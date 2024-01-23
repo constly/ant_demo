@@ -21,26 +21,22 @@ run.bat
 ## 如何注册一个功能示例
 ```
 local ecs = ...
-local m = ecs.system "system_name"
-local main = import_package "demo.main"
-
-local id = main.register(m, "示例分类", {
-    name = "示例名",
-    desc = "功能描述说明",
-})
+local system = ecs.system "system_name"
+local mgr = require "data_mgr"
+local id = mgr.register(system, mgr.type_imgui, "02_基础控件", "展示基础控件")
 
 -- 当进入示例时（可能需要执行一些初始化）
-function m:on_entry()
+function system:on_entry()
 end
 
 -- 当离开示例时（可能需要执行清理操作）
-function m:on_leave()
+function system:on_leave()
 end
 
 -- 如果能在外层控制不执行system的回调就好了
 -- 自己实现一个tick? (但可能调用时机不合适)
-function m:data_changed()
-    if id ~= main.get_current_id() then return end 
+function system:data_changed()
+    if id ~= mgr.get_current_id() then return end 
 
     -- 具体示例代码写这里
 end

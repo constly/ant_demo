@@ -1,8 +1,7 @@
 local ecs = ...
-local m = ecs.system "demo_main_system"
-
+local system = ecs.system "data_system"
 local ImGui = import_package "ant.imgui"
-local main  = require "main"
+local data_mgr  = require "data_mgr"
 local category = nil
 local selected = {}
 
@@ -18,19 +17,19 @@ local set_btn_style = function(current)
     end
 end
 
-function m:data_changed()
+function system:data_changed()
     -- 顶部菜单
     ImGui.SetNextWindowPos(169, 5)
     ImGui.SetNextWindowSize(1000, 40)
     if ImGui.Begin("demo_main_title", ImGui.Flags.Window {"AlwaysAutoResize", "NoMove", "NoTitleBar", "NoScrollbar"}) then 
-        for i, v in ipairs(main.get_data()) do 
+        for i, v in ipairs(data_mgr.get_data()) do 
             local current = v.category == category
             set_btn_style(current)
             local label = v.category .. "###main_category_i_" .. i
             if ImGui.Button(label, 80, 25) or not category then 
                 category = v.category
                 if selected[category] then 
-                    main.set_current_item(selected[category])
+                    data_mgr.set_current_item(selected[category])
                 end
             end
             ImGui.SameLine()
@@ -39,7 +38,7 @@ function m:data_changed()
     end
     ImGui.End()
 
-    local tbList = main.find_category(category) or {items = {}}
+    local tbList = data_mgr.find_category(category) or {items = {}}
     local item
     
     -- 左边菜单
@@ -56,7 +55,7 @@ function m:data_changed()
             set_btn_style(current)
             if ImGui.Button(label, 135, 23) or not selected[category] then 
                 selected[category] = v
-                main.set_current_item(v)
+                data_mgr.set_current_item(v)
             end
             ImGui.PopStyleColor(3)
         end

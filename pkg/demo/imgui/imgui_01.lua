@@ -1,29 +1,18 @@
 local ecs = ...
-local world = ecs.world
-local w = world.w
-
+local system = ecs.system "imgui_01_system"
 local ImGui = import_package "ant.imgui"
-local ImGuiIO = ImGui.io
-local math3d = require "math3d"
-local main = import_package "demo.main"
-local m = ecs.system "main_system"
+local mgr = require "data_mgr"
+local id = mgr.register(system, mgr.type_imgui, "01_实时显示", "由于目前无法输入多行，所以该功能待定")
 
-
-local demo1 = 
+local default_input = 
 [[
     local ImGui = import_package "ant.imgui"
     ImGui.Text("demo1")
 ]]
+local text = {text = default_input, hint = "测试"}
 
-local text = {text = demo1, hint = "测试"}
-
-local id = main.register(m, "ImGui", {
-    name = "实时显示",
-    desc = "由于目前无法输入多行，所以该功能待定",
-})
-
-function m:data_changed()
-    if id ~= main.get_current_id() then return end 
+function system:data_changed()
+    if id ~= mgr.get_current_id() then return end 
 
     ImGui.SetNextWindowPos(200, 95)
     ImGui.SetNextWindowSize(800, 500)
