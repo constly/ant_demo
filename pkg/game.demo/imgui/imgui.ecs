@@ -22,3 +22,6 @@ system "imgui_07"
 
 system "imgui_08"
     .implement "imgui/imgui_08.lua"
+
+system "imgui_09"
+    .implement "imgui/imgui_09.lua"

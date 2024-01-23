@@ -2,7 +2,7 @@ local ecs = ...
 local system = ecs.system "imgui_01_system"
 local ImGui = import_package "ant.imgui"
 local mgr = require "data_mgr"
-local id = mgr.register(system, mgr.type_imgui, "01_实时显示", "由于目前无法输入多行，所以该功能待定")
+local id = mgr.register(system, mgr.type_imgui, "01_实时输入显示", "由于目前无法输入多行，所以该功能待定")
 
 local default_input = 
 [[

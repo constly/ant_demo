@@ -5,7 +5,7 @@ import_package "ant.window".start {
     window_size = "1280x720",
     enable_mouse = true,
     feature = {
-        "demo",
+        "game.demo",
         
         "ant.render",
         "ant.animation",
