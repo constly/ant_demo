@@ -1,5 +1,4 @@
 local ecs = ...
-local world = ecs.world
 local system = ecs.system "data_system"
 local window = require "window"
 local tools = import_package 'game.tools'
@@ -7,6 +6,7 @@ local ImGui = import_package "ant.imgui"
 local data_mgr  = require "data_mgr"
 local category = nil
 local selected = {}
+local showHover = true
 
 local set_btn_style = function(current)
     if current then 
@@ -20,8 +20,7 @@ local set_btn_style = function(current)
     end
 end
 
-function system:init_world()
-    data_mgr.set_world(world)
+function system.init_world()
     data_mgr.disable_all()
     window.set_title("Ant Game Engine 使用大全")
     category = tools.user_data.get("last_category")
@@ -31,7 +30,7 @@ function system:init_world()
     end
 end
 
-function system:data_changed()
+function system.data_changed()
     -- 顶部菜单
     ImGui.SetNextWindowPos(169, 5)
     ImGui.SetNextWindowSize(1000, 40)
@@ -71,14 +70,38 @@ function system:data_changed()
                 item = v
             end
             set_btn_style(current)
+            local click = false
             if ImGui.Button(label, 135, 23) or not selected[category] or (selected[category] == 0) then 
+                click = true
+            end
+            ImGui.PopStyleColor(3)
+            local id = string.format("btn_left_pop_id_%d", i)
+            if ImGui.BeginPopupContextItem(id) then 
+                click = true
+                showHover = false
+                if ImGui.MenuItem("打开文件") then 
+                    os.execute("code "..v.file)
+                end
+                if ImGui.MenuItem("选中文件") then 
+                    os.execute("c:\\windows\\explorer.exe /select,"..v.file)
+                end
+                ImGui.EndPopup()
+            else 
+                if showHover and ImGui.IsItemHovered() then
+                    if ImGui.BeginTooltip() then
+                        ImGui.Text("右键可选中/打开所在文件")
+                        ImGui.EndTooltip()
+                    end
+                end
+            end
+
+            if click and selected[category] ~= v.id then 
                 selected[category] = v.id
                 data_mgr.set_current_item(category, v.id)
                 -- 这里记录id不严谨，因为id是运行时动态生成的，不过影响不大，因为这是编辑器
                 -- 99%的情况下这里不会出问题，即使出问题也是小问题
                 tools.user_data.set('last_category_' .. category, v.id, true) 
             end
-            ImGui.PopStyleColor(3)
         end
     end
     ImGui.End()

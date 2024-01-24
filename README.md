@@ -51,7 +51,16 @@ run.bat
 ```
 local ecs = ...
 local mgr = require "data_mgr"
-local system = mgr.create_system(ecs, "system_name", mgr.type_imgui, "用例名字", "用例描述")
+local tbParam = 
+{
+    ecs             = ecs,
+    system_name     = "系统名字",           -- 如: imgui_02_system
+    category        = "用例所属类别",       -- 如: mgr.type_imgui
+    name            = "用例名字",           -- 如: 01_ImGui基础功能展示
+    desc            = "用例描述",           -- 如: 展示ImGui常用控件
+    file            = "用例文件路径",       -- 如: imgui/imgui_02.lua
+}
+local system = mgr.create_system(tbParam)
 
 -- 当进入示例时（可能需要执行一些初始化）
 function system.on_entry()
