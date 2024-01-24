@@ -1,11 +1,10 @@
 # Ant Game Engine 使用大全
-本项目试图帮助我以及很多与我一样学习能力不出众的开发者尽快上手[Ant Game Engine](https://github.com/ejoy/ant)，具体指导方针如下:
-```
+本项目试图帮助广大开发者尽快上手[Ant Game Engine](https://github.com/ejoy/ant)，具体指导方针如下:
 * 尽可能给每一个功能点都加上示例代码
 * 尽可能覆盖游戏开发的方方面面，比如编辑器，UI，渲染，联机，调试，优化，资源管理，对接Steam等等
 * 尽可能多写注释讲明原理
 * 尽量封装+模块化，以便需要时直接Ctrl+C, Ctrl+V
-```
+
 
 **欢迎有兴趣的朋友加入进来一起完善，主界面如下:**
 ![界面预览](./img/icon.png)
@@ -40,7 +39,7 @@
 
 
 ## 如何运行
-将工程克隆到引擎根目录，然后执行run.bat，注意: 默认使用的release引擎
+将工程克隆到引擎根目录，然后执行run.bat，注意: 默认使用release引擎
 ```
 git clone https://github.com/constly/ant_demo.git
 cd ant_demo
@@ -51,23 +50,19 @@ run.bat
 ## 如何注册一个功能示例
 ```
 local ecs = ...
-local system = ecs.system "system_name"
 local mgr = require "data_mgr"
-local id = mgr.register(system, mgr.type_imgui, "02_基础控件", "展示基础控件")
+local system = mgr.create_system(ecs, "system_name", mgr.type_imgui, "用例名字", "用例描述")
 
 -- 当进入示例时（可能需要执行一些初始化）
-function system:on_entry()
+function system.on_entry()
 end
 
 -- 当离开示例时（可能需要执行清理操作）
-function system:on_leave()
+function system.on_leave()
 end
 
--- 如果能在外层控制不执行system的回调就好了
--- 自己实现一个tick? (但可能调用时机不合适)
-function system:data_changed()
-    if id ~= mgr.get_current_id() then return end 
-
+-- 每帧更新
+function system.data_changed()
     -- 具体示例代码写这里
 end
 ```

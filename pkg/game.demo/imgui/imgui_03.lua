@@ -1,10 +1,9 @@
 local ecs = ...
-local system = ecs.system "imgui_03_system"
 local ImGui = import_package "ant.imgui"
 local mgr = require "data_mgr"
-local id = mgr.register(system, mgr.type_imgui, "03_窗口", "尚未实现")
+local system = mgr.create_system(ecs, "imgui_03_system", mgr.type_imgui, "03_窗口", "尚未实现")
 
-function system:data_changed()
-    if id ~= mgr.get_current_id() then return end 
+function system.data_changed()
+    
 
 end

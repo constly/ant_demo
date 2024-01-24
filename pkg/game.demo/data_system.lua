@@ -1,4 +1,5 @@
 local ecs = ...
+local world = ecs.world
 local system = ecs.system "data_system"
 local window = require "window"
 local tools = import_package 'game.tools'
@@ -20,6 +21,8 @@ local set_btn_style = function(current)
 end
 
 function system:init_world()
+    data_mgr.set_world(world)
+    data_mgr.disable_all()
     window.set_title("Ant Game Engine 使用大全")
     category = tools.user_data.get("last_category")
     if category ~= "" then 

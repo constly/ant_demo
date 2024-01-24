@@ -1,8 +1,7 @@
 local ecs = ...
-local system = ecs.system "imgui_01_system"
-local ImGui = import_package "ant.imgui"
 local mgr = require "data_mgr"
-local id = mgr.register(system, mgr.type_imgui, "01_实时输入显示", "由于目前无法输入多行，所以该功能待定")
+local system = mgr.create_system(ecs, "imgui_01_system", mgr.type_imgui, "01_实时输入显示", "由于目前无法输入多行，所以该功能待定")
+local ImGui = import_package "ant.imgui"
 
 local default_input = 
 [[
@@ -11,9 +10,7 @@ local default_input =
 ]]
 local text = {text = default_input, hint = "测试"}
 
-function system:data_changed()
-    if id ~= mgr.get_current_id() then return end 
-
+function system.data_changed()
     ImGui.SetNextWindowPos(200, 95)
     ImGui.SetNextWindowSize(800, 500)
     if ImGui.Begin("demo_imgui", ImGui.Flags.Window {"NoMove", "NoTitleBar"}) then 
