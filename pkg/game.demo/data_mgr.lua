@@ -5,8 +5,6 @@ local cur_item = nil
 local api = {}
 
 function api.create_system(tbParam)
-    if type(tbParam) ~= "table" then return end 
-
     local tb = api.find_category(tbParam.category)
     if not tb then 
         tb = {category = tbParam.category, items = {}}
@@ -20,6 +18,7 @@ function api.create_system(tbParam)
     data.name = tbParam.name
     data.world = tbParam.ecs and tbParam.ecs.world
     data.desc = tbParam.desc
+    data.ok   = tbParam.ok
     data.system = system
     data.system_name = system and ("game.demo|" .. tbParam.system_name)
     data.id = max_id
@@ -82,19 +81,18 @@ function api.get_data() return all_data end
 
 function api.get_current_id() return cur_item and cur_item.id end
 
-function api.get_content_start() return {x = 180, y = 100} end
+function api.get_content_start() return {x = 180, y = 85} end
 
 -- 类型排版占位
 local tb_def = {
     {"type_imgui",      "ImGui"},
-    {"type_res",        "资源管理"},
+    {"type_core",       "引擎核心"},
+    {"type_asset",      "资源管理"},
     {"type_rmlui",      "RmlUI"},
-    {"type_scene",      "场景和输入"},
-    {"type_ecs",        "Lua ECS"},
+    {"type_scene",      "场景"},
     {"type_renderer",   "渲染"},
-    {"type_effect",     "特效和声音"},
     {"type_net",        "网络"},
-    {"type_debug",      "性能和调试"},
+    {"type_minigame",   "完整示例"},
 }
 for i, v in ipairs(tb_def) do 
     api[v[1]] = v[2]    
@@ -109,31 +107,37 @@ local temp_create = function(category, name, desc)
     local tbParam = { category = category, name = name, desc = desc, file = "data_system.lua" }
     api.create_system(tbParam)
 end
-temp_create("资源管理", "通过vfs加载", "尚未实现")
-temp_create("资源管理", "自定义字节流存取", "尚未实现")
-temp_create("资源管理", "自定义字符串存取", "尚未实现")
-temp_create("资源管理", "单机存档/读档", "尚未实现")
-temp_create("资源管理", "打pack包", "尚未实现")
-temp_create("资源管理", "解pack包", "尚未实现")
-temp_create("资源管理", "加密/解密", "尚未实现")
-temp_create("资源管理", "压缩/解压", "尚未实现")
 
-temp_create("RmlUI", "01_基础控件", "尚未实现")
-temp_create("RmlUI", "02_列表和弹框", "尚未实现")
-temp_create("RmlUI", "03_UI播放动画", "尚未实现")
-temp_create("RmlUI", "04_UI播放特效", "尚未实现")
-temp_create("RmlUI", "05_UI中显示RT", "尚未实现")
+temp_create(api.type_core, "01_创建/删除entity", "尚未实现")
+temp_create(api.type_core, "02_system", "尚未实现")
+temp_create(api.type_core, "03_pipeline", "尚未实现")
+temp_create(api.type_core, "04_itask", "尚未实现")
+temp_create(api.type_core, "07_输入", "尚未实现")
+temp_create(api.type_core, "10_特效", "尚未实现")
+temp_create(api.type_core, "11_声音", "1. 2D声音，包括BGM和音效; \n2. 3D声音，可以指定声音距离摄像机的距离，有暂停/继续/中止等接口演示；\n3.音量调节")
+temp_create(api.type_core, "12_性能分析", "帧率，内存使用，cput使用，gpu使用，尚未实现")
 
-temp_create("场景和输入", "模型和动画", "尚未实现")
-temp_create("场景和输入", "角色操控", "尚未实现")
-temp_create("场景和输入", "第三人称摄像机", "尚未实现")
-temp_create("场景和输入", "键盘和鼠标", "尚未实现")
-temp_create("场景和输入", "多点触屏", "尚未实现")
-temp_create("场景和输入", "手柄", "尚未实现")
-temp_create("场景和输入", "选中场景物件", "尚未实现")
+temp_create(api.type_asset, "01_通过vfs加载", "尚未实现")
+temp_create(api.type_asset, "02_自定义数据存取", "尚未实现") -- 包括字符串/字节流
+temp_create(api.type_asset, "03_单机存档/读档", "尚未实现")
+temp_create(api.type_asset, "04_打/解pack包", "尚未实现")
+temp_create(api.type_asset, "05_加密/解密", "尚未实现")
+temp_create(api.type_asset, "06_压缩/解压", "尚未实现")
 
-temp_create("Lua ECS", "创建Entity", "创建和删除Entity")
-temp_create("Lua ECS", "System更新", "")
+temp_create(api.type_rmlui, "01_基础控件", "尚未实现")
+temp_create(api.type_rmlui, "02_列表和弹框", "尚未实现")
+temp_create(api.type_rmlui, "03_UI播放动画", "尚未实现")
+temp_create(api.type_rmlui, "04_UI播放特效", "尚未实现")
+temp_create(api.type_rmlui, "05_UI中显示RT", "尚未实现")
+
+temp_create(api.type_scene, "模型和动画", "尚未实现")
+temp_create(api.type_scene, "角色操控", "尚未实现")
+temp_create(api.type_scene, "第三人称摄像机", "尚未实现")
+temp_create(api.type_scene, "键盘和鼠标", "尚未实现")
+temp_create(api.type_scene, "多点触屏", "尚未实现")
+temp_create(api.type_scene, "手柄", "尚未实现")
+temp_create(api.type_scene, "选中场景物件", "尚未实现")
+
 
 temp_create("渲染", "01_LOD", "尚未实现")
 temp_create("渲染", "02_光影/迷雾", "尚未实现")
@@ -145,17 +149,11 @@ temp_create("渲染", "07_RenderTexture", "通过RT反向操作物体")
 temp_create("渲染", "08_卡通渲染", "尚未实现")
 temp_create("渲染", "09_画质设置", "尚未实现")
 
-temp_create("特效和声音", "测试特效", "尚未实现")
-temp_create("特效和声音", "2D声音", "包括BGM和音效")
-temp_create("特效和声音", "3D声音", "1. 可以指定声音距离摄像机的距离\n2. 有暂停/继续/中止等接口演示")
-temp_create("特效和声音", "音量调节", "尚未实现")
+temp_create(api.type_net, "WebServer", "尚未实现")
+temp_create(api.type_net, "Socket通信", "尚未实现")
+temp_create(api.type_net, "简单多人游戏", "尚未实现")
 
-temp_create("网络", "WebServer", "尚未实现")
-temp_create("网络", "Socket通信", "尚未实现")
-temp_create("网络", "简单多人游戏", "尚未实现")
-
-temp_create("性能和调试", "帧率", "尚未实现")
-temp_create("性能和调试", "内存情况", "尚未实现")
+temp_create(api.type_minigame, "待定", "尚未实现")
 
 
 return api;

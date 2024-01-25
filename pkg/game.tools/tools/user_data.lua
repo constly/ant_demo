@@ -36,11 +36,14 @@ function api.get_number(key, default)
     return tonumber(api.get(key)) or default or 0
 end
 
-function api.get(key)
-    return data[key] or ""
+function api.get(key, default)
+    return data[key] or default
 end 
 
 function api.set(key, value, auto_save)
+    if data[key] == value then 
+        return
+    end
     data[key] = value
     if auto_save then 
         api.save()

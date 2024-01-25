@@ -8,15 +8,25 @@ local category = nil
 local selected = {}
 local showHover = true
 
-local set_btn_style = function(current)
+local set_btn_style = function(current, ok)
     if current then 
         ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0.6, 0.6, 0.25, 1)
         ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0.5, 0.5, 0.25, 1)
         ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0.5, 0.5, 0.25, 1)
+        if ok then 
+            ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.95, 0.95, 0.95, 1)
+        else 
+            ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.8, 0.8, 0.8, 1)
+        end
     else 
         ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0.2, 0.2, 0.25, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0.2, 0.2, 0.25, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0.2, 0.2, 0.25, 1)
+        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
+        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
+        if ok then 
+            ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.95, 0.95, 0.95, 1)
+        else 
+            ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.7, 0.7, 0.7, 1)
+        end
     end
 end
 
@@ -28,6 +38,8 @@ function system.init_world()
         selected[category] = tools.user_data.get_number('last_category_' .. category)
         data_mgr.set_current_item(category, selected[category])    
     end
+    -- 设置全局文本默认颜色
+    ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.9, 0.9, 0.9, 1)
 end
 
 function system.data_changed()
@@ -37,7 +49,7 @@ function system.data_changed()
     if ImGui.Begin("demo_main_title", ImGui.Flags.Window {"AlwaysAutoResize", "NoMove", "NoTitleBar", "NoScrollbar"}) then 
         for i, v in ipairs(data_mgr.get_data()) do 
             local current = v.category == category
-            set_btn_style(current)
+            set_btn_style(current, true)
             local label = v.category .. "###main_category_i_" .. i
             if ImGui.Button(label, 80, 25) or category == "" then 
                 category = v.category
@@ -50,7 +62,7 @@ function system.data_changed()
                 end
             end
             ImGui.SameLine()
-            ImGui.PopStyleColor(3)
+            ImGui.PopStyleColor(4)
         end
     end
     ImGui.End()
@@ -69,12 +81,12 @@ function system.data_changed()
             if current then 
                 item = v
             end
-            set_btn_style(current)
+            set_btn_style(current, v.ok)
             local click = false
             if ImGui.Button(label, 135, 23) or not selected[category] or (selected[category] == 0) then 
                 click = true
             end
-            ImGui.PopStyleColor(3)
+            ImGui.PopStyleColor(4)
             local id = string.format("btn_left_pop_id_%d", i)
             if ImGui.BeginPopupContextItem(id) then 
                 click = true
@@ -109,10 +121,14 @@ function system.data_changed()
 
     -- 功能描述
     if item and item.desc then 
-        ImGui.SetNextWindowPos(180, 50)
-        ImGui.SetNextWindowSize(800, 100)
-        if ImGui.Begin("demo_main_body_desc", ImGui.Flags.Window {"NoInputs", "NoMove", "NoTitleBar", "NoScrollbar", "NoBringToFrontOnFocus", "NoBackground"}) then 
-            ImGui.Text(item.desc)
+        ImGui.SetNextWindowPos(170, 45)
+        ImGui.SetNextWindowSize(60, 60)
+        if ImGui.Begin("demo_main_body_desc", ImGui.Flags.Window {"NoMove", "NoResize", "NoTitleBar", "NoScrollbar", "NoBringToFrontOnFocus", "NoBackground"}) then 
+            ImGui.TextDisabled("(?)");
+            if ImGui.IsItemHovered() and ImGui.BeginTooltip() then 
+                ImGui.Text(item.desc);
+                ImGui.EndTooltip();
+            end
         end
         ImGui.End()
     end

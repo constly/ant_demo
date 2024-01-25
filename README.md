@@ -59,6 +59,7 @@ local tbParam =
     name            = "用例名字",           -- 如: 01_ImGui基础功能展示
     desc            = "用例描述",           -- 如: 展示ImGui常用控件
     file            = "用例文件路径",       -- 如: imgui/imgui_02.lua
+    ok              = false,               -- 功能是否已经开发完成
 }
 local system = mgr.create_system(tbParam)
 

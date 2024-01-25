@@ -7,7 +7,8 @@ local tbParam =
     category        = mgr.type_imgui,
     name            = "02_基础控件",
     desc            = "展示ImGui常用基础控件",
-    file            = "imgui/imgui_02.lua"
+    file            = "imgui/imgui_02.lua",
+    ok              = true
 }
 local system = mgr.create_system(tbParam)
 
@@ -35,24 +36,12 @@ function system.on_entry()
     end
 end
 
-local draw_line = function(head1, body1, head2, body2)
-    ImGui.Text(head1)
-    ImGui.SameLine(headlen)
-    body1()
-
-    if head2 and body2 then
-        ImGui.SameLine(start_x_2)
-        ImGui.Text(head2)
-        ImGui.SameLine(headlen2)
-        body2()
-    end
-end
-
+-- 每帧更新
 function system.data_changed()
     local start = mgr.get_content_start()
     ImGui.SetNextWindowPos(start.x, start.y)            
-    ImGui.SetNextWindowSize(1000, 500)
-    if ImGui.Begin("wnd_body", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar", "NoScrollbar", "NoBringToFrontOnFocus", "NoBackground"}) then 
+    ImGui.SetNextWindowSize(1000, 600)
+    if ImGui.Begin("wnd_body", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar", "NoBringToFrontOnFocus"}) then 
         local n = math.ceil(#tbDataList / 2)
         for i = 1, n do 
             if i > 1 then 
@@ -61,8 +50,17 @@ function system.data_changed()
             end
             ImGui.SameLine(start_x)
             local data1 = tbDataList[i * 2 - 1]
-            local data2 = tbDataList[i * 2] or {}
-            draw_line(data1[1], data1[2], data2[1], data2[2])
+            ImGui.Text(data1[1])
+            ImGui.SameLine(headlen)
+            data1[2]()
+
+            local data2 = tbDataList[i * 2]
+            if data2 then 
+                ImGui.SameLine(start_x_2)
+                ImGui.Text(data2[1])
+                ImGui.SameLine(headlen2)
+                data2[2]()
+            end
             ImGui.Separator()
         end
     end
@@ -74,14 +72,20 @@ local cur_combo = tbComboList[1]
 local cur_list_box = 1
 local radio_flag = 1
 local progress_value = 0.01
+local checkbox_value = false
+local arrowbtn_value = 0
 
 local drag_int_value = { [1] = 50, min = 0, max = 120, format = "%d%%" }
 local drag_float_value = { [1] = 0.5, min = 0, max = 10, speed = 0.1, format = "%d%%" }
 local slider_int_value = { [1] = 20, min = 0, max = 100 }
 local slider_float_value = { [1] = 0.625, min = 0, max = 1 }
 local list_box_value = { [1] = "AA", [2] = "BB", [3] = "CC", current = 1, height = 3 }
+local color_edit_ui = {0.3, 0.6, 0.7, 1}
+local color_pick_ui = {0.5, 0.6, 0.7, 0.8, flags = 0}
 
 function system.init_world()
+    if #tbDataList > 0 then return end 
+
     local register = function(label, func)
         table.insert(tbDataList, {label, func})
     end
@@ -95,12 +99,25 @@ function system.init_world()
         end
     end)
     register("RadioButton:", function()
-        if ImGui.RadioButton("男生##radio_id_1", radio_flag == 1) then 
+        if ImGui.RadioButton("剑客##radio_id_1", radio_flag == 1) then 
             radio_flag = 1
         end
         ImGui.SameLine()
-        if ImGui.RadioButton("女生##radio_id_2", radio_flag == 2) then 
+        if ImGui.RadioButton("刀客##radio_id_2", radio_flag == 2) then 
             radio_flag = 2
+        end
+    end)
+    register("ColorButton:", function()
+        local x, y = ImGui.GetCursorPos();
+        ImGui.ColorButton("##colorbtn", 0.13, 0.66, 0.40, 1.0, 0, 120, 23);
+        ImGui.SetCursorPos(x + 6, y + 2);
+        ImGui.Text(string.format("%.2f x %.2f", x, y));
+    end)
+    register("SmallButton:", function()
+        ImGui.SmallButton("click here")
+        if ImGui.IsItemHovered() and ImGui.BeginTooltip() then
+            ImGui.Text("没有border的按钮")
+            ImGui.EndTooltip()
         end
     end)
     register("ImageButton:", function()
@@ -180,6 +197,23 @@ function system.init_world()
         end
         ImGui.ProgressBar(progress_value, 150, 22, "嘿嘿") 
     end)
+    register("Checkbox:", function()
+        local change, v = ImGui.Checkbox("同意##checkbox_1", checkbox_value)
+        if change then 
+            checkbox_value = v
+        end
+    end)
+    register("ArrowButton:", function()
+        if ImGui.ArrowButton("arrow_a", "l") then arrowbtn_value = arrowbtn_value + 1 end
+        ImGui.SameLine()
+        if ImGui.ArrowButton("arrow_b", "r") then arrowbtn_value = arrowbtn_value + 1 end
+        ImGui.SameLine()
+        if ImGui.ArrowButton("arrow_c", "u") then arrowbtn_value = arrowbtn_value + 1 end
+        ImGui.SameLine()
+        if ImGui.ArrowButton("arrow_d", "d") then arrowbtn_value = arrowbtn_value + 1 end
+        ImGui.SameLine()
+        ImGui.Text("点击了" .. arrowbtn_value .. "次")
+    end)
     register("ListBox:", function()
         ImGui.SetNextItemWidth(150)
         if ImGui.ListBox("##listbox", list_box_value) then 
@@ -202,5 +236,13 @@ function system.init_world()
             end
             ImGui.EndListBox()
         end
+    end)
+    register("ColorPicker:", function()
+        ImGui.SetNextItemWidth(150)
+        ImGui.ColorPicker("##color_picker", color_pick_ui)
+    end)
+    register("ColorEdit:", function()
+        ImGui.SetNextItemWidth(150)
+        ImGui.ColorEdit("##clor_editor_1", color_edit_ui)
     end)
 end
