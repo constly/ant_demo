@@ -94,13 +94,17 @@ function system.data_changed()
     ImGui.SetNextWindowPos(225, 540)  
     ImGui.SetNextWindowSize(950, 400)
     if ImGui.Begin("wnd_bottom", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar", "NoScrollbar", "NoBackground"}) then 
-        ImGui.PushTextWrapPos(650);
         local str = string.format("%s {%s}", szFlag, table.concat(system.get_styles(), ", "))
-        ImGui.InputText("##input_show", {text = str, flags = ImGui.Flags.InputText({"ReadOnly"})})
-        ImGui.PopTextWrapPos();
+		ImGui.PushTextWrapPos(650);
+        ImGui.Text(str)
+		ImGui.PopTextWrapPos()
 
         set_btn_style(false)
-        ImGui.SetCursorPos(810, 10)
+        ImGui.SetCursorPos(720, 10)
+		if ImGui.Button("复 制##btn_copy_flag", 80, 25) then 
+			print("copy", str)
+		end 
+		ImGui.SameLine()
         if ImGui.Button("清 空##btn_clear_flag", 80, 25) then 
             for i, v in pairs(selected) do 
                 selected[i] = nil
@@ -221,24 +225,37 @@ all_flags["InputText"] = {
 }
 local input_content = {
     text = "",
+	hint = "请输入",
     flags = nil,
-    up = function()
-    end,
-    down = function()
-    end,
+    up = function() end,
+    down = function() end,
+}
+local input_multi_content = {
+    text = "文本内容",
+    flags = nil,
+	width = 180,
+	height = 150,
 }
 function system.Draw_InputText()
     ImGui.SetNextWindowPos(wnd_pos.x, wnd_pos.y)  
     ImGui.SetNextWindowSize(wnd_size.x, wnd_size.y)
     if ImGui.Begin("##window_imgui_03_input", ImGui.Flags.Window {}) then 
-        ImGui.SetCursorPos(50, 100)
+        ImGui.SetCursorPos(30, 70)
         ImGui.Text("InputText: ")
         ImGui.SameLine()
-        ImGui.SetNextItemWidth(150)
+        ImGui.SetNextItemWidth(180)
         input_content.flags = ImGui.Flags.InputText(system.get_styles())
         if ImGui.InputText("##input_test", input_content) then 
             print("input", tostring(input_content.text))
         end
+
+		ImGui.SetCursorPos(30, 120)
+		ImGui.Text("InputMult: ")
+        ImGui.SameLine()
+		input_multi_content.flags = ImGui.Flags.InputText(system.get_styles())
+		if ImGui.InputTextMultiline("##input_multi_test", input_multi_content) then 
+			print("multi_input", tostring(input_multi_content.text))
+		end
     end 
     ImGui.End()
     return "ImGui.Flags.InputText"
