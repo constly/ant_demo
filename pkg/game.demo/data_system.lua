@@ -33,7 +33,7 @@ end
 function system.init_world()
     data_mgr.disable_all()
     window.set_title("Ant Game Engine 使用大全")
-    category = tools.user_data.get("last_category")
+    category = tools.user_data.get("last_category", "")
     if category ~= "" then 
         selected[category] = tools.user_data.get_number('last_category_' .. category)
         data_mgr.set_current_item(category, selected[category])    
