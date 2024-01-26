@@ -68,23 +68,39 @@ function system.data_changed()
     ImGui.End()
 
     tb_flags = all_flags[cur_page]
-    system['Draw_' .. cur_page]()
+    local szFlag = system['Draw_' .. cur_page]() or ""
 
     ImGui.SetNextWindowPos(720, 130)  
     ImGui.SetNextWindowSize(400, 400)
     if ImGui.Begin("wnd_flags", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar"}) then 
-        for i, name in ipairs(tb_flags) do 
+        for i, v in ipairs(tb_flags) do 
+            local is_table = type(v) == "table"
+            local name = is_table and v[1] or v
             if ImGui.RadioButton(name .. "##flag" .. i, selected[i] == true) then 
                 selected[i] = not selected[i]
+            end
+            if is_table then 
+                if ImGui.IsItemHovered() and ImGui.BeginTooltip() then 
+                    ImGui.PushTextWrapPos(400);
+                    ImGui.Text(v[2]);
+                    ImGui.PopTextWrapPos()
+                    ImGui.EndTooltip();
+                end
             end
         end
     end
     ImGui.End()
 
-    ImGui.SetNextWindowPos(880, 540)  
-    ImGui.SetNextWindowSize(100, 400)
-    if ImGui.Begin("wnd_buttom", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar", "NoScrollbar", "NoBackground"}) then 
+    ImGui.SetNextWindowPos(225, 540)  
+    ImGui.SetNextWindowSize(950, 400)
+    if ImGui.Begin("wnd_bottom", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar", "NoScrollbar", "NoBackground"}) then 
+        ImGui.PushTextWrapPos(650);
+        local str = string.format("%s {%s}", szFlag, table.concat(system.get_styles(), ", "))
+        ImGui.InputText("##input_show", {text = str, flags = ImGui.Flags.InputText({"ReadOnly"})})
+        ImGui.PopTextWrapPos();
+
         set_btn_style(false)
+        ImGui.SetCursorPos(810, 10)
         if ImGui.Button("清 空##btn_clear_flag", 80, 25) then 
             for i, v in pairs(selected) do 
                 selected[i] = nil
@@ -97,7 +113,9 @@ end
 
 function system.get_styles()
     local ret = {}
-    for i, name in ipairs(tb_flags) do 
+    for i, v in ipairs(tb_flags) do 
+        local is_table = type(v) == "table"
+        local name = is_table and v[1] or v
         if selected[i] then 
             table.insert(ret, name)
         end
@@ -144,6 +162,7 @@ function system.Draw_Window()
     end
     wnd_size.x, wnd_size.y = ImGui.GetWindowSize()
     ImGui.End()
+    return "ImGui.Flags.Window"
 end
 
 ----------------------------------------------------------------
@@ -162,7 +181,7 @@ all_flags["Child"] = {
 function system.Draw_Child()
     ImGui.SetNextWindowPos(wnd_pos.x, wnd_pos.y)  
     ImGui.SetNextWindowSize(wnd_size.x, wnd_size.y)
-    if ImGui.Begin("ChildParent##window_imgui_03_2", ImGui.Flags.Window {}) then 
+    if ImGui.Begin("##window_imgui_03_child", ImGui.Flags.Window {}) then 
         ImGui.SetCursorPos(50, 50)
         ImGui.BeginChild("ImGui.BeginChild", 300, 300, ImGui.Flags.Child(system.get_styles()), ImGui.Flags.Window { "HorizontalScrollbar" })
         for i, desc in ipairs(contents) do 
@@ -171,15 +190,58 @@ function system.Draw_Child()
         ImGui.EndChild()
     end 
     ImGui.End()
+    return "ImGui.Flags.Child"
 end
 
 ----------------------------------------------------------------
 --- InputText
 ----------------------------------------------------------------
 all_flags["InputText"] = {
-
+    {"CharsDecimal", "Allow 0123456789.+-*/"},
+    {"CharsHexadecimal", "Allow 0123456789ABCDEFabcdef"},
+    {"CharsUppercase", "Turn a..z into A..Z"},
+    {"CharsNoBlank", "Filter out spaces, tabs"},
+    {"AutoSelectAll", "Select entire text when first taking mouse focus"},
+    {"EnterReturnsTrue", "Return 'true' when Enter is pressed (as opposed to every time the value was modified). Consider looking at the IsItemDeactivatedAfterEdit() function."},
+    {"CallbackCompletion", "Callback on pressing TAB (for completion handling)"},
+    {"CallbackHistory", "Callback on pressing Up/Down arrows (for history handling)"},
+ --   {"CallbackAlways", "Callback on each iteration. User code may query cursor position, modify text buffer."},
+    {"CallbackCharFilter", "Callback on character inputs to replace or discard them. Modify 'EventChar' to replace or discard, or return 1 in callback to discard."},
+    {"AllowTabInput", "Pressing TAB input a '\t' character into the text field"},
+    {"CtrlEnterForNewLine", "In multi-line mode, unfocus with Enter, add new line with Ctrl+Enter (default is opposite: unfocus with Ctrl+Enter, add line with Enter)."},
+    {"NoHorizontalScroll", "Disable following the cursor horizontally"},
+    {"AlwaysOverwrite", "Overwrite mode"},
+    {"ReadOnly", "Read-only mode"},
+    {"Password", "Password mode, display all characters as '*'"},
+    {"NoUndoRedo", "Disable undo/redo. Note that input text owns the text data while active, if you want to provide your own undo/redo stack you need e.g. to call ClearActiveID()."},
+    {"CharsScientific", "Allow 0123456789.+-*/eE (Scientific notation input)"},
+    {"CallbackResize", "Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow. Notify when the string wants to be resized (for string types which hold a cache of their Size). You will be provided a new BufSize in the callback and NEED to honor it. (see misc/cpp/imgui_stdlib.h for an example of using this)"},
+    {"CallbackEdit", "Callback on any edit (note that InputText() already returns true on edit, the callback is useful mainly to manipulate the underlying buffer while focus is active)"},
+    {"EscapeClearsAll", "Escape key clears content if not empty, and deactivate otherwise (contrast to default behavior of Escape to revert)"},
+}
+local input_content = {
+    text = "",
+    flags = nil,
+    up = function()
+    end,
+    down = function()
+    end,
 }
 function system.Draw_InputText()
+    ImGui.SetNextWindowPos(wnd_pos.x, wnd_pos.y)  
+    ImGui.SetNextWindowSize(wnd_size.x, wnd_size.y)
+    if ImGui.Begin("##window_imgui_03_input", ImGui.Flags.Window {}) then 
+        ImGui.SetCursorPos(50, 100)
+        ImGui.Text("InputText: ")
+        ImGui.SameLine()
+        ImGui.SetNextItemWidth(150)
+        input_content.flags = ImGui.Flags.InputText(system.get_styles())
+        if ImGui.InputText("##input_test", input_content) then 
+            print("input", tostring(input_content.text))
+        end
+    end 
+    ImGui.End()
+    return "ImGui.Flags.InputText"
 end
 
 ----------------------------------------------------------------
