@@ -86,7 +86,7 @@ function system.data_changed()
 				ImGui.SetCursorPos(xpos, ypos)
 
 				if idx_hover == i then 
-					ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.9, 0.1, 0.1, 1)
+					ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.1, 0.9, 0.1, 1)
 				else 
 					ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.9, 0.9, 0.9, 1)
 				end
