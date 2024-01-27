@@ -22,10 +22,13 @@ function system.on_entry()
 end
 
 function system.data_changed()
-	ImGui.SetNextWindowPos(250, 60)
-    ImGui.SetNextWindowSize(800, 500)
-    if ImGui.Begin("window_body", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar", "NoScrollbar", "NoBackground"}) then 
-		ImGui.SetCursorPos(260, 20)
+	ImGui.SetNextWindowPos(mgr.get_content_start())
+    ImGui.SetNextWindowSize(mgr.get_content_size())
+    if ImGui.Begin("window_body", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar", "NoScrollbar"}) then 
+		local offset_x = 150;
+		local offset_y = 50
+
+		ImGui.SetCursorPos(260 + offset_x, 20 + offset_y)
 		ImGui.Text("试试拖动")
 
 		ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0.2, 0.2, 0.25, 1)
@@ -37,8 +40,8 @@ function system.data_changed()
 		for i, v in ipairs(items) do 
 			local x = (i - 1) % 3
 			local y = math.ceil(i / 3)
-			local xpos = 120 * x + 120
-			local ypos = 120 * y - 50
+			local xpos = 120 * x + 120 + offset_x
+			local ypos = 120 * y - 50 + offset_y
 			ImGui.SetCursorPos(xpos, ypos)
 			local label = string.format("##btn_l_%d", i)
 			ImGui.Button(label, 100, 100)
@@ -76,10 +79,10 @@ function system.data_changed()
 		for i, v in ipairs(items) do 
 			local payload = ImGui.GetDragDropPayload("DragNode")
 			if not payload or tonumber(payload) ~= i then 
-				local x = (i - 1) % 3
+				local x = (i - 1) % 3 
 				local y = math.ceil(i / 3)
-				local xpos = 120 * x + 120 + 45
-				local ypos = 120 * y - 50 + 40
+				local xpos = 120 * x + 120 + 45 + offset_x
+				local ypos = 120 * y - 50 + 40 + offset_y
 				ImGui.SetCursorPos(xpos, ypos)
 
 				if idx_hover == i then 

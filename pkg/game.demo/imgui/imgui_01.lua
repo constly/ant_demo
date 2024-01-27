@@ -5,7 +5,7 @@ local tbParam =
     ecs             = ecs,
     system_name     = "imgui_01_system",
     category        = mgr.type_imgui,
-    name            = "01_实时输入显示",
+    name            = "01_实时绘制",
     desc            = "实时输入，实时绘制",
     file            = "imgui/imgui_01.lua",
 	ok 				= true
@@ -19,8 +19,8 @@ local cur_page = tools.user_data.get_number("imgui_01_page", 1)
 local input_context = {
     text = "",
     hint = "输入指令",
-    width = 400,
-    height = 400,
+    width = 500,
+    height = 500,
     flags = ImGui.Flags.InputText{"CallbackCompletion", "CallbackHistory", "AllowTabInput"},
 }
 
@@ -37,13 +37,13 @@ local set_btn_style = function(current)
 end
 
 function system.data_changed()
-    ImGui.SetNextWindowPos(200, 80)
-    ImGui.SetNextWindowSize(970, 565)
+    ImGui.SetNextWindowPos(mgr.get_content_start())
+    ImGui.SetNextWindowSize(mgr.get_content_size())
     if ImGui.Begin("demo_imgui", ImGui.Flags.Window {"NoMove", "NoTitleBar", "NoResize"}) then 
 		for i = 1, #default_inputs do 
 			set_btn_style(i == cur_page)
 			local label = string.format("P%d##btn_page_%d", i, i)
-			if ImGui.Button(label, 50, 23) then 
+			if ImGui.Button(label, 60) then 
 				cur_page = i
 				input_context.text = default_inputs[i]
 				tools.user_data.set("imgui_01_page", tostring(i), true)
@@ -53,16 +53,15 @@ function system.data_changed()
 		end
 		ImGui.NewLine()
 
-		local bodyX = 10;
         local sizeX, sizeY = ImGui.GetContentRegionAvail()
-        local childX = sizeX * 0.5 - bodyX * 3
+        local half = sizeX * 0.5
         local childY = sizeY - 100
 		if ImGui.InputTextMultiline("##input_2", input_context) then 
 			default_inputs[cur_page] = tostring(input_context.text)
 		end
 
-        ImGui.SameLine(childX + bodyX * 1.5)
-        ImGui.BeginChild("###child_output", childX, childY)
+        ImGui.SameLine(half + 10)
+        ImGui.BeginChild("###child_output", half - 30, childY)
 			err_text = ""
             xpcall(function()
                 load(tostring(input_context.text))()
@@ -72,7 +71,7 @@ function system.data_changed()
         ImGui.EndChild()
 
 		ImGui.SetCursorPos(10, sizeY - 60)
-		ImGui.PushTextWrapPos(850);
+		ImGui.PushTextWrapPos(sizeX - 100);
         ImGui.Text(err_text)
 		ImGui.PopTextWrapPos()
     end

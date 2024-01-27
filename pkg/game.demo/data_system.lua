@@ -40,18 +40,22 @@ function system.init_world()
     end
     -- 设置全局文本默认颜色
     ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.9, 0.9, 0.9, 1)
+
+   
 end
 
 function system.data_changed()
+    local dpiScale = data_mgr.get_dpi_scale()
+    local top_y = 40 * dpiScale
     -- 顶部菜单
-    ImGui.SetNextWindowPos(169, 5)
-    ImGui.SetNextWindowSize(1000, 40)
+    ImGui.SetNextWindowPos(199, 5)
+    ImGui.SetNextWindowSize(1150, top_y)
     if ImGui.Begin("demo_main_title", ImGui.Flags.Window {"AlwaysAutoResize", "NoMove", "NoTitleBar", "NoScrollbar"}) then 
         for i, v in ipairs(data_mgr.get_data()) do 
             local current = v.category == category
             set_btn_style(current, true)
             local label = v.category .. "###main_category_i_" .. i
-            if ImGui.Button(label, 80, 25) or category == "" then 
+            if ImGui.Button(label, 50 + 30 * dpiScale, 25 * dpiScale) or category == "" then 
                 category = v.category
                 tools.user_data.set('last_category', category, true)
                 if not selected[category] then 
@@ -71,8 +75,9 @@ function system.data_changed()
     local item
     
     -- 左边菜单
-    ImGui.SetNextWindowPos(20, 44)
-    ImGui.SetNextWindowSize(150, 600)
+    data_mgr.set_content_start(200, top_y + 4)
+    ImGui.SetNextWindowPos(20, top_y + 4)
+    ImGui.SetNextWindowSize(180, 700)
     ImGui.PushStyleVar(ImGui.Enum.StyleVar.ButtonTextAlign, 0, 0.5)
     if ImGui.Begin("demo_main_body_left", ImGui.Flags.Window {"AlwaysAutoResize", "NoMove", "NoTitleBar", "NoScrollbar"}) then 
         for i, v in ipairs(tbList.items) do 
@@ -83,7 +88,7 @@ function system.data_changed()
             end
             set_btn_style(current, v.ok)
             local click = false
-            if ImGui.Button(label, 135, 23) or not selected[category] or (selected[category] == 0) then 
+            if ImGui.Button(label, 165) or not selected[category] or (selected[category] == 0) then 
                 click = true
             end
             ImGui.PopStyleColor(4)
@@ -120,17 +125,17 @@ function system.data_changed()
     ImGui.PopStyleVar()
 
     -- 功能描述
-    if item and item.desc then 
-        ImGui.SetNextWindowPos(170, 45)
-        ImGui.SetNextWindowSize(60, 60)
-        if ImGui.Begin("demo_main_body_desc", ImGui.Flags.Window {"NoMove", "NoResize", "NoTitleBar", "NoScrollbar", "NoBringToFrontOnFocus", "NoBackground"}) then 
-            ImGui.TextDisabled("(?)");
-            if ImGui.IsItemHovered() and ImGui.BeginTooltip() then 
-                ImGui.Text(item.desc);
-                ImGui.EndTooltip();
-            end
-        end
-        ImGui.End()
-    end
+    -- if item and item.desc then 
+    --     ImGui.SetNextWindowPos(170, 45 * dpiScale)
+    --     ImGui.SetNextWindowSize(60, 60)
+    --     if ImGui.Begin("demo_main_body_desc", ImGui.Flags.Window {"NoMove", "NoResize", "NoTitleBar", "NoScrollbar", "NoBringToFrontOnFocus", "NoBackground"}) then 
+    --         ImGui.TextDisabled("(?)");
+    --         if ImGui.IsItemHovered() and ImGui.BeginTooltip() then 
+    --             ImGui.Text(item.desc);
+    --             ImGui.EndTooltip();
+    --         end
+    --     end
+    --     ImGui.End()
+    -- end
 
 end

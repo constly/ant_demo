@@ -38,8 +38,6 @@ local set_btn_style = function(current)
 end
 
 function system.on_entry()
-    local start = mgr.get_content_start()
-    wnd_pos = {x = start.x + 50,  y = 130}
     wnd_size = {x = 400, y = 400}
     contents = {}
     for i = 1, 5 do 
@@ -48,14 +46,19 @@ function system.on_entry()
 end
 
 function system.data_changed()
-    ImGui.SetNextWindowPos(250, 60)
-    ImGui.SetNextWindowSize(800, 40)
+    local start_x, start_y = mgr.get_content_start()
+    wnd_pos = {x = start_x + 50,  y = start_y + 70}
+
+    local start_x, start_y = mgr.get_content_start()
+    local content_x, content_y = mgr.get_content_size()
+    ImGui.SetNextWindowPos(start_x, start_y)
+    ImGui.SetNextWindowSize(content_x, 40)
     if ImGui.Begin("title", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar", "NoScrollbar", "NoBackground"}) then 
         for i, name in ipairs(pages) do 
             local current = name == cur_page
             set_btn_style(current)
             local label = name .. "###btn_title_" .. i
-            if ImGui.Button(label, 80, 25) or not cur_page then 
+            if ImGui.Button(label, 70 * mgr.get_dpi_scale()) or not cur_page then 
                 cur_page = name
                 selected = all_selected[i] or {}
                 all_selected[i] = selected
@@ -70,7 +73,7 @@ function system.data_changed()
     tb_flags = all_flags[cur_page]
     local szFlag = system['Draw_' .. cur_page]() or ""
 
-    ImGui.SetNextWindowPos(720, 130)  
+    ImGui.SetNextWindowPos(780, wnd_pos.y)  
     ImGui.SetNextWindowSize(400, 400)
     if ImGui.Begin("wnd_flags", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar"}) then 
         for i, v in ipairs(tb_flags) do 
@@ -91,7 +94,7 @@ function system.data_changed()
     end
     ImGui.End()
 
-    ImGui.SetNextWindowPos(225, 540)  
+    ImGui.SetNextWindowPos(225, 550)  
     ImGui.SetNextWindowSize(950, 400)
     if ImGui.Begin("wnd_bottom", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar", "NoScrollbar", "NoBackground"}) then 
         local str = string.format("%s {%s}", szFlag, table.concat(system.get_styles(), ", "))
@@ -101,11 +104,11 @@ function system.data_changed()
 
         set_btn_style(false)
         ImGui.SetCursorPos(720, 10)
-		if ImGui.Button("复 制##btn_copy_flag", 80, 25) then 
+		if ImGui.Button("复 制##btn_copy_flag", 100) then 
 			print("copy", str)
 		end 
 		ImGui.SameLine()
-        if ImGui.Button("清 空##btn_clear_flag", 80, 25) then 
+        if ImGui.Button("清 空##btn_clear_flag", 100) then 
             for i, v in pairs(selected) do 
                 selected[i] = nil
             end

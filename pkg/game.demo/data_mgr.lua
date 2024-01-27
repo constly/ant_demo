@@ -1,8 +1,10 @@
 local utils = import_package 'game.tools'
+local ImGui = import_package "ant.imgui"
 local all_data = {}
 local max_id = 0
 local cur_item = nil
 local api = {}
+local content_start = {200, 100}
 
 function api.create_system(tbParam)
     local tb = api.find_category(tbParam.category)
@@ -81,7 +83,12 @@ function api.get_data() return all_data end
 
 function api.get_current_id() return cur_item and cur_item.id end
 
-function api.get_content_start() return {x = 180, y = 85} end
+function api.get_content_start() return content_start[1],  content_start[2] end
+function api.set_content_start(x, y) content_start = {x, y} end
+
+function api.get_content_size() return 1149, 700 end
+
+function api.get_dpi_scale() return ImGui.GetMainViewport().DpiScale end
 
 -- 类型排版占位
 local tb_def = {
@@ -116,6 +123,7 @@ temp_create(api.type_core, "07_输入", "尚未实现")
 temp_create(api.type_core, "10_特效", "尚未实现")
 temp_create(api.type_core, "11_声音", "1. 2D声音，包括BGM和音效; \n2. 3D声音，可以指定声音距离摄像机的距离，有暂停/继续/中止等接口演示；\n3.音量调节")
 temp_create(api.type_core, "12_性能分析", "帧率，内存使用，cput使用，gpu使用，尚未实现")
+temp_create(api.type_core, "13_PC平台", "当窗口最小化时，当窗口分辨率变化时，修改窗口分辨率，得到窗口分辨率，设置窗口标题")
 
 temp_create(api.type_asset, "01_通过vfs加载", "尚未实现")
 temp_create(api.type_asset, "02_自定义数据存取", "尚未实现") -- 包括字符串/字节流

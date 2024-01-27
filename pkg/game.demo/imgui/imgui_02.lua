@@ -20,11 +20,12 @@ local input_content = {text = 'input'}
 
 local flag = {}
 local icon_btn
+local scale = 1
 
 local start_x = 50
-local headlen = 100 + start_x;
-local start_x_2 = 500
-local headlen2 = start_x_2 + 100
+local headlen = 150 + start_x;
+local start_x_2 = 600
+local headlen2 = start_x_2 + 150
 local line_space_y = 10
 local tbDataList = {}
 
@@ -38,9 +39,9 @@ end
 
 -- 每帧更新
 function system.data_changed()
-    local start = mgr.get_content_start()
-    ImGui.SetNextWindowPos(start.x, start.y)            
-    ImGui.SetNextWindowSize(1000, 600)
+    scale = mgr.get_dpi_scale()
+    ImGui.SetNextWindowPos(mgr.get_content_start())            
+    ImGui.SetNextWindowSize(mgr.get_content_size())
     if ImGui.Begin("wnd_body", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar", "NoBringToFrontOnFocus"}) then 
         local n = math.ceil(#tbDataList / 2)
         for i = 1, n do 
@@ -90,7 +91,7 @@ function system.init_world()
         table.insert(tbDataList, {label, func})
     end
     register("Button:", function()
-        if ImGui.Button("按钮##btn_1", 60, 23) then     
+        if ImGui.Button("按钮##btn_1", 60, 23 * scale) then     
             flag[1] = not flag[1]
         end
         if flag[1] then 
@@ -109,7 +110,7 @@ function system.init_world()
     end)
     register("ColorButton:", function()
         local x, y = ImGui.GetCursorPos();
-        ImGui.ColorButton("##colorbtn", 0.13, 0.66, 0.40, 1.0, 0, 120, 23);
+        ImGui.ColorButton("##colorbtn", 0.13, 0.66, 0.40, 1.0, 0, 120 * scale, 23 * scale);
         ImGui.SetCursorPos(x + 6, y + 2);
         ImGui.Text(string.format("%.2f x %.2f", x, y));
     end)
@@ -121,7 +122,7 @@ function system.init_world()
         end
     end)
     register("ImageButton:", function()
-        if ImGui.ImageButton("##btn_2",  textureman.texture_get(icon_btn.id), 60, 23) then 
+        if ImGui.ImageButton("##btn_2",  textureman.texture_get(icon_btn.id), 60 * scale, 23 * scale) then 
             flag[2] = not flag[2]
         end
         if flag[2] then 
@@ -221,7 +222,7 @@ function system.init_world()
         end
     end)
     register("BeginListBox:", function()
-        if ImGui.BeginListBox("##begin_list_box", 150, 70) then 
+        if ImGui.BeginListBox("##begin_list_box", 150, 70 * scale) then 
             for i, name in ipairs(tbComboList) do 
                 if ImGui.Selectable(name, i == cur_list_box) then 
                     cur_list_box = i
@@ -238,11 +239,11 @@ function system.init_world()
         end
     end)
     register("ColorPicker:", function()
-        ImGui.SetNextItemWidth(150)
+        ImGui.SetNextItemWidth(150 * scale)
         ImGui.ColorPicker("##color_picker", color_pick_ui)
     end)
     register("ColorEdit:", function()
-        ImGui.SetNextItemWidth(150)
+        ImGui.SetNextItemWidth(150 * scale)
         ImGui.ColorEdit("##clor_editor_1", color_edit_ui)
     end)
 end
