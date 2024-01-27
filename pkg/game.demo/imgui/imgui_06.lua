@@ -55,10 +55,6 @@ function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
 
-	ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0.15, 0.4, 0.2, 1)
-    ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
-    ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
-
 	if ImGui.Begin("window_body", ImGui.Flags.Window {"NoResize", "NoMove", "NoScrollbar", "MenuBar"}) then 
 		
 		if ImGui.BeginMenuBar() then
@@ -134,7 +130,6 @@ function system.data_changed()
 
 	end
 	ImGui.End()
-	ImGui.PopStyleColor(3)
 end
 
 function system.wnd_popup_modal1()

@@ -196,7 +196,7 @@ function system.init_world()
         if progress_value > 1 then 
             progress_value = 0 
         end
-        ImGui.ProgressBar(progress_value, 150, 22, "嘿嘿") 
+        ImGui.ProgressBar(progress_value, 150, 22 * scale, "嘿嘿") 
     end)
     register("Checkbox:", function()
         local change, v = ImGui.Checkbox("同意##checkbox_1", checkbox_value)
