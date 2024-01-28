@@ -5,6 +5,7 @@ local max_id = 0
 local cur_item = nil
 local api = {}
 local content_start = {200, 100}
+local content_size = {1149, 700}
 
 function api.create_system(tbParam)
     local tb = api.find_category(tbParam.category)
@@ -86,7 +87,8 @@ function api.get_current_id() return cur_item and cur_item.id end
 function api.get_content_start() return content_start[1],  content_start[2] end
 function api.set_content_start(x, y) content_start = {x, y} end
 
-function api.get_content_size() return 1149, 700 end
+function api.get_content_size() return content_size[1], content_size[2] end
+function api.set_content_size(x, y) content_size = {x, y} end
 
 function api.get_dpi_scale() return ImGui.GetMainViewport().DpiScale end
 

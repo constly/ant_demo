@@ -45,11 +45,15 @@ function system.init_world()
 end
 
 function system.data_changed()
+    local viewport = ImGui.GetMainViewport();
+    local size_x, size_y = table.unpack(viewport.WorkSize)
+
     local dpiScale = data_mgr.get_dpi_scale()
     local top_y = 40 * dpiScale
+    local top_size_x = size_x - 250
     -- 顶部菜单
     ImGui.SetNextWindowPos(199, 5)
-    ImGui.SetNextWindowSize(1150, top_y)
+    ImGui.SetNextWindowSize(top_size_x, top_y)
     if ImGui.Begin("demo_main_title", ImGui.Flags.Window {"AlwaysAutoResize", "NoMove", "NoTitleBar", "NoScrollbar"}) then 
         for i, v in ipairs(data_mgr.get_data()) do 
             local current = v.category == category
@@ -75,9 +79,12 @@ function system.data_changed()
     local item
     
     -- 左边菜单
-    data_mgr.set_content_start(200, top_y + 4)
-    ImGui.SetNextWindowPos(20, top_y + 4)
-    ImGui.SetNextWindowSize(180, 700)
+    local begin_y = top_y + 4
+    local left_body_y = size_y - begin_y - 40;
+    data_mgr.set_content_start(199, begin_y)
+    data_mgr.set_content_size(top_size_x, left_body_y)
+    ImGui.SetNextWindowPos(20, begin_y)
+    ImGui.SetNextWindowSize(180, left_body_y)
     ImGui.PushStyleVar(ImGui.Enum.StyleVar.ButtonTextAlign, 0, 0.5)
     if ImGui.Begin("demo_main_body_left", ImGui.Flags.Window {"AlwaysAutoResize", "NoMove", "NoTitleBar", "NoScrollbar"}) then 
         for i, v in ipairs(tbList.items) do 
