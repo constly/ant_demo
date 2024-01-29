@@ -1,5 +1,7 @@
-# Ant Game Engine 使用大全
-本项目试图帮助广大开发者尽快上手[Ant Game Engine](https://github.com/ejoy/ant)，具体指导方针如下:
+# Ant Game Engine 学习记录
+~~本项目试图帮助广大开发者尽快上手[Ant Game Engine](https://github.com/ejoy/ant)，具体指导方针如下:~~
+
+本项目记录我是怎么学习[Ant Game Engine](https://github.com/ejoy/ant)的，以及为后面正式做东西铺路：
 * 尽可能给每一个功能点都加上示例代码
 * 尽可能覆盖游戏开发的方方面面，比如编辑器，UI，渲染，联机，调试，优化，资源管理，对接Steam等等
 * 尽可能多写注释讲明原理
@@ -19,7 +21,7 @@
 * ~~ImGui - 04_Table~~
 * ImGui - 06_菜单/弹框
 * ImGui - 07_撤销/回退
-* ~~ImGui - 08_复制/粘贴~~
+* ImGui - 08_复制/粘贴
 * ImGui - 09_自定义绘制
 * ~~ImGui - 10_蓝图示例~~
 * ~~引擎核心 - 01_entity~~

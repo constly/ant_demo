@@ -13,6 +13,10 @@ local tbParam =
 local system = mgr.create_system(tbParam)
 
 function system.data_changed()
-    
-
+    ImGui.SetNextWindowPos(mgr.get_content_start())
+    ImGui.SetNextWindowSize(mgr.get_content_size())
+	if ImGui.Begin("window_body", ImGui.Flags.Window {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
+		ImGui.Text("暂缓")		
+	end 
+	ImGui.End()
 end
