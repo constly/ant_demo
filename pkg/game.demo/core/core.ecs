@@ -1,0 +1,6 @@
+local function DEFINE(n)
+    system(n).implement(("core/%s.lua"):format(n))
+end
+
+DEFINE "core_01"
+DEFINE "core_02"

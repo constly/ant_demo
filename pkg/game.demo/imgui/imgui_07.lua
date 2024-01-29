@@ -6,7 +6,7 @@ local tbParam =
     ecs             = ecs,
     system_name     = "imgui_07_system",
     category        = mgr.type_imgui,
-    name            = "07_撤销/回退",
+    name            = "07_撤销&回退",
     file            = "imgui/imgui_07.lua",
     ok              = true,
 }

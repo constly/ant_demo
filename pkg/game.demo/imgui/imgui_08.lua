@@ -6,7 +6,7 @@ local tbParam =
     ecs             = ecs,
     system_name     = "imgui_08_system",
     category        = mgr.type_imgui,
-    name            = "08_复制/粘贴",
+    name            = "08_复制&粘贴",
     file            = "imgui/imgui_08.lua",
     ok              = true,
 }

@@ -1,0 +1,19 @@
+
+system "test_system"
+    .implement "test_system.lua"
+
+
+pipeline "init"
+    .stage "init"
+    .stage "post_init"
+
+pipeline "exit"
+    .stage "exit"
+
+pipeline "update"
+    .stage "data_changed"
+	.pipeline "game_update"
+
+pipeline "game_update"
+	.stage "on_fixedupdate"
+

@@ -32,7 +32,7 @@ end
 
 function system.init_world()
     data_mgr.disable_all()
-    window.set_title("Ant Game Engine 使用大全")
+    window.set_title("Ant Game Engine 学习记录")
     category = tools.user_data.get("last_category", "")
     if category ~= "" then 
         selected[category] = tools.user_data.get_number('last_category_' .. category)
@@ -40,8 +40,6 @@ function system.init_world()
     end
     -- 设置全局文本默认颜色
     ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.9, 0.9, 0.9, 1)
-
-   
 end
 
 function system.data_changed()
@@ -122,8 +120,6 @@ function system.data_changed()
             if click and selected[category] ~= v.id then 
                 selected[category] = v.id
                 data_mgr.set_current_item(category, v.id)
-                -- 这里记录id不严谨，因为id是运行时动态生成的，不过影响不大，因为这是编辑器
-                -- 99%的情况下这里不会出问题，即使出问题也是小问题
                 tools.user_data.set('last_category_' .. category, v.id, true) 
             end
         end

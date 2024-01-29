@@ -109,17 +109,12 @@ for i, v in ipairs(tb_def) do
     api.create_system(tbParam)
 end
 
-
-
 -- 下面是测试占位
 local temp_create = function(category, name, desc)
     local tbParam = { category = category, name = name, desc = desc, file = "data_system.lua" }
     api.create_system(tbParam)
 end
 
-temp_create(api.type_core, "01_创建/删除entity", "尚未实现")
-temp_create(api.type_core, "02_system", "尚未实现")
-temp_create(api.type_core, "03_pipeline", "尚未实现")
 temp_create(api.type_core, "04_itask", "尚未实现")
 temp_create(api.type_core, "07_输入", "尚未实现")
 temp_create(api.type_core, "10_特效", "尚未实现")

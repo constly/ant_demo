@@ -6,7 +6,7 @@ local tbParam =
     ecs             = ecs,
     system_name     = "imgui_06_system",
     category        = mgr.type_imgui,
-    name            = "06_菜单/弹框",
+    name            = "06_菜单&弹框",
     file            = "imgui/imgui_06.lua",
 	ok 				= true
 }
