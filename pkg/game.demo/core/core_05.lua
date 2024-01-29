@@ -4,35 +4,20 @@ local mgr = require "data_mgr"
 local tbParam = 
 {
     ecs             = ecs,
-    system_name     = "core_02_system",
+    system_name     = "core_05_system",
     category        = mgr.type_core,
-    name            = "02_引擎源码学习",
-    file            = "core/core_02.lua",
+    name            = "05_entity&system",
+    file            = "core/core_05.lua",
     ok              = false
 }
 local system = mgr.create_system(tbParam)
-
-local text = 
-[[
-一. engine/
-	1. abc.lua 
-	2. bcd.lua 
-
-二. pkg/
-	pkg.audio 
-		1. 说明
-	pkg.asset 
-		2. 
-
-	ant.timer
-	ant.timeline 
-]]
 
 function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
     if ImGui.Begin("window_body", ImGui.Flags.Window {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
-		ImGui.Text(text)
+		-- 演示如何创建/删除/遍历entity
+		-- 演示system的禁用 和 激活
 	end
 	ImGui.End()
 end

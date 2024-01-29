@@ -8,7 +8,7 @@
 * 尽量封装+模块化，以便需要时直接Ctrl+C, Ctrl+V
 
 
-**欢迎有兴趣的朋友加入进来一起完善，部分界面如下:**
+**部分界面如下:**
 ![imgui_02](./img/imgui_02.png)
 ![imgui_07](./img/imgui_07.png)
 ![imgui_08](./img/imgui_08.png)

@@ -115,7 +115,7 @@ local temp_create = function(category, name, desc)
     api.create_system(tbParam)
 end
 
-temp_create(api.type_core, "04_itask", "尚未实现")
+
 temp_create(api.type_core, "07_输入", "尚未实现")
 temp_create(api.type_core, "10_特效", "尚未实现")
 temp_create(api.type_core, "11_声音", "1. 2D声音，包括BGM和音效; \n2. 3D声音，可以指定声音距离摄像机的距离，有暂停/继续/中止等接口演示；\n3.音量调节")
