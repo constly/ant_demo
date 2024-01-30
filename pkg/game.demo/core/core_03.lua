@@ -23,7 +23,7 @@ function S.rpc_notify_core_03(msg)
 end
 
 function system.on_entry()
-	-- 这里为了避免初始化太卡，特意fork了一个子线程来执行
+	-- 这里为了避免初始化太卡，特意fork了一个子线程执行
 	if not service_01 then
 		ltask.fork(function ()
 			service_01 = ltask.uniqueservice("game.demo|service_01", ltask.self())
@@ -53,6 +53,22 @@ function system.data_changed()
 			ltask.send(service_01, "send_event", "test", "abc")
 		end
 		ImGui.EndGroup()
+
+		ImGui.SetCursorPos(450, 50)
+		ImGui.BeginGroup()
+		ImGui.Text("注意:")
+		ImGui.Text("Ant 引擎使用 ltask 来使用处理器的多核，并将功能模块分离到不同的服务中")
+		ImGui.Text("这些服务各自处于独立的 Lua 虚拟机，被 ltask 调度到不同的线程运行")
+		ImGui.Text("服务间通过消息通讯，而不能直接共享状态")
+		ImGui.Text("\n即:")
+		ImGui.Text("引擎内有多个服务")
+		ImGui.Text("每个服务是一个虚拟机")
+		ImGui.Text("一个虚拟机内可以有多个ecs world")
+		ImGui.Text("一个虚拟机内多次require一个文件，会得到同一个table")
+		ImGui.Text("ecs.require() 可以让文件在ecs间隔离")
+		ImGui.Text("切换场景，会传入新的feature重新启动窗口服务，期间其他服务不受影响")
+		ImGui.EndGroup()
+
 	end
 	ImGui.End()
 end

@@ -1,16 +1,17 @@
 ServiceWorld = ...
 local ltask = require "ltask"
+
 local S = {}
 local is_pause = false
 
--- 这里处于一个独立的虚拟机，可以正常require其他文件，
+-- 这里处于一个独立的虚拟机中
 -- require "core.startup"
-
 
 local update = function()
 	print("[service_01] update", os.time())
 end
 
+-- fork一个子线程来运行服务
 ltask.fork(function ()
 	while true do
 		if not is_pause then
@@ -21,6 +22,7 @@ ltask.fork(function ()
 	end
 end)
 
+-- 暴露接口，供其他service调用
 function S.send_event(eventName, arg)
 	print("send_event", eventName, arg)
 
