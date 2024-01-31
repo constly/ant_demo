@@ -104,27 +104,74 @@ engine/service: 引擎内置的服务
 
 ["ant/pkg/"] = 
 [[
-pkg.audio 
-	1. 说明
+ant.anim_ctrl:	动画控制器
+	说明: 具体做了哪些事情还没搞明白
 
-pkg.asset 
-	ant.timer
-	ant.timeline 
+ant.animation: 动画
+
 ]],
 
 ["ant/test/"] = 
 [[
+test/features: 展示引擎的各种特性
+	说明: 此处最好把所有支持的都列完, 方便后续查询
+	1. 有描边, 水, pbr, 光源, 阴影, 特效等等
 
+test/httpc: 下载和上传
+	说明: 不知道是不是封装的原生平台内置的下载功能
+
+test/imgui: 测试imgui功能
+	说明: 里面功能很简单，可能需要完善下
+
+test/native_bgfx: 
+	说明: 没有使用系统定义的pipeline，不知道干嘛用的
+
+test/rmlui: 测试rmlui
+	说明: 里面测试例子太简陋了，可能需要完善下
+
+test/simple: 一个最简单的项目示例
+	说明: 也很简陋，可以更复杂点
+
+test/vfsmem: 演示在内存中动态创建vfs路径（不会存档）
+	说明: 这个启动程序非常简单，没有窗口那一套
+	1. 这个执行是瞬间的，写命令行工具程序时，很适合参考这个示例
+
+test/zip: 演示zip的使用
+	说明: 包括以下几点功能
+	1. 往zip中写入/读取文件
+	2. 对字符串 压缩/解压
+	3. 这个示例更简单，直接就是执行一个lua文件，vfsmem还要启动一个服务，看来写命令行工具更适合参考这个
 ]],
 
 ["ant/runtime/"] = 
 [[
-
+ios/window/posix 平台启动入口
 ]],
 
 ["ant/tools/"] = 
 [[
+工具库:
 
+tools/editor: 引擎编辑器
+	说明: 
+
+tools/fbx2glb: 通过blender将fbx转换为glb
+	说明: 
+
+tools/filepack: 打包相关
+	说明: 
+
+tools/fileserver: 引擎运行时需要的开发机服务
+	说明: 此服务如何部署呢？
+
+tools/material_compile:  材质编译服务
+	说明: 什么情况下使用这个工具呢？
+
+tools/prefab_viewer: prefab预览工具？
+	说明：运行报错，跑不起来，不知道是啥效果
+
+tools/texture: 没太明白是干嘛用的
+	说明: 这个示例启动方向有点奇怪
 ]],
 
 }

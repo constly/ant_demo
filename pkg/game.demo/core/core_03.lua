@@ -67,6 +67,7 @@ function system.data_changed()
 		ImGui.Text("一个虚拟机内多次require一个文件，会得到同一个table")
 		ImGui.Text("ecs.require() 可以让文件在ecs间隔离")
 		ImGui.Text("切换场景，会传入新的feature重新启动窗口服务，期间其他服务不受影响")
+		ImGui.Text("应该是不太建议一个服务内有多个ecs world, 如果有这种需求可以新启一个服务来解决")
 		ImGui.EndGroup()
 
 	end

@@ -1,11 +1,15 @@
 ServiceWorld = ...
 local ltask = require "ltask"
-
 local S = {}
 local is_pause = false
 
 -- 这里处于一个独立的虚拟机中
 -- require "core.startup"
+
+--[[
+1. 这里由core/core_03.lua 调用过来
+2. 用于演示如何创建service以及互相通信
+--]]
 
 local update = function()
 	print("[service_01] update", os.time())
