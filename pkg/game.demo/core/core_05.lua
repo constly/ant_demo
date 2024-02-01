@@ -8,7 +8,7 @@ local tbParam =
     category        = mgr.type_core,
     name            = "05_ecs",
     file            = "core/core_05.lua",
-    ok              = false
+    ok              = true
 }
 local system = mgr.create_system(tbParam)
 
@@ -103,11 +103,36 @@ ant.animation/package.ecs
 	feature "debug_material"
 		.import "debug_material.ecs"
 
-	-- 这注释	
+	-- 这是注释	
 	--system "slot_system"
 	--    .implement "slot.lua"
 	
 ]]
+
+local tbMenu = {
+	"package.ecs文件解读"
+}
+local curMenuIndex
+
+local context = {
+    text = "",
+    flags = ImGui.Flags.InputText{"ReadOnly"},
+}
+
+local set_btn_style = function(current)
+    if current then 
+        ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0.6, 0.6, 0.25, 1)
+        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0.5, 0.5, 0.25, 1)
+        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0.5, 0.5, 0.25, 1) 
+        ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.95, 0.95, 0.95, 1)
+    else 
+        ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0.2, 0.2, 0.25, 1)
+        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
+        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
+        ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.95, 0.95, 0.95, 1)
+    end
+	ImGui.PushStyleVar(ImGui.Enum.StyleVar.ButtonTextAlign, 0, 0.5)
+end
 
 function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
@@ -115,6 +140,28 @@ function system.data_changed()
     if ImGui.Begin("window_body", ImGui.Flags.Window {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
 		-- 演示如何创建/删除/遍历entity
 		-- 演示system的禁用 和 激活
+
+		-- 菜单
+		local scale = mgr.get_dpi_scale()
+		local btn_len  = 150 * scale
+		ImGui.BeginGroup()
+		for i, v in ipairs(tbMenu) do 
+			set_btn_style(i == curMenuIndex)
+			if ImGui.Button(v, btn_len) or not curMenuIndex then 
+				curMenuIndex = i;
+				context.text = desc2
+			end	
+			ImGui.PopStyleColor(4)
+			ImGui.PopStyleVar()
+		end
+		ImGui.EndGroup()
+		
+
+		ImGui.SetCursorPos(btn_len + 10, 5)
+		ImGui.BeginGroup()
+		context.width, context.height = ImGui.GetContentRegionAvail()
+		ImGui.InputTextMultiline("##show_text", context)
+		ImGui.EndGroup()
 	end
 	ImGui.End()
 end

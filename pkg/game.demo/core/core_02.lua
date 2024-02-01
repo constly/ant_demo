@@ -105,9 +105,69 @@ engine/service: 引擎内置的服务
 ["ant/pkg/"] = 
 [[
 ant.anim_ctrl:	动画控制器
-	说明: 具体做了哪些事情还没搞明白
-
-ant.animation: 动画
+ant.animation: 动画播放
+ant.asset: 引擎内部资源加载和卸载，主要指材质 和 贴图
+ant.audio: 声音相关接口封装
+ant.camera: 摄像机控制器 和 摄像机轨迹录制
+ant.compile_resource: 资源编译，用在打包等场景，禁止在运行时使用
+ant.daynight: 白天和晚上，通过修改光照/材质参数实现
+and.debug: 调试, 具体是指调试group、材质、贴图、mipmap
+ant.debugger: 调试, 具体是指通过vscode调试游戏
+ant.decal: 贴花，具体不知道咋用
+ant.ecs: ecs核心系统
+ant.efk: 特效播放相关
+ant.font: 字体有关 (涉及到bgfx)
+ant.general: 没看懂在干嘛，好像是提供了一些公共接口
+ant.geometry: 得到常用几何体的顶点、绘制骨骼
+ant.grid: 绘制网格
+ant.group: 激活/禁用组，过滤组，刷新组 
+ant.httpc: http协议实现
+ant.hwi: 渲染接口封装
+ant.imgui: imgui初始化与渲染更新
+ant.inputmgr: 输入管理
+ant.io:	对vfs 和 fastio 的封装
+ant.json: json decode 和 encode
+ant.landform: 地形相关
+ant.luaecs: 看起来是把ecs world中所有实体写到文件中，以及从文件中还原
+ant.material: 材质相关
+ant.math: 一些数学相关的接口，还包括射线创建之类的
+ant.modifier: 动画可以直接驱动场景对象，只需要将动画中的骨骼点和场景对象关联在一起。官方wiki里面有详细说明
+ant.motion_sampler: 运动插值器:如果想让一个场景对象沿直线运动，更可以只设置起点、终点和运行时间就够了，具体使用需要看官方文档
+ant.net: 网络接口封装，比如listen, connect, recv, send 等
+ant.objcontroller: 场景对象控制，比如拾取检测
+ant.outline: 应该是描边吧
+ant.pipeline: 引擎默认pipeline
+ant.polyline: 没太看懂，看起来与画线有关
+ant.render: 渲染核心，里面很复杂
+ant.render.core: 渲染层中被其它包依赖的部分
+ant.resource_manager: 资源管理服务
+	* pkg/ant.resource_manager/service 资源管理 (ltask) 服务
+	* pkg/ant.resource_manager/src 资源管理用到的 C 模块（用于绕过 Lua 层直接用过 C API 获取资源）
+	* pkg/ant.resource_manager/thread 资源管理服务用到的 Lua 模块
+ant.resources: 引擎中定义的文本资源
+	* pkg/ant.resources/materials 材质
+	* pkg/ant.resources/settings 材质的配置
+	* pkg/ant.resources/shaders 着色器
+	* pkg/ant.resources/state_machines （？？？）
+	* pkg/ant.resources/textures 默认纹理
+ant.resources.binary:  引擎中定义的二进制资源
+ant.resources.test: 引擎test需要的资源
+ant.rmlui: 游戏用 UI （RMLUI）
+ant.scene: 场景组件实现
+ant.serialize: 似乎是解析/保存datalist的
+ant.settings: 项目全局设置相关
+ant.sh: 好像是一些工具接口，没看懂
+ant.shadow_bounding: 阴影范围之类的？没看明白
+ant.sky: 天空盒
+ant.splitviews: 视野分割吗，使用场景是啥呢
+ant.starsky: 与天空盒有关，具体没看懂
+ant.terrain: 地形，好像还有水
+ant.timeline: 时间线，多少时间后干啥事情
+ant.timer: 定时器？没太看懂
+ant.vfs: 虚拟文件系统
+ant.webserver: 简易web服务器实现
+ant.widget: 绘制常见几何体，比如sphere, box, capsule, aabb, skeleton
+ant.window: 游戏窗体服务， 切换场景时调用其rebot
 
 ]],
 

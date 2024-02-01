@@ -15,15 +15,18 @@ local update = function()
 	print("[service_01] update", os.time())
 end
 
+local quit
+
 -- fork一个子线程来运行服务
 ltask.fork(function ()
-	while true do
+	while not quit do
 		if not is_pause then
 			update()
 		end
 		-- 100 表示 1秒
 		ltask.sleep(100)
 	end
+	ltask.wakeup(quit)
 end)
 
 -- 暴露接口，供其他service调用
@@ -44,7 +47,10 @@ end
 
 function S.quit()
 	print("quit")
-	ltask.quit()
+	-- 由于上面每0.1秒执行一次，这里有可能卡0.1秒，也许需要改为fork一个子线程来执行
+	quit = {}
+    ltask.wait(quit)
+    ltask.quit()
 end
 
 return S;
