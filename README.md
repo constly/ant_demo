@@ -1,6 +1,4 @@
 # Ant Game Engine 学习记录
-~~本项目试图帮助广大开发者尽快上手[Ant Game Engine](https://github.com/ejoy/ant)，具体指导方针如下:~~
-
 本项目记录我是怎么学习[Ant Game Engine](https://github.com/ejoy/ant)的，以及为后面正式做东西铺路：
 * 尽可能给每一个功能点都加上示例代码
 * 尽可能覆盖游戏开发的方方面面，比如编辑器，UI，渲染，联机，调试，优化，资源管理，对接Steam等等
