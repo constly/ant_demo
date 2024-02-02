@@ -55,7 +55,7 @@ function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
 
-	if ImGui.Begin("window_body", ImGui.Flags.Window {"NoResize", "NoMove", "NoScrollbar", "MenuBar"}) then 
+	if ImGui.Begin("window_body", ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "MenuBar"}) then 
 		
 		if ImGui.BeginMenuBar() then
 			if ImGui.BeginMenu("菜单") then 
@@ -133,7 +133,7 @@ function system.data_changed()
 end
 
 function system.wnd_popup_modal1()
-	if ImGui.BeginPopupModal("popup_modal1", ImGui.Flags.Window{"AlwaysAutoResize", "NoClosed"} ) then
+	if ImGui.BeginPopupModal("popup_modal1", ImGui.WindowFlags{"AlwaysAutoResize", "NoClosed"} ) then
 		ImGui.Text("弹框内容1")
 		ImGui.Text("弹框内容2")
 		ImGui.Separator();
@@ -147,7 +147,7 @@ end
 
 function system.wnd_popup_modal2()
 	
-	if ImGui.BeginPopupModal("popup_modal2", ImGui.Flags.Window{"NoResize", "NoMove"} ) then
+	if ImGui.BeginPopupModal("popup_modal2", ImGui.WindowFlags{"NoResize", "NoMove"} ) then
 		local sizex, sizey = ImGui.GetContentRegionAvail()
 		ImGui.SetCursorPos(sizex * 0.5 - 100, sizey * 0.5 - 10)
 		ImGui.BeginGroup()
@@ -161,7 +161,7 @@ function system.wnd_popup_modal2()
 end
 
 function system.wnd_popup_modal3()
-	if ImGui.BeginPopupModal("popup_modal3", ImGui.Flags.Window{} ) then
+	if ImGui.BeginPopupModal("popup_modal3", ImGui.WindowFlags{} ) then
 		local sizex, sizey = ImGui.GetContentRegionAvail()
 		ImGui.SetCursorPos(sizex * 0.5 - 100, sizey * 0.5 - 10)
 		ImGui.BeginGroup()

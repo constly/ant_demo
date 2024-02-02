@@ -12,6 +12,7 @@ local tbParam =
 }
 local system = mgr.create_system(tbParam)
 local ImGui = import_package "ant.imgui"
+local ImGuiLegacy = require "imgui.legacy"
 local tools = import_package 'game.tools'
 local err_text = ""
 local default_inputs
@@ -21,25 +22,25 @@ local input_context = {
     hint = "输入指令",
     width = 500,
     height = 500,
-    flags = ImGui.Flags.InputText{"CallbackCompletion", "CallbackHistory", "AllowTabInput"},
+    flags = ImGui.InputTextFlags{"CallbackCompletion", "CallbackHistory", "AllowTabInput"},
 }
 
 local set_btn_style = function(current)
     if current then 
-        ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0, 0.5, 0.8, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0, 0.55, 0.7, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0, 0.55, 0.7, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0, 0.5, 0.8, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0, 0.55, 0.7, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0, 0.55, 0.7, 1)
     else 
-        ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0.2, 0.2, 0.25, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.2, 0.2, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
     end
 end
 
 function system.data_changed()
     ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
-    if ImGui.Begin("demo_imgui", ImGui.Flags.Window {"NoMove", "NoTitleBar", "NoResize"}) then 
+    if ImGui.Begin("demo_imgui", nil, ImGui.WindowFlags {"NoMove", "NoTitleBar", "NoResize"}) then 
 		for i = 1, #default_inputs do 
 			set_btn_style(i == cur_page)
 			local label = string.format("P%d##btn_page_%d", i, i)
@@ -56,7 +57,7 @@ function system.data_changed()
         local sizeX, sizeY = ImGui.GetContentRegionAvail()
         local half = sizeX * 0.5
         local childY = sizeY - 100
-		if ImGui.InputTextMultiline("##input_2", input_context) then 
+		if ImGuiLegacy.InputTextMultiline("##input_2", input_context) then 
 			default_inputs[cur_page] = tostring(input_context.text)
 		end
 

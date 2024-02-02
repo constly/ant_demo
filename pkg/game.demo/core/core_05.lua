@@ -1,5 +1,6 @@
 local ecs = ...
 local ImGui = import_package "ant.imgui"
+local ImGuiLegacy = require "imgui.legacy"
 local mgr = require "data_mgr"
 local tbParam = 
 {
@@ -116,28 +117,28 @@ local curMenuIndex
 
 local context = {
     text = "",
-    flags = ImGui.Flags.InputText{"ReadOnly"},
+    flags = ImGui.InputTextFlags{"ReadOnly"},
 }
 
 local set_btn_style = function(current)
     if current then 
-        ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0.6, 0.6, 0.25, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0.5, 0.5, 0.25, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0.5, 0.5, 0.25, 1) 
-        ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.95, 0.95, 0.95, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.6, 0.6, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.5, 0.5, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.5, 0.5, 0.25, 1) 
+        ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.95, 0.95, 0.95, 1)
     else 
-        ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0.2, 0.2, 0.25, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.95, 0.95, 0.95, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.2, 0.2, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.95, 0.95, 0.95, 1)
     end
-	ImGui.PushStyleVar(ImGui.Enum.StyleVar.ButtonTextAlign, 0, 0.5)
+	ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
 end
 
 function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
-    if ImGui.Begin("window_body", ImGui.Flags.Window {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
+    if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
 		-- 演示如何创建/删除/遍历entity
 		-- 演示system的禁用 和 激活
 
@@ -160,7 +161,7 @@ function system.data_changed()
 		ImGui.SetCursorPos(btn_len + 10, 5)
 		ImGui.BeginGroup()
 		context.width, context.height = ImGui.GetContentRegionAvail()
-		ImGui.InputTextMultiline("##show_text", context)
+		ImGuiLegacy.InputTextMultiline("##show_text", context)
 		ImGui.EndGroup()
 	end
 	ImGui.End()

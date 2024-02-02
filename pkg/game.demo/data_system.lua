@@ -10,22 +10,22 @@ local showHover = true
 
 local set_btn_style = function(current, ok)
     if current then 
-        ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0.6, 0.6, 0.25, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0.5, 0.5, 0.25, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0.5, 0.5, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.6, 0.6, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.5, 0.5, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.5, 0.5, 0.25, 1)
         if ok then 
-            ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.95, 0.95, 0.95, 1)
+            ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.95, 0.95, 0.95, 1)
         else 
-            ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.8, 0.8, 0.8, 1)
+            ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.8, 0.8, 0.8, 1)
         end
     else 
-        ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0.2, 0.2, 0.25, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.2, 0.2, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
         if ok then 
-            ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.95, 0.95, 0.95, 1)
+            ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.95, 0.95, 0.95, 1)
         else 
-            ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.7, 0.7, 0.7, 1)
+            ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.7, 0.7, 0.7, 1)
         end
     end
 end
@@ -39,12 +39,12 @@ function system.init_world()
         data_mgr.set_current_item(category, selected[category])    
     end
     -- 设置全局文本默认颜色
-    ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.9, 0.9, 0.9, 1)
+    ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.9, 0.9, 0.9, 1)
 end
 
 function system.data_changed()
     local viewport = ImGui.GetMainViewport();
-    local size_x, size_y = table.unpack(viewport.WorkSize)
+    local size_x, size_y = viewport.WorkSize.x, viewport.WorkSize.y
 
     local dpiScale = data_mgr.get_dpi_scale()
     local top_y = 40 * dpiScale
@@ -52,12 +52,12 @@ function system.data_changed()
     -- 顶部菜单
     ImGui.SetNextWindowPos(199, 5)
     ImGui.SetNextWindowSize(top_size_x, top_y)
-    if ImGui.Begin("demo_main_title", ImGui.Flags.Window {"AlwaysAutoResize", "NoMove", "NoTitleBar", "NoScrollbar"}) then 
+    if ImGui.Begin("demo_main_title", nil, ImGui.WindowFlags {"AlwaysAutoResize", "NoMove", "NoTitleBar", "NoScrollbar"}) then 
         for i, v in ipairs(data_mgr.get_data()) do 
             local current = v.category == category
             set_btn_style(current, true)
             local label = v.category .. "###main_category_i_" .. i
-            if ImGui.Button(label, 50 + 30 * dpiScale, 25 * dpiScale) or category == "" then 
+            if ImGui.ButtonEx(label, 50 + 30 * dpiScale, 25 * dpiScale) or category == "" then 
                 category = v.category
                 tools.user_data.set('last_category', category, true)
                 if not selected[category] then 
@@ -83,8 +83,8 @@ function system.data_changed()
     data_mgr.set_content_size(top_size_x, left_body_y)
     ImGui.SetNextWindowPos(20, begin_y)
     ImGui.SetNextWindowSize(180, left_body_y)
-    ImGui.PushStyleVar(ImGui.Enum.StyleVar.ButtonTextAlign, 0, 0.5)
-    if ImGui.Begin("demo_main_body_left", ImGui.Flags.Window {"AlwaysAutoResize", "NoMove", "NoTitleBar", "NoScrollbar"}) then 
+    ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
+    if ImGui.Begin("demo_main_body_left", nil, ImGui.WindowFlags {"AlwaysAutoResize", "NoMove", "NoTitleBar", "NoScrollbar"}) then 
         for i, v in ipairs(tbList.items) do 
             local label = v.name .. "###main_body_left_" .. i
             local current = v.id == selected[category]
@@ -93,7 +93,7 @@ function system.data_changed()
             end
             set_btn_style(current, v.ok)
             local click = false
-            if ImGui.Button(label, 165) or not selected[category] or (selected[category] == 0) then 
+            if ImGui.ButtonEx(label, 165) or not selected[category] or (selected[category] == 0) then 
                 click = true
             end
             ImGui.PopStyleColor(4)
@@ -131,7 +131,7 @@ function system.data_changed()
     -- if item and item.desc then 
     --     ImGui.SetNextWindowPos(170, 45 * dpiScale)
     --     ImGui.SetNextWindowSize(60, 60)
-    --     if ImGui.Begin("demo_main_body_desc", ImGui.Flags.Window {"NoMove", "NoResize", "NoTitleBar", "NoScrollbar", "NoBringToFrontOnFocus", "NoBackground"}) then 
+    --     if ImGui.Begin("demo_main_body_desc", ImGui.WindowFlags {"NoMove", "NoResize", "NoTitleBar", "NoScrollbar", "NoBringToFrontOnFocus", "NoBackground"}) then 
     --         ImGui.TextDisabled("(?)");
     --         if ImGui.IsItemHovered() and ImGui.BeginTooltip() then 
     --             ImGui.Text(item.desc);

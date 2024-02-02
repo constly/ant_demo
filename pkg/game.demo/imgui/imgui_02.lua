@@ -14,6 +14,7 @@ local system = mgr.create_system(tbParam)
 
 local assetmgr  = import_package "ant.asset"
 local ImGui = import_package "ant.imgui"
+local ImGuiLegacy = require "imgui.legacy"
 local tools = import_package "game.tools"
 local textureman = require "textureman.client"
 local input_content = {text = 'input'}
@@ -42,24 +43,24 @@ function system.data_changed()
     scale = mgr.get_dpi_scale()
     ImGui.SetNextWindowPos(mgr.get_content_start())            
     ImGui.SetNextWindowSize(mgr.get_content_size())
-    if ImGui.Begin("wnd_body", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar", "NoBringToFrontOnFocus"}) then 
+    if ImGui.Begin("wnd_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoCollapse", "NoTitleBar"}) then 
         local n = math.ceil(#tbDataList / 2)
         for i = 1, n do 
             if i > 1 then 
                 ImGui.Dummy(1, line_space_y)
                 ImGui.NewLine()
             end
-            ImGui.SameLine(start_x)
+            ImGui.SameLineEx(start_x)
             local data1 = tbDataList[i * 2 - 1]
             ImGui.Text(data1[1])
-            ImGui.SameLine(headlen)
+            ImGui.SameLineEx(headlen)
             data1[2]()
 
             local data2 = tbDataList[i * 2]
             if data2 then 
-                ImGui.SameLine(start_x_2)
+                ImGui.SameLineEx(start_x_2)
                 ImGui.Text(data2[1])
-                ImGui.SameLine(headlen2)
+                ImGui.SameLineEx(headlen2)
                 data2[2]()
             end
             ImGui.Separator()
@@ -73,16 +74,16 @@ local cur_combo = tbComboList[1]
 local cur_list_box = 1
 local radio_flag = 1
 local progress_value = 0.01
-local checkbox_value = false
+local checkbox_value = {false}
 local arrowbtn_value = 0
 
 local drag_int_value = { [1] = 50, min = 0, max = 120, format = "%d%%" }
 local drag_float_value = { [1] = 0.5, min = 0, max = 10, speed = 0.1, format = "%d%%" }
-local slider_int_value = { [1] = 20, min = 0, max = 100 }
-local slider_float_value = { [1] = 0.625, min = 0, max = 1 }
+local slider_int_value = { [1] = 20}
+local slider_float_value = { [1] = 0.625 }
 local list_box_value = { [1] = "AA", [2] = "BB", [3] = "CC", current = 1, height = 3 }
 local color_edit_ui = {0.3, 0.6, 0.7, 1}
-local color_pick_ui = {0.5, 0.6, 0.7, 0.8, flags = 0}
+local color_pick_ui = {0.5, 0.6, 0.7, 0.8}
 
 function system.init_world()
     if #tbDataList > 0 then return end 
@@ -91,7 +92,7 @@ function system.init_world()
         table.insert(tbDataList, {label, func})
     end
     register("Button:", function()
-        if ImGui.Button("按钮##btn_1", 60, 23 * scale) then     
+        if ImGui.ButtonEx("按钮##btn_1", 60, 23 * scale) then     
             flag[1] = not flag[1]
         end
         if flag[1] then 
@@ -110,7 +111,7 @@ function system.init_world()
     end)
     register("ColorButton:", function()
         local x, y = ImGui.GetCursorPos();
-        ImGui.ColorButton("##colorbtn", 0.13, 0.66, 0.40, 1.0, 0, 120 * scale, 23 * scale);
+        ImGui.ColorButtonEx("##colorbtn", 0.13, 0.66, 0.40, 1.0, 0, 120 * scale, 23 * scale);
         ImGui.SetCursorPos(x + 6, y + 2);
         ImGui.Text(string.format("%.2f x %.2f", x, y));
     end)
@@ -139,7 +140,7 @@ function system.init_world()
     end)
     register("InputText:", function()
         ImGui.SetNextItemWidth(150)
-        if ImGui.InputText("##input_3", input_content) then 
+        if ImGuiLegacy.InputText("##input_3", input_content) then 
             print("输入", input_content.text)
         end
         if ImGui.IsItemHovered() and ImGui.BeginTooltip() then
@@ -176,11 +177,11 @@ function system.init_world()
     end)
     register("SliderInt:", function()
         ImGui.SetNextItemWidth(150)
-        ImGui.SliderInt("##slider_line_0501", slider_int_value)
+        ImGui.SliderInt("##slider_line_0501", slider_int_value, 0, 100)
     end)
     register("SliderFloat:", function()
         ImGui.SetNextItemWidth(150)
-        ImGui.SliderFloat("##slider_line_0502", slider_float_value)
+        ImGui.SliderFloat("##slider_line_0502", slider_float_value, 0, 1)
     end)
     register("帮助:", function()
         ImGui.TextDisabled("(?)");
@@ -201,25 +202,26 @@ function system.init_world()
     register("Checkbox:", function()
         local change, v = ImGui.Checkbox("同意##checkbox_1", checkbox_value)
         if change then 
-            checkbox_value = v
+            --checkbox_value[1] = v
         end
     end)
     register("ArrowButton:", function()
-        if ImGui.ArrowButton("arrow_a", "l") then arrowbtn_value = arrowbtn_value + 1 end
+        if ImGui.ArrowButton("arrow_a", ImGui.Dir.Left) then arrowbtn_value = arrowbtn_value + 1 end
         ImGui.SameLine()
-        if ImGui.ArrowButton("arrow_b", "r") then arrowbtn_value = arrowbtn_value + 1 end
+        if ImGui.ArrowButton("arrow_b", ImGui.Dir.Right) then arrowbtn_value = arrowbtn_value + 1 end
         ImGui.SameLine()
-        if ImGui.ArrowButton("arrow_c", "u") then arrowbtn_value = arrowbtn_value + 1 end
+        if ImGui.ArrowButton("arrow_c", ImGui.Dir.Up) then arrowbtn_value = arrowbtn_value + 1 end
         ImGui.SameLine()
-        if ImGui.ArrowButton("arrow_d", "d") then arrowbtn_value = arrowbtn_value + 1 end
+        if ImGui.ArrowButton("arrow_d", ImGui.Dir.Down) then arrowbtn_value = arrowbtn_value + 1 end
         ImGui.SameLine()
         ImGui.Text("点击了" .. arrowbtn_value .. "次")
     end)
     register("ListBox:", function()
         ImGui.SetNextItemWidth(150)
-        if ImGui.ListBox("##listbox", list_box_value) then 
-            print("list is", list_box_value.current)
-        end
+		ImGui.Text("统一使用 ImGui.BeginListBox")
+        --if ImGui.ListBox("##listbox", list_box_value) then 
+        --    print("list is", list_box_value.current)
+        --end
     end)
     register("BeginListBox:", function()
         if ImGui.BeginListBox("##begin_list_box", 150, 70 * scale) then 
@@ -240,10 +242,10 @@ function system.init_world()
     end)
     register("ColorPicker:", function()
         ImGui.SetNextItemWidth(150 * scale)
-        ImGui.ColorPicker("##color_picker", color_pick_ui)
+        ImGui.ColorEdit4("##color_picker", color_pick_ui, ImGui.ColorEditFlags { "None" })
     end)
     register("ColorEdit:", function()
         ImGui.SetNextItemWidth(150 * scale)
-        ImGui.ColorEdit("##clor_editor_1", color_edit_ui)
+        ImGui.ColorEdit4("##clor_editor_1", color_edit_ui, ImGui.ColorEditFlags { "None" })
     end)
 end

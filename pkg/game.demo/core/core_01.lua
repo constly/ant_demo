@@ -1,5 +1,6 @@
 local ecs = ...
 local ImGui = import_package "ant.imgui"
+local ImGuiLegacy = require "imgui.legacy"
 local mgr = require "data_mgr"
 local tbParam = 
 {
@@ -84,17 +85,17 @@ zlib-ng: 适用于下一代系统的 zlib 数据压缩库
 
 local context = {
     text = text,
-    flags = ImGui.Flags.InputText{"ReadOnly"},
+    flags = ImGui.InputTextFlags{"ReadOnly"},
 }
 
 
 function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
-	ImGui.PushStyleColor(ImGui.Enum.Col.FrameBg, 0, 0, 0, 0)
-    if ImGui.Begin("window_body", ImGui.Flags.Window {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
+	ImGui.PushStyleColorImVec4(ImGui.Col.FrameBg, 0, 0, 0, 0)
+    if ImGui.Begin("window_body", ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
 		context.width, context.height = ImGui.GetContentRegionAvail()
-		ImGui.InputTextMultiline("##show", context)
+		ImGuiLegacy.InputTextMultiline("##show", context)
 	end
 	ImGui.PopStyleColor()
 	ImGui.End()

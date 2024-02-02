@@ -24,16 +24,16 @@ end
 function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
-    if ImGui.Begin("window_body", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar", "NoScrollbar"}) then 
+    if ImGui.Begin("window_body", ImGui.WindowFlags {"NoResize", "NoMove", "NoTitleBar", "NoScrollbar"}) then 
 		local offset_x = 150;
 		local offset_y = 50
 
 		ImGui.SetCursorPos(260 + offset_x, 20 + offset_y)
 		ImGui.Text("试试拖动")
 
-		ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0.2, 0.2, 0.25, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
+		ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.2, 0.2, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
 
 		local idx_hover 
 		local x, y = ImGui.GetCursorPos()
@@ -86,9 +86,9 @@ function system.data_changed()
 				ImGui.SetCursorPos(xpos, ypos)
 
 				if idx_hover == i then 
-					ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.1, 0.9, 0.1, 1)
+					ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.1, 0.9, 0.1, 1)
 				else 
-					ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.9, 0.9, 0.9, 1)
+					ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.9, 0.9, 0.9, 1)
 				end
 				ImGui.Text(v)
 				ImGui.PopStyleColor(1)

@@ -1,5 +1,6 @@
 local ecs = ...
 local ImGui = import_package "ant.imgui"
+local ImGuiLegacy = require "imgui.legacy"
 local mgr = require "data_mgr"
 local tools = import_package 'game.tools'
 local tbParam = 
@@ -27,13 +28,13 @@ local tb_flags = {}
 
 local set_btn_style = function(current)
     if current then 
-        ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0, 0.5, 0.8, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0, 0.55, 0.7, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0, 0.55, 0.7, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0, 0.5, 0.8, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0, 0.55, 0.7, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0, 0.55, 0.7, 1)
     else 
-        ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0.2, 0.2, 0.25, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.2, 0.2, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
     end
 end
 
@@ -53,7 +54,7 @@ function system.data_changed()
     local content_x, content_y = mgr.get_content_size()
     ImGui.SetNextWindowPos(start_x, start_y)
     ImGui.SetNextWindowSize(content_x, 40)
-    if ImGui.Begin("title", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar", "NoScrollbar", "NoBackground"}) then 
+    if ImGui.Begin("title", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoTitleBar", "NoScrollbar", "NoBackground"}) then 
         for i, name in ipairs(pages) do 
             local current = name == cur_page
             set_btn_style(current)
@@ -75,7 +76,7 @@ function system.data_changed()
 
     ImGui.SetNextWindowPos(780, wnd_pos.y)  
     ImGui.SetNextWindowSize(400, 400)
-    if ImGui.Begin("wnd_flags", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar"}) then 
+    if ImGui.Begin("wnd_flags", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoTitleBar"}) then 
         for i, v in ipairs(tb_flags) do 
             local is_table = type(v) == "table"
             local name = is_table and v[1] or v
@@ -96,7 +97,7 @@ function system.data_changed()
 
     ImGui.SetNextWindowPos(225, 550)  
     ImGui.SetNextWindowSize(950, 400)
-    if ImGui.Begin("wnd_bottom", ImGui.Flags.Window {"NoResize", "NoMove", "NoTitleBar", "NoScrollbar", "NoBackground"}) then 
+    if ImGui.Begin("wnd_bottom", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoTitleBar", "NoScrollbar", "NoBackground"}) then 
         local str = string.format("%s {%s}", szFlag, table.concat(system.get_styles(), ", "))
 		ImGui.PushTextWrapPos(650);
         ImGui.Text(str)
@@ -162,14 +163,14 @@ all_flags["Window"] = {
 function system.Draw_Window()
     ImGui.SetNextWindowPos(wnd_pos.x, wnd_pos.y)  
     ImGui.SetNextWindowSize(wnd_size.x, wnd_size.y)
-    if ImGui.Begin("ImGui.Begin##window_imgui_03", ImGui.Flags.Window(system.get_styles())) then 
+    if ImGui.Begin("ImGui.Begin##window_imgui_03", ImGui.WindowFlags(system.get_styles())) then 
         for i, desc in ipairs(contents) do 
             ImGui.Text(desc)
         end
     end
     wnd_size.x, wnd_size.y = ImGui.GetWindowSize()
     ImGui.End()
-    return "ImGui.Flags.Window"
+    return "ImGui.WindowFlags"
 end
 
 ----------------------------------------------------------------
@@ -188,9 +189,9 @@ all_flags["Child"] = {
 function system.Draw_Child()
     ImGui.SetNextWindowPos(wnd_pos.x, wnd_pos.y)  
     ImGui.SetNextWindowSize(wnd_size.x, wnd_size.y)
-    if ImGui.Begin("##window_imgui_03_child", ImGui.Flags.Window {}) then 
+    if ImGui.Begin("##window_imgui_03_child", nil, ImGui.WindowFlags{"NoResize", "NoMove", "NoCollapse", "NoTitleBar"}) then 
         ImGui.SetCursorPos(50, 50)
-        ImGui.BeginChild("ImGui.BeginChild", 300, 300, ImGui.Flags.Child(system.get_styles()), ImGui.Flags.Window { "HorizontalScrollbar" })
+        ImGui.BeginChild("ImGui.BeginChild", 300, 300, ImGui.ChildFlags(system.get_styles()), ImGui.WindowFlags { "HorizontalScrollbar" })
         for i, desc in ipairs(contents) do 
             ImGui.Text(desc)
         end
@@ -242,26 +243,26 @@ local input_multi_content = {
 function system.Draw_InputText()
     ImGui.SetNextWindowPos(wnd_pos.x, wnd_pos.y)  
     ImGui.SetNextWindowSize(wnd_size.x, wnd_size.y)
-    if ImGui.Begin("##window_imgui_03_input", ImGui.Flags.Window {}) then 
+    if ImGui.Begin("##window_imgui_03_input", nil, ImGui.WindowFlags {}) then 
         ImGui.SetCursorPos(30, 70)
         ImGui.Text("InputText: ")
         ImGui.SameLine()
         ImGui.SetNextItemWidth(180)
-        input_content.flags = ImGui.Flags.InputText(system.get_styles())
-        if ImGui.InputText("##input_test", input_content) then 
+        input_content.flags = ImGui.InputTextFlags(system.get_styles())
+        if ImGuiLegacy.InputText("##input_test", input_content) then 
             print("input", tostring(input_content.text))
         end
 
 		ImGui.SetCursorPos(30, 120)
 		ImGui.Text("InputMult: ")
         ImGui.SameLine()
-		input_multi_content.flags = ImGui.Flags.InputText(system.get_styles())
-		if ImGui.InputTextMultiline("##input_multi_test", input_multi_content) then 
+		input_multi_content.flags = ImGui.InputTextFlags(system.get_styles())
+		if ImGuiLegacy.InputTextMultiline("##input_multi_test", input_multi_content) then 
 			print("multi_input", tostring(input_multi_content.text))
 		end
     end 
     ImGui.End()
-    return "ImGui.Flags.InputText"
+    return "ImGui.InputTextFlags"
 end
 
 ----------------------------------------------------------------

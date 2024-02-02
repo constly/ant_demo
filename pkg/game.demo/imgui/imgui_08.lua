@@ -167,29 +167,29 @@ local cur_mode_type = 1
 local set_btn_style = function(name)
     if type(name) == "table" then 
         local cfg = name
-        ImGui.PushStyleColor(ImGui.Enum.Col.Button, cfg.bg[1], cfg.bg[2], cfg.bg[3], cfg.bg[4])
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, cfg.bg[1] * 1.2, cfg.bg[2] * 1.2, cfg.bg[3] * 1.2, cfg.bg[4])
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, cfg.bg[1] * 1.2, cfg.bg[2] * 1.2, cfg.bg[3] * 1.2, cfg.bg[4])
-        ImGui.PushStyleColor(ImGui.Enum.Col.Text, cfg.text_col[1], cfg.text_col[2], cfg.text_col[3], cfg.text_col[4])
+        ImGui.PushStyleColorImVec4(ImGui.Col.Button, cfg.bg[1], cfg.bg[2], cfg.bg[3], cfg.bg[4])
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, cfg.bg[1] * 1.2, cfg.bg[2] * 1.2, cfg.bg[3] * 1.2, cfg.bg[4])
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, cfg.bg[1] * 1.2, cfg.bg[2] * 1.2, cfg.bg[3] * 1.2, cfg.bg[4])
+        ImGui.PushStyleColorImVec4(ImGui.Col.Text, cfg.text_col[1], cfg.text_col[2], cfg.text_col[3], cfg.text_col[4])
         return    
     end
     if name == "current" then 
-        ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0, 0.5, 0.7, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0.1, 0.65, 0.8, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0.1, 0.65, 0.8, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.9, 0.9, 0.9, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0, 0.5, 0.7, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.1, 0.65, 0.8, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.1, 0.65, 0.8, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.9, 0.9, 0.9, 1)
     elseif name == "normal" then 
-        ImGui.PushStyleColor(ImGui.Enum.Col.Button, 0.2, 0.2, 0.25, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
-        ImGui.PushStyleColor(ImGui.Enum.Col.Text, 0.9, 0.9, 0.9, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.2, 0.2, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.9, 0.9, 0.9, 1)
     end
 end
 
 function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
-    if ImGui.Begin("window_body", ImGui.Flags.Window {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then         
+    if ImGui.Begin("window_body", ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then         
         ImGui.SetCursorPos(420, 15)
         ImGui.Text("简易地图编辑器")
         system.draw_grid_def()
