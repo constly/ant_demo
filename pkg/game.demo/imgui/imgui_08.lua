@@ -187,6 +187,8 @@ local set_btn_style = function(name)
 end
 
 function system.data_changed()
+	if not ImGui.draw_list then return end 
+	
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
     if ImGui.Begin("window_body", ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then         
@@ -224,7 +226,7 @@ function system.data_changed()
 				szId = string.format("%d, %d", x, y) 
 			end
 			local label = string.format("%s##btn_grid_%d", szId, i)
-            if ImGui.Button(label, gridsize, gridsize) then 
+            if ImGui.ButtonEx(label, gridsize, gridsize) then 
                 if cur_mode_type == 1 then
                     if v.id ~= cur_grid_id then
                         v.id = cur_grid_id
@@ -240,7 +242,7 @@ function system.data_changed()
                     end
                 end
             end 
-            ImGui.PopStyleColor(4)
+            ImGui.PopStyleColorEx(4)
 
             if cur_mode_type == 2 and ImGui.BeginDragDropSource() then 
                 ImGui.SetDragDropPayload("DragGrid", tostring(i));
@@ -314,7 +316,7 @@ function system.draw_grid_def()
             ImGui.Text(v.name);
             ImGui.EndDragDropSource();
         end
-        ImGui.PopStyleColor(4)
+        ImGui.PopStyleColorEx(4)
     end
     ImGui.EndGroup();
 end
@@ -328,7 +330,7 @@ function system.draw_editor_mode()
         if ImGui.Button(name, 100) then 
             cur_mode_type = i
         end
-        ImGui.PopStyleColor(4)
+        ImGui.PopStyleColorEx(4)
     end
     ImGui.EndGroup()
 
@@ -371,6 +373,6 @@ function system.draw_options()
     end
     ImGui.Button("保 存", 100)
     ImGui.Button("加 载", 100)
-    ImGui.PopStyleColor(4)
+    ImGui.PopStyleColorEx(4)
     ImGui.EndGroup()
 end 

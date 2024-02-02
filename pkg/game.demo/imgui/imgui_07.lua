@@ -13,8 +13,8 @@ local tbParam =
 local system = mgr.create_system(tbParam)
 local scrolling = {x = 0.0, y = 0.0};
 local adding_line = false
-local opt_enable_grid = true;
-local opt_enable_context_menu = true;
+local opt_enable_grid = {true};
+local opt_enable_context_menu = {true};
 
 local data = {points = {}}
 
@@ -68,16 +68,18 @@ function data_stack:snapshoot()
 end
 
 function system.data_changed()
+	if not ImGui.draw_list then return end 
+	
     ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
     if ImGui.Begin("window_body", ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
         
         if ImGui.Checkbox("Enable grid", opt_enable_grid) then 
-            opt_enable_grid = not opt_enable_grid 
+            --opt_enable_grid = not opt_enable_grid 
         end 
         ImGui.SameLine()
         if ImGui.Checkbox("Enable context menu", opt_enable_context_menu) then 
-            opt_enable_context_menu = not opt_enable_context_menu
+            --opt_enable_context_menu = not opt_enable_context_menu
         end
         local undo_desc = string.format("Ctrl+Z, Ctrl+Y: 撤销和回退；当前数据堆栈: %d / %d", data_stack.index, #data_stack.stack)
         ImGui.Text("Mouse Left: drag to add lines,\nMouse Right: drag to scroll, click for context menu.\n" .. undo_desc);
@@ -117,7 +119,7 @@ function system.data_changed()
 
         -- Pan (we use a zero mouse threshold when there's no context menu)
         -- You may decide to make that threshold dynamic based on whether the mouse is hovering something etc.
-        local mouse_threshold_for_pan = opt_enable_context_menu and -1.0 or 0.0;
+        local mouse_threshold_for_pan = opt_enable_context_menu[1] and -1.0 or 0.0;
         if (is_active and ImGui.IsMouseDragging(ImGui.Enum.MouseButton.Right, mouse_threshold_for_pan)) then
             local delta_x, delta_y = io.GetMouseDelta()
             scrolling.x = scrolling.x + delta_x;
@@ -126,7 +128,7 @@ function system.data_changed()
 
         -- Context menu (under default mouse threshold)
         local drag_delta_x, drag_delta_y = ImGui.GetMouseDragDelta(ImGui.Enum.MouseButton.Right);
-        if (opt_enable_context_menu and drag_delta_x == 0.0 and drag_delta_y == 0.0) then
+        if (opt_enable_context_menu[1] and drag_delta_x == 0.0 and drag_delta_y == 0.0) then
             ImGui.OpenPopupOnItemClick("context", ImGui.Flags.Popup{"MouseButtonRight"});
         end
         if ImGui.BeginPopup("context") then 
@@ -149,7 +151,7 @@ function system.data_changed()
 
         -- Draw grid + all lines in the canvas
         draw_list.PushClipRect(min_x, min_y, max_x, max_y, true);
-        if opt_enable_grid then
+        if opt_enable_grid[1] then
             local GRID_STEP = 64.0;
             local x = math.fmod(scrolling.x, GRID_STEP)
             while x < size_x do

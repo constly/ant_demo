@@ -68,7 +68,7 @@ function system.data_changed()
                 end
             end
             ImGui.SameLine()
-            ImGui.PopStyleColor(4)
+            ImGui.PopStyleColorEx(4)
         end
     end
     ImGui.End()
@@ -96,7 +96,7 @@ function system.data_changed()
             if ImGui.ButtonEx(label, 165) or not selected[category] or (selected[category] == 0) then 
                 click = true
             end
-            ImGui.PopStyleColor(4)
+            ImGui.PopStyleColorEx(4)
             local id = string.format("btn_left_pop_id_%d", i)
             if ImGui.BeginPopupContextItem(id) then 
                 click = true

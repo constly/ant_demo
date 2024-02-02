@@ -273,16 +273,16 @@ function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
 	ImGui.PushStyleColorImVec4(ImGui.Col.FrameBg, 0, 0, 0.3, 0)
-    if ImGui.Begin("window_body", ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
+    if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
 		-- 菜单
 		ImGui.BeginGroup()
 		for i, v in ipairs(tb_dir) do 
 			set_btn_style(i == cur_dir)
-			if ImGui.Button(v, 130) or not cur_dir then 
+			if ImGui.ButtonEx(v, 130) or not cur_dir then 
 				cur_dir = i;
 				context.text = tb_text[v]
 			end	
-			ImGui.PopStyleColor(4)
+			ImGui.PopStyleColorEx(4)
 			ImGui.PopStyleVar()
 		end
 		ImGui.EndGroup()
@@ -294,6 +294,6 @@ function system.data_changed()
 		ImGuiLegacy.InputTextMultiline("##show_text", context)
 		ImGui.EndGroup()
 	end
-	ImGui.PopStyleColor()
+	ImGui.PopStyleColorEx()
 	ImGui.End()
 end

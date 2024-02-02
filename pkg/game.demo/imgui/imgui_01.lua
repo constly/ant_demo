@@ -22,7 +22,7 @@ local input_context = {
     hint = "输入指令",
     width = 500,
     height = 500,
-    flags = ImGui.InputTextFlags{"CallbackCompletion", "CallbackHistory", "AllowTabInput"},
+   -- flags = ImGui.InputTextFlags{"CallbackCompletion", "CallbackHistory", "AllowTabInput"},
 }
 
 local set_btn_style = function(current)
@@ -50,7 +50,7 @@ function system.data_changed()
 				tools.user_data.set("imgui_01_page", tostring(i), true)
 			end
 			ImGui.SameLine()
-			ImGui.PopStyleColor(3)
+			ImGui.PopStyleColorEx(3)
 		end
 		ImGui.NewLine()
 

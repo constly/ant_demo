@@ -26,7 +26,7 @@ local menu_options = function()
 		ImGui.MenuItem("作者");
 		ImGui.Separator();
 		ImGui.Text("测试滚动区域")
-		ImGui.BeginChild("child", 200, 50, ImGui.Flags.Child({"Border"}));
+		ImGui.BeginChild("child", 200, 50, ImGui.ChildFlags({"Border"}));
 		for i = 1, 5 do 
 			ImGui.Text("滚动区域 " .. i);
 		end
@@ -37,10 +37,10 @@ local menu_options = function()
 end
 
 local my_popup = function(name)
-	if ImGui.BeginPopupContextItem(name) then 
+	if ImGui.BeginPopupContextItemEx(name) then 
 		menu_options()
 		if ImGui.MenuItem("打开弹窗") then 
-			ImGui.OpenPopup("my popup");
+			ImGui.OpenPopup("my popup", ImGui.PopupFlags { "None" });
 		end
 		set_item_tooltip("点击我")
 		ImGui.Separator()
@@ -76,7 +76,7 @@ function system.data_changed()
 		end
 
 		ImGui.SetCursorPos(50, 100)
-		ImGui.BeginChild("##child_1", 500, 500, ImGui.Flags.Child({"Border"}))
+		ImGui.BeginChild("##child_1", 500, 500, ImGui.ChildFlags({"Border"}))
 			ImGui.SameLine(150)
 			ImGui.Text("测试菜单") 
 			
@@ -100,12 +100,12 @@ function system.data_changed()
 		
 			ImGui.NewLine()
 			if ImGui.Button("3. 左键点击我，也可以打开菜单") then 
-				ImGui.OpenPopup("popup_menu");
+				ImGui.OpenPopup("popup_menu", ImGui.PopupFlags { "None" });
 			end
 		ImGui.EndChild()
 
 		ImGui.SetCursorPos(600, 100)
-		if ImGui.BeginChild("##child_2", 500, 500, ImGui.Flags.Child({"Border"})) then
+		if ImGui.BeginChild("##child_2", 500, 500, ImGui.ChildFlags({"Border"})) then
 			ImGui.SameLine(150)
 			ImGui.Text("测试弹框") 
 			ImGui.NewLine()
@@ -119,7 +119,7 @@ function system.data_changed()
 			for i, name in ipairs(cfg) do 
 				local label = string.format("%d. %s  ##btn_child2_%d", i, name, i)
 				if ImGui.Button(label) then 
-					ImGui.OpenPopup("popup_modal" .. i)
+					ImGui.OpenPopup("popup_modal" .. i, ImGui.PopupFlags { "None" })
 					ImGui.SetNextWindowPos(500, 200) 
 					ImGui.SetNextWindowSize(300, 200)
 				end
@@ -133,7 +133,7 @@ function system.data_changed()
 end
 
 function system.wnd_popup_modal1()
-	if ImGui.BeginPopupModal("popup_modal1", ImGui.WindowFlags{"AlwaysAutoResize", "NoClosed"} ) then
+	if ImGui.BeginPopupModal("popup_modal1", nil, ImGui.WindowFlags{"AlwaysAutoResize"} ) then
 		ImGui.Text("弹框内容1")
 		ImGui.Text("弹框内容2")
 		ImGui.Separator();
@@ -147,7 +147,7 @@ end
 
 function system.wnd_popup_modal2()
 	
-	if ImGui.BeginPopupModal("popup_modal2", ImGui.WindowFlags{"NoResize", "NoMove"} ) then
+	if ImGui.BeginPopupModal("popup_modal2", nil, ImGui.WindowFlags{"NoResize", "NoMove"} ) then
 		local sizex, sizey = ImGui.GetContentRegionAvail()
 		ImGui.SetCursorPos(sizex * 0.5 - 100, sizey * 0.5 - 10)
 		ImGui.BeginGroup()
@@ -161,7 +161,7 @@ function system.wnd_popup_modal2()
 end
 
 function system.wnd_popup_modal3()
-	if ImGui.BeginPopupModal("popup_modal3", ImGui.WindowFlags{} ) then
+	if ImGui.BeginPopupModal("popup_modal3", nil, ImGui.WindowFlags{} ) then
 		local sizex, sizey = ImGui.GetContentRegionAvail()
 		ImGui.SetCursorPos(sizex * 0.5 - 100, sizey * 0.5 - 10)
 		ImGui.BeginGroup()

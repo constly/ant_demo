@@ -23,7 +23,8 @@ local curve_segments_override = false;
 local colf = {1.0, 1.0, 0.4, 1.0};
 
 function system.data_changed()
-    
+    if not ImGui.draw_list then return end 
+	
     ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
     if ImGui.Begin("window_body", ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 

@@ -93,10 +93,10 @@ function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
 	ImGui.PushStyleColorImVec4(ImGui.Col.FrameBg, 0, 0, 0, 0)
-    if ImGui.Begin("window_body", ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
+    if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
 		context.width, context.height = ImGui.GetContentRegionAvail()
 		ImGuiLegacy.InputTextMultiline("##show", context)
 	end
-	ImGui.PopStyleColor()
+	ImGui.PopStyleColorEx()
 	ImGui.End()
 end

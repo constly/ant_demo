@@ -45,11 +45,11 @@ end
 function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
-    if ImGui.Begin("window_body", ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
+    if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
 		ImGui.SetCursorPos(50, 50)
 		ImGui.BeginGroup()
 		ImGui.Text("1. 演示如何新建service\n2. service之间互相通信\n3. 暂停/继续service\n")
-		if ImGui.Button("通 信", 80) then 
+		if ImGui.ButtonEx("通 信", 80) then 
 			ltask.send(service_01, "send_event", "test", "abc")
 		end
 		ImGui.EndGroup()

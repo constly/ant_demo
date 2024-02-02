@@ -152,7 +152,7 @@ function system.data_changed()
 				curMenuIndex = i;
 				context.text = desc2
 			end	
-			ImGui.PopStyleColor(4)
+			ImGui.PopStyleColorEx(4)
 			ImGui.PopStyleVar()
 		end
 		ImGui.EndGroup()

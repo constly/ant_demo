@@ -1,3 +1,5 @@
 .vscode
 .app
 res
+bin/
+build/

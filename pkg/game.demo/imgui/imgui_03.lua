@@ -66,7 +66,7 @@ function system.data_changed()
                 tools.user_data.set('imgui_03_save_key', name, true)
             end
             ImGui.SameLine()
-            ImGui.PopStyleColor(3)
+            ImGui.PopStyleColorEx(3)
         end
     end
     ImGui.End()
@@ -114,7 +114,7 @@ function system.data_changed()
                 selected[i] = nil
             end
         end
-        ImGui.PopStyleColor(3)
+        ImGui.PopStyleColorEx(3)
     end
     ImGui.End()
 end
@@ -198,7 +198,7 @@ function system.Draw_Child()
         ImGui.EndChild()
     end 
     ImGui.End()
-    return "ImGui.Flags.Child"
+    return "ImGui.ChildFlags"
 end
 
 ----------------------------------------------------------------

@@ -44,7 +44,7 @@ function system.data_changed()
 			local ypos = 120 * y - 50 + offset_y
 			ImGui.SetCursorPos(xpos, ypos)
 			local label = string.format("##btn_l_%d", i)
-			ImGui.Button(label, 100, 100)
+			ImGui.ButtonEx(label, 100, 100)
 
 			if ImGui.BeginDragDropSource() then 
 				ImGui.SetDragDropPayload("DragNode", tostring(i));
@@ -91,11 +91,11 @@ function system.data_changed()
 					ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.9, 0.9, 0.9, 1)
 				end
 				ImGui.Text(v)
-				ImGui.PopStyleColor(1)
+				ImGui.PopStyleColorEx(1)
 			end
 		end
 
-		ImGui.PopStyleColor(3)
+		ImGui.PopStyleColorEx(3)
     end
     ImGui.End()
 end

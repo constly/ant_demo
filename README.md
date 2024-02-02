@@ -48,10 +48,12 @@
 
 
 ## 如何运行
-将工程克隆到引擎根目录，然后执行run.bat，注意: 默认使用release引擎
 ```
 git clone https://github.com/constly/ant_demo.git
 cd ant_demo
+git submodule update --init  -- 或者手动建立3rd目录，将ant引擎拷贝进去
+luamake -mode release editor
+luamake -mode release tools
 run.bat 
 ```
 
