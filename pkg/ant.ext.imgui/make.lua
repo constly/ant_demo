@@ -19,6 +19,7 @@ lm:source_set "imgui" {
     },
     sources = {
         "text_editor/*.cpp",
+		"text_color/*.cpp"
     },
     defines = {
         defines,

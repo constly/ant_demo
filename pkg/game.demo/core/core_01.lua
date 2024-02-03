@@ -26,7 +26,7 @@ bgfx:	跨平台渲染库
 	1. 支持direct3d, opengl, vulkan, webgl
 	2. 支持android, ios, linux, windows(7+), wasm
 
-bgfx.luamake 使用luamake编译bgfx
+bgfx.luamake: 使用luamake编译bgfx
 	地址: https://github.com/actboy168/bgfx.luamake
 
 fmod: 声音播放
@@ -84,46 +84,32 @@ zlib-ng: 适用于下一代系统的 zlib 数据压缩库
 	1. zlib 是一个用于数据压缩和解压缩的开源库，它通常用于在文件中或通过网络传输数据时进行压缩
 ]]
 
-local context = {
-    text = text,
-    flags = ImGui.InputTextFlags{"ReadOnly"},
-}
-
-local textEditor = nil
+local tbLines = {}
+local textColorful = nil
 
 function system.init_world()
-	if not textEditor then 
+	if not textColorful then 
 		local lines = utils.lib.split(text, "\n")
-		local tbKeyword = {}
-		local tbIdentifiers = {}
 		for i, line in ipairs(lines) do 
-			local pos = string.find(line, ' ')
+			local pos = string.find(line, ':') 
+			if not pos then 
+				pos = string.find(line, ' ') 
+			end
 			if pos then 
 				local str = string.sub(line, 1, pos)
 				local first = string.sub(str, 1, 1)
+				local dest 
 				if first == ' ' or first == '\t' then 
-					tbIdentifiers[utils.lib.trim(str)] = true
+					dest = string.format("<color=0,222,0,255>%s</>%s", str, string.sub(line, pos + 1))
 				else 
-					tbKeyword[utils.lib.trim(str)] = true
+					dest = string.format("<color=222,0,0,255>%s</>%s", str, string.sub(line, pos + 1))
 				end
+				table.insert(tbLines, dest);
+			else 
+				table.insert(tbLines, line);
 			end
 		end
-		print("print tbKeyword")
-		utils.lib.dump(tbKeyword)
-
-		print("print tbIdentifiers")
-		utils.lib.dump(tbIdentifiers)
-
-		textEditor = ImGuiExtend.CreateTextEditor()
-		textEditor:SetTabSize(8)
-		textEditor:SetColorizerEnable(true)
-		textEditor:SetShowWhitespaces(false)
-		textEditor:SetLanguageDefinition({
-			keywords = utils.lib.map_key_to_array(tbKeyword),
-			identifiers = utils.lib.map_key_to_array(tbIdentifiers),
-		})
-		textEditor:SetText(text);
-		--textEditor:SetReadOnly(true)
+		textColorful = ImGuiExtend.CreateTextColor()
 	end
 end
 
@@ -131,10 +117,15 @@ function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
 	ImGui.PushStyleColorImVec4(ImGui.Col.FrameBg, 0, 0, 0, 0)
-    if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
-		context.width, context.height = ImGui.GetContentRegionAvail()
-		textEditor:Render("##text_show", context.width, context.height, true)
-		--ImGuiLegacy.InputTextMultiline("##show", context)
+    if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoCollapse", "NoTitleBar"}) then 
+		local width, height = ImGui.GetContentRegionAvail()
+		local x, y = ImGui.GetCursorScreenPos()
+		local line_y = 23 * mgr.get_dpi_scale()
+		ImGui.Dummy(width, #tbLines * line_y + line_y)
+		for i, line in ipairs(tbLines) do 
+			textColorful:Render(line, x, y)
+			y = y + line_y;
+		end
 	end
 	ImGui.PopStyleColorEx()
 	ImGui.End()

@@ -12,21 +12,8 @@ local tbParam =
     ok              = true
 }
 local system = mgr.create_system(tbParam)
-
-local desc =
-[[
-
-local ecs   = ...
-local world = ecs.world
-local w     = world.w
-
--- 这个接口啥子意思
-w:extend(e, "keyframe:in")
-
-]]
-
--- ecs 文件说明
-local desc2 = 
+local tb_desc = {}
+tb_desc[1] = 
 [[
 ant.animation/package.ecs
 
@@ -110,8 +97,20 @@ ant.animation/package.ecs
 	
 ]]
 
+tb_desc[2] =
+[[
+local ecs   = ...
+local world = ecs.world
+local w     = world.w
+
+-- 这个接口啥子意思
+w:extend(e, "keyframe:in")
+
+]]
+
 local tbMenu = {
-	"package.ecs文件解读"
+	"package.ecs文件解读",
+	"ecs常用接口说明",
 }
 local curMenuIndex
 
@@ -148,9 +147,9 @@ function system.data_changed()
 		ImGui.BeginGroup()
 		for i, v in ipairs(tbMenu) do 
 			set_btn_style(i == curMenuIndex)
-			if ImGui.Button(v, btn_len) or not curMenuIndex then 
+			if ImGui.ButtonEx(v, btn_len) or not curMenuIndex then 
 				curMenuIndex = i;
-				context.text = desc2
+				context.text = tb_desc[i]
 			end	
 			ImGui.PopStyleColorEx(4)
 			ImGui.PopStyleVar()
