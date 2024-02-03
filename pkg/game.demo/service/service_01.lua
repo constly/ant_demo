@@ -7,7 +7,7 @@ local is_pause = false
 -- require "core.startup"
 
 --[[
-1. 这里由core/core_03.lua 调用过来
+1. 这里由core/core_05.lua 调用过来
 2. 用于演示如何创建service以及互相通信
 --]]
 
@@ -34,7 +34,7 @@ function S.send_event(eventName, arg)
 	print("send_event", eventName, arg)
 
 	-- 调回主服务
-	ltask.send(ServiceWorld, "rpc_notify_core_03", "你在给我发事件！")
+	ltask.send(ServiceWorld, "rpc_notify_core_05", "你在给我发事件！")
 end
 
 function S.pause()

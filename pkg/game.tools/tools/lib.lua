@@ -20,7 +20,26 @@ function lib.split(content, delim)
 	end
 	return ret
 end
+function lib.start_with(str, prefix)
+    return str:sub(1, #prefix) == prefix
+end
 
+function lib.end_with(str, suffix)
+    return suffix == "" or str:sub(-#suffix) == suffix
+end
+
+function lib.trim(s, chars)
+    chars = chars or "%s" -- 默认为空白字符
+    return s:gsub("^["..chars.."]*(.-)["..chars.."]*$", "%1")
+end
+
+function lib.map_key_to_array(list)
+	local array = {}
+	for key, _ in pairs(list) do 
+		array[#array + 1] = key
+	end
+	return array
+end
 
 function lib.dump(obj)
     if not obj then return print("nil") end;

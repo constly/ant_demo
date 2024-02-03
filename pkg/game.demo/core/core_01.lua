@@ -1,6 +1,7 @@
 local ecs = ...
 local ImGui = import_package "ant.imgui"
-local ImGuiLegacy = require "imgui.legacy"
+local utils = import_package 'game.tools'
+local ImGuiExtend = require "imgui.extend"
 local mgr = require "data_mgr"
 local tbParam = 
 {
@@ -71,7 +72,7 @@ stylecache: CSS style 管理
 
 vulkan: 跨平台3D图形库
 	地址: https://www.vulkan.org/
-	问题：有了bgfx为啥还要有vulkan？
+	问题: 有了bgfx为啥还要有vulkan？
 
 yoga: 一个可嵌入且高性能的 flexbox 布局引擎
 	地址: https://github.com/facebook/yoga.git
@@ -88,6 +89,43 @@ local context = {
     flags = ImGui.InputTextFlags{"ReadOnly"},
 }
 
+local textEditor = nil
+
+function system.init_world()
+	if not textEditor then 
+		local lines = utils.lib.split(text, "\n")
+		local tbKeyword = {}
+		local tbIdentifiers = {}
+		for i, line in ipairs(lines) do 
+			local pos = string.find(line, ' ')
+			if pos then 
+				local str = string.sub(line, 1, pos)
+				local first = string.sub(str, 1, 1)
+				if first == ' ' or first == '\t' then 
+					tbIdentifiers[utils.lib.trim(str)] = true
+				else 
+					tbKeyword[utils.lib.trim(str)] = true
+				end
+			end
+		end
+		print("print tbKeyword")
+		utils.lib.dump(tbKeyword)
+
+		print("print tbIdentifiers")
+		utils.lib.dump(tbIdentifiers)
+
+		textEditor = ImGuiExtend.CreateTextEditor()
+		textEditor:SetTabSize(8)
+		textEditor:SetColorizerEnable(true)
+		textEditor:SetShowWhitespaces(false)
+		textEditor:SetLanguageDefinition({
+			keywords = utils.lib.map_key_to_array(tbKeyword),
+			identifiers = utils.lib.map_key_to_array(tbIdentifiers),
+		})
+		textEditor:SetText(text);
+		--textEditor:SetReadOnly(true)
+	end
+end
 
 function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
@@ -95,7 +133,8 @@ function system.data_changed()
 	ImGui.PushStyleColorImVec4(ImGui.Col.FrameBg, 0, 0, 0, 0)
     if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
 		context.width, context.height = ImGui.GetContentRegionAvail()
-		ImGuiLegacy.InputTextMultiline("##show", context)
+		textEditor:Render("##text_show", context.width, context.height, true)
+		--ImGuiLegacy.InputTextMultiline("##show", context)
 	end
 	ImGui.PopStyleColorEx()
 	ImGui.End()

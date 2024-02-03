@@ -10,8 +10,10 @@ local defines = {
     lm.os == "windows" and "IMGUI_ENABLE_WIN32_DEFAULT_IME_FUNCTIONS"
 }
 
+-- 非lua相关的代码放这里
 lm:source_set "imgui" {
     includes = {
+		lm.AntDir .. "/3rd/bee.lua",
         lm.AntDir .. "/clibs/imgui",
         lm.AntDir .. "/3rd/imgui",
     },
@@ -23,13 +25,16 @@ lm:source_set "imgui" {
     },
 }
 
+-- lua绑定相关代码只能放在 lua_source中，不然编译不通过
 lm:lua_source "imgui" {
     includes = {
         lm.AntDir .. "/clibs/imgui",
         lm.AntDir .. "/3rd/imgui",
+		lm.AntDir .. "/3rd/bee.lua",
     },
     sources = {
         "luabinding.cpp",
+		"binding/*.cpp",
     },
     defines = {
         defines,

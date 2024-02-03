@@ -1,8 +1,13 @@
 #include <lua.hpp>
-#include "text_editor/ImTextEditor.h"
+
+extern void init_text_editor(lua_State* L);
 
 extern "C"
 int luaopen_imgui_extend(lua_State *L) {
+	lua_newtable(L);
+	init_text_editor(L);
+
+/*
     luaL_Reg lib[] = {
         // { "Sequencer", wSequencer },
         // { "SimpleSequencer", wSimpleSequencer },
@@ -11,5 +16,6 @@ int luaopen_imgui_extend(lua_State *L) {
         { NULL, NULL },
     };
     luaL_newlib(L, lib);
+*/
     return 1;
 }

@@ -10,7 +10,9 @@
 #include <regex>
 #include "imgui.h"
 
-class TextEditor
+namespace imguilua {
+
+struct TextEditor
 {
 public:
 	enum class PaletteIndex
@@ -387,3 +389,5 @@ private:
 
 	float mLastClick;
 };
+
+}
