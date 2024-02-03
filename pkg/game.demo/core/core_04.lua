@@ -29,7 +29,7 @@ function system.data_changed()
 			ImGui.Text("4. pipeline中可以定义子pipeline")
 			ImGui.Text("5. 在test_sytem.lua中实现了总共5个stage")
 			ImGui.Text("6. 程序在连续调用了pipeline的init, 5次update, exit后销毁了world")
-			if ImGui.Button("执 行 ##btn_world_01", 80) then 
+			if ImGui.ButtonEx("执 行 ##btn_world_01", 80) then 
 				system.create_world_01();
 			end
 			ImGui.EndGroup()
@@ -42,7 +42,7 @@ function system.data_changed()
 			ImGui.BeginGroup()
 			ImGui.Text("1. 动态创建空World，没有使用feature")
 			ImGui.Text("2. 演示了world的 sub, pub, unsub 的用法")
-			if ImGui.Button("执 行 ##btn_world_02", 80) then 
+			if ImGui.ButtonEx("执 行 ##btn_world_02", 80) then 
 				system.create_world_02();
 			end
 			ImGui.EndGroup()

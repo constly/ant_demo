@@ -44,7 +44,7 @@ function system.data_changed()
 		for i = 1, #default_inputs do 
 			set_btn_style(i == cur_page)
 			local label = string.format("P%d##btn_page_%d", i, i)
-			if ImGui.Button(label, 60) then 
+			if ImGui.ButtonEx(label, 60) then 
 				cur_page = i
 				input_context.text = default_inputs[i]
 				tools.user_data.set("imgui_01_page", tostring(i), true)
