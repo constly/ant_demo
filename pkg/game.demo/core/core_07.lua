@@ -103,8 +103,47 @@ local ecs   = ...
 local world = ecs.world
 local w     = world.w
 
--- 这个接口啥子意思
-w:extend(e, "keyframe:in")
+-- world相关接口
+do
+	local ecs = import_package "ant.ecs"
+	-- 创建ecs world
+	local world = ecs.new_world({ ecs = { feature = {} } })
+
+	-- world 大部分接口在 ant.ecs/main.lua
+
+	-- 3个主要 pipeline 接口
+	world:pipeline_init()
+	world:pipeline_update()
+	world:pipeline_exit()
+
+	world:create_instance()
+	world:remove_instance(instance)
+	world:remove_template(filename)
+	world:group_enable_tag(tag, id)
+	world:group_disable_tag(tag, id)
+	world:group_flush(tag)
+	world:instance_set_parent()
+
+	-- entity 和 instance 有什么区别
+	world:entity_message()
+	world:instance_message()
+	
+	world:import_feature(name)
+	world:enable_system(name)
+	world:disable_system(name)
+
+	-- 消息通信接口
+	local event_mb = world:sub {"test_event_group", "event_name"}
+	world:unsub(event_mb)
+	world:dispatch_message { type = "update" }
+end 
+
+
+-- entity相关接口
+do 
+	-- 这个接口啥子意思
+	w:extend(e, "keyframe:in")
+end
 
 ]]
 
