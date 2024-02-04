@@ -1,5 +1,6 @@
 local ecs = ...
 local ImGui = import_package "ant.imgui"
+local ImGuiExtend = require "imgui.extend"
 local mgr = require "data_mgr"
 local tbParam = 
 {
@@ -68,11 +69,9 @@ function data_stack:snapshoot()
 end
 
 function system.data_changed()
-	if not ImGui.draw_list then return end 
-	
     ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
-    if ImGui.Begin("window_body", ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
+    if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
         
         if ImGui.Checkbox("Enable grid", opt_enable_grid) then 
             --opt_enable_grid = not opt_enable_grid 
@@ -90,12 +89,12 @@ function system.data_changed()
           
         -- Draw border and background color
         local io = ImGui.io
-        local draw_list = ImGui.draw_list
+        local draw_list = ImGuiExtend.draw_list
         draw_list.AddRectFilled({min = {min_x, min_y}, max = {max_x, max_y}, col = {0.25, 0.25, 0.25, 1}});
         draw_list.AddRect({min = {min_x, min_y}, max = {max_x, max_y}, col = {1, 1, 1, 1}});
 
         -- This will catch our interactions
-        ImGui.InvisibleButton("canvas", size_x, size_y, ImGui.Flags.Button{ "MouseButtonLeft", "MouseButtonRight"} );
+        ImGui.InvisibleButton("canvas", size_x, size_y, ImGui.ButtonFlags{ "MouseButtonLeft", "MouseButtonRight"} );
         local is_hovered = ImGui.IsItemHovered(); 
         local is_active = ImGui.IsItemActive();   
         local origin = {x = min_x + scrolling.x, y = min_y + scrolling.y}; 
@@ -103,7 +102,7 @@ function system.data_changed()
         local mouse_pos_in_canvas = {x = mouse_x - origin.x, y = mouse_y - origin.y};
 
         -- Add first and second point
-        if (is_hovered and not adding_line and ImGui.IsMouseClicked(ImGui.Enum.MouseButton.Left)) then
+        if (is_hovered and not adding_line and ImGui.IsMouseClicked(ImGui.MouseButton.Left)) then
             table.insert(data.points, mouse_pos_in_canvas);
             table.insert(data.points, mouse_pos_in_canvas);
             adding_line = true;
@@ -111,7 +110,7 @@ function system.data_changed()
 
         if (adding_line) then
             data.points[#data.points] = mouse_pos_in_canvas
-            if not ImGui.IsMouseDown(ImGui.Enum.MouseButton.Left) then 
+            if not ImGui.IsMouseDown(ImGui.MouseButton.Left) then 
                 adding_line = false;
                 data_stack:snapshoot()
             end
@@ -120,16 +119,16 @@ function system.data_changed()
         -- Pan (we use a zero mouse threshold when there's no context menu)
         -- You may decide to make that threshold dynamic based on whether the mouse is hovering something etc.
         local mouse_threshold_for_pan = opt_enable_context_menu[1] and -1.0 or 0.0;
-        if (is_active and ImGui.IsMouseDragging(ImGui.Enum.MouseButton.Right, mouse_threshold_for_pan)) then
-            local delta_x, delta_y = io.GetMouseDelta()
+        if (is_active and ImGui.IsMouseDragging(ImGui.MouseButton.Right, mouse_threshold_for_pan)) then
+            local delta_x, delta_y = ImGui.GetMouseDragDelta(ImGui.MouseButton.Right)
             scrolling.x = scrolling.x + delta_x;
             scrolling.y = scrolling.y + delta_y;
         end
 
         -- Context menu (under default mouse threshold)
-        local drag_delta_x, drag_delta_y = ImGui.GetMouseDragDelta(ImGui.Enum.MouseButton.Right);
+        local drag_delta_x, drag_delta_y = ImGui.GetMouseDragDelta(ImGui.MouseButton.Right);
         if (opt_enable_context_menu[1] and drag_delta_x == 0.0 and drag_delta_y == 0.0) then
-            ImGui.OpenPopupOnItemClick("context", ImGui.Flags.Popup{"MouseButtonRight"});
+            ImGui.OpenPopupOnItemClick("context", ImGui.PopupFlags{"MouseButtonRight"});
         end
         if ImGui.BeginPopup("context") then 
             if adding_line then
@@ -174,11 +173,11 @@ function system.data_changed()
     ImGui.End();
 
     -- 检查快捷键
-    if ImGui.IsKeyDown(ImGui.Enum.Key.LeftCtrl) and ImGui.IsKeyPressed(ImGui.Enum.Key.Z, false) then 
+    if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) and ImGui.IsKeyPressed(ImGui.Key.Z, false) then 
         data_stack:undo()
     end
     
-    if ImGui.IsKeyDown(ImGui.Enum.Key.LeftCtrl) and ImGui.IsKeyPressed(ImGui.Enum.Key.Y, false) then 
+    if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) and ImGui.IsKeyPressed(ImGui.Key.Y, false) then 
         data_stack:redo()
     end
 end

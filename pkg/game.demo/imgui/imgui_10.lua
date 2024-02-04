@@ -16,7 +16,6 @@ function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
     if ImGui.Begin("window_body", ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
-        local draw_list = ImGui.draw_list;
 		ImGui.Text("暂缓")
 	end 
 	ImGui.End()

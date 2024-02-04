@@ -2,22 +2,12 @@
 
 extern void init_text_editor(lua_State* L);
 extern void init_text_color(lua_State* L);
+extern void init_draw_list(lua_State* L);
 
-extern "C" 
-int luaopen_imgui_extend(lua_State *L) {
+extern "C" int luaopen_imgui_extend(lua_State *L) {
 	lua_newtable(L);
 	init_text_editor(L);
 	init_text_color(L);
-
-/*
-    luaL_Reg lib[] = {
-        // { "Sequencer", wSequencer },
-        // { "SimpleSequencer", wSimpleSequencer },
-        // { "DirectionalArrow", zDirectionalArrow },
-        // { "PropertyLabel", wPropertyLabel },
-        { NULL, NULL },
-    };
-    luaL_newlib(L, lib);
-*/
+	init_draw_list(L);
     return 1;
 }

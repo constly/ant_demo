@@ -1,6 +1,7 @@
 local ecs = ...
 local ImGui = import_package "ant.imgui"
 local mgr = require "data_mgr"
+local ImGuiExtend = require "imgui.extend"
 local tbParam = 
 {
     ecs             = ecs,
@@ -187,11 +188,9 @@ local set_btn_style = function(name)
 end
 
 function system.data_changed()
-	if not ImGui.draw_list then return end 
-	
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
-    if ImGui.Begin("window_body", ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then         
+    if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then         
         ImGui.SetCursorPos(420, 15)
         ImGui.Text("简易地图编辑器")
         system.draw_grid_def()
@@ -199,7 +198,7 @@ function system.data_changed()
         system.draw_tips()
         system.draw_options()
 
-        local draw_list = ImGui.draw_list;
+        local draw_list = ImGuiExtend.draw_list;
         local offset_x = 210;
         local offset_y = 65;
         local gridsize = 90;
@@ -233,7 +232,7 @@ function system.data_changed()
                         data_stack:snapshoot()
                     end
                 else 
-                    if ImGui.IsKeyDown(ImGui.Enum.Key.LeftCtrl) then
+                    if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then
 						data_hander.add_selected(i)
                         data_stack:snapshoot()
                     else 
@@ -280,16 +279,16 @@ function system.data_changed()
 	ImGui.End()    
 
     -- 快捷键
-    if ImGui.IsKeyDown(ImGui.Enum.Key.LeftCtrl) then 
-        if ImGui.IsKeyPressed(ImGui.Enum.Key.Z, false) then data_stack:undo() end
-        if ImGui.IsKeyPressed(ImGui.Enum.Key.Y, false) then data_stack:redo() end
+    if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
+        if ImGui.IsKeyPressed(ImGui.Key.Z, false) then data_stack:undo() end
+        if ImGui.IsKeyPressed(ImGui.Key.Y, false) then data_stack:redo() end
         if cur_mode_type == 2 then
-        	if ImGui.IsKeyPressed(ImGui.Enum.Key.C, false) then clipboard.copy() end
-        	if ImGui.IsKeyPressed(ImGui.Enum.Key.V, false) then clipboard.paste() end
-        	if ImGui.IsKeyPressed(ImGui.Enum.Key.X, false) then clipboard.cut() end
+        	if ImGui.IsKeyPressed(ImGui.Key.C, false) then clipboard.copy() end
+        	if ImGui.IsKeyPressed(ImGui.Key.V, false) then clipboard.paste() end
+        	if ImGui.IsKeyPressed(ImGui.Key.X, false) then clipboard.cut() end
         end
     end
-	if cur_mode_type == 2 and ImGui.IsKeyPressed(ImGui.Enum.Key.Delete, false) then 
+	if cur_mode_type == 2 and ImGui.IsKeyPressed(ImGui.Key.Delete, false) then 
 		if data_hander.data.last_idx then 
 			data_hander.clear_map_grid(data_hander.data.last_idx) 
 			data_stack:snapshoot()
@@ -303,7 +302,7 @@ function system.draw_grid_def()
     ImGui.Text("格子定义")
     for i, v in ipairs(tb_grid_def) do 
         set_btn_style(i == cur_grid_id and "current" or "normal")
-        if ImGui.Button(v.name, 100) then 
+        if ImGui.ButtonEx(v.name, 100) then 
             cur_grid_id = i
         end
         if cur_mode_type == 2 and ImGui.IsItemHovered() and ImGui.BeginTooltip() then 
@@ -327,7 +326,7 @@ function system.draw_editor_mode()
     ImGui.Text(" 编辑模式")
     for i, name in ipairs(tb_mode_def) do 
         set_btn_style( i == cur_mode_type and "current" or "normal")
-        if ImGui.Button(name, 100) then 
+        if ImGui.ButtonEx(name, 100) then 
             cur_mode_type = i
         end
         ImGui.PopStyleColorEx(4)
@@ -367,12 +366,12 @@ function system.draw_options()
     ImGui.SetCursorPos(840, 480)
     ImGui.BeginGroup()
     set_btn_style( "normal")
-    if ImGui.Button("重 置", 100) then 
+    if ImGui.ButtonEx("重 置", 100) then 
         data_hander.init()
         data_stack:snapshoot()
     end
-    ImGui.Button("保 存", 100)
-    ImGui.Button("加 载", 100)
+    ImGui.ButtonEx("保 存", 100)
+    ImGui.ButtonEx("加 载", 100)
     ImGui.PopStyleColorEx(4)
     ImGui.EndGroup()
 end 

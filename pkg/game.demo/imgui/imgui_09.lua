@@ -1,6 +1,7 @@
 local ecs = ...
 local ImGui = import_package "ant.imgui"
 local mgr = require "data_mgr"
+local ImGuiExtend = require "imgui.extend"
 local tbParam = 
 {
     ecs             = ecs,
@@ -14,22 +15,20 @@ local system = mgr.create_system(tbParam)
 
 local drag_sz = { [1] = 63, min = 2, max = 100, speed = 0.2, format = "%.0f" }
 local drag_thickness = { [1] = 3, min = 1, max = 8, speed = 0.05, format = "%.02f" }
-local slider_ngon_sides = { [1] = 6, min = 3, max = 12 }
-local circle_segments_override_v = { [1] = 12, min = 3, max = 40 }
-local curve_segments_override_v = { [1] = 8, min = 3, max = 40 }
+local slider_ngon_sides = { [1] = 6 }
+local circle_segments_override_v = { [1] = 12 }
+local curve_segments_override_v = { [1] = 8 }
 
 local circle_segments_override = false;
 local curve_segments_override = false;
 local colf = {1.0, 1.0, 0.4, 1.0};
 
 function system.data_changed()
-    if not ImGui.draw_list then return end 
-	
     ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
     if ImGui.Begin("window_body", ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
         ImGui.PushItemWidth(-ImGui.GetFontSize() * 15);
-        local draw_list = ImGui.draw_list;
+        local draw_list = ImGuiExtend.draw_list;
 
         -- Draw gradients
         -- (note that those are currently exacerbating our sRGB/Linear issues)
@@ -57,29 +56,29 @@ function system.data_changed()
         ImGui.Text("All primitives");
         ImGui.DragFloat("Size", drag_sz);
         ImGui.DragFloat("Thickness", drag_thickness);
-        ImGui.SliderInt("N-gon sides", slider_ngon_sides);
-        local change, v = ImGui.Checkbox("##circlesegmentoverride", circle_segments_override);
+        ImGui.SliderInt("N-gon sides", slider_ngon_sides, 3, 12);
+        local change, v = ImGui.Checkbox("##circlesegmentoverride", {circle_segments_override});
         if change then
             circle_segments_override = v 
         end 
         ImGui.SameLine(0.0, 5);
-        if ImGui.SliderInt("Circle segments override", circle_segments_override_v) then 
+        if ImGui.SliderInt("Circle segments override", circle_segments_override_v, 3, 40) then 
             circle_segments_override = true
         end
-        local change, v = ImGui.Checkbox("##curvessegmentoverride", curve_segments_override);
+        local change, v = ImGui.Checkbox("##curvessegmentoverride", {curve_segments_override});
         if change then
             curve_segments_override = v 
         end
         ImGui.SameLine(0.0, 5);
-        if ImGui.SliderInt("Curves segments override", curve_segments_override_v) then 
+        if ImGui.SliderInt("Curves segments override", curve_segments_override_v, 3, 40) then 
             curve_segments_override = true
         end
-        ImGui.ColorEdit("Color", colf);
+        ImGui.ColorEdit4("Color", colf, ImGui.ColorEditFlags { "None" });
 
         local p = {ImGui.GetCursorScreenPos()};
         local col = { table.unpack(colf) };
         local spacing = 10.0;
-        local corners_tl_br = ImGui.Flags.Draw {"RoundCornersTopLeft", "RoundCornersBottomRight"};
+        local corners_tl_br = ImGui.DrawFlags {"RoundCornersTopLeft", "RoundCornersBottomRight"};
         local rounding = drag_sz[1] / 5.0;
         local circle_segments = circle_segments_override and circle_segments_override_v[1] or 0;
         local curve_segments = curve_segments_override and curve_segments_override_v[1] or 0;
