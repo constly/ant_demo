@@ -8,7 +8,7 @@ local tbParam =
     category        = mgr.type_core,
     name            = "03_luamake",
     file            = "core/core_03.lua",
-    ok              = true
+    ok              = false
 }
 local system = mgr.create_system(tbParam)
 
