@@ -1,6 +1,6 @@
 local ecs = ...
 local ImGui = import_package "ant.imgui"
-local ImGuiLegacy = require "imgui.legacy"
+local ImGuiExtend = require "imgui.extend"
 local mgr = require "data_mgr"
 local tbParam = 
 {
@@ -13,8 +13,70 @@ local tbParam =
 }
 local system = mgr.create_system(tbParam)
 local tb_desc = {}
-tb_desc[1] = 
-[[
+
+--[[
+markdown
+## 嘿嘿
+## 嘿嘿
+### 嘿嘿
+	* 黑了下
+		* 232
+	* [地址](https://github.com/juliettef/imgui_markdown) lightweight 
+	*emphasis*
+	_emphasis_
+	**strong emphasis**
+	__strong emphasis__
+
+	list 
+	Normal text
+	Indent level 1
+		Indent level 2
+			*. Indent level 3
+	Normal text
+--]]
+tb_desc[1] = [[
+规则说明
+***
+import_feature: 导入其他包内的特性，即依赖
+	*用法: 
+		import_feature "ant.scene"
+
+pipeline: 定义pipeline 
+	*方法1: .stage, 定义策略阶段
+	*用法: 
+		pipeline "animation" 
+			.stage "animation_state"
+			.stage "animation_playback"
+
+policy: 定义策略,策略是组件的集合, 用于实例化entity
+	*方法1: .component "animation", 表示给策划加组件
+	*方法2: .include_policy "ant.scene|scene_object", 表示可以包含子策略
+	*用法: 
+		policy "animation" 
+			.component "animation" 
+			.include_policy "ant.scene|scene_object"
+
+component: 定义组件,需要指定组件是c还是lua, 组件有哪些属性, 组件的实现文件
+	*说明: 当组件没有属性时, 退化为tag
+	*用法:
+		component "render_object"
+			.type "c"
+			.field "worldmat:userdata|math_t"
+			.implement "render_system/render_object.lua"
+
+system: 定义系统
+	*用法:
+		system "animation_system"
+			.implement "animation.lua"
+
+feature: 导入本包内其他featire
+	*用法: 
+		feature "debug_material"
+			.import "debug_material.ecs"
+
+***
+以下为完整示例:
+***
 ant.animation/package.ecs
 
 	-- 表示运行依赖 pkg ant.scene
@@ -94,7 +156,8 @@ ant.animation/package.ecs
 	-- 这是注释	
 	--system "slot_system"
 	--    .implement "slot.lua"
-	
+
+
 ]]
 
 tb_desc[2] =
@@ -116,18 +179,56 @@ do
 	world:pipeline_update()
 	world:pipeline_exit()
 
-	world:create_instance()
-	world:remove_instance(instance)
 	world:remove_template(filename)
 	world:group_enable_tag(tag, id)
 	world:group_disable_tag(tag, id)
 	world:group_flush(tag)
 	world:instance_set_parent()
 
-	-- entity 和 instance 有什么区别
+	-- instance里面可以有一组entity
+	-- 对使用create_entity()创建出来的entity发送消息
+	-- 对使用create_instance()创建出来的instance发送消息
 	world:entity_message()
 	world:instance_message()
+
+	-- 对于由create_instance创建出来的entity列表, 可以由remove_entiy分批次销毁
+	-- entity id唯一, 重复销毁不会出问题
+	-- entity销毁是异步的, 在当前帧末尾才真正销毁
+	-- 如果要在销毁时做事情, 需要加一个叫 entity_remove 的stage, 在里面通过 world:select "REMOVE component_name:in" 
+	-- 筛选出当前帧被删除的组件，并作收尾处理
+	-- 此处REMOVE是引擎定义的ecs tag, 所有当前帧被移除的entity 都由这个tag
+	-- entity id 是64位的
+	world:create_instance()
+	world:remove_instance(instance)
 	
+	-- 单纯创建/销毁entity 
+	-- entiy构建是异步的, 调用create接口后, 只会返回一个id, 但entity还不可用
+	-- 可以在entity_init这个stage中 通过 world:select "INIT component_name:update" 筛选出刚刚创建出来的包含component_name的组件, 执行初始化
+	-- 此处INIT是一个引擎定义的ecs tag, 只会存在一帧
+	-- 当所有entity_init stage执行完后, 才会依次调用on_ready 函数
+	world:create_entity()
+	world:remove_entity()
+
+	-- entity 遍历说明
+	-- clear temp component from all entities
+	world:clear "temp"
+
+	-- Iterate the entity with visible/value/output components and without readonly component
+	-- Create temp component for each.
+	for v in w:select "visible readonly:absent value:in output:out temp:new" do
+		v.output = v.value + 1
+		v.temp = v.value
+	end
+
+	-- 形式: component_name[:?]action, actin有以下取值 
+	in : read the component
+	out : write the component
+	update : read / write
+	absent : check if the component is not exist
+	exist (default) : check if the component is exist
+	new : create the component
+	? means it's an optional action if the component is not exist
+
 	world:import_feature(name)
 	world:enable_system(name)
 	world:disable_system(name)
@@ -141,15 +242,23 @@ end
 
 -- entity相关接口
 do 
-	-- 这个接口啥子意思
+	-- 扩展entity e, 申请读取keyframe组件
 	w:extend(e, "keyframe:in")
+	-- 扩展e, 深入读取value, 写入name 权限
+	w:extend(e, "value:in name:out")
+	-- 扩展e, 如果有value组件就申请写入权限
+	w:extend(v, "value?in")
+
+	-- 提交entity的修改
+	w:submit(e)
 end
 
 ]]
 
 local tbMenu = {
 	"package.ecs文件解读",
-	"ecs常用接口说明",
+	"ecs概述",
+	"system使用"
 }
 local curMenuIndex
 
@@ -176,10 +285,7 @@ end
 function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
-    if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
-		-- 演示如何创建/删除/遍历entity
-		-- 演示system的禁用 和 激活
-
+    if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoScrollWithMouse", "NoCollapse", "NoTitleBar"}) then 
 		-- 菜单
 		local scale = mgr.get_dpi_scale()
 		local btn_len  = 150 * scale
@@ -188,19 +294,18 @@ function system.data_changed()
 			set_btn_style(i == curMenuIndex)
 			if ImGui.ButtonEx(v, btn_len) or not curMenuIndex then 
 				curMenuIndex = i;
-				context.text = tb_desc[i]
+				context.text = tb_desc[i] or ""
 			end	
 			ImGui.PopStyleColorEx(4)
 			ImGui.PopStyleVar()
 		end
 		ImGui.EndGroup()
 		
-
-		ImGui.SetCursorPos(btn_len + 10, 5)
-		ImGui.BeginGroup()
-		context.width, context.height = ImGui.GetContentRegionAvail()
-		ImGuiLegacy.InputTextMultiline("##show_text", context)
-		ImGui.EndGroup()
+		ImGui.SetCursorPos(btn_len + 15, 0)
+		local x, y = ImGui.GetContentRegionAvail()
+		ImGui.BeginChild("wnd_content", x + 8, y + 13, ImGui.ChildFlags({"Border"}), ImGui.WindowFlags {  })
+        ImGuiExtend.Markdown(context.text)
+        ImGui.EndChild()
 	end
 	ImGui.End()
 end

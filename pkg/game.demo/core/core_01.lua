@@ -102,7 +102,7 @@ function system.init_world()
 				if first == ' ' or first == '\t' then 
 					dest = string.format("<color=0,222,0,255>%s</>%s", str, string.sub(line, pos + 1))
 				else 
-					dest = string.format("<color=222,0,0,255>%s</>%s", str, string.sub(line, pos + 1))
+					dest = string.format("<color=222,222,0,255>%s</>%s", str, string.sub(line, pos + 1))
 				end
 				table.insert(tbLines, dest);
 			else 
