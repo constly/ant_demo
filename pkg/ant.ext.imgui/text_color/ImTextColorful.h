@@ -11,7 +11,7 @@ namespace imguilua {
 			ImU32 InColor;
 			std::string ColorfulString;
 		};
-		ImTextColorful() :DefaultColor(ImVec4(1.0f, 1.0f, 1.0f, 1.f)) {}
+		ImTextColorful() :DefaultColor(ImVec4(0.9f, 0.9f, 0.9f, 1.f)) {}
 		ImTextColorful(ImVec4 InColor) :DefaultColor(InColor) {}
 
 		void DrawLine(const std::string& InContent, ImVec2 DrawPosition, bool DisableFlag = false);

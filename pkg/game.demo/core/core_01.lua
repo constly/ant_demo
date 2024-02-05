@@ -1,7 +1,6 @@
 local ecs = ...
 local ImGui = import_package "ant.imgui"
-local utils = import_package 'game.tools'
-local ImGuiExtend = require "imgui.extend"
+local draw_color_text = require 'utils.draw_color_text'
 local mgr = require "data_mgr"
 local tbParam = 
 {
@@ -84,32 +83,11 @@ zlib-ng: 适用于下一代系统的 zlib 数据压缩库
 	1. zlib 是一个用于数据压缩和解压缩的开源库，它通常用于在文件中或通过网络传输数据时进行压缩
 ]]
 
-local tbLines = {}
-local textColorful = nil
+local tbLines
 
 function system.init_world()
-	if not textColorful then 
-		local lines = utils.lib.split(text, "\n")
-		for i, line in ipairs(lines) do 
-			local pos = string.find(line, ':') 
-			if not pos then 
-				pos = string.find(line, ' ') 
-			end
-			if pos then 
-				local str = string.sub(line, 1, pos)
-				local first = string.sub(str, 1, 1)
-				local dest 
-				if first == ' ' or first == '\t' then 
-					dest = string.format("<color=0,222,0,255>%s</>%s", str, string.sub(line, pos + 1))
-				else 
-					dest = string.format("<color=222,222,0,255>%s</>%s", str, string.sub(line, pos + 1))
-				end
-				table.insert(tbLines, dest);
-			else 
-				table.insert(tbLines, line);
-			end
-		end
-		textColorful = ImGuiExtend.CreateTextColor()
+	if not tbLines then 
+		tbLines = draw_color_text.convert(text)
 	end
 end
 
@@ -118,14 +96,7 @@ function system.data_changed()
     ImGui.SetNextWindowSize(mgr.get_content_size())
 	ImGui.PushStyleColorImVec4(ImGui.Col.FrameBg, 0, 0, 0, 0)
     if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoCollapse", "NoTitleBar"}) then 
-		local width, height = ImGui.GetContentRegionAvail()
-		local x, y = ImGui.GetCursorScreenPos()
-		local line_y = 23 * mgr.get_dpi_scale()
-		ImGui.Dummy(width, #tbLines * line_y + line_y)
-		for i, line in ipairs(tbLines) do 
-			textColorful:Render(line, x, y)
-			y = y + line_y;
-		end
+		draw_color_text.draw(tbLines)
 	end
 	ImGui.PopStyleColorEx()
 	ImGui.End()

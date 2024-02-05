@@ -1,6 +1,5 @@
 local ecs = ...
 local ImGui = import_package "ant.imgui"
-local ImGuiExtend = require "imgui.extend"
 local mgr = require "data_mgr"
 local tbParam = 
 {
@@ -12,31 +11,14 @@ local tbParam =
     ok              = true
 }
 local system = mgr.create_system(tbParam)
+local draw_color_text = require 'utils.draw_color_text'
+local utils = import_package 'game.tools'
 local tb_desc = {}
 
---[[
-markdown
-## 嘿嘿
-## 嘿嘿
-### 嘿嘿
-	* 黑了下
-		* 232
-	* [地址](https://github.com/juliettef/imgui_markdown) lightweight 
-	*emphasis*
-	_emphasis_
-	**strong emphasis**
-	__strong emphasis__
-
-	list 
-	Normal text
-	Indent level 1
-		Indent level 2
-			*. Indent level 3
-	Normal text
---]]
 tb_desc[1] = [[
-规则说明
-***
+-----------------------------------------------------------------------------
+-- 规则说明
+-----------------------------------------------------------------------------
 import_feature: 导入其他包内的特性，即依赖
 	*用法: 
 		import_feature "ant.scene"
@@ -74,98 +56,94 @@ feature: 导入本包内其他featire
 		feature "debug_material"
 			.import "debug_material.ecs"
 
-***
-以下为完整示例:
-***
-ant.animation/package.ecs
+-----------------------------------------------------------------------------
+-- 以下为完整示例:
+-----------------------------------------------------------------------------
+-- ant.animation/package.ecs
 
-	-- 表示运行依赖 pkg ant.scene
-	import_feature "ant.scene"
+-- 表示运行依赖 pkg ant.scene
+import_feature "ant.scene"
 
-	-- 定义pipeline 
-	pipeline "animation"
-		.stage "animation_state"
-		.stage "animation_playback"
-		.stage "animation_sample"
-	
-	-- 定义策略，用于创建entity
-	-- 策略是组件的集合
-	policy "animation"
-		-- 继承的意思
-		.include_policy "ant.scene|scene_object"
-		-- entity身上挂载的组件
-		.component "animation"
-	
-	-- 定义策略
-	policy "skinning"
-		.include_policy "ant.scene|scene_object"
-		-- 某些组件的初始值可以由构造函数产生，不需要构造 entity 时外部提供
-		-- 当构造一个带有 skinning 这个 policy 的 entity 时，就不需要在构造时给出 skinning 组件的初始数据。
-		.component_opt "skinning"
-	
-	-- 定义策略
-	policy "slot"
-		-- 在 ant.scene|scene_object 的基础上增加了 slot 和 animation 两个组件
-		.include_policy "ant.scene|scene_object"
-		.component "slot"
-		.component "animation"
-	
-	-- 定义组件，数据类型是lua
-	component "animation".type "lua"
+-- 定义pipeline 
+pipeline "animation"
+	.stage "animation_state"
+	.stage "animation_playback"
+	.stage "animation_sample"
 
-	-- 定义组件，由于没有值，会自动变为tag，在代码中，通过设置e.animation_changed = true or e.animation_changed = false 来开启或者关闭tag
-	component "animation_changed"
-	component "animation_playback"
-	
-	-- 定义lua组件
-	component "slot".type "lua"
-	
-	-- 定义系统，预定义system名字为animation_system，代码实现在animation.lua中
-	system "animation_system"
-		.implement "animation.lua"
+-- 定义策略，用于创建entity
+-- 策略是组件的集合
+policy "animation"
+	-- 继承的意思
+	.include_policy "ant.scene|scene_object"
+	-- entity身上挂载的组件
+	.component "animation"
 
-	-- 定义了一个C++实现的系统
-	system "scenespace_system"
-		-- : 表示由C++实现
-		.implement ":system.scene"
+-- 定义策略
+policy "skinning"
+	.include_policy "ant.scene|scene_object"
+	-- 某些组件的初始值可以由构造函数产生，不需要构造 entity 时外部提供
+	-- 当构造一个带有 skinning 这个 policy 的 entity 时，就不需要在构造时给出 skinning 组件的初始数据。
+	.component_opt "skinning"
 
-	-- 定义复杂组件, 类型为C, Ant 的编译系统会利用这个定义生成一个 C 的 .h 文件供 C/C++ 代码使用
-	-- 生成代码放在 clibs/ecs/ecs/component.hpp 中
-	component "render_object"
-		.type "c"
-		.field "worldmat:userdata|math_t"
-	
-		--materials
-		.field "rm_idx:dword"
-	
-		--visible
-		.field "visible_idx:int"
-		.field "cull_idx:int"
-	
-		--mesh
-		.field "vb_start:dword"
+-- 定义策略
+policy "slot"
+	-- 在 ant.scene|scene_object 的基础上增加了 slot 和 animation 两个组件
+	.include_policy "ant.scene|scene_object"
+	.component "slot"
+	.component "animation"
 
-		-- 组件会有构造方法等方法
-		-- .implement 告诉了引擎，这些方法的实现放在哪个 lua 源文件中
-		.implement "render_system/render_object.lua"
+-- 定义组件，数据类型是lua
+component "animation".type "lua"
 
-	-- 目录下可以定义多个ecs，系统只会默认加载package.ecs，其他的ecs需要通过下面的方式手动引入
-	feature "debug_material"
-		.import "debug_material.ecs"
+-- 定义组件，由于没有值，会自动变为tag，在代码中，通过设置e.animation_changed = true or e.animation_changed = false 来开启或者关闭tag
+component "animation_changed"
+component "animation_playback"
 
-	-- 这是注释	
-	--system "slot_system"
-	--    .implement "slot.lua"
+-- 定义lua组件
+component "slot".type "lua"
+
+-- 定义系统，预定义system名字为animation_system，代码实现在animation.lua中
+system "animation_system"
+	.implement "animation.lua"
+
+-- 定义了一个C++实现的系统
+system "scenespace_system"
+	-- : 表示由C++实现
+	.implement ":system.scene"
+
+-- 定义复杂组件, 类型为C, Ant 的编译系统会利用这个定义生成一个 C 的 .h 文件供 C/C++ 代码使用
+-- 生成代码放在 clibs/ecs/ecs/component.hpp 中
+component "render_object"
+	.type "c"
+	.field "worldmat:userdata|math_t"
+
+	--materials
+	.field "rm_idx:dword"
+
+	--visible
+	.field "visible_idx:int"
+	.field "cull_idx:int"
+
+	--mesh
+	.field "vb_start:dword"
+
+	-- 组件会有构造方法等方法
+	-- .implement 告诉了引擎，这些方法的实现放在哪个 lua 源文件中
+	.implement "render_system/render_object.lua"
+
+-- 目录下可以定义多个ecs，系统只会默认加载package.ecs，其他的ecs需要通过下面的方式手动引入
+feature "debug_material"
+	.import "debug_material.ecs"
+
+-- 这是注释	
+--system "slot_system"
+--    .implement "slot.lua"
 
 
 ]]
 
 tb_desc[2] =
 [[
-local ecs   = ...
-local world = ecs.world
-local w     = world.w
-
 -- world相关接口
 do
 	local ecs = import_package "ant.ecs"
@@ -173,6 +151,31 @@ do
 	local world = ecs.new_world({ ecs = { feature = {} } })
 
 	-- world 大部分接口在 ant.ecs/main.lua
+
+	-- 创建entity 
+	-- entiy构建是异步的, 调用create接口后, 只会返回一个id, 但entity还不可用
+	-- 可以在entity_init这个stage中 通过 world:select "INIT component_name:update" 筛选出刚刚创建出来的包含component_name的组件, 执行初始化
+	-- 此处INIT是一个引擎定义的ecs tag, 只会存在一帧
+	-- 当所有entity_init stage执行完后, 才会依次调用on_ready 函数
+	world:create_entity()
+	world:create_instance()
+
+	-- 销毁entity 
+	-- 对于由create_instance创建出来的entity列表, 可以由remove_entiy分批次销毁
+	-- entity id唯一, 重复销毁不会出问题
+	-- entity销毁是异步的, 在当前帧末尾才真正销毁
+	-- 如果要在销毁时做事情, 需要加一个叫 entity_remove 的stage, 在里面通过 world:select "REMOVE component_name:in" 
+	-- 筛选出当前帧被删除的组件，并作收尾处理
+	-- 此处REMOVE是引擎定义的ecs tag, 所有当前帧被移除的entity 都由这个tag
+	-- entity id 是64位的
+	world:remove_instance(instance)
+	world:remove_entity()
+
+	-- instance里面可以有一组entity
+	-- 对使用create_entity()创建出来的entity发送消息
+	-- 对使用create_instance()创建出来的instance发送消息
+	world:entity_message()
+	world:instance_message()
 
 	-- 3个主要 pipeline 接口
 	world:pipeline_init()
@@ -184,30 +187,6 @@ do
 	world:group_disable_tag(tag, id)
 	world:group_flush(tag)
 	world:instance_set_parent()
-
-	-- instance里面可以有一组entity
-	-- 对使用create_entity()创建出来的entity发送消息
-	-- 对使用create_instance()创建出来的instance发送消息
-	world:entity_message()
-	world:instance_message()
-
-	-- 对于由create_instance创建出来的entity列表, 可以由remove_entiy分批次销毁
-	-- entity id唯一, 重复销毁不会出问题
-	-- entity销毁是异步的, 在当前帧末尾才真正销毁
-	-- 如果要在销毁时做事情, 需要加一个叫 entity_remove 的stage, 在里面通过 world:select "REMOVE component_name:in" 
-	-- 筛选出当前帧被删除的组件，并作收尾处理
-	-- 此处REMOVE是引擎定义的ecs tag, 所有当前帧被移除的entity 都由这个tag
-	-- entity id 是64位的
-	world:create_instance()
-	world:remove_instance(instance)
-	
-	-- 单纯创建/销毁entity 
-	-- entiy构建是异步的, 调用create接口后, 只会返回一个id, 但entity还不可用
-	-- 可以在entity_init这个stage中 通过 world:select "INIT component_name:update" 筛选出刚刚创建出来的包含component_name的组件, 执行初始化
-	-- 此处INIT是一个引擎定义的ecs tag, 只会存在一帧
-	-- 当所有entity_init stage执行完后, 才会依次调用on_ready 函数
-	world:create_entity()
-	world:remove_entity()
 
 	-- entity 遍历说明
 	-- clear temp component from all entities
@@ -244,7 +223,7 @@ end
 do 
 	-- 扩展entity e, 申请读取keyframe组件
 	w:extend(e, "keyframe:in")
-	-- 扩展e, 深入读取value, 写入name 权限
+	-- 扩展e, 申请读取value, 写入name 权限
 	w:extend(e, "value:in name:out")
 	-- 扩展e, 如果有value组件就申请写入权限
 	w:extend(v, "value?in")
@@ -255,17 +234,26 @@ end
 
 ]]
 
+tb_desc[3] =
+[[
+-----------------------------------------------------------------------------
+-- 接口说明
+-----------------------------------------------------------------------------
+激活系统
+	world:disable_system("game.demo|core_07_system")
+
+禁用系统
+	world:enable_system("game.demo|core_07_system")
+
+]]
+
 local tbMenu = {
 	"package.ecs文件解读",
 	"ecs概述",
 	"system使用"
 }
 local curMenuIndex
-
-local context = {
-    text = "",
-    flags = ImGui.InputTextFlags{"ReadOnly"},
-}
+local tb_lines
 
 local set_btn_style = function(current)
     if current then 
@@ -293,8 +281,13 @@ function system.data_changed()
 		for i, v in ipairs(tbMenu) do 
 			set_btn_style(i == curMenuIndex)
 			if ImGui.ButtonEx(v, btn_len) or not curMenuIndex then 
-				curMenuIndex = i;
-				context.text = tb_desc[i] or ""
+				local idx = i
+				if not curMenuIndex then
+					idx = tonumber(utils.user_data.get("core_07_index", i)) or i
+				end
+				curMenuIndex = idx;
+				tb_lines = draw_color_text.convert(tb_desc[idx])
+				utils.user_data.set("core_07_index", idx, true)
 			end	
 			ImGui.PopStyleColorEx(4)
 			ImGui.PopStyleVar()
@@ -304,7 +297,7 @@ function system.data_changed()
 		ImGui.SetCursorPos(btn_len + 15, 0)
 		local x, y = ImGui.GetContentRegionAvail()
 		ImGui.BeginChild("wnd_content", x + 8, y + 13, ImGui.ChildFlags({"Border"}), ImGui.WindowFlags {  })
-        ImGuiExtend.Markdown(context.text)
+		draw_color_text.draw(tb_lines)
         ImGui.EndChild()
 	end
 	ImGui.End()

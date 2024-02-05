@@ -1,7 +1,7 @@
 local ecs = ...
 local ImGui = import_package "ant.imgui"
 local mgr = require "data_mgr"
-local ImGuiLegacy = require "imgui.legacy"
+local draw_color_text = require 'utils.draw_color_text'
 local tbParam = 
 {
     ecs             = ecs,
@@ -237,12 +237,6 @@ tools/texture: 没太明白是干嘛用的
 
 }
 
-
-local context = {
-    text = "",
-    flags = ImGui.InputTextFlags{"ReadOnly"},
-}
-
 local tb_dir = 
 {
 	"ant/clibs/",
@@ -253,6 +247,7 @@ local tb_dir =
 	"ant/tools/",
 }
 local cur_dir;
+local tbLines
 
 local set_btn_style = function(current)
     if current then 
@@ -280,18 +275,16 @@ function system.data_changed()
 			set_btn_style(i == cur_dir)
 			if ImGui.ButtonEx(v, 130) or not cur_dir then 
 				cur_dir = i;
-				context.text = tb_text[v]
+				tbLines = draw_color_text.convert(tb_text[v])
 			end	
 			ImGui.PopStyleColorEx(4)
 			ImGui.PopStyleVar()
 		end
 		ImGui.EndGroup()
 		
-
 		ImGui.SetCursorPos(150, 5)
 		ImGui.BeginGroup()
-		context.width, context.height = ImGui.GetContentRegionAvail()
-		ImGuiLegacy.InputTextMultiline("##show_text", context)
+		draw_color_text.draw(tbLines)
 		ImGui.EndGroup()
 	end
 	ImGui.PopStyleColorEx()
