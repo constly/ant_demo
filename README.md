@@ -12,49 +12,18 @@
 ![imgui_08](./img/imgui_08.png)
 ![imgui_09](./img/imgui_09.png)
 
-#### 所有示例如下 （划线的表示尚未开始）
-* ImGui - 01_实时绘制
-* ImGui - 02_基础控件
-* ImGui - 03_各种Flag(50%)
-* ~~ImGui - 04_Table~~
-* ImGui - 06_菜单/弹框
-* ImGui - 07_撤销/回退
-* ImGui - 08_复制/粘贴
-* ImGui - 09_自定义绘制
-* ~~ImGui - 10_蓝图示例~~
-* ~~引擎核心 - 01_entity~~
-* ~~引擎核心 - 02_system~~
-* ~~引擎核心 - 03_pipeline~~
-* ~~引擎核心 - 04_itask~~
-* ~~资源管理 - 01_通过vfs加载资源~~
-* ~~资源管理 - 02_自定义文件读取~~
-* ~~RmlUI - 01_基础控件~~
-* ~~RmlUI - 02_列表和弹框~~
-* ~~RmlUI - 03_UI播放动画~~
-* ~~RmlUI - 04_UI播放特效~~
-* ~~RmlUI - 05_UI中显示RT~~
-* ~~渲染 - 01_LOD~~
-* ~~渲染 - 02_光影/迷雾~~
-* ~~渲染 - 03_森林/草原~~
-* ~~渲染 - 04_河流/瀑布~~
-* ~~渲染 - 05_下雪和脚印~~
-* ~~渲染 - 06_下雨和水面涟漪~~
-* ~~渲染 - 07_RenderTexture~~
-* ~~渲染 - 08_卡通渲染~~
-* ~~渲染 - 09_画质设置~~
-* 其他若干示例待规划
-
 
 ## 如何运行
 ```
 git clone https://github.com/constly/ant_demo.git
 cd ant_demo
 git submodule update --init  -- 或者手动建立3rd目录，将ant引擎拷贝进去
-luamake -mode release editor
-luamake -mode release tools
+compile.bat
 run.bat 
 ```
 
+## 问题
+1. 如何将项目转换为vs2022工程, 以便后续调试? (在build目录下执行这个不行: ninja -t msvc)
 
 ## 如何注册一个功能示例
 ```

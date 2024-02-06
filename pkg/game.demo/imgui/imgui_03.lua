@@ -105,11 +105,11 @@ function system.data_changed()
 
         set_btn_style(false)
         ImGui.SetCursorPos(720, 10)
-		if ImGui.Button("复 制##btn_copy_flag", 100) then 
+		if ImGui.ButtonEx("复 制##btn_copy_flag", 80) then 
 			print("copy", str)
 		end 
 		ImGui.SameLine()
-        if ImGui.Button("清 空##btn_clear_flag", 100) then 
+        if ImGui.ButtonEx("清 空##btn_clear_flag", 80) then 
             for i, v in pairs(selected) do 
                 selected[i] = nil
             end
@@ -163,7 +163,7 @@ all_flags["Window"] = {
 function system.Draw_Window()
     ImGui.SetNextWindowPos(wnd_pos.x, wnd_pos.y)  
     ImGui.SetNextWindowSize(wnd_size.x, wnd_size.y)
-    if ImGui.Begin("ImGui.Begin##window_imgui_03", ImGui.WindowFlags(system.get_styles())) then 
+    if ImGui.Begin("ImGui.Begin##window_imgui_03", nil, ImGui.WindowFlags(system.get_styles())) then 
         for i, desc in ipairs(contents) do 
             ImGui.Text(desc)
         end

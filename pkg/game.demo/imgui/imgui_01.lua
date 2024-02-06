@@ -12,18 +12,13 @@ local tbParam =
 }
 local system = mgr.create_system(tbParam)
 local ImGui     = require "imgui"
-local ImGuiLegacy = require "imgui.legacy"
+local ImGuiExtend = require "imgui.extend"
 local tools = import_package 'game.tools'
+
 local err_text = ""
 local default_inputs
+local text_editor
 local cur_page = tools.user_data.get_number("imgui_01_page", 1)
-local input_context = {
-    text = "",
-    hint = "输入指令",
-    width = 500,
-    height = 500,
-   -- flags = ImGui.InputTextFlags{"CallbackCompletion", "CallbackHistory", "AllowTabInput"},
-}
 
 local set_btn_style = function(current)
     if current then 
@@ -37,6 +32,15 @@ local set_btn_style = function(current)
     end
 end
 
+function system.on_entry()
+	if not text_editor then 
+		text_editor = ImGuiExtend.CreateTextEditor()
+		text_editor:SetTabSize(8)
+		text_editor:SetShowWhitespaces(false)
+		text_editor:SetText(default_inputs[cur_page])
+	end
+end
+
 function system.data_changed()
     ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
@@ -46,7 +50,7 @@ function system.data_changed()
 			local label = string.format("P%d##btn_page_%d", i, i)
 			if ImGui.ButtonEx(label, 60) then 
 				cur_page = i
-				input_context.text = default_inputs[i]
+				text_editor:SetText(default_inputs[i])
 				tools.user_data.set("imgui_01_page", tostring(i), true)
 			end
 			ImGui.SameLine()
@@ -54,18 +58,19 @@ function system.data_changed()
 		end
 		ImGui.NewLine()
 
-        local sizeX, sizeY = ImGui.GetContentRegionAvail()
+		local sizeX, sizeY = ImGui.GetContentRegionAvail()
         local half = sizeX * 0.5
         local childY = sizeY - 100
-		if ImGuiLegacy.InputTextMultiline("##input_2", input_context) then 
-			default_inputs[cur_page] = tostring(input_context.text)
-		end
+
+		text_editor:Render("##text_input", 500, 500, true)
+		local str = text_editor:GetText()
+		default_inputs[cur_page] = str
 
         ImGui.SameLine(half + 10)
         ImGui.BeginChild("###child_output", half - 30, childY)
 			err_text = ""
             xpcall(function()
-                load(tostring(input_context.text))()
+                load(tostring(str))()
             end, function(err)
 				err_text = err
             end)
@@ -89,12 +94,10 @@ ImGui.Button("button")
 ImGui.RadioButton("button")
 ]],
 
-[2] = [[]],
+[2] = [[local ImGui     = require "imgui"]],
 [3] = [[]],
 [4] = [[]],
 [5] = [[]],
 [6] = [[]],
 [7] = [[]],
 }
-
-input_context.text = default_inputs[cur_page]
