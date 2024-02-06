@@ -13,7 +13,7 @@ local tbParam =
 local system = mgr.create_system(tbParam)
 
 local assetmgr  = import_package "ant.asset"
-local ImGui = import_package "ant.imgui"
+local ImGui     = require "imgui"
 local ImGuiLegacy = require "imgui.legacy"
 local tools = import_package "game.tools"
 local textureman = require "textureman.client"

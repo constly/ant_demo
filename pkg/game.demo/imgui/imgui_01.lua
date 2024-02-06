@@ -11,7 +11,7 @@ local tbParam =
 	ok 				= true
 }
 local system = mgr.create_system(tbParam)
-local ImGui = import_package "ant.imgui"
+local ImGui     = require "imgui"
 local ImGuiLegacy = require "imgui.legacy"
 local tools = import_package 'game.tools'
 local err_text = ""
@@ -83,7 +83,7 @@ end
 default_inputs = {
 [1] = 
 [[
-local ImGui = import_package "ant.imgui"
+local ImGui     = require "imgui"
 ImGui.Text("text")
 ImGui.Button("button")
 ImGui.RadioButton("button")

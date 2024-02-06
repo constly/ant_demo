@@ -1,12 +1,12 @@
 local ecs = ...
-local ImGui = import_package "ant.imgui"
+local ImGui     = require "imgui"
 local mgr = require "data_mgr"
 local tbParam = 
 {
     ecs             = ecs,
     system_name     = "core_08_system",
     category        = mgr.type_core,
-    name            = "08_DataList",
+    name            = "08_datalist",
     file            = "core/core_08.lua",
     ok              = false
 }

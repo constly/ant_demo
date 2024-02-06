@@ -1,5 +1,5 @@
 local ecs = ...
-local ImGui = import_package "ant.imgui"
+local ImGui     = require "imgui"
 local ImGuiLegacy = require "imgui.legacy"
 local mgr = require "data_mgr"
 local tools = import_package 'game.tools'
@@ -272,6 +272,7 @@ all_flags["Table"] = {
 
 }
 function system.Draw_Table()
+	local i  = 0;
 end
 
 ----------------------------------------------------------------
@@ -281,6 +282,7 @@ all_flags["TreeNode"] = {
 
 }
 function system.Draw_TreeNode()
+	local i  = 0;
 end
 
 ----------------------------------------------------------------
@@ -290,6 +292,7 @@ all_flags["Combo"] = {
 
 }
 function system.Draw_Combo()
+	local i  = 0;
 end
 
 
@@ -300,6 +303,7 @@ all_flags["TabBar"] = {
 
 }
 function system.Draw_TabBar()
+	local i  = 0;
 end
 
 ----------------------------------------------------------------
@@ -309,4 +313,5 @@ all_flags["TabItem"] = {
 
 }
 function system.Draw_TabItem()
+	local i  = 0;
 end

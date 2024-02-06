@@ -1,5 +1,5 @@
 local ecs = ...
-local ImGui = import_package "ant.imgui"
+local ImGui     = require "imgui"
 local mgr = require "data_mgr"
 local draw_color_text = require 'utils.draw_color_text'
 local tbParam = 

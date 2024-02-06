@@ -1,4 +1,4 @@
-local ImGui = import_package "ant.imgui"
+local ImGui     = require "imgui"
 local utils = import_package 'game.tools'
 local ImGuiExtend = require "imgui.extend"
 local mgr = require "data_mgr"
