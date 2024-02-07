@@ -1,0 +1,12 @@
+{
+    "workspace.ignoreDir": [
+        "*.ecs"
+    ],
+    "diagnostics.globals": [
+        "import_package",
+        "log",
+        "__ANT_EDITOR__",
+        "__ANT_RUNTIME__"
+    ],
+    "workspace.checkThirdParty": false
+}

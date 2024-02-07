@@ -6,9 +6,9 @@ local tbParam =
     ecs             = ecs,
     system_name     = "core_10_system",
     category        = mgr.type_core,
-    name            = "10_输入",
+    name            = "10_模型浏览",
     file            = "core/core_10.lua",
-    ok              = false
+    ok              = true
 }
 local system = mgr.create_system(tbParam)
 local world = ecs.world
@@ -18,69 +18,170 @@ local math3d = require "math3d"
 local imesh = ecs.require "ant.asset|mesh"
 local ientity = ecs.require "ant.render|components.entity"
 
+local tools = import_package "game.tools"
+local vfs = require "vfs"
+local lfs = require "bee.filesystem"
 local ivs = ecs.require "ant.render|visible_state"
 local ianimation = ecs.require "ant.animation|animation"
 local iplayback = ecs.require "ant.animation|playback"
 
 local e_light = nil;
 local e_plane = nil
-local ins_girl = nil
+local ins_model = nil
 local entities
 
-function system.on_entry()
-	-- prefab中可以有多个实体
-	-- 返回entity id数组
-	e_light = world:create_instance {
-        prefab = "/pkg/game.res/light.prefab"
-    }
+local model_index 
+local glbs
 
-	-- 返回entity id
+function system.on_entry()
+	e_light = world:create_instance { prefab = "/pkg/game.res/light.prefab" }
 	e_plane = world:create_entity{
-		policy = {
-			"ant.render|simplerender",
-		},
+		policy = { "ant.render|simplerender", },
 		data = {
-			scene 		= {
-				s = {250, 1, 250},
-            },
+			scene = { s = {250, 1, 250}, },
 			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
 			visible_state= "main_view",
 			simplemesh 	= imesh.init_mesh(ientity.plane_mesh()),
-			on_ready = function(e)
-				print("create plane complete", e)
-			end,
+			on_ready = function(e) end,
 		}
 	}
 
-	ins_girl = world:create_instance {
-		prefab = "/pkg/game.res/npc/test_001/test_001.glb|mesh.prefab",
-        on_ready = function ()
-            local main_queue = w:first "main_queue camera_ref:in"
-            local main_camera <close> = world:entity(main_queue.camera_ref, "camera:in")
-            local dir = math3d.vector(0, -1, 1)
+	-- 遍历得到目录下所有glb文件
+	glbs = {}
+	local repo = vfs.repopath()
+	local pkg_name = "/pkg/game.res"
+	local root = repo .. pkg_name 
+	local files = {}
+	system.get_all_files(root, files)
+	local tb_ext = {".glb", ".gltf"}
+	for _, path in ipairs(files) do 
+		for _, ext in ipairs(tb_ext) do 
+			if tools.lib.end_with(path, ext) then 
+				local path = string.gsub(path, repo, "");
+				local shortpath = string.gsub(path, pkg_name, "")
+				local name = tools.lib.get_filename(shortpath)
+				table.insert(glbs, {name = name, tip = path, path = path .. "|mesh.prefab"})
+				break;
+			end
+		end
+	end
+	table.sort(glbs, function (a, b) return a.name < b.name end)
+	tools.lib.dump(glbs)
+	system.show_model(model_index or 1)
+end
 
-			local boxcorners = {math3d.vector(-1.0, -1.0, -1.0), math3d.vector(1.0, 1.0, 1.0)}
-			local aabb = math3d.aabb(boxcorners[1], boxcorners[2])
-			icamera.focus_aabb(main_camera, aabb, dir)
-			
-            -- if not icamera.focus_prefab(main_camera, entities, dir) then
-            --     error "aabb not found"
-            -- end
-        end
-    }
-    entities = ins_girl.tag['*']
+function system.get_all_files(root, rets)
+	for file in lfs.pairs(root) do
+		if file ~= "." and file ~= ".." then
+			if lfs.is_directory(file) then 
+				system.get_all_files(file, rets)
+			else 
+				rets[#rets + 1] = tostring(file)
+			end
+		end
+	end
 end
 
 function system.on_leave()
 	world:remove_entity(e_plane)
 	world:remove_instance(e_light)
-	world:remove_instance(ins_girl)
+	world:remove_instance(ins_model)
 end
 
 function system.data_changed()
-	ImGui.SetNextWindowPos(mgr.get_content_start())
+	system.draw_filelist()
+	system.draw_anim()
+end
 
-    if ImGui.Begin("entities", nil, ImGui.WindowFlags {"AlwaysAutoResize", "NoMove", "NoTitleBar"}) then
+function system.show_model(index)
+	model_index = index
+	local data = glbs[index]
+	if not data then return end 
+	if ins_model then world:remove_instance(ins_model) end
+
+	local mathpkg   = import_package "ant.math"
+	local mc    = mathpkg.constant
+	ins_model = world:create_instance {
+		prefab = data.path,
+        on_ready = function ()
+            local main_queue = w:first "main_queue camera_ref:in"
+            local main_camera <close> = world:entity(main_queue.camera_ref, "camera:in")
+            local dir = math3d.vector(0, -1, 1)
+			local aabb
+			for i = 1, #entities do
+				local e = entities[i]
+				local ec <close> = world:entity(e, "bounding?in")
+				local bounding = ec.bounding
+				if bounding and bounding.scene_aabb ~= mc.NULL then
+					if not aabb then
+						aabb = bounding.scene_aabb
+					else
+						aabb = math3d.aabb_merge(bounding.scene_aabb, aabb)
+					end
+				end
+			end
+			if aabb then
+				local aabb_min, aabb_max = math3d.tovalue(math3d.array_index(aabb, 1)), math3d.tovalue(math3d.array_index(aabb, 2))
+				local delta_x = math.abs(aabb_min[1] - aabb_max[1])
+				local delta_y = math.abs(aabb_min[2] - aabb_max[2])
+				local delta_z = math.abs(aabb_min[3] - aabb_max[3])
+				local value = math.max(delta_x, delta_y, delta_z)
+				if value < 1 then 
+					aabb = nil
+				end
+			end
+
+			if aabb then 
+				icamera.focus_aabb(main_camera, aabb, dir)
+			else 
+				local aabb = math3d.aabb(math3d.vector(-1.0, -1.0, -1.0), math3d.vector(1.0, 1.0, 1.0))
+				icamera.focus_aabb(main_camera, aabb, dir)
+			end
+        end
+    }
+    entities = ins_model.tag['*']
+end
+
+function system.draw_filelist()
+	local posx, posy = mgr.get_content_start()
+	local sizex, sizey = mgr.get_content_size()
+	local set_btn_style = function(current)
+		if current then 
+			ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0, 0.5, 0.8, 1)
+			ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0, 0.55, 0.7, 1)
+			ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0, 0.55, 0.7, 1)
+		else 
+			ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.2, 0.2, 0.25, 1)
+			ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
+			ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
+		end
+		ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
+	end
+
+	local btn_size = 180
+	ImGui.SetNextWindowPos(posx + sizex - btn_size, posy)
+	ImGui.SetNextWindowSize(btn_size, sizey)
+	if ImGui.Begin("wnd_filelist", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoCollapse", "NoTitleBar"}) then 
+		for i, data in ipairs(glbs) do 
+			set_btn_style(i == model_index)
+			local label = string.format("%d. %s##btn_file_%d", i, data.name, i)
+			if ImGui.ButtonEx(label, btn_size - 10) then 
+				system.show_model(i)
+			end
+			if ImGui.IsItemHovered() and ImGui.BeginTooltip() then
+				ImGui.Text(data.path)
+				ImGui.EndTooltip()
+			end
+			ImGui.PopStyleColorEx(3)
+			ImGui.PopStyleVar()
+		end
+	end 
+	ImGui.End()
+end
+
+function system.draw_anim()
+	ImGui.SetNextWindowPos(mgr.get_content_start())
+    if ImGui.Begin("wnd_entities", nil, ImGui.WindowFlags {"AlwaysAutoResize", "NoMove", "NoTitleBar"}) then
         local animation_eid
         if ImGui.TreeNode "mesh" then
             for i = 1, #entities do

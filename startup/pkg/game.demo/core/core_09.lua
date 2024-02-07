@@ -8,7 +8,7 @@ local tbParam =
     category        = mgr.type_core,
     name            = "09_内置多边形",
     file            = "core/core_09.lua",
-    ok              = false
+    ok              = true
 }
 local system = mgr.create_system(tbParam)
 local world = ecs.world
@@ -84,11 +84,11 @@ function system.on_leave()
 	entities = {}
 end
 
-function system.data_changed()
+--function system.data_changed()
 	-- ImGui.SetNextWindowPos(mgr.get_content_start())
     -- ImGui.SetNextWindowSize(mgr.get_content_size())
     -- if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
 	-- 	ImGui.Text("待定")
 	-- end 
 	-- ImGui.End()
-end
+--end

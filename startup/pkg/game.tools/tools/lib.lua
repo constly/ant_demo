@@ -41,6 +41,13 @@ function lib.map_key_to_array(list)
 	return array
 end
 
+function lib.get_filename(path)
+	--local path = "/path/to/your/file.txt"
+	local filename = path:match("^.+/([^/]+)$")
+	--print(filename)  -- 输出 "file.txt"
+	return filename
+end
+
 function lib.dump(obj)
     if not obj then return print("nil") end;
         
