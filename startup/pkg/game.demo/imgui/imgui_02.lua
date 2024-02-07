@@ -14,7 +14,6 @@ local system = mgr.create_system(tbParam)
 
 local assetmgr  = import_package "ant.asset"
 local ImGui     = require "imgui"
-local ImGuiLegacy = require "imgui.legacy"
 local tools = import_package "game.tools"
 local textureman = require "textureman.client"
 local input_content = {text = 'input'}
@@ -140,7 +139,7 @@ function system.init_world()
     end)
     register("InputText:", function()
         ImGui.SetNextItemWidth(150)
-        if ImGuiLegacy.InputText("##input_3", input_content) then 
+        if ImGui.InputText("##input_3", input_content) then 
             print("输入", input_content.text)
         end
         if ImGui.IsItemHovered() and ImGui.BeginTooltip() then

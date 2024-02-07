@@ -1,6 +1,5 @@
 local ecs = ...
 local ImGui     = require "imgui"
-local ImGuiLegacy = require "imgui.legacy"
 local mgr = require "data_mgr"
 local tools = import_package 'game.tools'
 local tbParam = 
@@ -249,7 +248,7 @@ function system.Draw_InputText()
         ImGui.SameLine()
         ImGui.SetNextItemWidth(180)
         input_content.flags = ImGui.InputTextFlags(system.get_styles())
-        if ImGuiLegacy.InputText("##input_test", input_content) then 
+        if ImGui.InputText("##input_test", input_content) then 
             print("input", tostring(input_content.text))
         end
 
@@ -257,7 +256,7 @@ function system.Draw_InputText()
 		ImGui.Text("InputMult: ")
         ImGui.SameLine()
 		input_multi_content.flags = ImGui.InputTextFlags(system.get_styles())
-		if ImGuiLegacy.InputTextMultiline("##input_multi_test", input_multi_content) then 
+		if ImGui.InputTextMultiline("##input_multi_test", input_multi_content) then 
 			print("multi_input", tostring(input_multi_content.text))
 		end
     end 
