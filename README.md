@@ -15,11 +15,17 @@
 
 ## 如何运行
 ```
+-- 先clone引擎，注意就用默认名字ant
+git clone https://github.com/ejoy/ant.git   
+
+-- 接下来在引擎同级目录clone项目
 git clone https://github.com/constly/ant_demo.git
+
+--双击 ant_demo.code-workspace 打开vscode
 cd ant_demo
-git submodule update --init  -- 或者手动建立3rd目录，将ant引擎拷贝进去
 compile.bat
 run.bat 
+
 ```
 
 ## 问题
