@@ -126,19 +126,4 @@ function system.data_changed()
     end
     ImGui.End()
     ImGui.PopStyleVar()
-
-    -- 功能描述
-    -- if item and item.desc then 
-    --     ImGui.SetNextWindowPos(170, 45 * dpiScale)
-    --     ImGui.SetNextWindowSize(60, 60)
-    --     if ImGui.Begin("demo_main_body_desc", ImGui.WindowFlags {"NoMove", "NoResize", "NoTitleBar", "NoScrollbar", "NoBringToFrontOnFocus", "NoBackground"}) then 
-    --         ImGui.TextDisabled("(?)");
-    --         if ImGui.IsItemHovered() and ImGui.BeginTooltip() then 
-    --             ImGui.Text(item.desc);
-    --             ImGui.EndTooltip();
-    --         end
-    --     end
-    --     ImGui.End()
-    -- end
-
 end
