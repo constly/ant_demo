@@ -47,12 +47,13 @@ function system.data_changed()
     local size_x, size_y = viewport.WorkSize.x, viewport.WorkSize.y
 
     local dpiScale = data_mgr.get_dpi_scale()
-    local top_y = 40 * dpiScale
-    local top_size_x = size_x - 250
+    local top_y = 35 * dpiScale
+    local top_size_x = size_x
     -- 顶部菜单
-    ImGui.SetNextWindowPos(199, 5)
-    ImGui.SetNextWindowSize(top_size_x, top_y)
+    ImGui.SetNextWindowPos(0, 0)
+    ImGui.SetNextWindowSize(size_x, top_y)
     if ImGui.Begin("demo_main_title", nil, ImGui.WindowFlags {"AlwaysAutoResize", "NoMove", "NoTitleBar", "NoScrollbar"}) then 
+		ImGui.SetCursorPosX(200)
         for i, v in ipairs(data_mgr.get_data()) do 
             local current = v.category == category
             set_btn_style(current, true)
@@ -77,12 +78,12 @@ function system.data_changed()
     local item
     
     -- 左边菜单
-    local begin_y = top_y + 4
-    local left_body_y = size_y - begin_y - 40;
-    data_mgr.set_content_start(199, begin_y)
-    data_mgr.set_content_size(top_size_x, left_body_y)
-    ImGui.SetNextWindowPos(20, begin_y)
-    ImGui.SetNextWindowSize(180, left_body_y)
+    local begin_y = top_y
+    local left_body_y = size_y - begin_y;
+    data_mgr.set_content_start(200, begin_y)
+    data_mgr.set_content_size(top_size_x - 200, left_body_y)
+    ImGui.SetNextWindowPos(0, begin_y)
+    ImGui.SetNextWindowSize(200, left_body_y)
     ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
     if ImGui.Begin("demo_main_body_left", nil, ImGui.WindowFlags {"AlwaysAutoResize", "NoMove", "NoTitleBar", "NoScrollbar"}) then 
         for i, v in ipairs(tbList.items) do 
@@ -93,7 +94,7 @@ function system.data_changed()
             end
             set_btn_style(current, v.ok)
             local click = false
-            if ImGui.ButtonEx(label, 165) or not selected[category] or (selected[category] == 0) then 
+            if ImGui.ButtonEx(label, 185) or not selected[category] or (selected[category] == 0) then 
                 click = true
             end
             ImGui.PopStyleColorEx(4)

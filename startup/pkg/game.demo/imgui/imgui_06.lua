@@ -55,7 +55,7 @@ function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
 
-	if ImGui.Begin("window_body", ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "MenuBar"}) then 
+	if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "MenuBar"}) then 
 		
 		if ImGui.BeginMenuBar() then
 			if ImGui.BeginMenu("菜单") then 

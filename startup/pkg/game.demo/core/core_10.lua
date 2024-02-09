@@ -158,8 +158,8 @@ function system.draw_filelist()
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
 	end
 
-	local btn_size = 180
-	ImGui.SetNextWindowPos(posx + sizex - btn_size, posy)
+	local btn_size = 200
+	ImGui.SetNextWindowPos(sizex, posy)
 	ImGui.SetNextWindowSize(btn_size, sizey)
 	if ImGui.Begin("wnd_filelist", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoCollapse", "NoTitleBar"}) then 
 		for i, data in ipairs(glbs) do 

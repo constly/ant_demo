@@ -26,7 +26,7 @@ local colf = {1.0, 1.0, 0.4, 1.0};
 function system.data_changed()
     ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
-    if ImGui.Begin("window_body", ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
+    if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
         ImGui.PushItemWidth(-ImGui.GetFontSize() * 15);
         local draw_list = ImGuiExtend.draw_list;
 
