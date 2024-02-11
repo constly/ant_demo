@@ -48,8 +48,8 @@ function lib.get_filename(path)
 	return filename
 end
 
-function lib.dump(obj)
-    if not obj then return print("nil") end;
+function lib.table2string(obj)
+	if not obj then return "nil" end;
         
     local getIndent, quoteStr, wrapKey, wrapVal, isArray, dumpObj
     getIndent = function(level)
@@ -117,7 +117,11 @@ function lib.dump(obj)
         tokens[#tokens + 1] = getIndent(level - 1) .. "}"
         return table.concat(tokens, "\n")
     end
-    print(dumpObj(obj, 0));
+    return dumpObj(obj, 0);
+end
+
+function lib.dump(obj)
+    print(lib.table2string(obj))
 end
 
 function lib.copy(tb)

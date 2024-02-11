@@ -24,6 +24,7 @@ local player
 local kb_mb
 local mouse_mb
 local mouse_lastx, mouse_lasty
+local eventGesturePinch;
 
 function system.on_entry()
 	PC:create_instance { prefab = "/pkg/game.res/light.prefab" }
@@ -73,6 +74,7 @@ function system.on_entry()
 
 	kb_mb = world:sub{"keyboard"}
 	mouse_mb = world:sub {"mouse"}
+	eventGesturePinch = world:sub {"gesture", "pinch"}
 	world:disable_system("ant.camera|default_camera_controller")
 end 
 
@@ -80,6 +82,7 @@ function system.on_leave()
 	PC:clear()
 	world:unsub(kb_mb)
 	world:unsub(mouse_mb)
+	world:unsub(eventGesturePinch)
 	world:enable_system("ant.camera|default_camera_controller")
 end
 
@@ -140,34 +143,29 @@ local camera_cfg = {
 	-- 摄像机旋转角度
 	angle = 0,
 
-	-- 视野Y偏移
+	-- 视点偏移
 	offset_y = 0,
-	offset_y_min = -1,
-	offset_y_max = 4,
+	offset_x = 0,
+	offset_z = 0,
 
 	-- 摄像机旋转速度
 	rotate_speed = 135,
-
-	set_offset_y = function(self, value)
-		self.offset_y = value
-		self.offset_y = math.max(self.offset_y_min, self.offset_y)
-		self.offset_y = math.min(self.offset_y_max, self.offset_y)
-	end,
 
 	reset = function(self)
 		self.dis = 10
 		self.height = 7
 		self.offset_y = 0
-		self.offset_y_min = -1
-		self.offset_y_max = 4
+		self.offset_x = 0
+		self.offset_z = 0
 	end
 }
 
 local camera_move_type = 1
 local tb_camera_move_type = {
 	"跟随玩家",
-	"自由拖动",
 	"固定动画",
+	"自由拖动水平",
+	"自由拖动360",
 }
 
 function system.get_camera_degree(offset)
@@ -189,40 +187,59 @@ function system.update_camera_(pe, delta_time)
 				local delta_x, delta_y = x - mouse_lastx, y - mouse_lasty
 				mouse_lastx, mouse_lasty = x, y
 
-				if (math.abs(delta_x) >= math.abs(delta_y)) then 
-					delta_y = 0
-				end
-
 				if delta_x ~= 0 then 
 					local move = delta_time * camera_cfg.rotate_speed
 					camera_cfg.angle = camera_cfg.angle + (delta_x > 0 and -move or move)
 				end
-				if delta_y ~= 0 then 
-					camera_cfg:set_offset_y(camera_cfg.offset_y - delta_y * 0.1)
-				end
 			end
+		elseif btn == "MIDDLE" then
+			
 		end
+		print(btn, state, x, y)
 	end
+
+	for _, _, e in eventGesturePinch:unpack() do
+		local v = e.velocity * -0.03
+        camera_cfg.dis = camera_cfg.dis + camera_cfg.dis * v
+		camera_cfg.height = camera_cfg.height + camera_cfg.height * v
+    end
+
+	local degree = system.get_camera_degree(90)
+	local offset_x = camera_cfg.offset_x * math.cos(degree) - camera_cfg.offset_z * math.sin(degree)
+	local offset_z = camera_cfg.offset_z * math.cos(degree) + camera_cfg.offset_x * math.sin(degree)
+	local view_target = math3d.vector(tpos[1] + offset_x, tpos[2] + camera_cfg.offset_y, tpos[3] + offset_z)
+	tpos = math3d.tovalue(view_target)
 
 	local degree = system.get_camera_degree() 
 	local new_x = tpos[1] + math.cos(degree) * camera_cfg.dis;
 	local new_y = tpos[2] + camera_cfg.height
 	local new_z = tpos[3] + math.sin(degree) * camera_cfg.dis
 	local camera_pos = math3d.vector(new_x, new_y, new_z)
-	local view_target = math3d.vector(tpos[1], tpos[2] + camera_cfg.offset_y, tpos[3])
+
 	local viewdir = math3d.sub(view_target, camera_pos) 
 	iom.lookto(ce, camera_pos, viewdir)
 end
 
+------------------------------------------------------------------------------
+--- debug ui
+------------------------------------------------------------------------------
+
+local text_dis = ImGui.StringBuf()
+local slider_dis = { [1] = 0 }
+local slider_height = { [1] = 0 }
+local slider_offset_x = { [1] = 0 }
+local slider_offset_y = { [1] = 0 }
+local slider_offset_z = { [1] = 0 }
+
 function system.draw_ui_debug()
 	local posx, posy = mgr.get_content_start()
 	local sizex, sizey = mgr.get_content_size()
-	local btn_size = 180
+	local btn_size = 220
 	ImGui.SetNextWindowPos(posx + sizex - btn_size, posy)
 	ImGui.SetNextWindowSize(btn_size, sizey)
 	if ImGui.Begin("wnd_ui_debug", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoCollapse", "NoTitleBar"}) then 
 		ImGui.Text("相机移动类型:")
-		ImGui.SetNextItemWidth(150)
+		ImGui.SetNextItemWidth(200)
         if ImGui.BeginCombo("##combo_camera_move_type", tb_camera_move_type[camera_move_type]) then
             for i, name in ipairs(tb_camera_move_type) do
                 if ImGui.Selectable(name, i == camera_move_type) then
@@ -233,9 +250,49 @@ function system.draw_ui_debug()
         end
 
 		if camera_move_type == 1 then
-			ImGui.Text("跟随玩家")
-			ImGui.Text("自由拖动")
-			ImGui.Text("固定动画")
+			ImGui.Text("水平距离:")
+			ImGui.SameLineEx(120)
+			ImGui.SetNextItemWidth(90)
+			slider_dis[1] = camera_cfg.dis
+			if ImGui.SliderFloat("##slider_dis", slider_dis, 1, 20) then 
+				camera_cfg.dis = slider_dis[1]
+			end
+
+			ImGui.Text("相机高度:")
+			ImGui.SameLineEx(120)
+			ImGui.SetNextItemWidth(90)
+			slider_height[1] = camera_cfg.height
+			if ImGui.SliderFloat("##slider_height", slider_height, 1, 20) then 
+				camera_cfg.height = slider_height[1]
+			end
+
+			ImGui.Text("视点偏移x:")
+			ImGui.SameLineEx(120)
+			ImGui.SetNextItemWidth(90)
+			slider_offset_x[1] = camera_cfg.offset_x
+			if ImGui.SliderFloat("##slider_offset_x", slider_offset_x, -5, 5) then 
+				camera_cfg.offset_x = slider_offset_x[1]
+			end
+
+			ImGui.Text("视点偏移y:")
+			ImGui.SameLineEx(120)
+			ImGui.SetNextItemWidth(90)
+			slider_offset_y[1] = camera_cfg.offset_y
+			if ImGui.SliderFloat("##slider_offset_y", slider_offset_y, -5, 5) then 
+				camera_cfg.offset_y = slider_offset_y[1]
+			end
+
+			ImGui.Text("视点偏移z:")
+			ImGui.SameLineEx(120)
+			ImGui.SetNextItemWidth(90)
+			slider_offset_z[1] = camera_cfg.offset_z
+			if ImGui.SliderFloat("##slider_offset_z", slider_offset_z, -5, 5) then 
+				camera_cfg.offset_z = slider_offset_z[1]
+			end
+		end
+
+		if ImGui.ButtonEx("重 置##btn_reset", 80) then 
+			camera_cfg.reset(camera_cfg)
 		end
 	end 
 	ImGui.End()

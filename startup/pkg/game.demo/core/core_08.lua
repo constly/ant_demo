@@ -8,9 +8,13 @@ local tbParam =
     category        = mgr.type_core,
     name            = "08_datalist",
     file            = "core/core_08.lua",
-    ok              = false
+    ok              = true
 }
 local system = mgr.create_system(tbParam)
+local ImGuiExtend = require "imgui.extend"
+local datalist = require 'datalist'
+local stringify = import_package "ant.serialize".stringify
+local tools = import_package "game.tools" 
 
 local desc = 
 [[
@@ -33,11 +37,86 @@ gltf 和 glb 的区别
 
 ]]
 
+local default_tb = 
+[[
+{
+	a = 1,
+	b = 2,
+	c = {
+		2,3, 4, "123",
+		a = 6,
+		c = {4,5}
+	},
+	d = 1
+}
+]]
+
+local default_text = 
+[[
+x :
+	1 2 3
+y :
+	dict : "hello world"
+z : { foobar }	
+]]
+
+local tb_editor
+local text_editor
+
+
+
+function system.on_entry()
+	if not text_editor then 
+		text_editor = ImGuiExtend.CreateTextEditor()
+		text_editor:SetTabSize(8)
+		text_editor:SetShowWhitespaces(false)
+		text_editor:SetText(default_text)
+	end
+	if not tb_editor then 
+		tb_editor = ImGuiExtend.CreateTextEditor()
+		tb_editor:SetTabSize(8)
+		tb_editor:SetShowWhitespaces(false)
+		tb_editor:SetText(default_tb)
+	end
+end
+
 function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
     if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoCollapse", "NoTitleBar"}) then 
-		ImGui.Text("待定")
+		local sizeX, sizeY = ImGui.GetContentRegionAvail()
+		local height = sizeY * 0.5 - 20
+		local length = sizeX * 0.5 - 150
+		local halfx = sizeX * 0.5
+
+		tb_editor:Render("##tb_input", length, height, true)
+		local str = tb_editor:GetText()
+		ImGui.SameLineEx(halfx + 50)
+        ImGui.BeginChild("###tb_child_output", length, height, ImGui.ChildFlags({"Border"}))
+			xpcall(function()
+				local tb = load(tostring("return " .. str))()
+				ImGui.Text(stringify(tb))
+			end, function(err)
+		end)
+        ImGui.EndChild()
+		
+		text_editor:Render("##text_input", length, height, true)
+		local str = text_editor:GetText()
+		ImGui.SameLineEx(halfx + 50)
+        ImGui.BeginChild("###txt_child_output", length, height, ImGui.ChildFlags({"Border"}))
+			xpcall( function()
+				local tb = datalist.parse(str)
+				ImGui.Text(tools.lib.table2string(tb))
+			end, function()
+			end)
+        ImGui.EndChild()
+
+		ImGui.SetCursorPos(halfx - 100, 100)
+		ImGui.Text("table \n  to \ndatalist")
+
+		ImGui.SetCursorPos(halfx - 100, 100 + height)
+		ImGui.Text("datalist \n  to \ntable")
+
 	end 
 	ImGui.End()
 end

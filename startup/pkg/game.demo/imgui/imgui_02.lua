@@ -16,7 +16,7 @@ local assetmgr  = import_package "ant.asset"
 local ImGui     = require "imgui"
 local tools = import_package "game.tools"
 local textureman = require "textureman.client"
-local input_content = {text = 'input'}
+local input_content = ImGui.StringBuf()
 
 local flag = {}
 local icon_btn
@@ -140,10 +140,10 @@ function system.init_world()
     register("InputText:", function()
         ImGui.SetNextItemWidth(150)
         if ImGui.InputText("##input_3", input_content) then 
-            print("输入", input_content.text)
+            print("输入", tostring(input_content))
         end
         if ImGui.IsItemHovered() and ImGui.BeginTooltip() then
-            ImGui.Text(tostring(input_content.text))
+            ImGui.Text(tostring(input_content))
             ImGui.EndTooltip()
         end
     end)
