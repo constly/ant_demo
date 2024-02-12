@@ -1,14 +1,4 @@
-local function DEFINE(n)
-    system(n).implement(("imgui/%s.lua"):format(n))
+for i = 1, 10 do
+	local name = ("imgui_%02d"):format(i)
+	system(name).implement(("imgui/%s.lua"):format(name))	
 end
-
-DEFINE "imgui_01"
-DEFINE "imgui_02"
-DEFINE "imgui_03"
-DEFINE "imgui_04"
-DEFINE "imgui_05"
-DEFINE "imgui_06"
-DEFINE "imgui_07"
-DEFINE "imgui_08"
-DEFINE "imgui_09"
-DEFINE "imgui_10"

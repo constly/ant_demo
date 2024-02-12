@@ -60,3 +60,10 @@ function system.data_changed()
     -- 具体示例代码写这里
 end
 ```
+
+
+## 其他说明
+#### 一. 安装特效编辑器Effekseer  
+1. 官方文档 [HowToBuild](https://github.com/effekseer/Effekseer/blob/master/docs/Development/HowToBuild.md)  
+2. 另外需要安装python最新版,以及执行: pip install setuptools
+3. Effekseer/ResourceData/samples目录下有大量示例

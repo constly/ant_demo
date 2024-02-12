@@ -53,7 +53,8 @@ function system.on_entry()
 
 	-- 玩家模型, 挂在player下
 	PC:create_instance {
-		prefab = "/pkg/game.res/npc/test_002/test_002.glb|mesh.prefab",
+		prefab = "/pkg/game.res/npc/test_003/scene.gltf|mesh.prefab",
+		--prefab = "/pkg/game.res/npc/cube_001/cube_001.glb|mesh.prefab",
         on_ready = function (e)
 			world:instance_set_parent(e, player)
 		end,

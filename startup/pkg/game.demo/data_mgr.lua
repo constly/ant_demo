@@ -117,7 +117,6 @@ end
 
 
 
-temp_create(api.type_core, "91_特效", "尚未实现")
 temp_create(api.type_core, "92_声音", "1. 2D声音，包括BGM和音效; \n2. 3D声音，可以指定声音距离摄像机的距离，有暂停/继续/中止等接口演示；\n3.音量调节")
 temp_create(api.type_core, "93_性能分析", "帧率，内存使用，cput使用，gpu使用，尚未实现")
 temp_create(api.type_core, "94_PC平台", "当窗口最小化时，当窗口分辨率变化时，修改窗口分辨率，得到窗口分辨率，设置窗口标题")

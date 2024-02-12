@@ -1,15 +1,5 @@
-local function DEFINE(n)
-    system(n).implement(("core/%s.lua"):format(n))
-end
 
-DEFINE "core_01"
-DEFINE "core_02"
-DEFINE "core_03"
-DEFINE "core_04"
-DEFINE "core_05"
-DEFINE "core_06"
-DEFINE "core_07"
-DEFINE "core_08"
-DEFINE "core_09"
-DEFINE "core_10"
-DEFINE "core_11"
+for i = 1, 12 do
+	local name = ("core_%02d"):format(i)
+	system(name).implement(("core/%s.lua"):format(name))	
+end
