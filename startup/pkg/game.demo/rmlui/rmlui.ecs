@@ -1,0 +1,5 @@
+
+for i = 1, 3 do
+	local name = ("rmlui_%02d"):format(i)
+	system(name).implement(("rmlui/%s.lua"):format(name))	
+end

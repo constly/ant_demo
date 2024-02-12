@@ -44,7 +44,7 @@ function system.on_entry()
 		policy = { "ant.scene|scene_object" },
 		data = {
 			scene = { 
-				s = {0.4, 0.4, 0.4}, 
+				s = {1.2, 1.2, 1.2}, 
 				t = {0, 0, 0}, 
 				r = {0, 0, 0}
 			}

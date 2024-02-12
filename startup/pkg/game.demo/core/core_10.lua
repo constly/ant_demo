@@ -182,7 +182,8 @@ end
 function system.draw_anim()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     if ImGui.Begin("wnd_entities", nil, ImGui.WindowFlags {"AlwaysAutoResize", "NoMove", "NoTitleBar"}) then
-        local animation_eid = {}
+        ImGui.Text("请自行将vaststars工程里面\n的资源拷贝到game.res下")
+		local animation_eid = {}
         if ImGui.TreeNode "mesh" then
             for i = 1, #entities do
                 local eid = entities[i]
