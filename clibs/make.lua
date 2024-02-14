@@ -43,7 +43,7 @@ if lm.os == "ios" then
             LuaInclude,
             lm.AntDir .. "/runtime/common",
         },
-        sources = "c_modules.c"
+        sources = "modules.c"
     }
     return
 end
@@ -79,7 +79,7 @@ if lm.os == "android" then
             LuaInclude,
             lm.AntDir .. "/runtime/common",
         },
-        sources = "c_modules.c",
+        sources = "modules.c",
     }
     return
 end
@@ -96,7 +96,7 @@ if lm.os == "macos" then
             LuaInclude,
             lm.AntDir .. "/runtime/common",
         },
-        sources = "c_modules.c"
+        sources = "modules.c"
     }
 
     lm:exe "ant_demo" {
@@ -114,7 +114,7 @@ if lm.os == "macos" then
         msvc = {
             defines = "LUA_BUILD_AS_DLL",
         },
-        sources = "c_modules.c"
+        sources = "modules.c"
     }
     lm:exe "ant_demo_rt" {
         deps = {
@@ -136,7 +136,7 @@ if lm.os == "macos" then
             "Metal",
             "QuartzCore",
         },
-        sources = "c_modules.c"
+        sources = "modules.c"
     }
     return
 end
@@ -157,7 +157,7 @@ lm:exe "ant_demo" {
         defines = "LUA_BUILD_AS_DLL",
     },
     sources = {
-        "c_modules.c",
+        "modules.c",
         "../runtime/win32/ant_demo.rc"
     }
 }
@@ -175,7 +175,7 @@ lm:exe "ant_demo_rt" {
         lm.AntDir .. "/runtime/common",
     },
     sources = {
-        "c_modules.c",
+        "modules.c",
         "../runtime/win32/ant_demo.rc"
     }
 }

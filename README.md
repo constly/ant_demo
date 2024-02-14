@@ -37,6 +37,9 @@ run.bat
 2. 另外需要安装python最新版,以及执行: pip install setuptools
 3. Effekseer/ResourceData/samples目录下有大量示例
 
+### 二. bgfx学习
+1. 如何[build](https://github.com/bkaradzic/bgfx/blob/master/docs/build.rst)
+1. bgfx下有大量使用示例, 网上也有学习[笔记](https://hinageshi01.github.io/2022/05/30/bgfx/)
 
 
 ## 待解决问题
