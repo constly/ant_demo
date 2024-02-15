@@ -2,23 +2,12 @@ local lib = {}
 
 function lib.split(content, delim)
     delim = delim or '\n'
-    if string.len(content) <= 0 then 
-        return {} 
-    end
-	local ret = {};
-	local pat = "(.-)" .. delim;
-	local pos = 0;
-	while pos <= string.len(content) do
-		local _start, _end, part = string.find(content, pat, pos);
-		if not _start then
-			table.insert(ret, string.sub(content, pos));
-			pos = string.len(content) + 1;
-		else
-			table.insert(ret, part or "");
-			pos = _end + 1;
-		end
-	end
-	return ret
+	local ret = {}
+    local pattern = string.format("([^%s]+)", delim)
+    content:gsub(pattern, function(substring)
+        table.insert(ret, substring)
+    end)
+    return ret
 end
 function lib.start_with(str, prefix)
     return str:sub(1, #prefix) == prefix
@@ -97,9 +86,15 @@ function lib.table2string(obj)
         end 
         return true, count
     end
+	local processed = {}
     dumpObj = function(obj, level)
         if type(obj) ~= "table" then
             return wrapVal(obj)
+		else 
+			if processed[obj] then 
+				return "--Recycle--"
+			end 
+			processed[obj] = true
         end
         level = level + 1
         local tokens = {}

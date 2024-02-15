@@ -133,7 +133,7 @@ function system.data_changed()
 end
 
 function system.wnd_popup_modal1()
-	if ImGui.BeginPopupModal("popup_modal1", nil, ImGui.WindowFlags{"AlwaysAutoResize"} ) then
+	if ImGui.BeginPopupModal("popup_modal1", true, ImGui.WindowFlags{"AlwaysAutoResize"} ) then
 		ImGui.Text("弹框内容1")
 		ImGui.Text("弹框内容2")
 		ImGui.Separator();
@@ -147,7 +147,7 @@ end
 
 function system.wnd_popup_modal2()
 	
-	if ImGui.BeginPopupModal("popup_modal2", nil, ImGui.WindowFlags{"NoResize", "NoMove"} ) then
+	if ImGui.BeginPopupModal("popup_modal2", true, ImGui.WindowFlags{"NoResize", "NoMove"} ) then
 		local sizex, sizey = ImGui.GetContentRegionAvail()
 		ImGui.SetCursorPos(sizex * 0.5 - 100, sizey * 0.5 - 10)
 		ImGui.BeginGroup()
@@ -161,7 +161,7 @@ function system.wnd_popup_modal2()
 end
 
 function system.wnd_popup_modal3()
-	if ImGui.BeginPopupModal("popup_modal3", nil, ImGui.WindowFlags{} ) then
+	if ImGui.BeginPopupModal("popup_modal3", true, ImGui.WindowFlags{} ) then
 		local sizex, sizey = ImGui.GetContentRegionAvail()
 		ImGui.SetCursorPos(sizex * 0.5 - 100, sizey * 0.5 - 10)
 		ImGui.BeginGroup()

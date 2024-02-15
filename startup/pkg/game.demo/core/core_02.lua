@@ -123,7 +123,7 @@ ant.geometry: 得到常用几何体的顶点、绘制骨骼
 ant.grid: 绘制网格
 ant.group: 激活/禁用组，过滤组，刷新组 
 ant.httpc: http协议实现
-ant.hwi: 渲染接口封装
+ant.hwi: 渲染接口封装(有些渲染功能在一个独立服务中,hwi中封装了通信接口)
 ant.imgui: imgui初始化与渲染更新
 ant.inputmgr: 输入管理
 ant.io:	对vfs 和 fastio 的封装
