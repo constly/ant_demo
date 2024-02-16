@@ -54,7 +54,6 @@ function system.on_entry()
 	-- 玩家模型, 挂在player下
 	PC:create_instance {
 		prefab = "/pkg/game.res/npc/test_003/scene.gltf|mesh.prefab",
-		--prefab = "/pkg/game.res/npc/cube_001/cube_001.glb|mesh.prefab",
         on_ready = function (e)
 			world:instance_set_parent(e, player)
 		end,
@@ -64,7 +63,7 @@ function system.on_entry()
 	local iom = ecs.require "ant.objcontroller|obj_motion"
 	for i = 1, 3 do 
 		PC:create_instance {
-			prefab = "/pkg/ant.resources.binary/meshes/base/cube.glb|mesh.prefab",
+			prefab = "/pkg/game.res/npc/cube/cube_green.glb|mesh.prefab",
 			on_ready = function(e)
 				local eid = e.tag['*'][1]
 				local ee<close> = world:entity(eid)
