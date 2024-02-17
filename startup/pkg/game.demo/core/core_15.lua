@@ -94,6 +94,13 @@ function system.on_leave()
 	PC:clear()
 end 
 
+local desc = 
+[[
+1. 场景中只有一个真实方块, 其他全是通过hitch批量渲染
+2. 所有方块除了位置旋转缩放不一样, 其他属性共享
+3. hitch的对象似乎没有光照阴影效果? 
+]]
+
 function system.data_changed()
 	local timer = ecs.require "ant.timer|timer_system"
 	local delta = timer.delta() * 0.001
@@ -106,6 +113,6 @@ function system.data_changed()
 
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     if ImGui.Begin("wnd_debug", nil, ImGui.WindowFlags {"AlwaysAutoResize", "NoMove", "NoTitleBar"}) then
-		ImGui.Text("场景中只有一个真实方块, 其他全是通过hitch批量渲染\n所有方块除了位置旋转缩放不一样, 其他属性共享")
+		ImGui.Text(desc)
 	end
 end

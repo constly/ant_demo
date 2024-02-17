@@ -16,5 +16,7 @@ import_package "ant.window".start {
 		"ant.efk",
         "ant.pipeline",
         "ant.sky|sky",
+
+		"ant.objcontroller|pickup",
     },
 }
