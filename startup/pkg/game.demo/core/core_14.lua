@@ -25,7 +25,7 @@ local selected = {}
 
 function system.on_entry()
 	PC:create_instance { 
-		prefab = "/pkg/game.res/light.prefab",
+		prefab = "/pkg/game.res/light_skybox.prefab",
 		on_ready = function() 
 			local main_queue = w:first "main_queue camera_ref:in"
 			local main_camera <close> = world:entity(main_queue.camera_ref, "camera:in")

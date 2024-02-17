@@ -27,7 +27,7 @@ local mouse_lastx, mouse_lasty
 local eventGesturePinch;
 
 function system.on_entry()
-	PC:create_instance { prefab = "/pkg/game.res/light.prefab" }
+	PC:create_instance { prefab = "/pkg/game.res/light_skybox.prefab" }
 	PC:create_entity{
 		policy = { "ant.render|simplerender", },
 		data = {

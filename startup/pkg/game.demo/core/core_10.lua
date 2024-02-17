@@ -34,7 +34,7 @@ local model_index
 local glbs
 
 function system.on_entry()
-	e_light = world:create_instance { prefab = "/pkg/game.res/light.prefab" }
+	e_light = world:create_instance { prefab = "/pkg/game.res/light_skybox.prefab" }
 	e_plane = world:create_entity{
 		policy = { "ant.render|simplerender", },
 		data = {
