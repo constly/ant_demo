@@ -37,6 +37,7 @@ elseif arg[0] == "-p" then
     table.insert(arg, 1, "../../startup")
 elseif arg[0] == "-d" then
     arg[0] = "../ant/tools/editor/main.lua"
+	table.insert(arg, 1, tostring(ProjectDir) .. "/startup")
 elseif arg[0] == nil or arg[0] == "" then
     arg[0] = "startup/main.lua"
 end

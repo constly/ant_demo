@@ -113,6 +113,7 @@
 			"sort_r.h": "c",
 			"stdio.h": "c"
 		},
-		"lua.debug.variables.showIntegerAsHex": false
+		"lua.debug.variables.showIntegerAsHex": false,
+		"dotnet.defaultSolution": "disable"
 	}
 }
