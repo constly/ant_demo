@@ -23,10 +23,12 @@ static const luaL_Reg loadedlibs[] = {
 
 
 int luaopen_imgui_extend(lua_State* L);
+int luaopen_game_sound(lua_State* L);
 
 static void loadmodules(lua_State* L) {
 	static const luaL_Reg modules[] = {
 		{ "imgui.extend", luaopen_imgui_extend },
+		{ "game.sound", luaopen_game_sound},
 	};
 
 	const luaL_Reg *lib;
