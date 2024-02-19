@@ -9,8 +9,9 @@ lm:source_set "game.sound" {
 lm:lua_source "game.sound" {
     includes = {
 		lm.AntDir .. "/3rd/bee.lua",
+		lm.AntDir .. "/clibs/luabind",
     },
     sources = {
-        "binding_sound.cpp",
+        "src/binding_sound.cpp",
     },
 }

@@ -16,7 +16,7 @@ local w = world.w
 local icamera = ecs.require "ant.camera|camera"
 local math3d = require "math3d"
 local imesh = ecs.require "ant.asset|mesh"
-local ientity = ecs.require "ant.render|components.entity"
+local ientity = ecs.require "ant.entity|entity"
 
 local tools = import_package "game.tools"
 local vfs = require "vfs"

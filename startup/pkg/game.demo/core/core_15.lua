@@ -15,7 +15,7 @@ local world = ecs.world
 local w = world.w
 
 local imesh = ecs.require "ant.asset|mesh"
-local ientity = ecs.require "ant.render|components.entity"
+local ientity = ecs.require "ant.entity|entity"
 local math3d= require "math3d"
 local iom   = ecs.require "ant.objcontroller|obj_motion"
 local ig    = ecs.require "ant.group|group"
@@ -115,4 +115,5 @@ function system.data_changed()
     if ImGui.Begin("wnd_debug", nil, ImGui.WindowFlags {"AlwaysAutoResize", "NoMove", "NoTitleBar"}) then
 		ImGui.Text(desc)
 	end
+	ImGui.End()
 end

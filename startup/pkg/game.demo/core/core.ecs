@@ -1,5 +1,5 @@
 
-for i = 1, 15 do
+for i = 1, 16 do
 	local name = ("core_%02d"):format(i)
 	system(name).implement(("core/%s.lua"):format(name))	
 end

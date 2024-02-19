@@ -1,0 +1,18 @@
+
+
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lua",
+            "request": "launch",
+            "name": "Debug",
+            "luaexe": "${workspaceFolder}/bin/msvc/debug/ant_demo.exe",
+            "console": "integratedTerminal",
+            "stopOnEntry": true,
+            "outputCapture": [],
+            "program": "startup/main.lua",
+            "arg": []
+        }
+    ]
+}

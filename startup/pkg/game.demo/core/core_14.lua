@@ -15,7 +15,7 @@ local world = ecs.world
 local w = world.w
 
 local imesh = ecs.require "ant.asset|mesh"
-local ientity = ecs.require "ant.render|components.entity"
+local ientity = ecs.require "ant.entity|entity"
 local icamera = ecs.require "ant.camera|camera"
 local math3d = require "math3d"
 local iom = ecs.require "ant.objcontroller|obj_motion"
@@ -91,4 +91,5 @@ function system.data_changed()
 			end
 		end
 	end
+	ImGui.End()
 end

@@ -1,2 +1,2 @@
 chcp 65001
-"./bin/msvc/release/ant_demo.exe" -d
+"./bin/msvc/debug/ant_demo.exe" -d

@@ -97,7 +97,7 @@ function system.data_changed()
 				local tb = load(tostring("return " .. str))()
 				ImGui.Text(stringify(tb))
 			end, function(err)
-		end)
+			end)
         ImGui.EndChild()
 		
 		text_editor:Render("##text_input", length, height, true)

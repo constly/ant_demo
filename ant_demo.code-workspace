@@ -111,7 +111,13 @@
 			"stdlib.h": "c",
 			"string.h": "c",
 			"sort_r.h": "c",
-			"stdio.h": "c"
+			"stdio.h": "c",
+			"cfenv": "cpp",
+			"coroutine": "cpp",
+			"expected": "cpp",
+			"print": "cpp",
+			"ranges": "cpp",
+			"semaphore": "cpp"
 		},
 		"lua.debug.variables.showIntegerAsHex": false,
 		"dotnet.defaultSolution": "disable"

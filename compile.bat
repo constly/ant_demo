@@ -1,3 +1,3 @@
 
-luamake -mode release 
+luamake -mode debug 
 luamake -mode release tools
