@@ -19,6 +19,7 @@ compile.bat
 run.bat 
 
 -- 双击 ant_demo.code-workspace 打开vscode
+-- 用Visual Studio打开根目录，将bin/msvc/debug/ant_demo.exe设置为启动项, 启动即可调试C++
 ```
 
 ## 内容展示
@@ -43,6 +44,5 @@ run.bat
 
 
 ## 待解决问题
-1. 如何将项目转换为vs2022工程, 以便后续调试? (在build目录下执行这个不行: ninja -t msvc)
 2. 有没有其他声音播放方案, 可以考虑 [cute](https://github.com/RandyGaul/cute_headers)
 3. 如何遍历场景中所有entity, 以及他们身上有什么组件, 并且展示出组件属性字段

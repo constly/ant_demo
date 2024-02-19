@@ -1,4 +1,5 @@
 .app
+.vs
 res
 bin/
 build/

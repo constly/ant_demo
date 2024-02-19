@@ -7,11 +7,12 @@ function api.init()
 	if not ServiceSound then
 		ServiceSound = ltask.uniqueservice "game.sound|sound"
 	end
-	ltask.send(ServiceSound, "init")
 end
 
 function api.play_sound(path)
-	ltask.send(ServiceSound, "preload", path)
+	api.init()
+	-- 调用顺序似乎不能保证
+	--ltask.send(ServiceSound, "preload", path)
 	ltask.send(ServiceSound, "play_sound", path)
 end
 

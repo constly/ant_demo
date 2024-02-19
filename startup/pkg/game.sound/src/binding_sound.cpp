@@ -39,7 +39,7 @@ namespace bind::CuteSound {
 	static int sInit(lua_State* L) {
 		void* os_handle = nullptr;
 #if CUTE_SOUND_PLATFORM == CUTE_SOUND_WINDOWS
-		os_handle = GetConsoleWindow();
+		os_handle = GetForegroundWindow();
 #endif
 		auto ret = cs_init(os_handle, 44100, 1024, NULL);
 		if (ret != CUTE_SOUND_ERROR_NONE) {
@@ -96,6 +96,14 @@ namespace bind::CuteSound {
 			}
 		}
 		return 0;
+	}
+
+	static int sIsPreload(lua_State* L) {
+		CuteSoundMgr& mgr = bee::lua::checkudata<CuteSoundMgr>(L, 1);
+		const char* path = luaL_checkstring(L, 2);
+		auto it = mgr.assets.find(path);
+		lua_pushboolean(L, it == mgr.assets.end() ? false : true);
+		return 1;
 	}
 
 	static int sUnload(lua_State* L) {
@@ -197,7 +205,6 @@ namespace bind::CuteSound {
 		bool loop = (bool)!!lua_toboolean(L, 3);
 		float volume = (float)luaL_optnumber(L, 4, 1);
 		float pan = (float)luaL_optnumber(L, 5, 0.5);
-
 		cs_audio_source_t* wav = mgr.get_audio_source(path);
 		if (wav) {
 			cs_sound_params_t params;
@@ -308,6 +315,7 @@ namespace bind::CuteSound {
 
 			// load / unload
 			{ "Preload", 				sPreload },
+			{ "IsPreload", 				sIsPreload },
 			{ "Unload", 				sUnload },
 			{ "UnloadAll", 				sUnloadAll },
 
