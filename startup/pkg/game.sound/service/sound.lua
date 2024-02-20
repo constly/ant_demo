@@ -52,7 +52,7 @@ ltask.fork(function()
     	local delta = now - last
     	last = now
 		S.update(delta * 0.001)
-		ltask.sleep(50)
+		ltask.sleep(0)
 	end	
 	ltask.wakeup(quit)
 	mgr:Shutdown()

@@ -22,7 +22,9 @@ function system.data_changed()
 		if ImGui.ButtonEx("播放声音1", 100) then 
 			sound.play_sound("/pkg/game.res/sound/piano2.wav")
 		end
-		ImGui.Text("暂时放弃，声音播不出来，不是wav后缀名的问题\n不知道是啥问题，声音播出来完全不对")
+		if ImGui.ButtonEx("播放声音2", 100) then 
+			sound.play_sound("/pkg/game.res/sound/jump.wav")
+		end
 	end
 	ImGui.End()
 end
