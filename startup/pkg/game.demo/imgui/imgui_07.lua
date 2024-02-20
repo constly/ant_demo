@@ -18,6 +18,7 @@ local opt_enable_grid = {true};
 local opt_enable_context_menu = {true};
 
 local data = {points = {}}
+local is_dragged = false
 
 -- 深拷贝table
 local copy;
@@ -88,7 +89,6 @@ function system.data_changed()
         local max_x, max_y = min_x + size_x, min_y + size_y;   
           
         -- Draw border and background color
-        local io = ImGui.io
         local draw_list = ImGuiExtend.draw_list
         draw_list.AddRectFilled({min = {min_x, min_y}, max = {max_x, max_y}, col = {0.25, 0.25, 0.25, 1}});
         draw_list.AddRect({min = {min_x, min_y}, max = {max_x, max_y}, col = {1, 1, 1, 1}});
@@ -116,6 +116,10 @@ function system.data_changed()
             end
         end
 
+		if ImGui.IsMouseDown(ImGui.MouseButton.Right) then 
+			is_dragged = false
+		end
+
         -- Pan (we use a zero mouse threshold when there's no context menu)
         -- You may decide to make that threshold dynamic based on whether the mouse is hovering something etc.
         local mouse_threshold_for_pan = opt_enable_context_menu[1] and -1.0 or 0.0;
@@ -123,11 +127,13 @@ function system.data_changed()
             local delta_x, delta_y = ImGui.GetMouseDragDelta(ImGui.MouseButton.Right)
             scrolling.x = scrolling.x + delta_x;
             scrolling.y = scrolling.y + delta_y;
+			ImGui.ResetMouseDragDeltaEx(ImGui.MouseButton.Right)
+			is_dragged = true
         end
 
         -- Context menu (under default mouse threshold)
         local drag_delta_x, drag_delta_y = ImGui.GetMouseDragDelta(ImGui.MouseButton.Right);
-        if (opt_enable_context_menu[1] and drag_delta_x == 0.0 and drag_delta_y == 0.0) then
+        if (opt_enable_context_menu[1] and not is_dragged and drag_delta_x == 0.0 and drag_delta_y == 0.0) then
             ImGui.OpenPopupOnItemClick("context", ImGui.PopupFlags{"MouseButtonRight"});
         end
         if ImGui.BeginPopup("context") then 

@@ -20,6 +20,7 @@ local icamera = ecs.require "ant.camera|camera"
 local math3d = require "math3d"
 local iom = ecs.require "ant.objcontroller|obj_motion"
 local ig    = ecs.require "ant.group|group"
+local irender = ecs.require "ant.render|render"
 local PC  = ecs.require("utils.world_handler").proxy_creator()
 local selected = {}
 
@@ -71,7 +72,7 @@ function system.on_entry()
 				end
 			}
 		end
-		selected[i] = {group_name = group_name, enable = true}
+		selected[i] = {group_name = group_name, enable = true, gid = g}
 		ig.enable_from_name(group_name, "view_visible", true)
 	end 
 end 
@@ -87,7 +88,10 @@ function system.data_changed()
         for i, data in ipairs(selected) do
 			if ImGui.RadioButton(string.format("Group %d##radio_id_1", i), data.enable) then 
 				data.enable = not data.enable
-				ig.enable_from_name(data.group_name, "view_visible", data.enable)
+				
+				local go = ig.obj "view_visible"
+    			go:enable(data.gid, data.enable)
+    			irender.group_flush(go)
 			end
 		end
 	end
