@@ -20,10 +20,10 @@ function system.data_changed()
     if ImGui.Begin("wnd_debug", nil, ImGui.WindowFlags {"AlwaysAutoResize", "NoMove", "NoTitleBar"}) then
 		-- "1. 2D声音，包括BGM和音效; \n2. 3D声音，可以指定声音距离摄像机的距离，有暂停/继续/中止等接口演示；\n3.音量调节"
 		if ImGui.ButtonEx("播放声音1", 100) then 
-			sound.play_sound("/pkg/game.res/sound/piano2.wav")
+			sound.play_sound("/pkg/game.res/sound/select.wav")
 		end
 		if ImGui.ButtonEx("播放声音2", 100) then 
-			sound.play_sound("/pkg/game.res/sound/jump.wav")
+			sound.play_sound("/pkg/game.res/sound/click.wav")
 		end
 	end
 	ImGui.End()

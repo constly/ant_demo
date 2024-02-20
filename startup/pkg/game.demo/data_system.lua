@@ -4,6 +4,7 @@ local window = require "window"
 local tools = import_package 'game.tools'
 local ImGui     = require "imgui"
 local data_mgr  = require "data_mgr"
+local sound = import_package "game.sound"
 local category = nil
 local selected = {}
 local showHover = true
@@ -40,6 +41,9 @@ function system.init_world()
     end
     -- 设置全局文本默认颜色
     ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.9, 0.9, 0.9, 1)
+
+	sound.play_music("/pkg/game.res/sound/bgm.wav")
+	sound.set_music_volume(0.3)
 end
 
 function system.data_changed()
@@ -67,6 +71,7 @@ function system.data_changed()
                 if selected[category] > 0 then 
                     data_mgr.set_current_item(category, selected[category])    
                 end
+				sound.play_sound("/pkg/game.res/sound/click.wav")
             end
             ImGui.SameLine()
             ImGui.PopStyleColorEx(4)
@@ -96,6 +101,7 @@ function system.data_changed()
             local click = false
             if ImGui.ButtonEx(label, 185) or not selected[category] or (selected[category] == 0) then 
                 click = true
+				sound.play_sound("/pkg/game.res/sound/click.wav")
             end
             ImGui.PopStyleColorEx(4)
             local id = string.format("btn_left_pop_id_%d", i)

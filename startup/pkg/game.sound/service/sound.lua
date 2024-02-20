@@ -26,13 +26,28 @@ function S.preload(path)
 	print("preload", path)
 end
 
-function S.play_music()
+function S.set_global_volume(volume)
+	mgr:SetGlobalVolume(volume)
+end
+
+function S.set_music_volume(volume)
+	mgr:SetMusicVolume(volume)
+end
+
+function S.set_sound_volume(volume)
+	mgr:SetSoundVolume(volume)
+end
+
+function S.play_music(path)
+	S.preload(path)
+	mgr:PlayMusic(path, 0)
+	print("play_music", path)
 end 
 
 function S.play_sound(path)
 	S.preload(path)
 	mgr:PlaySound(path, false)
-	print("playsound", path)
+	print("play_sound", path)
 end
 
 function S.shutdown()
@@ -40,7 +55,6 @@ function S.shutdown()
     ltask.wait(quit)
     ltask.quit()
 end
-
 
 ltask.fork(function()
 	local _, last = ltask.now()
