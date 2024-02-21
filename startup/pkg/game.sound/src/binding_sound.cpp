@@ -39,6 +39,11 @@ namespace bind::CuteSound {
 	static int sInit(lua_State* L) {
 		void* os_handle = nullptr;
 #if CUTE_SOUND_PLATFORM == CUTE_SOUND_WINDOWS
+		/*
+			注意: 这里代码是有问题的
+			GetForegroundWindow 返回的是操作系统中当前激活的窗口，不一定是本程序的渲染窗口 (取决于代码执行到这里时，用户的焦点窗口在哪里)
+			假如GetForegroundWindow()返回的是其他窗口，并且其他窗口被销毁后，不清楚会有什么表现
+		*/ 
 		os_handle = GetForegroundWindow();
 #endif
 		auto ret = cs_init(os_handle, 44100, 1024, NULL);
