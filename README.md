@@ -42,7 +42,11 @@ run.bat
 1. 如何[build](https://github.com/bkaradzic/bgfx/blob/master/docs/build.rst)
 1. bgfx下有大量使用示例, 网上也有学习[笔记](https://hinageshi01.github.io/2022/05/30/bgfx/)
 
+## 其他说明
+### 一. 关于声音
+1. 使用的 [cute](https://github.com/RandyGaul/cute_headers)
+
 
 ## 待解决问题
-2. 有没有其他声音播放方案, 可以考虑 [cute](https://github.com/RandyGaul/cute_headers)
 3. 如何遍历场景中所有entity, 以及他们身上有什么组件, 并且展示出组件属性字段
+4. 按键延迟问题(角色控制demo很明显)
