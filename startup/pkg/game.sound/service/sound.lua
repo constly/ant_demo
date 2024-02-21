@@ -57,15 +57,15 @@ function S.shutdown()
 end
 
 ltask.fork(function()
-	local _, last = ltask.now()
+	local last = os.clock()
 	mgr = GameSound.CreateSoundMgr()
 	S.init()
 
 	while not quit do 
-		local _, now = ltask.now()
+		local now = os.clock()
     	local delta = now - last
     	last = now
-		S.update(delta * 0.001)
+		S.update(delta)
 		ltask.sleep(0)
 	end	
 	ltask.wakeup(quit)
