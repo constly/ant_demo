@@ -25,6 +25,7 @@ local kb_mb
 local mouse_mb
 local mouse_lastx, mouse_lasty
 local eventGesturePinch;
+local tb_keydown = {}
 
 function system.on_entry()
 	PC:create_instance { prefab = "/pkg/game.res/light_skybox.prefab" }
@@ -88,23 +89,39 @@ end
 
 
 function system.data_changed()
-	local move_dir = {x = 0, z = 0}
-	local delta = timer.delta() * 0.001
 	local move_speed = 8
 	for _, key, press, status in kb_mb:unpack() do
-        --local pressed = press == 1 or press == 0
-        if key == "D" then
-            move_dir.x = move_dir.x + 1
-		end
-		if key == "A" then 
-			move_dir.x = move_dir.x - 1
-		end
-		if key == "W" then 
-			move_dir.z = move_dir.z + 1
-		end
-		if key == "S" then
-			move_dir.z = move_dir.z - 1
+		--[[ 
+			press: 
+				1 - 按下 
+				2 - 长按 
+				0 - 按起
+			state: ?
+		--]]
+		if press == 1 then 
+			tb_keydown[key] = true 
+		elseif press == 0 then 
+			tb_keydown[key] = false 
 		end 
+	end
+
+	local move_dir = {x = 0, z = 0}
+	local delta = timer.delta() * 0.001
+	for key, down in pairs(tb_keydown) do 
+		if down then 
+			if key == "D" then
+				move_dir.x = move_dir.x + 1
+			end
+			if key == "A" then 
+				move_dir.x = move_dir.x - 1
+			end
+			if key == "W" then 
+				move_dir.z = move_dir.z + 1
+			end
+			if key == "S" then
+				move_dir.z = move_dir.z - 1
+			end 
+		end
 	end
 
 	-- 处理玩家移动
