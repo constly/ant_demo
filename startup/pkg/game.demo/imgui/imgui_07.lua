@@ -116,9 +116,7 @@ function system.data_changed()
             end
         end
 
-		if ImGui.IsMouseDown(ImGui.MouseButton.Right) then 
-			is_dragged = false
-		end
+		if ImGui.IsMouseDown(ImGui.MouseButton.Right) then is_dragged = false  end
 
         -- Pan (we use a zero mouse threshold when there's no context menu)
         -- You may decide to make that threshold dynamic based on whether the mouse is hovering something etc.
@@ -132,8 +130,7 @@ function system.data_changed()
         end
 
         -- Context menu (under default mouse threshold)
-        local drag_delta_x, drag_delta_y = ImGui.GetMouseDragDelta(ImGui.MouseButton.Right);
-        if (opt_enable_context_menu[1] and not is_dragged and drag_delta_x == 0.0 and drag_delta_y == 0.0) then
+        if (opt_enable_context_menu[1] and not is_dragged and ImGui.IsMouseReleased(ImGui.MouseButton.Right)) then
             ImGui.OpenPopupOnItemClick("context", ImGui.PopupFlags{"MouseButtonRight"});
         end
         if ImGui.BeginPopup("context") then 
