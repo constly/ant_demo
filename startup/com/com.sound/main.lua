@@ -5,7 +5,7 @@ local ServiceSound
 
 function api.init()
 	if not ServiceSound then
-		ServiceSound = ltask.uniqueservice "game.sound|sound"
+		ServiceSound = ltask.uniqueservice "com.sound|sound"
 	end
 end
 
