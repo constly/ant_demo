@@ -6,25 +6,26 @@ local tbParam =
     ecs             = ecs,
     system_name     = "imgui_10_system",
     category        = mgr.type_imgui,
-    name            = "10_蓝图示例",
+    name            = "10_节点编辑器",
     file            = "imgui/imgui_10.lua",
     ok              = true
 }
 local system = mgr.create_system(tbParam)
 local ImGuiExtend = require "imgui.extend"
 local draw_list = ImGuiExtend.draw_list
+local blueprint = ImGuiExtend.blueprint
 local scrolling = {x = 0.0, y = 0.0};
 local is_dragged = false
 local scale = 1
 local node_width = 100
-local node_height = 150
+local node_height = 300
 local region_x, region_y
 local is_canvas_hovered
 local cur_node = -1
 local nodes = {
-	{id = 1, order = 1, pos = {x = 120, y = 120}},
-	{id = 2, order = 1, pos = {x = 580, y = 120}},
-	{id = 3, order = 1, pos = {x = 320, y = 420}},
+	{id = 1, order = 1, pos = {x = 120, y = 60}},
+	{id = 2, order = 1, pos = {x = 580, y = 60}},
+	{id = 3, order = 1, pos = {x = 320, y = 300}},
 }
 local max_node_id = #nodes + 1
 
@@ -130,8 +131,9 @@ function system.draw_nodes()
 		draw_list.AddRectFilled({min = {min_x, min_y}, max = {max_x, max_y}, col = col});
 		ImGui.Text("Id: " .. data.id)
 		ImGui.Text("Order: " .. data.order)
-		ImGui.Text("文本1")
-		ImGui.Text("文本2")
+		for i = 0, 7 do 
+			blueprint.DrawPinIcon(i, false, 255, scale)
+		end
 		ImGui.EndGroup()
 		ImGui.PopID()
 	end
