@@ -11,9 +11,7 @@ local tbParam =
     ok              = true
 }
 local system = mgr.create_system(tbParam)
-local world = ecs.world
-local w = world.w
-local sound = import_package "game.sound"
+local sound = import_package "com.sound"
 
 function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
