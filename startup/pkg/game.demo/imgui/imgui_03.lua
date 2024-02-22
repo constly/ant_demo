@@ -182,7 +182,7 @@ all_flags["Child"] = {
     "ResizeY",
     "AutoResizeX",
     "AutoResizeY",
-    "AlwaysAutoResize",
+  --  "AlwaysAutoResize",
     "FrameStyle",
 }
 function system.Draw_Child()
