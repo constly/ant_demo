@@ -21,7 +21,8 @@ lm:source_set "imgui.extend" {
     },
     sources = {
         "text_editor/*.cpp",
-		"text_color/*.cpp"
+		"text_color/*.cpp",
+		"blueprint/*.cpp",
     },
     defines = {
         defines,

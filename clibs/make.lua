@@ -24,6 +24,14 @@ for path in fs.pairs(fs.path(lm.workdir) / "../startup/pkg") do
     end
 end
 
+for path in fs.pairs(fs.path(lm.workdir) / "../startup/com") do
+    if fs.exists(path / "make.lua") then
+        local name = path:filename():string()
+        local makefile = ("../startup/com/%s/make.lua"):format(name)
+		checkAddModule(name, makefile)
+    end
+end
+
 lm:copy "bootstrap_lua" {
     input = "bootstrap.lua",
     output = "../" .. lm.bindir .. "/main.lua",
