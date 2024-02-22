@@ -8,7 +8,7 @@ local tbParam =
     category        = mgr.type_scene,
     name            = "02_pickup",
     file            = "scene/scene_02.lua",
-    ok              = false
+    ok              = true
 }
 local system = mgr.create_system(tbParam)
 local world = ecs.world
@@ -20,16 +20,19 @@ local PC  = ecs.require("utils.world_handler").proxy_creator()
 local timer = ecs.require "ant.timer|timer_system"
 local iom = ecs.require "ant.objcontroller|obj_motion"
 local mathpkg = import_package "ant.math"
+local dotween = import_package "com.dotween"
 local mu      = mathpkg.util
 local iviewport = ecs.require "ant.render|viewport.state"
 local ipu = ecs.require "ant.objcontroller|pickup.pickup_system"
 local icamera = ecs.require "ant.camera|camera"
 
 local topick_mb
-
+local pickup_mb
+local last_entity
 
 function system.on_entry()
 	topick_mb = world:sub{"mouse", "LEFT"}
+	pickup_mb = world:sub{"pickup"}
 
 	PC:create_instance { prefab = "/pkg/game.res/light_skybox.prefab" }
 	PC:create_entity{
@@ -61,12 +64,23 @@ function system.on_entry()
 				iom.set_position(ee, math3d.vector(i * 6 - 10, 1, 5))
 			end
 		}
+
+		PC:create_instance {
+			prefab = "/pkg/game.res/npc/cube/cube_green.glb|mesh.prefab",
+			on_ready = function(e)
+				local eid = e.tag['*'][1]
+				local ee<close> = world:entity(eid)
+				iom.set_position(ee, math3d.vector(i * 6 - 10, 1, 2))
+			end
+		}
 	end
 end 
 
 function system.on_leave()
 	world:unsub(topick_mb)
+	world:unsub(pickup_mb)
 	PC:clear()
+	last_entity = nil
 end 
 
 
@@ -79,9 +93,9 @@ local function remap_xy(x, y)
 end
 
 function system.data_changed()
-
 	for _, _, state, x, y in topick_mb:unpack() do
         if state == "DOWN" then
+			system.set_scale(last_entity, 1)
             x, y = remap_xy(x, y)
             ipu.pick(x, y, function(e, a, b)
 				print("pick", e, a, b)
@@ -89,4 +103,25 @@ function system.data_changed()
         end
     end
 
+	for _, eid, x, y in pickup_mb:unpack() do 
+		system.set_scale(eid, 1.1)
+		last_entity = eid
+		break
+	end
+
+	ImGui.SetNextWindowPos(mgr.get_content_start())
+    if ImGui.Begin("wnd_debug", nil, ImGui.WindowFlags {"AlwaysAutoResize", "NoMove", "NoTitleBar"}) then
+		ImGui.Text("点击场景中的方块, 被选中的目标会被放大1.1倍")
+	end
+	ImGui.End()
+end
+
+function system.set_scale(eid, scale)
+	eid = tonumber(eid)
+	if not eid then return end 
+
+	local ee<close> = world:entity(eid)
+	if ee then 
+		iom.set_scale(ee, scale)
+	end
 end
