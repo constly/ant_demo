@@ -83,7 +83,6 @@ function system.on_leave()
 	last_entity = nil
 end 
 
-
 local function remap_xy(x, y)
     local vp = iviewport.device_size
     local vr = iviewport.viewrect
@@ -91,6 +90,15 @@ local function remap_xy(x, y)
     nx, ny  = mu.convert_device_to_screen_coord(vp, vr, nx, ny)
 	return nx, ny
 end
+
+local desc = 
+[[
+点击场景中的方块, 被选中的目标会被放大1.1倍
+问题:
+1. 目前点击结果是通过事件分发的, 当代码比较复杂时，
+	如果有多处都在发起点击请求，我怎么知道点击结果是哪里发起的？
+2. 怎么设置 谁能被点击，谁不能被点击？
+]]
 
 function system.data_changed()
 	for _, _, state, x, y in topick_mb:unpack() do
@@ -103,15 +111,9 @@ function system.data_changed()
         end
     end
 
-	for _, eid, x, y in pickup_mb:unpack() do 
-		system.set_scale(eid, 1.1)
-		last_entity = eid
-		break
-	end
-
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     if ImGui.Begin("wnd_debug", nil, ImGui.WindowFlags {"AlwaysAutoResize", "NoMove", "NoTitleBar"}) then
-		ImGui.Text("点击场景中的方块, 被选中的目标会被放大1.1倍")
+		ImGui.Text(desc)
 	end
 	ImGui.End()
 end
@@ -123,5 +125,13 @@ function system.set_scale(eid, scale)
 	local ee<close> = world:entity(eid)
 	if ee then 
 		iom.set_scale(ee, scale)
+	end
+end
+
+function system.after_pickup()
+	for _, eid, x, y in pickup_mb:unpack() do 
+		system.set_scale(eid, 1.1)
+		last_entity = eid
+		break
 	end
 end
