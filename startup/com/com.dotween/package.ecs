@@ -1,0 +1,2 @@
+system "dotween_system"
+    .implement "system/dotween_system.lua"
