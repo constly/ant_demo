@@ -19,6 +19,7 @@ lm:source_set "imgui.node_editor" {
     },
     sources = {
         "src/*.cpp",
+		"bp/*.cpp",
     },
     defines = {
         defines,
