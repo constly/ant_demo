@@ -15,7 +15,7 @@ local ed = require "imgui.node_editor"
 local ImGuiExtend = require "imgui.extend"
 local draw_list = ImGuiExtend.draw_list
 local context
-local links = {{id = 1, input = 6, output = 11}}
+local links = {{id = 1, input = 7, output = 12}}
 local next_link_id = 1;
 local id = 0
 local next_id = function()
@@ -78,9 +78,15 @@ function system.draw_node1()
 
 	ed.BeginNode(id)
 		ImGui.Text("Node A")
-		ed.BeginPin(next_id(), ed.PinKind.Input)
-			ImGui.Text("-> In")
-		ed.EndPin()
+		ImGui.BeginGroup();
+			ed.BeginPin(next_id(), ed.PinKind.Input)
+				ImGui.Text("-> In1")
+			ed.EndPin()
+			ed.BeginPin(next_id(), ed.PinKind.Input)
+				ImGui.Text("-> In2")
+			ed.EndPin()
+		ImGui.EndGroup()
+		
 		ImGui.SameLine()
 		ed.BeginPin(next_id(), ed.PinKind.Output)
 			ImGui.Text("Out ->")
