@@ -40,12 +40,12 @@ run.bat
 3. Effekseer/ResourceData/samples目录下有大量示例
 
 ### 二. bgfx学习
-1. 如何[build](https://github.com/bkaradzic/bgfx/blob/master/docs/build.rst)
-1. bgfx下有大量使用示例, 网上也有学习[笔记](https://hinageshi01.github.io/2022/05/30/bgfx/)
+1. 如何 [build](https://github.com/bkaradzic/bgfx/blob/master/docs/build.rst)
+1. bgfx下有大量使用示例, 网上也有 [学习笔记](https://hinageshi01.github.io/2022/05/30/bgfx/)
 
 ## 其他说明
-### 一. 关于声音
-1. 使用的 [cute](https://github.com/RandyGaul/cute_headers)
+1. 声音使用的 [cute](https://github.com/RandyGaul/cute_headers)
+2. 节点编辑器使用的 [imgui-node-editor](https://github.com/thedmd/imgui-node-editor.git)
 
 
 ## 待解决问题
