@@ -8,33 +8,33 @@ local function checkAddModule(name, makefile)
 	lm:import (makefile)
 end
 
-for path in fs.pairs(fs.path(lm.workdir) / "../clibs") do
+for path in fs.pairs(fs.path(lm.workdir) / "clibs") do
     if fs.exists(path / "make.lua") then
         local name = path:filename():string()
-        local makefile = ("%s/make.lua"):format(name)
+        local makefile = ("clibs/%s/make.lua"):format(name)
 		checkAddModule(name, makefile)
     end
 end
 
-for path in fs.pairs(fs.path(lm.workdir) / "../startup/pkg") do
+for path in fs.pairs(fs.path(lm.workdir) / "pkg") do
     if fs.exists(path / "make.lua") then
         local name = path:filename():string()
-        local makefile = ("../startup/pkg/%s/make.lua"):format(name)
+        local makefile = ("pkg/%s/make.lua"):format(name)
 		checkAddModule(name, makefile)
     end
 end
 
-for path in fs.pairs(fs.path(lm.workdir) / "../startup/com") do
+for path in fs.pairs(fs.path(lm.workdir) / "../pkg") do
     if fs.exists(path / "make.lua") then
         local name = path:filename():string()
-        local makefile = ("../startup/com/%s/make.lua"):format(name)
+        local makefile = ("../pkg/%s/make.lua"):format(name)
 		checkAddModule(name, makefile)
     end
 end
 
 lm:copy "bootstrap_lua" {
     input = "bootstrap.lua",
-    output = "../" .. lm.bindir .. "/main.lua",
+    output = "../../" .. lm.bindir .. "/main.lua",
 }
 
 
@@ -51,7 +51,7 @@ if lm.os == "ios" then
             LuaInclude,
             lm.AntDir .. "/runtime/common",
         },
-        sources = "modules.c"
+        sources = "../modules.c"
     }
     return
 end
@@ -87,7 +87,7 @@ if lm.os == "android" then
             LuaInclude,
             lm.AntDir .. "/runtime/common",
         },
-        sources = "modules.c",
+        sources = "../modules.c",
     }
     return
 end
@@ -104,7 +104,7 @@ if lm.os == "macos" then
             LuaInclude,
             lm.AntDir .. "/runtime/common",
         },
-        sources = "modules.c"
+        sources = "../modules.c"
     }
 
     lm:exe "ant_demo" {
@@ -122,7 +122,7 @@ if lm.os == "macos" then
         msvc = {
             defines = "LUA_BUILD_AS_DLL",
         },
-        sources = "modules.c"
+        sources = "../modules.c"
     }
     lm:exe "ant_demo_rt" {
         deps = {
@@ -144,7 +144,7 @@ if lm.os == "macos" then
             "Metal",
             "QuartzCore",
         },
-        sources = "modules.c"
+        sources = "../modules.c"
     }
     return
 end
@@ -165,8 +165,8 @@ lm:exe "ant_demo" {
         defines = "LUA_BUILD_AS_DLL",
     },
     sources = {
-        "modules.c",
-        "../runtime/win32/ant_demo.rc"
+        "../modules.c",
+        "../../runtime/win32/ant_demo.rc"
     }
 }
 
@@ -183,7 +183,7 @@ lm:exe "ant_demo_rt" {
         lm.AntDir .. "/runtime/common",
     },
     sources = {
-        "modules.c",
-        "../runtime/win32/ant_demo.rc"
+        "../modules.c",
+        "../../runtime/win32/ant_demo.rc"
     }
 }

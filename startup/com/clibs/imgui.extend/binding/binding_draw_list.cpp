@@ -1,5 +1,6 @@
 #include "binding_utils.h"
 #include "imgui.h"
+#include "imgui_internal.h"
 
 #define INDEX_ID 1
 #define INDEX_ARGS 2
@@ -502,6 +503,24 @@ dlAddBezierQuadratic(lua_State* L) {
 	return 0;
 }
 
+static int dlBeginColumns(lua_State* L) {
+	const char* label = luaL_checkstring(L, 1);
+	int count = (int)luaL_checkinteger(L, 2);
+	ImGui::BeginColumns(label, count);
+	return 0;
+}
+
+static int dlSetColumnWidth(lua_State* L) {
+	int index = (int)luaL_checkinteger(L, 1);
+	float width = (float)luaL_checknumber(L, 2);
+	ImGui::SetColumnWidth(index, width);
+	return 0;
+}
+
+static int dlEndColumns(lua_State* L) {
+	ImGui::EndColumns();
+	return 0;
+}
 
 void init_draw_list(lua_State* L) {
 	luaL_Reg draw_list[] = {
@@ -526,6 +545,10 @@ void init_draw_list(lua_State* L) {
 		{ "AddText", dlAddText },
 		{ "AddBezierCubic", dlAddBezierCubic },
 		{ "AddBezierQuadratic", dlAddBezierQuadratic },
+		{ "BeginColumns", dlBeginColumns },
+		{ "SetColumnWidth", dlSetColumnWidth },
+		{ "EndColumns", dlEndColumns },
+
 		{ NULL, NULL },
 	};
 	luaL_newlib(L, draw_list);
