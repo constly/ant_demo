@@ -3,5 +3,5 @@ mount:
     /pkg/    %engine%/pkg
     /        %project%
     /        %project%/mod
-    /pkg/    %project%/com
+    /        %project%/com
 	

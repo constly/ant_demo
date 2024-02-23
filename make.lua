@@ -47,7 +47,7 @@ lm.builddir = ("build/%s/%s"):format(plat, lm.mode)
 lm.bindir = ("bin/%s/%s"):format(plat, lm.mode)
 
 lm:import(lm.AntDir .. "/make.lua")
-lm:import "clibs/make.lua"
+lm:import "startup/com/make.lua"
 
 if lm.os == "windows" then
     lm:copy "copy_dll" {
