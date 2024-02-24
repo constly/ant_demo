@@ -6,7 +6,7 @@ local tbParam =
     ecs             = ecs,
     system_name     = "imgui_10_system",
     category        = mgr.type_imgui,
-    name            = "10_节点编辑器",
+    name            = "10_原生节点使用",
     file            = "imgui/imgui_10.lua",
     ok              = true
 }
@@ -29,6 +29,7 @@ function system.on_entry()
 		context = ed.CreateEditorContext()
 		context:OnStart()
 	end
+	needNavigateTo = true
 end
 
 function system.data_changed()
@@ -36,45 +37,38 @@ function system.data_changed()
     ImGui.SetNextWindowSize(mgr.get_content_size())
     if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoScrollWithMouse", "NoCollapse", "NoTitleBar"}) then 
 		local size_x, size_y = ImGui.GetContentRegionAvail();
-		local left = 200
 		local io = ImGui.GetIO()
 		ImGui.Text(string.format("FPS: %.2f (%.2gms)", io.Framerate, io.Framerate > 0 and 1000 / io.Framerate or 0 ))
-		ImGui.PushTextWrapPos(190);
-		ImGui.Text("节点编辑器基础使用演示")
-		ImGui.PopTextWrapPos();
-
-		ImGui.SetCursorPos(10, 100)
-		if ImGui.ButtonEx("重置视图", 80) then 
+		ImGui.SameLineEx(size_x * 0.5 - 150)
+		ImGui.Text("原生节点编辑器使用演示")
+		ImGui.SetCursorPos(size_x - 120, 5)
+		if ImGui.ButtonEx("重置视图") then 
 			needNavigateTo = true
 		end
 
-		ImGui.SetCursorPos(left, 10)
-		ImGui.BeginChild("##child_1", size_x - left, size_y, ImGui.ChildFlags{"None"}, ImGui.WindowFlags {"NoScrollbar", "NoScrollWithMouse"})
 		ed.SetCurrentEditor(context)
-		ed.Begin("My Editor", 0, 0)
-			id = 0
-			system.draw_node1();
-			system.draw_node2();
-			system.draw_node3();
-			system.draw_node4();
-			system.draw_node5();
-			system.draw_links()
-		ed.End()
+			ed.Begin("My Editor", 0, 0)
+				id = 0
+				system.draw_node1();
+				system.draw_node2();
+				system.draw_node3();
+				system.draw_node4();
+				system.draw_node5();
+				system.draw_links()
+			ed.End()
 
-		if needNavigateTo then 
-			needNavigateTo = false
-			ed.NavigateToContent()
-		end
-
+			if needNavigateTo then 
+				needNavigateTo = false
+				ed.NavigateToContent()
+			end
 		ed.SetCurrentEditor(nil)
-		ImGui.EndChild()
 	end 
 	ImGui.End()
 end
 
 function system.draw_node1()
 	local id = next_id()
-	if not ed.CheckNodeExist(id) then ed.SetNodePosition(id, 50, 50) end
+	if not ed.CheckNodeExist(id) then ed.SetNodePosition(id, 50, 20) end
 
 	ed.BeginNode(id)
 		ImGui.Text("Node A")
@@ -224,7 +218,7 @@ local popup_text = "Pick one!"
 local do_popup = false
 function system.draw_node4()
 	local id = next_id()
-	if not ed.CheckNodeExist(id) then ed.SetNodePosition(id, 550, 300) end
+	if not ed.CheckNodeExist(id) then ed.SetNodePosition(id, 600, 300) end
 
 	-- Tool Tip & Pop-up Demo =====================================================================================
 	-- Tooltips, combo-boxes, drop-down menus need to use a work-around to place the "overlay window" in the canvas.
@@ -318,7 +312,7 @@ end
 local progress, progress_dir = 0, 1.0;
 function system.draw_node5()
 	local id = next_id()
-	if not ed.CheckNodeExist(id) then ed.SetNodePosition(id, 200, 550) end
+	if not ed.CheckNodeExist(id) then ed.SetNodePosition(id, 650, 530) end
 
 	ed.BeginNode(id)
 		ImGui.Text("Plot Demo");
