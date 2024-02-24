@@ -46,6 +46,7 @@ run.bat
 ## 其他说明
 1. 声音使用的 [cute](https://github.com/RandyGaul/cute_headers)
 2. 节点编辑器使用的 [imgui-node-editor](https://github.com/thedmd/imgui-node-editor.git)
+2. lua语法提示使用的 EmmyLua
 
 
 ## 待解决问题

@@ -2,34 +2,17 @@ local lm = require "luamake"
 local fs = require "bee.filesystem"
 
 local modules = {}
-local function checkAddModule(name, makefile)
-	print("checkAddModule", name, makefile)
-	modules[#modules + 1] = name
-	lm:import (makefile)
-end
-
-for path in fs.pairs(fs.path(lm.workdir) / "clibs") do
-    if fs.exists(path / "make.lua") then
-        local name = path:filename():string()
-        local makefile = ("clibs/%s/make.lua"):format(name)
-		checkAddModule(name, makefile)
-    end
-end
-
-for path in fs.pairs(fs.path(lm.workdir) / "pkg") do
-    if fs.exists(path / "make.lua") then
-        local name = path:filename():string()
-        local makefile = ("pkg/%s/make.lua"):format(name)
-		checkAddModule(name, makefile)
-    end
-end
-
-for path in fs.pairs(fs.path(lm.workdir) / "../pkg") do
-    if fs.exists(path / "make.lua") then
-        local name = path:filename():string()
-        local makefile = ("../pkg/%s/make.lua"):format(name)
-		checkAddModule(name, makefile)
-    end
+local libs = {"clibs", "pkg", "../pkg"}
+for i, name in ipairs(libs) do 
+	for path in fs.pairs(fs.path(lm.workdir) / name) do
+		if fs.exists(path / "make.lua") then
+			local filename = path:filename():string()
+			local makefile = ("%s/%s/make.lua"):format(name, filename)
+			modules[#modules + 1] = filename
+			lm:import (makefile)
+			print("import", filename, makefile)
+		end
+	end
 end
 
 lm:copy "bootstrap_lua" {
