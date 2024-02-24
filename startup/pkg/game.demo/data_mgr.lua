@@ -3,6 +3,7 @@ local ImGui     = require "imgui"
 local all_data = {}
 local max_id = 0
 local cur_item = nil
+---@class data_mgr
 local api = {}
 local content_start = {200, 100}
 local content_size = {1149, 700}

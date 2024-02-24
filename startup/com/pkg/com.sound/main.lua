@@ -1,5 +1,6 @@
 local ltask = require "ltask"
 
+---@class sound_api
 local api = {}
 local ServiceSound
 
@@ -7,6 +8,10 @@ function api.init()
 	if not ServiceSound then
 		ServiceSound = ltask.uniqueservice "com.sound|sound"
 	end
+end
+
+function api.exit()
+	ltask.send(ServiceSound, "shutdown")
 end
 
 function api.play_sound(path)

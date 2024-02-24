@@ -3,8 +3,8 @@ local system = ecs.system "data_system"
 local window = require "window"
 local tools = import_package 'game.tools'
 local ImGui     = require "imgui"
-local data_mgr  = require "data_mgr"
-local sound = import_package "com.sound"
+local data_mgr  = require "data_mgr" 	---@type data_mgr
+local sound = import_package "com.sound"  ---@type sound_api
 local category = nil
 local selected = {}
 local showHover = true
@@ -44,6 +44,10 @@ function system.init_world()
 
 	sound.play_music("/pkg/game.res/sound/bgm.wav")
 	sound.set_music_volume(0.3)
+end
+
+function system.exit()
+	sound.exit()
 end
 
 function system.data_changed()
