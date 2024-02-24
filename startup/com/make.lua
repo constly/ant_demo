@@ -33,8 +33,8 @@ for path in fs.pairs(fs.path(lm.workdir) / "../pkg") do
 end
 
 lm:copy "bootstrap_lua" {
-    input = "bootstrap.lua",
-    output = "../../" .. lm.bindir .. "/main.lua",
+    inputs = "bootstrap.lua",
+    outputs = "$bin/main.lua",
 }
 
 
