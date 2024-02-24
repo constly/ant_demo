@@ -1,13 +1,13 @@
 #include <lua.hpp>
 #include <bee/lua/binding.h>
 #include "src/imgui_node_editor.h"
-
+#include "bp/blueprint.h"
 
 namespace ed = ax::NodeEditor;
 
 namespace imguilua {
 	struct NodeEditorContext {	
-		~NodeEditorContext() { OnStop(); }
+		~NodeEditorContext() { OnDestroy(); }
 		ed::EditorContext* m_Context = nullptr;
 
 		void OnStart() {
@@ -18,7 +18,7 @@ namespace imguilua {
 			}
 		}
 
-		void OnStop() {
+		void OnDestroy() {
 			if (m_Context) {
 				ed::DestroyEditor(m_Context);
 				m_Context = nullptr;
@@ -36,9 +36,9 @@ namespace imguilua::bind {
 		return 0;
 	}
 
-	static int OnStop(lua_State* L) {
+	static int OnDestroy(lua_State* L) {
 		auto& context = bee::lua::checkudata<imguilua::NodeEditorContext>(L, 1);
-		context.OnStop();
+		context.OnDestroy();
 		return 0;
 	}
 
@@ -48,7 +48,7 @@ namespace imguilua::bind {
 	static void metatable(lua_State* L) {
 		static luaL_Reg lib[] = {
 			{"OnStart", OnStart},
-			{"OnStop", OnStop},
+			{"OnDestroy", OnDestroy},
 
 			{nullptr, nullptr},
 		};
@@ -204,6 +204,22 @@ static int bNavigateToContent(lua_State* L) {
 	return 0;
 }
 
+static int bSplitter(lua_State* L) {
+	bool split_vertically = lua_toboolean(L, 1);
+	float thickness = (float)luaL_checknumber(L, 2);
+	float size1 = (float)luaL_checknumber(L, 3); 
+	float size2 = (float)luaL_checknumber(L, 4);
+	float min_size1 = (float)luaL_checknumber(L, 5);
+	float min_size2 = (float)luaL_checknumber(L, 6);
+	float splitter_long_axis_size = (float)luaL_optnumber(L, 7, -1);
+	if (ed::Splitter(split_vertically, thickness, &size1, &size2, min_size1, min_size2, splitter_long_axis_size)) {
+		lua_pushnumber(L, size1);
+		lua_pushnumber(L, size2);
+		return 2;
+	} 
+	return 0;
+}
+
 #define DEF_ENUM(CLASS, MEMBER)                                      \
     lua_pushinteger(L, static_cast<lua_Integer>(ed::CLASS::MEMBER)); \
     lua_setfield(L, -2, #MEMBER);
@@ -233,6 +249,7 @@ extern "C" int luaopen_imgui_node_editor(lua_State *L) {
 		{ "QueryDeletedLink", 	bQueryDeletedLink },
 		{ "AcceptDeletedItem", 	bAcceptDeletedItem },
 		{ "NavigateToContent", 	bNavigateToContent },
+		{ "Splitter", 			bSplitter },
 		
 		{ NULL, NULL },
 	};
