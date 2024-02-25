@@ -1,6 +1,9 @@
-local path  = require 'tools/path'
 local lib   = require 'tools/lib'
-local file_path = path.disk_temp_data_root .. 'user_data.txt'
+local fs = require "bee.filesystem"
+local vfs = require "vfs"
+
+local data_root = (fs.path(vfs.repopath()) / ".app/temp/"):string()
+local file_path = data_root .. 'user_data.txt'
 
 local function load_string_from_disk(path)
     local f<close> = io.open(path, 'r')

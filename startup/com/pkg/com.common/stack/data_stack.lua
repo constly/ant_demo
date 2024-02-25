@@ -1,3 +1,6 @@
+---------------------------------------------------------------------------
+--- 数据堆栈处理，主要用于支持编辑器的撤销/回退功能
+---------------------------------------------------------------------------
 
 -- 深拷贝table
 local copy;
@@ -18,8 +21,7 @@ end
 
 
 local create = function()
-	-- 数据堆栈
-	---@class node_editor_data_stack
+	---@class common_data_stack  数据堆栈处理器(用于支持 撤销/回退)
 	local data_stack = {}
 	local data_hander
 	local index = 0
@@ -51,14 +53,30 @@ local create = function()
 		end
 	end
 
-	function data_stack.snapshoot()
+	---@param dirty boolean 数据是否有更改
+	function data_stack.snapshoot(dirty)
 		while(index >= 0 and #stack > index) do 
 			table.remove(stack, #stack)
 		end
+		data_hander.data.__dirty = dirty									-- 本次是否有数据变动
+		data_hander.data.__isModify = data_stack.get_modify()				-- 遍历所有堆栈，看数据是否有变化
 		local new_data = copy(data_hander.data)
 		table.insert(stack, new_data)
 		index = #stack
 		print("snapshoot", index)
+	end
+
+	function data_stack.get_modify()
+		if data_hander.data.__dirty then 
+			return true 
+		end
+		for i = 1,  index do 
+			local data = stack[i]
+			if data and data.__dirty then 
+				return true 
+			end
+		end
+		return false;
 	end
 
 	return data_stack
