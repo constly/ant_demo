@@ -220,6 +220,41 @@ static int bSplitter(lua_State* L) {
 	return 0;
 }
 
+static int bShowNodeContextMenu(lua_State* L) {
+	ed::NodeId id;
+	if (ed::ShowNodeContextMenu(&id)) {
+		lua_pushinteger(L, id.Get());
+		return 1;
+	}
+	return 0;
+}
+
+static int bShowPinContextMenu(lua_State* L) {
+	ed::PinId id;
+	if (ed::ShowPinContextMenu(&id)) {
+		lua_pushinteger(L, id.Get());
+		return 1;
+	}
+	return 0;
+}
+
+static int bShowLinkContextMenu(lua_State* L) {
+	ed::LinkId id;
+	if (ed::ShowLinkContextMenu(&id)) {
+		lua_pushinteger(L, id.Get());
+		return 1;
+	}
+	return 0;
+}
+
+static int bShowBackgroundContextMenu(lua_State* L) {
+	if (ed::ShowBackgroundContextMenu()) {
+		lua_pushboolean(L, true);
+		return 1;
+	}
+	return 0;
+}
+
 #define DEF_ENUM(CLASS, MEMBER)                                      \
     lua_pushinteger(L, static_cast<lua_Integer>(ed::CLASS::MEMBER)); \
     lua_setfield(L, -2, #MEMBER);
@@ -250,6 +285,10 @@ extern "C" int luaopen_imgui_node_editor(lua_State *L) {
 		{ "AcceptDeletedItem", 	bAcceptDeletedItem },
 		{ "NavigateToContent", 	bNavigateToContent },
 		{ "Splitter", 			bSplitter },
+		{ "ShowNodeContextMenu", 			bShowNodeContextMenu },	
+		{ "ShowPinContextMenu", 			bShowPinContextMenu },
+		{ "ShowLinkContextMenu", 			bShowLinkContextMenu },
+		{ "ShowBackgroundContextMenu", 			bShowBackgroundContextMenu },
 		
 		{ NULL, NULL },
 	};

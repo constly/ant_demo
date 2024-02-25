@@ -1,5 +1,6 @@
 local ecs = ...
-local ImGui  = require "imgui"
+local dep = require 'dep'
+local ImGui  = dep.ImGui
 local mgr = require "data_mgr"
 local tbParam = 
 {
@@ -11,21 +12,20 @@ local tbParam =
     ok              = true
 }
 local system = mgr.create_system(tbParam)
-local node_editor = import_package("com.node.editor")
-local node_rumtime_bp = import_package "com.node.runtime.bp"  ---@type com.node.runtime.bp.api
-local ed = require "imgui.node_editor"
+local blueprint = dep.blueprint
+local ed = dep.ed
 local editor 		---@type blueprint_graph_main
 local size1 = 200
 
 function system.on_entry()
+	
 	---@type node_editor_create_args
 	local args = 
 	{
-		type = "blueprint",
-		subgraph = 1,
-		node_declares = node_rumtime_bp.node_declare.get();
+		graph_count = 1,
+		blueprint_builder = system.get_builder()
 	}
-	editor = node_editor.create(args)
+	editor = blueprint.create_editor(args)
 	editor.on_begin()
 end 
 
@@ -50,4 +50,22 @@ function system.data_changed()
 		editor.on_render(0.033);
 	end
 	ImGui.End()
+end
+
+function system.get_builder()
+	local blueprint = dep.blueprint.blueprint_builder.create() ---@type blueprint_builder
+
+	blueprint.create_node "test"
+		.set_show_type(blueprint.type_blueprint)
+		.set_group("default", "test")
+		.set_attr("key", "value")
+		.add_input("Entry")
+		.add_output("Exit")
+		.add_input_var("int", "count")
+		.add_input_var("string", "name")
+		.add_output_var("int", "value")
+		.add_output_var("string", "flag")
+
+	blueprint.on_create_complete()
+	return blueprint
 end
