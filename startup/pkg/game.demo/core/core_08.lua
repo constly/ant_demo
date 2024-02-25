@@ -14,7 +14,7 @@ local system = mgr.create_system(tbParam)
 local ImGuiExtend = require "imgui.extend"
 local datalist = require 'datalist'
 local stringify = import_package "ant.serialize".stringify
-local tools = import_package "game.tools" 
+local dep = require 'dep'
 
 local desc = 
 [[
@@ -106,7 +106,7 @@ function system.data_changed()
         ImGui.BeginChild("###txt_child_output", length + 50, height, ImGui.ChildFlags({"Border"}))
 			xpcall( function()
 				local tb = datalist.parse(str)
-				ImGui.Text(tools.lib.table2string(tb))
+				ImGui.Text(dep.common.lib.table2string(tb))
 			end, function()
 			end)
         ImGui.EndChild()

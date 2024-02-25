@@ -18,7 +18,7 @@ local math3d = require "math3d"
 local imesh = ecs.require "ant.asset|mesh"
 local ientity = ecs.require "ant.entity|entity"
 
-local tools = import_package "game.tools"
+local dep = require "dep"
 local vfs = require "vfs"
 local lfs = require "bee.filesystem"
 local ivs = ecs.require "ant.render|visible_state"
@@ -56,17 +56,17 @@ function system.on_entry()
 	local tb_ext = {".glb", ".gltf"}
 	for _, path in ipairs(files) do 
 		for _, ext in ipairs(tb_ext) do 
-			if tools.lib.end_with(path, ext) then 
+			if dep.common.lib.end_with(path, ext) then 
 				local path = string.gsub(path, repo, "");
 				local shortpath = string.gsub(path, pkg_name, "")
-				local name = tools.lib.get_filename(shortpath)
+				local name = dep.common.lib.get_filename(shortpath)
 				table.insert(glbs, {name = name, tip = path, path = path .. "|mesh.prefab"})
 				break;
 			end
 		end
 	end
 	table.sort(glbs, function (a, b) return a.name < b.name end)
-	tools.lib.dump(glbs)
+	dep.common.lib.dump(glbs)
 	system.show_model(model_index or 1)
 end
 

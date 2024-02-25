@@ -1,6 +1,6 @@
-local ImGui     = require "imgui"
-local utils = import_package 'game.tools'
-local ImGuiExtend = require "imgui.extend"
+local dep = require 'dep'
+local ImGui = dep.ImGui
+local ImGuiExtend = dep.ImGuiExtend
 local mgr = require "data_mgr"
 
 local textColorful = nil
@@ -22,11 +22,11 @@ function api.convert(content)
 		end
 	end
 
-	local lines = utils.lib.split(content, "\n")
+	local lines = dep.common.lib.split(content, "\n")
 	for i, line in ipairs(lines) do 
 		local first = string.sub(line, 1, 1)
 		local dest
-		if utils.lib.start_with(utils.lib.trim(line), "--") then 
+		if dep.common.lib.start_with(dep.common.lib.trim(line), "--") then 
 			dest = string.format("<color=66,155,0,255>%s</>", line)
 		elseif first == ' ' or first == '\t' then 
 			local pos = get_pos(line)

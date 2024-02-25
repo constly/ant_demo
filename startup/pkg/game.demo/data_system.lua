@@ -1,7 +1,7 @@
 local ecs = ...
 local system = ecs.system "data_system"
 local window = require "window"
-local tools = import_package 'game.tools'
+local dep = require 'dep'
 local ImGui     = require "imgui"
 local data_mgr  = require "data_mgr" 	---@type data_mgr
 local sound = import_package "com.sound"  ---@type sound_api
@@ -34,9 +34,9 @@ end
 function system.init_world()
     data_mgr.disable_all()
     window.set_title("Ant Game Engine 学习记录")
-    category = tools.user_data.get("last_category", "")
+    category = dep.common.user_data.get("last_category", "")
     if category ~= "" then 
-        selected[category] = tools.user_data.get_number('last_category_' .. category)
+        selected[category] = dep.common.user_data.get_number('last_category_' .. category)
         data_mgr.set_current_item(category, selected[category])    
     end
     -- 设置全局文本默认颜色
@@ -68,9 +68,9 @@ function system.data_changed()
             local label = v.category .. "###main_category_i_" .. i
             if ImGui.ButtonEx(label, 50 + 30 * dpiScale, 25 * dpiScale) or category == "" then 
                 category = v.category
-                tools.user_data.set('last_category', category, true)
+                dep.common.user_data.set('last_category', category, true)
                 if not selected[category] then 
-                    selected[category] = tools.user_data.get_number('last_category_' .. category)
+                    selected[category] = dep.common.user_data.get_number('last_category_' .. category)
                 end
                 if selected[category] > 0 then 
                     data_mgr.set_current_item(category, selected[category])    
@@ -131,7 +131,7 @@ function system.data_changed()
             if click and selected[category] ~= v.id then 
                 selected[category] = v.id
                 data_mgr.set_current_item(category, v.id)
-                tools.user_data.set('last_category_' .. category, v.id, true) 
+                dep.common.user_data.set('last_category_' .. category, v.id, true) 
             end
         end
     end

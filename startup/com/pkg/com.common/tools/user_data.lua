@@ -14,6 +14,7 @@ local function load_string_from_disk(path)
 end
 
 local function save_string_to_disk(path, content)
+	fs.create_directories(data_root)
     local f<close> = io.open(path, 'wb')
     if f then
         f:write(content)

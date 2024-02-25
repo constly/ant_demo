@@ -1,7 +1,7 @@
 local ecs = ...
-local ImGui     = require "imgui"
 local mgr = require "data_mgr"
-local tools = import_package 'game.tools'
+local dep = require 'dep'
+local ImGui = dep.ImGui
 local tbParam = 
 {
     ecs             = ecs,
@@ -20,7 +20,7 @@ local wnd_size = {x = 400, y = 400}
 local wnd_pos = {x = 100, y = 100}
 local contents = {}
 local pages = {"Window", "Child", "InputText", "Table", "TreeNode", "Combo", "TabBar", "TabItem"}
-local cur_page = tools.user_data.get('imgui_03_save_key')
+local cur_page = dep.common.user_data.get('imgui_03_save_key')
 
 local all_flags = {}
 local tb_flags = {}
@@ -62,7 +62,7 @@ function system.data_changed()
                 cur_page = name
                 selected = all_selected[i] or {}
                 all_selected[i] = selected
-                tools.user_data.set('imgui_03_save_key', name, true)
+                dep.common.user_data.set('imgui_03_save_key', name, true)
             end
             ImGui.SameLine()
             ImGui.PopStyleColorEx(3)

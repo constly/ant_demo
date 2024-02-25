@@ -1,7 +1,7 @@
 
-local ImGui = require "imgui"
-local ImGuiExtend = require "imgui.extend"
-local tools = import_package "game.tools"
+local dep = require "dep"
+local ImGui = dep.ImGui
+local ImGuiExtend = dep.ImGuiExtend
 
 local api = {}
 local label = "World Dump##popup_world_dump"
@@ -68,14 +68,14 @@ function api.draw(world)
 				set_btn_style(cur_key == i)
 				if ImGui.ButtonEx(name, 200) or not cur_key then 
 					cur_key = i
-					local arr = tools.lib.split(name, ".")
+					local arr = dep.common.lib.split(name, ".")
 					local data = world
 					local idx = 1
 					while idx <= #arr and data do
 						data = data[arr[idx]]
 						idx = idx + 1
 					end
-					text_editor:SetText( tools.lib.table2string(data) )
+					text_editor:SetText( dep.common.lib.table2string(data) )
 				end
 				ImGui.PopStyleColorEx(4)
 				ImGui.PopStyleVar()

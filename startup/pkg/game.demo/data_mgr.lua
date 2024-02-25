@@ -1,5 +1,5 @@
-local utils = import_package 'game.tools'
-local ImGui     = require "imgui"
+local dep = require 'dep'
+local ImGui = dep.ImGui
 local all_data = {}
 local max_id = 0
 local cur_item = nil
@@ -26,7 +26,7 @@ function api.create_system(tbParam)
     data.system = system
     data.system_name = system and ("game.demo|" .. tbParam.system_name)
     data.id = max_id
-    data.file = utils.path.disk_project_root .. 'pkg/game.demo/' .. tbParam.file;
+    data.file = dep.vfs.repopath() .. 'pkg/game.demo/' .. tbParam.file;
     data.file = data.file:gsub("/","\\")
     table.insert(tb.items, data)
     table.sort(tb.items, function(a, b) return a.name < b.name end)

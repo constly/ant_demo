@@ -12,7 +12,7 @@ local tbParam =
 }
 local system = mgr.create_system(tbParam)
 local draw_color_text = require 'utils.draw_color_text'
-local utils = import_package 'game.tools'
+local dep = require 'dep'
 local tb_desc = {}
 
 tb_desc[1] = [[
@@ -283,11 +283,11 @@ function system.data_changed()
 			if ImGui.ButtonEx(v, btn_len) or not curMenuIndex then 
 				local idx = i
 				if not curMenuIndex then
-					idx = tonumber(utils.user_data.get("core_07_index", i)) or i
+					idx = tonumber(dep.common.user_data.get("core_07_index", i)) or i
 				end
 				curMenuIndex = idx;
 				tb_lines = draw_color_text.convert(tb_desc[idx])
-				utils.user_data.set("core_07_index", idx, true)
+				dep.common.user_data.set("core_07_index", idx, true)
 			end	
 			ImGui.PopStyleColorEx(4)
 			ImGui.PopStyleVar()

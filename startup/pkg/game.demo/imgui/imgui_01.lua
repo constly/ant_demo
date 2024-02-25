@@ -13,12 +13,12 @@ local tbParam =
 local system = mgr.create_system(tbParam)
 local ImGui     = require "imgui"
 local ImGuiExtend = require "imgui.extend"
-local tools = import_package 'game.tools'
+local dep = require 'dep'
 
 local err_text = ""
 local default_inputs
 local text_editor
-local cur_page = tools.user_data.get_number("imgui_01_page", 1)
+local cur_page = dep.common.user_data.get_number("imgui_01_page", 1)
 
 local set_btn_style = function(current)
     if current then 
@@ -51,7 +51,7 @@ function system.data_changed()
 			if ImGui.ButtonEx(label, 60) then 
 				cur_page = i
 				text_editor:SetText(default_inputs[i])
-				tools.user_data.set("imgui_01_page", tostring(i), true)
+				dep.common.user_data.set("imgui_01_page", tostring(i), true)
 			end
 			ImGui.SameLine()
 			ImGui.PopStyleColorEx(3)

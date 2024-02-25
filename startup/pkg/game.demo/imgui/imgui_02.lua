@@ -14,7 +14,7 @@ local system = mgr.create_system(tbParam)
 
 local assetmgr  = import_package "ant.asset"
 local ImGui     = require "imgui"
-local tools = import_package "game.tools"
+local dep = require "dep"
 local textureman = require "textureman.client"
 local input_content = ImGui.StringBuf()
 
@@ -33,7 +33,7 @@ local tbDataList = {}
 function system.on_entry()
     if not icon_btn then 
         icon_btn = assetmgr.resource("/pkg/game.res/images/btn_red.texture", { compile = true })
-        tools.lib.dump(icon_btn)
+        dep.common.lib.dump(icon_btn)
     end
 end
 
