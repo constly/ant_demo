@@ -2,8 +2,9 @@ local ecs = ...
 local system = ecs.system "data_system"
 local window = require "window"
 local dep = require 'dep'
-local ImGui     = require "imgui"
+local ImGui = dep.ImGui
 local data_mgr  = require "data_mgr" 	---@type data_mgr
+local auto_test = ecs.require 'utils.auto_test'
 local sound = dep.sound
 local category = nil
 local selected = {}
@@ -82,7 +83,7 @@ function system.data_changed()
         end
 		ImGui.SetCursorPosX(size_x - 120)
 		if ImGui.Button("Auto Test") then 
-			
+			auto_test.begin()
 		end
     end
     ImGui.End()

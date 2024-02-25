@@ -1,5 +1,5 @@
-system "data_system"
-    .implement "data_system.lua"
+system "data_system" .implement "data_system.lua"
+system "auto_test" .implement "utils/auto_test.lua"
 
 import "imgui/imgui.ecs"
 import "core/core.ecs"
