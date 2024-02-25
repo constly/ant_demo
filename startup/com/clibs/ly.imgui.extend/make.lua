@@ -11,9 +11,9 @@ local defines = {
 }
 
 -- 非lua相关的代码放这里
--- 注意, 一定要有一个与文件夹名同名的 source_set, 否则会编译报错: `vaststars`: deps `imgui.extend` undefine.
+-- 注意, 一定要有一个与文件夹名同名的 source_set, 否则会编译报错: `vaststars`: deps `ly.imgui.extend` undefine.
 -- 这个source_set里面内容可以为空
-lm:source_set "imgui.extend" {
+lm:source_set "ly.imgui.extend" {
     includes = {
 		lm.AntDir .. "/3rd/bee.lua",
         lm.AntDir .. "/clibs/imgui",

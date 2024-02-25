@@ -1,6 +1,7 @@
 local ecs = ...
-local ImGui     = require "imgui"
-local ImGuiExtend = require "imgui.extend"
+local dep = require "dep"
+local ImGui = dep.ImGui
+local ImGuiExtend = dep.ImGuiExtend
 local mgr = require "data_mgr"
 local tbParam = 
 {

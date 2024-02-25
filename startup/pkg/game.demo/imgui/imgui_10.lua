@@ -1,5 +1,4 @@
 local ecs = ...
-local ImGui  = require "imgui"
 local mgr = require "data_mgr"
 local tbParam = 
 {
@@ -11,8 +10,10 @@ local tbParam =
     ok              = true
 }
 local system = mgr.create_system(tbParam)
-local ed = require "imgui.node_editor"
-local ImGuiExtend = require "imgui.extend"
+local dep = require 'dep'
+local ed = dep.ed
+local ImGui  = dep.ImGui
+local ImGuiExtend = dep.ImGuiExtend
 local draw_list = ImGuiExtend.draw_list
 local context
 local links = {{id = 1, input = 7, output = 12}}

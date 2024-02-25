@@ -11,10 +11,11 @@ local tbParam =
     ok              = true
 }
 local system = mgr.create_system(tbParam)
-local ImGuiExtend = require "imgui.extend"
+local dep = require 'dep'
+local ImGuiExtend = dep.ImGuiExtend
 local datalist = require 'datalist'
 local stringify = import_package "ant.serialize".stringify
-local dep = require 'dep'
+
 
 local desc = 
 [[

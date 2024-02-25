@@ -11,7 +11,8 @@ local tbParam =
     ok              = true
 }
 local system = mgr.create_system(tbParam)
-local sound = import_package "com.sound"
+local dep = require 'dep'
+local sound = dep.sound
 
 function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())

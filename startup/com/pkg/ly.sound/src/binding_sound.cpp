@@ -367,7 +367,7 @@ static int create_sound_mgr(lua_State* L) {
 	return bind::CuteSound::create(L);
 }
 
-extern "C" int luaopen_com_sound_impl(lua_State *L) {
+extern "C" int luaopen_ly_sound_impl(lua_State *L) {
 	lua_newtable(L);
 
 	// sound mgr 全局只能有一个

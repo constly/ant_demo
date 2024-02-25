@@ -259,7 +259,7 @@ static int bShowBackgroundContextMenu(lua_State* L) {
     lua_pushinteger(L, static_cast<lua_Integer>(ed::CLASS::MEMBER)); \
     lua_setfield(L, -2, #MEMBER);
 
-extern "C" int luaopen_imgui_node_editor(lua_State *L) {
+extern "C" int luaopen_ly_imgui_node_editor(lua_State *L) {
 	luaL_Reg lib[] = {
 		{ "CreateEditorContext",bCreateEditorContext },
 		{ "SetCurrentEditor", 	bSetCurrentEditor },

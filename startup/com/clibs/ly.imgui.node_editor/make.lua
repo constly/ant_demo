@@ -11,7 +11,7 @@ local defines = {
 }
 
 -- 非lua相关的代码放这里
-lm:source_set "imgui.node_editor" {
+lm:source_set "ly.imgui.node_editor" {
     includes = {
 		lm.AntDir .. "/3rd/bee.lua",
         lm.AntDir .. "/clibs/imgui",

@@ -20,7 +20,6 @@ local PC  = ecs.require("utils.world_handler").proxy_creator()
 local timer = ecs.require "ant.timer|timer_system"
 local iom = ecs.require "ant.objcontroller|obj_motion"
 local mathpkg = import_package "ant.math"
-local dotween = import_package "com.dotween"
 local mu      = mathpkg.util
 local iviewport = ecs.require "ant.render|viewport.state"
 local ipu = ecs.require "ant.objcontroller|pickup.pickup_system"

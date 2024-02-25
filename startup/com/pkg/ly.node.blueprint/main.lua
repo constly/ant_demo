@@ -2,7 +2,7 @@
 --- 蓝图系统
 ---------------------------------------------------------------------------
 
----@class com.node.blueprint.main
+---@class ly.node.blueprint.main
 local api = {}
 
 api.blueprint_builder = require "common.blueprint_builder"

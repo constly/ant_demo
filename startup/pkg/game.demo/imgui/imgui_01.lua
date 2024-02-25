@@ -11,9 +11,10 @@ local tbParam =
 	ok 				= true
 }
 local system = mgr.create_system(tbParam)
-local ImGui     = require "imgui"
-local ImGuiExtend = require "imgui.extend"
 local dep = require 'dep'
+local ImGui = dep.ImGui
+local ImGuiExtend = dep.ImGuiExtend
+
 
 local err_text = ""
 local default_inputs

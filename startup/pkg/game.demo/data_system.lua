@@ -4,7 +4,7 @@ local window = require "window"
 local dep = require 'dep'
 local ImGui     = require "imgui"
 local data_mgr  = require "data_mgr" 	---@type data_mgr
-local sound = import_package "com.sound"  ---@type sound_api
+local sound = dep.sound
 local category = nil
 local selected = {}
 local showHover = true
@@ -80,6 +80,10 @@ function system.data_changed()
             ImGui.SameLine()
             ImGui.PopStyleColorEx(4)
         end
+		ImGui.SetCursorPosX(size_x - 120)
+		if ImGui.Button("Auto Test") then 
+			
+		end
     end
     ImGui.End()
 

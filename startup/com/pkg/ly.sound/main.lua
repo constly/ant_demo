@@ -1,12 +1,12 @@
 local ltask = require "ltask"
 
----@class sound_api
+---@class ly.sound.main
 local api = {}
 local ServiceSound
 
 function api.init()
 	if not ServiceSound then
-		ServiceSound = ltask.uniqueservice "com.sound|sound"
+		ServiceSound = ltask.uniqueservice "ly.sound|sound"
 	end
 end
 

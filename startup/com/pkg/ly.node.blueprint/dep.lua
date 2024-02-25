@@ -4,9 +4,8 @@
 
 local dep = {}
 
-dep.common 			= import_package 'com.common' 		---@type com.common.main
+dep.common 			= import_package 'ly.common' 		---@type ly.common.main
+dep.ed 				= require "ly.imgui.node_editor"
 dep.ImGui  			= require "imgui"
-dep.ed 				= require "imgui.node_editor"
-
 
 return dep
