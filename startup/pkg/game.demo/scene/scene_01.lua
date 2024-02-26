@@ -212,7 +212,6 @@ function system.update_camera_(pe, delta_time)
 		elseif btn == "MIDDLE" then
 			
 		end
-		print(btn, state, x, y)
 	end
 
 	for _, _, e in eventGesturePinch:unpack() do

@@ -82,8 +82,8 @@ function system.data_changed()
             ImGui.PopStyleColorEx(4)
         end
 		ImGui.SetCursorPosX(size_x - 120)
-		if ImGui.Button("Auto Test") then 
-			auto_test.begin()
+		if ImGui.Button(" Auto Test ") then 
+			auto_test.begin(system)
 		end
     end
     ImGui.End()
@@ -142,4 +142,11 @@ function system.data_changed()
     end
     ImGui.End()
     ImGui.PopStyleVar()
+end
+
+function system.set_current_item(_category, _item_id)
+	category = _category
+	selected[_category] = _item_id
+	data_mgr.set_current_item(_category, _item_id)
+	sound.play_sound("/pkg/game.res/sound/click.wav")
 end

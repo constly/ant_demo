@@ -83,7 +83,7 @@ function system.on_leave()
 end 
 
 local function remap_xy(x, y)
-    local vp = iviewport.device_size
+    local vp = iviewport.device_viewrect
     local vr = iviewport.viewrect
     local nx, ny = x - vp.x, y - vp.y
     nx, ny  = mu.convert_device_to_screen_coord(vp, vr, nx, ny)
