@@ -16,14 +16,17 @@
 namespace ed   = ax::NodeEditor;
 namespace util = ax::NodeEditor::Utilities;
 
-util::BlueprintNodeBuilder::BlueprintNodeBuilder(ImTextureID texture, int textureWidth, int textureHeight):
-    HeaderTextureId(texture),
-    HeaderTextureWidth(textureWidth),
-    HeaderTextureHeight(textureHeight),
-    CurrentNodeId(0),
-    CurrentStage(Stage::Invalid),
-    HasHeader(false)
-{
+util::BlueprintNodeBuilder::BlueprintNodeBuilder(ImTextureID texture, int textureWidth, int textureHeight) {
+	Init(texture, textureWidth, textureHeight);
+}
+
+void util::BlueprintNodeBuilder::Init(ImTextureID texture, int textureWidth, int textureHeight) {
+	HeaderTextureId = texture;
+	HeaderTextureWidth = textureWidth;
+	HeaderTextureHeight = textureHeight;
+	CurrentNodeId = 0;
+	CurrentStage = Stage::Invalid;
+	HasHeader = false;
 }
 
 void util::BlueprintNodeBuilder::Begin(ed::NodeId id)
@@ -311,7 +314,7 @@ void util::BlueprintNodeBuilder::EndPin()
 
 
 void util::BlueprintNodeBuilder::Spring(float weight, float spacing) {
-	ImGui::Dummy(ImVec2(weight, spacing));
+	//ImGui::Dummy(ImVec2(weight, spacing));
 }
 
 void util::BlueprintNodeBuilder::BeginHorizontal(const char* str_id) {

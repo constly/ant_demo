@@ -1,9 +1,13 @@
 #include <lua.hpp>
 #include <bee/lua/binding.h>
+#include "backend/imgui_impl_bgfx.h"
+#include <bee/nonstd/unreachable.h>
 #include "src/imgui_node_editor.h"
 #include "bp/blueprint.h"
+#include "bp/builders.h"
 
 namespace ed = ax::NodeEditor;
+namespace util = ax::NodeEditor::Utilities;
 
 namespace imguilua {
 	struct NodeEditorContext {	
@@ -56,11 +60,119 @@ namespace imguilua::bind {
 		lua_setfield(L, -2, "__index");
 	}
 }
-
 static int bCreateEditorContext(lua_State* L) {
 	bee::lua::newudata<imguilua::NodeEditorContext>(L);
 	return 1;
 }
+
+namespace imguilua::bindutils {
+
+	ImTextureID get_texture_id(lua_State* L, int idx) {
+		int lua_handle = (int)luaL_checkinteger(L, idx);
+		if (auto id = ImGui_ImplBgfx_GetTextureID(lua_handle)) {
+			return *id;
+		}
+		luaL_error(L, "Invalid handle type TEXTURE");
+		std::unreachable();
+	}
+
+	static int bInit(lua_State* L) {
+		util::BlueprintNodeBuilder& builder = bee::lua::checkudata<util::BlueprintNodeBuilder>(L, 1);
+		auto texture_id = get_texture_id(L, 2);
+		int textureWidth = (int)luaL_checkinteger(L, 3);
+		int textureHeight = (int)luaL_checkinteger(L, 4);
+		builder.Init(texture_id, textureWidth, textureHeight);
+		return 0;
+	}
+
+	static int bBegin(lua_State* L) {
+		util::BlueprintNodeBuilder& builder = bee::lua::checkudata<util::BlueprintNodeBuilder>(L, 1);
+		int pinId = (int)luaL_checkinteger(L, 2);
+		builder.Begin(pinId);
+		return 0;
+	}
+
+	static int bEnd(lua_State* L) {
+		util::BlueprintNodeBuilder& builder = bee::lua::checkudata<util::BlueprintNodeBuilder>(L, 1);
+		builder.End();
+		return 0;
+	}
+
+	static int bHeader(lua_State* L) {
+		util::BlueprintNodeBuilder& builder = bee::lua::checkudata<util::BlueprintNodeBuilder>(L, 1);
+		float r = (float)luaL_checknumber(L, 2);
+		float g = (float)luaL_checknumber(L, 3);
+		float b = (float)luaL_checknumber(L, 4);
+		float a = (float)luaL_checknumber(L, 5);
+		builder.Header(ImVec4(r, g, b, a));
+		return 0;
+	}
+
+	static int bEndHeader(lua_State* L) {
+		util::BlueprintNodeBuilder& builder = bee::lua::checkudata<util::BlueprintNodeBuilder>(L, 1);
+		builder.EndHeader();
+		return 0;
+	}
+
+	static int bInput(lua_State* L) {
+		util::BlueprintNodeBuilder& builder = bee::lua::checkudata<util::BlueprintNodeBuilder>(L, 1);
+		int pinId = (int)luaL_checkinteger(L, 2);
+		builder.Input(pinId);
+		return 0;
+	}
+
+	static int bEndInput(lua_State* L) {
+		util::BlueprintNodeBuilder& builder = bee::lua::checkudata<util::BlueprintNodeBuilder>(L, 1);
+		builder.EndInput();
+		return 0;
+	}
+
+	static int bMiddle(lua_State* L) {
+		util::BlueprintNodeBuilder& builder = bee::lua::checkudata<util::BlueprintNodeBuilder>(L, 1);
+		builder.Middle();
+		return 0;
+	}
+
+	static int bOutput(lua_State* L) {
+		util::BlueprintNodeBuilder& builder = bee::lua::checkudata<util::BlueprintNodeBuilder>(L, 1);
+		int pinId = (int)luaL_checkinteger(L, 2);
+		builder.Output(pinId);
+		return 0;
+	}
+
+	static int bEndOutput(lua_State* L) {
+		util::BlueprintNodeBuilder& builder = bee::lua::checkudata<util::BlueprintNodeBuilder>(L, 1);
+		builder.EndOutput();
+		return 0;
+	}
+
+	//----------------------------------------------------------
+	// metatable
+	//----------------------------------------------------------
+	static void metatable(lua_State* L) {
+		static luaL_Reg lib[] = {
+			{"Init", 		bInit},
+			{"Begin", 		bBegin},
+			{"End", 		bEnd},
+			{"Header", 		bHeader},
+			{"EndHeader", 	bEndHeader},
+			{"Input", 		bInput},
+			{"EndInput", 	bEndInput},
+			{"Middle", 		bMiddle},
+			{"Output", 		bOutput},
+			{"EndOutput", 	bEndOutput},
+
+			{nullptr, nullptr},
+		};
+		luaL_newlib(L, lib);
+		lua_setfield(L, -2, "__index");
+	}
+}
+static int bCreateBlueprintNodeBuilder(lua_State* L) {
+	bee::lua::newudata<util::BlueprintNodeBuilder>(L);
+	return 1;
+}
+
 
 static int bSetCurrentEditor(lua_State* L) {
 	if (lua_isuserdata(L, 1)) {
@@ -255,13 +367,37 @@ static int bShowBackgroundContextMenu(lua_State* L) {
 	return 0;
 }
 
+static int bPinPivotAlignment(lua_State* L) {
+	float x = (float)luaL_checknumber(L, 1);
+	float y = (float)luaL_checknumber(L, 2);
+	ed::PinPivotAlignment(ImVec2(x, y));
+	return 0;
+}
+
+static int bPinPivotSize(lua_State* L) {
+	float x = (float)luaL_checknumber(L, 1);
+	float y = (float)luaL_checknumber(L, 2);
+	ed::PinPivotSize(ImVec2(0, 0));
+	return 0;
+}
+
+static int bDrawPinIcon(lua_State* L) {
+	ed::PinType type = (ed::PinType)luaL_checkinteger(L, 1);
+	bool connected = !!lua_toboolean(L, 2);
+	int alpha = (int)luaL_checkinteger(L, 3);
+	ed::DrawPinIcon(type, connected, alpha);
+	return 0;
+}
+
 #define DEF_ENUM(CLASS, MEMBER)                                      \
     lua_pushinteger(L, static_cast<lua_Integer>(ed::CLASS::MEMBER)); \
     lua_setfield(L, -2, #MEMBER);
 
 extern "C" int luaopen_ly_imgui_node_editor(lua_State *L) {
 	luaL_Reg lib[] = {
-		{ "CreateEditorContext",bCreateEditorContext },
+		{ "CreateEditorContext", bCreateEditorContext },
+		{ "CreateBlueprintNodeBuilder", bCreateBlueprintNodeBuilder },
+	
 		{ "SetCurrentEditor", 	bSetCurrentEditor },
 		{ "Begin", 				bBegin },
 		{ "End", 				bEnd },
@@ -288,7 +424,10 @@ extern "C" int luaopen_ly_imgui_node_editor(lua_State *L) {
 		{ "ShowNodeContextMenu", 			bShowNodeContextMenu },	
 		{ "ShowPinContextMenu", 			bShowPinContextMenu },
 		{ "ShowLinkContextMenu", 			bShowLinkContextMenu },
-		{ "ShowBackgroundContextMenu", 			bShowBackgroundContextMenu },
+		{ "ShowBackgroundContextMenu", 		bShowBackgroundContextMenu },
+		{ "PinPivotAlignment", 				bPinPivotAlignment },
+		{ "PinPivotSize", 					bPinPivotSize },
+		{ "DrawPinIcon", 					bDrawPinIcon },
 		
 		{ NULL, NULL },
 	};
@@ -305,6 +444,17 @@ extern "C" int luaopen_ly_imgui_node_editor(lua_State *L) {
 	DEF_ENUM(FlowDirection, Backward);
 	lua_setfield(L, -2, "FlowDirection");
 
+	lua_newtable(L);
+	DEF_ENUM(PinType, Flow);
+	DEF_ENUM(PinType, Bool);
+	DEF_ENUM(PinType, Int);
+	DEF_ENUM(PinType, Float);
+	DEF_ENUM(PinType, String);
+	DEF_ENUM(PinType, Object);
+	DEF_ENUM(PinType, Function);
+	DEF_ENUM(PinType, Delegate);
+	lua_setfield(L, -2, "PinType");
+
     return 1;
 }
 
@@ -313,5 +463,11 @@ namespace bee::lua {
 	struct udata<imguilua::NodeEditorContext> {
 		static inline auto name = "imguilua::NodeEditorContext";
 		static inline auto metatable = imguilua::bind::metatable;
+	};
+
+	template <>
+	struct udata<util::BlueprintNodeBuilder> {
+		static inline auto name = "util::BlueprintNodeBuilder";
+		static inline auto metatable = imguilua::bindutils::metatable;
 	};
 }

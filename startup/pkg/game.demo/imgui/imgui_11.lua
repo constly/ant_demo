@@ -1,5 +1,5 @@
 local ecs = ...
-local dep = require 'dep'
+local dep = require 'dep'  ---@type game.demo.dep
 local ImGui  = dep.ImGui
 local mgr = require "data_mgr"
 local tbParam = 
@@ -55,7 +55,7 @@ end
 function system.get_builder()
 	local blueprint = dep.blueprint.blueprint_builder.create() ---@type blueprint_builder
 
-	blueprint.create_node "test"
+	blueprint.create_node "MoveTo"
 		.set_show_type(blueprint.type_blueprint)
 		.set_group("default", "test")
 		.set_attr("key", "value")
@@ -65,6 +65,7 @@ function system.get_builder()
 		.add_input_var("string", "name")
 		.add_output_var("int", "value")
 		.add_output_var("string", "flag")
+		.add_delegate("call", "回调1")
 
 	blueprint.on_create_complete()
 	return blueprint

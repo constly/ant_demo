@@ -23,7 +23,10 @@ namespace Utilities {
 //------------------------------------------------------------------------------
 struct BlueprintNodeBuilder
 {
-    BlueprintNodeBuilder(ImTextureID texture = nullptr, int textureWidth = 0, int textureHeight = 0);
+	BlueprintNodeBuilder() {}
+    BlueprintNodeBuilder(ImTextureID texture, int textureWidth = 0, int textureHeight = 0);
+
+	void Init(ImTextureID texture = nullptr, int textureWidth = 0, int textureHeight = 0);
 
     void Begin(NodeId id);
     void End();

@@ -2,7 +2,7 @@
 -- 编辑器由多个子图组成
 -- 图内可以定义局部变量 和 局部函数
 ---------------------------------------------------------------------------
-local dep = require "dep"
+local dep = require "dep" ---@type ly.node.blueprint.dep
 local graph_draw = require 'editor.graph_draw'
 local data_hander = require 'common.data_handler'
 
@@ -14,6 +14,7 @@ local create = function(args)
 	local data_hander = data_hander.create()			---@type blueprint_data_handler
 	local graph_draw = graph_draw.create(editor)		---@type blueprint_graph_draw
 
+	---@type node_editor_create_args
 	editor.args = args
 
 	function editor.on_init()
@@ -32,9 +33,9 @@ local create = function(args)
 	end 
 
 	function editor.on_render(deltatime)
-		local g = data_hander.get_cur_subgraph()
-		if g then
-			graph_draw.on_render(g, deltatime)
+		local data = data_hander.get_cur_graph()
+		if data then
+			graph_draw.on_render(data, deltatime)
 		end
 	end
 

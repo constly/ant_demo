@@ -43,6 +43,12 @@ function builder.add_input_var(data_type, name, desc, default, meta)
 end
 
 ---@return blueprint_node_builder
+function builder.add_delegate(name, desc)
+	table.insert(data.pins, {type = "delegate", name = name, desc = desc})
+	return builder
+end
+
+---@return blueprint_node_builder
 function builder.add_output(name, desc)
 	table.insert(data.pins, {type = "output_flow", name = name, desc = desc})
 	return builder

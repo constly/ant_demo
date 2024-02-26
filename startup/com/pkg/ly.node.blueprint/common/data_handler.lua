@@ -1,7 +1,7 @@
 ---------------------------------------------------------------------------
 -- 蓝图数据处理
 ---------------------------------------------------------------------------
-
+local dep = require 'dep' ---@type ly.node.blueprint.dep
 -- 图数据
 local create_graph_data = function()
 	---@class blueprint_graph_data
@@ -45,7 +45,7 @@ local create = function()
 	end
 
 	--- 得到当前编辑的子图
-	function handler.get_cur_subgraph()
+	function handler.get_cur_graph()
 		local data = handler.data
 		return data.graphs[data.index]
 	end 
@@ -64,7 +64,7 @@ local create = function()
 	--- 创建节点
 	---@param node_tpl blueprint_node_tpl_data
 	function handler.create_node(pos_x, pos_y, node_tpl)
-		local g = handler.get_cur_subgraph()
+		local g = handler.get_cur_graph()
 		if not g then return end 
 
 		---@type blueprint_node_data
@@ -119,6 +119,7 @@ local create = function()
 		end
 		node.input_flows = process(node.input_flows, tbs["input_flow"])
 		node.input_vars = process(node.input_vars, tbs["input_var"])
+		node.delegates = process(node.delegates, tbs["delegate"])
 		node.output_flows = process(node.output_flows, tbs["output_flow"])
 		node.output_vars = process(node.output_vars, tbs["output_var"])
 		node.tpl = node_tpl

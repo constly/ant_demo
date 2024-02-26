@@ -2,6 +2,7 @@
 --- 依赖的包
 ---------------------------------------------------------------------------
 
+---@class game.demo.dep
 local dep = {}
 
 dep.fs 				= require "bee.filesystem"

@@ -76,6 +76,9 @@ local blueprint_node_data =
 	---@type blueprint_node_pin_data[] 输出参数列表
 	output_vars = {},
 
+	---@type blueprint_node_pin_data[] 回调列表
+	delegates = {},
+
 	---@type blueprint_node_tpl_data 节点模板
 	tpl = {}
 }
@@ -83,13 +86,12 @@ local blueprint_node_data =
 ---@class node_editor_create_args 编辑器创建参数说明
 local node_editor_create_args = 
 {
-	-- 图的类型
-	type = "";		
+	---@type string 图的类型
+	type = "",		
 
-	-- 图数量
+	---@type number 图数量
 	graph_count = 1,
 
-	-- 节点声明列表
-	---@type blueprint_builder
-	blueprint_builder = {}
+	---@type blueprint_builder 节点声明列表
+	blueprint_builder = {},
 }
