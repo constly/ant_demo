@@ -27,6 +27,13 @@ function system.on_entry()
 	}
 	editor = blueprint.create_editor(args)
 	editor.on_begin()
+
+	editor.data_hander.create_node(200, 100, args.blueprint_builder.nodes[1])
+	editor.data_hander.create_node(600, 100, args.blueprint_builder.nodes[2])
+	editor.data_hander.create_node(100, 500, args.blueprint_builder.nodes[3])
+	editor.data_hander.create_node(400, 500, args.blueprint_builder.nodes[4])
+	editor.data_hander.create_node(600, 500, args.blueprint_builder.nodes[5])
+	editor.data_hander.create_node(800, 500, args.blueprint_builder.nodes[6])
 end 
 
 function system.on_leave()
@@ -54,18 +61,79 @@ end
 
 function system.get_builder()
 	local blueprint = dep.blueprint.blueprint_builder.create() ---@type blueprint_builder
+	local def = dep.blueprint.def
 
 	blueprint.create_node "MoveTo"
-		.set_show_type(blueprint.type_blueprint)
+		.set_show_type(def.type_blueprint)
+		.set_group("default", "test")
+		.set_attr("key", "value")
+		.add_input("Entry")
+		.add_input_var("int", "count")
+		.add_input_var("string", "name name name")
+
+		.add_output("Exit")
+		.add_output_var("int", "value")
+		.add_output_var("string", "flag")
+		.add_output_var("float", "test2 flag2")
+		.add_output_var("object", "test2 flag2")
+		.add_output_var("function", "v3")
+		.add_output_var("delegate", "vd")
+		
+		.add_delegate("call", "回调1")
+
+
+	blueprint.create_node "InputAction "
+		.set_show_type(def.type_blueprint)
+		.set_group("default", "test")
+		.set_attr("key", "value")
+		
+		.add_output("Pressed")
+		.add_output("Released")
+		
+		.add_delegate("call", "回调1")
+
+
+	blueprint.create_node "InputAction2 "
+		.set_show_type(def.type_blueprint)
+		.set_group("default", "test")
+		.set_attr("key", "value")
+		.add_input("Pressed")
+		.add_input("Released")
+		.add_input_var("string", "flag")
+		.add_input_var("float", "test2 flag2")
+		.add_input_var("object", "test2 flag2")
+		.add_input_var("function", "v3")
+		.add_input_var("delegate", "vd")
+
+		.add_output_var("string", "flag")
+		.add_output_var("float", "test2 flag2")
+		.add_output_var("object", "test2 flag2")
+		.add_output_var("function", "v3")
+		.add_output_var("delegate", "vd")
+		.add_delegate("call", "回调1")
+
+
+	blueprint.create_node "InputAction3 "
+		.set_show_type(def.type_blueprint)
+		.set_group("default", "test")
+		.set_attr("key", "value")
+		.add_input("Pressed")
+		.add_input("Released")
+
+	blueprint.create_node "InputAction4 "
+		.set_show_type(def.type_blueprint)
 		.set_group("default", "test")
 		.set_attr("key", "value")
 		.add_input("Entry")
 		.add_output("Exit")
-		.add_input_var("int", "count")
-		.add_input_var("string", "name")
-		.add_output_var("int", "value")
-		.add_output_var("string", "flag")
-		.add_delegate("call", "回调1")
+
+	blueprint.create_node "InputAction5 "
+		.set_show_type(def.type_blueprint)
+		.set_group("default", "test")
+		.set_attr("key", "value")
+		.add_output("Entry")
+		.add_output("Exit")
+
 
 	blueprint.on_create_complete()
 	return blueprint

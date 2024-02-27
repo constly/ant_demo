@@ -5,7 +5,8 @@
 ---@class ly.node.blueprint.main
 local api = {}
 
-api.blueprint_builder = require "common.blueprint_builder"
+api.blueprint_builder 		= require "common.blueprint_builder"
+api.def 					= require 'def'
 
 
 -- 创建蓝图编辑器

@@ -10,7 +10,7 @@ dep.vfs 			= require "vfs"
 
 dep.ImGui  			= require "imgui"
 dep.ImGuiExtend 	= require "ly.imgui.extend"
-dep.ed 				= require "ly.imgui.node_editor"
+dep.ed 				= require "ly.imgui.node_editor"  		---@type blueprint_ed
 
 
 dep.blueprint 		= import_package "ly.node.blueprint"  	---@type ly.node.blueprint.main

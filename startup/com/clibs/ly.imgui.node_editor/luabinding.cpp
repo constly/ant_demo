@@ -146,6 +146,13 @@ namespace imguilua::bindutils {
 		return 0;
 	}
 
+	static int bGetHeaderSize(lua_State* L) {
+		util::BlueprintNodeBuilder& builder = bee::lua::checkudata<util::BlueprintNodeBuilder>(L, 1);
+		lua_pushnumber(L, builder.HeaderMax.x - builder.HeaderMin.x);
+		lua_pushnumber(L, builder.HeaderMax.y - builder.HeaderMin.y);
+		return 2;
+	}
+
 	//----------------------------------------------------------
 	// metatable
 	//----------------------------------------------------------
@@ -161,6 +168,7 @@ namespace imguilua::bindutils {
 			{"Middle", 		bMiddle},
 			{"Output", 		bOutput},
 			{"EndOutput", 	bEndOutput},
+			{"GetHeaderSize", 	bGetHeaderSize},
 
 			{nullptr, nullptr},
 		};
@@ -231,7 +239,12 @@ static int bEndDelete(lua_State* L) {
 }
 
 static int bBeginCreate(lua_State* L) {
-	lua_pushboolean(L, ed::BeginCreate());
+	float r = (float)luaL_optnumber(L, 1, 1);
+	float g = (float)luaL_optnumber(L, 2, 1);
+	float b = (float)luaL_optnumber(L, 3, 1);
+	float a = (float)luaL_optnumber(L, 4, 1);
+	float thickness = (float)luaL_optnumber(L, 5, 1);
+	lua_pushboolean(L, ed::BeginCreate(ImVec4(r, g, b, a), thickness));
 	return 1;
 }
 
@@ -281,19 +294,27 @@ static int bLink(lua_State* L) {
 }
 
 static int bQueryNewLink(lua_State* L) {
-	ed::PinId inputPinId, outputPinId;
+	ed::PinId inputPinId = 0;
+	ed::PinId outputPinId = 0;
 	if (ed::QueryNewLink(&inputPinId, &outputPinId)) {
-		if (inputPinId && outputPinId) {
-			lua_pushinteger(L, inputPinId.Get());
-			lua_pushinteger(L, outputPinId.Get());
-			return 2;
-		}
+		lua_pushinteger(L, inputPinId.Get());
+		lua_pushinteger(L, outputPinId.Get());
+		return 2;
 	}
 	return 0;
 }
 
 static int bAcceptNewItem(lua_State* L) {
-	lua_pushboolean(L, ed::AcceptNewItem());
+	if (lua_tonumber(L, 1)) {
+		float r = (float)luaL_checknumber(L, 1);
+		float g = (float)luaL_checknumber(L, 2);
+		float b = (float)luaL_checknumber(L, 3);
+		float a = (float)luaL_checknumber(L, 4);
+		float thickness = (float)luaL_optnumber(L, 5, 1);
+		lua_pushboolean(L, ed::AcceptNewItem(ImVec4(r, g, b, a), thickness));
+	} else {
+		lua_pushboolean(L, ed::AcceptNewItem());
+	}
 	return 1;
 }
 
@@ -389,6 +410,16 @@ static int bDrawPinIcon(lua_State* L) {
 	return 0;
 }
 
+static int bRejectNewItem(lua_State* L) {
+	int r = (int)luaL_checkinteger(L, 1);
+	int g = (int)luaL_checkinteger(L, 2);
+	int b = (int)luaL_checkinteger(L, 3);
+	int a = (int)luaL_checkinteger(L, 4);
+	float thickness = (float)luaL_optnumber(L, 5, 1);
+	ed::RejectNewItem(ImColor(r, g, b, a), thickness);
+	return 0;
+}
+
 #define DEF_ENUM(CLASS, MEMBER)                                      \
     lua_pushinteger(L, static_cast<lua_Integer>(ed::CLASS::MEMBER)); \
     lua_setfield(L, -2, #MEMBER);
@@ -428,6 +459,8 @@ extern "C" int luaopen_ly_imgui_node_editor(lua_State *L) {
 		{ "PinPivotAlignment", 				bPinPivotAlignment },
 		{ "PinPivotSize", 					bPinPivotSize },
 		{ "DrawPinIcon", 					bDrawPinIcon },
+		{ "RejectNewItem", 					bRejectNewItem },
+		
 		
 		{ NULL, NULL },
 	};

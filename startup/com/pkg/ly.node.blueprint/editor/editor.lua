@@ -14,9 +14,11 @@ local create = function(args)
 	local data_hander = data_hander.create()			---@type blueprint_data_handler
 	local graph_draw = graph_draw.create(editor)		---@type blueprint_graph_draw
 
-	---@type node_editor_create_args
-	editor.args = args
-
+	editor.args = args									---@type node_editor_create_args
+	editor.blueprint_builder = args.blueprint_builder	---@type blueprint_builder
+	editor.stack = stack
+	editor.data_hander = data_hander
+	
 	function editor.on_init()
 		stack.set_data_handler(data_hander)	
 		data_hander.init(args)
@@ -39,8 +41,6 @@ local create = function(args)
 		end
 	end
 
-	editor.stack = stack
-	editor.data_hander = data_hander
 	editor.on_init()
 	return editor
 end 

@@ -67,13 +67,6 @@ local create = function()
 	---@type blueprint_node_tpl_data[] 节点列表
 	blueprint.nodes = {}
 
-	-- 节点类型定义
-	blueprint.type_blueprint = "blueprint"
-	blueprint.type_simple = "simple"
-	blueprint.type_tree = "tree"
-	blueprint.type_comment = "comment"
-	blueprint.type_houdini = "houdini"
-
 	---@return blueprint_node_builder
 	function blueprint.create_node(name)
 		local node = {

@@ -77,11 +77,13 @@ private:
     ImU32       HeaderColor;
     ImVec2      NodeMin;
     ImVec2      NodeMax;
-    ImVec2      HeaderMin;
-    ImVec2      HeaderMax;
     ImVec2      ContentMin;
     ImVec2      ContentMax;
     bool        HasHeader;
+
+public:
+	ImVec2      HeaderMin;
+    ImVec2      HeaderMax;
 };
 
 

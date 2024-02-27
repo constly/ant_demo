@@ -62,12 +62,15 @@ void util::BlueprintNodeBuilder::End()
         if ((HeaderMax.x > HeaderMin.x) && (HeaderMax.y > HeaderMin.y) && HeaderTextureId)
         {
             const auto uv = ImVec2(
-                (HeaderMax.x - HeaderMin.x) / (float)(4.0f * HeaderTextureWidth),
-                (HeaderMax.y - HeaderMin.y) / (float)(4.0f * HeaderTextureHeight));
+                (NodeMax.x - NodeMin.x) / (float)(4.0f * HeaderTextureWidth),
+                (NodeMax.y - NodeMin.y) / (float)(4.0f * HeaderTextureHeight));
 
+			auto min = NodeMin - ImVec2(8 - halfBorderWidth, 4 - halfBorderWidth);
+			auto max = NodeMax + ImVec2(8 - halfBorderWidth, 0);
+			max.y = min.y + (HeaderMax.y - HeaderMin.y) + 4;
             drawList->AddImageRounded(HeaderTextureId,
-                HeaderMin - ImVec2(8 - halfBorderWidth, 4 - halfBorderWidth),
-                HeaderMax + ImVec2(8 - halfBorderWidth, 0),
+                min,
+                max,
                 ImVec2(0.0f, 0.0f), uv,
 #if IMGUI_VERSION_NUM > 18101
                 headerColor, GetStyle().NodeRounding, ImDrawFlags_RoundCornersTop);
@@ -264,9 +267,12 @@ bool util::BlueprintNodeBuilder::SetStage(Stage stage)
             break;
 
         case Stage::Output:
-            if (oldStage == Stage::Middle || oldStage == Stage::Input)
+            if (oldStage == Stage::Middle || oldStage == Stage::Input) {
                 Spring(1);
-            else
+				ImGui::SameLine();
+				ImGui::Dummy(ImVec2(30, 25));
+				ImGui::SameLine();
+			} else
                 Spring(1, 0);
             BeginVertical("outputs", ImVec2(0, 0), 1.0f);
 
