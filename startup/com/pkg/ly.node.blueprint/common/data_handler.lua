@@ -80,6 +80,7 @@ local create = function()
 	end
 
 	---@param graph_data blueprint_graph_data
+	---@param pinId number
 	---@return blueprint_node_pin_data
 	function handler.find_pin(graph_data, pinId)
 		if not pinId or pinId <= 0 then return end 
@@ -126,6 +127,31 @@ local create = function()
 		if pinA.kind == pinB.kind or pinA.type ~= pinB.type then return false end 
 		if node1 == node2 then return false end;
 		return true
+	end
+
+	---@param graph_data blueprint_graph_data
+	---@return boolean
+	function handler.remove_node(graph_data, nodeId)
+		print("删除节点时，对应的连线也要一起删除掉")
+		for i, v in ipairs(graph_data.nodes) do 
+			if v.id == nodeId then 
+				table.remove(graph_data.nodes, i);
+				return true;
+			end
+		end
+		return  false
+	end
+
+	---@param graph_data blueprint_graph_data
+	---@return boolean
+	function handler.remove_link(graph_data, linkId)
+		for i, v in ipairs(graph_data.links) do 
+			if v.id == linkId then 
+				table.remove(graph_data.links, i);
+				return true;
+			end
+		end
+		return false
 	end
 
 	--- 创建节点

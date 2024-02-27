@@ -287,9 +287,33 @@ static int bLink(lua_State* L) {
 	int id = (int)luaL_checkinteger(L, 1);
 	int inputId = (int)luaL_checkinteger(L, 2);
 	int outputId = (int)luaL_checkinteger(L, 3);
-	// 颜色
-	// tickness
-	ed::Link(id, inputId, outputId);
+	float tickness = (float)luaL_optnumber(L, 5, 1);
+
+	ImVec4 color(1, 1, 1, 1);
+	if (lua_type(L, 4) == LUA_TTABLE) {
+		if (lua_geti(L, 4, 1) == LUA_TNUMBER)
+			color.x = (float)lua_tonumber(L, -1);
+		if (lua_geti(L, 4, 2) == LUA_TNUMBER)
+			color.y = (float)lua_tonumber(L, -1);
+		if (lua_geti(L, 4, 3) == LUA_TNUMBER)
+			color.z = (float)lua_tonumber(L, -1);
+		if (lua_geti(L, 4, 4) == LUA_TNUMBER)
+			color.w = (float)lua_tonumber(L, -1);
+		lua_pop(L, 4);
+	}
+	ed::Link(id, inputId, outputId, color, tickness);
+	return 0;
+}
+
+static int bPinLink(lua_State* L) {
+	int id = (int)luaL_checkinteger(L, 1);
+	int inputId = (int)luaL_checkinteger(L, 2);
+	int outputId = (int)luaL_checkinteger(L, 3);
+	ed::PinType type = (ed::PinType)luaL_checkinteger(L, 4);
+	float tickness = (float)luaL_optnumber(L, 5, 1);
+	
+	ImColor color = ed::GetIconColor(type);
+	ed::Link(id, inputId, outputId, color, tickness);
 	return 0;
 }
 
@@ -300,6 +324,15 @@ static int bQueryNewLink(lua_State* L) {
 		lua_pushinteger(L, inputPinId.Get());
 		lua_pushinteger(L, outputPinId.Get());
 		return 2;
+	}
+	return 0;
+}
+
+static int bQueryNewNode(lua_State* L) {
+	ed::PinId pinId = 0;
+	if (ed::QueryNewNode(&pinId)) {
+		lua_pushinteger(L, pinId.Get());
+		return 1;
 	}
 	return 0;
 }
@@ -319,9 +352,18 @@ static int bAcceptNewItem(lua_State* L) {
 }
 
 static int bQueryDeletedLink(lua_State* L) {
-	ed::LinkId deletedLinkId;
+	ed::LinkId deletedLinkId = 0;
 	if (ed::QueryDeletedLink(&deletedLinkId)) {
 		lua_pushinteger(L, deletedLinkId.Get());
+		return 1;
+	}
+	return 0;
+}
+
+static int bQueryDeletedNode(lua_State* L) {
+	ed::NodeId nodeId = 0;
+	if (ed::QueryDeletedNode(&nodeId)) {
+		lua_pushinteger(L, nodeId.Get());
 		return 1;
 	}
 	return 0;
@@ -363,7 +405,7 @@ static int bShowNodeContextMenu(lua_State* L) {
 }
 
 static int bShowPinContextMenu(lua_State* L) {
-	ed::PinId id;
+	ed::PinId id = 0;
 	if (ed::ShowPinContextMenu(&id)) {
 		lua_pushinteger(L, id.Get());
 		return 1;
@@ -372,7 +414,7 @@ static int bShowPinContextMenu(lua_State* L) {
 }
 
 static int bShowLinkContextMenu(lua_State* L) {
-	ed::LinkId id;
+	ed::LinkId id = 0;
 	if (ed::ShowLinkContextMenu(&id)) {
 		lua_pushinteger(L, id.Get());
 		return 1;
@@ -446,9 +488,12 @@ extern "C" int luaopen_ly_imgui_node_editor(lua_State *L) {
 		{ "Suspend", 			bSuspend },
 		{ "Resume", 			bResume },
 		{ "Link", 				bLink },
+		{ "PinLink", 			bPinLink },
 		{ "QueryNewLink", 		bQueryNewLink },
+		{ "QueryNewNode", 		bQueryNewNode },
 		{ "AcceptNewItem", 		bAcceptNewItem },
 		{ "QueryDeletedLink", 	bQueryDeletedLink },
+		{ "QueryDeletedNode", 	bQueryDeletedNode },
 		{ "AcceptDeletedItem", 	bAcceptDeletedItem },
 		{ "NavigateToContent", 	bNavigateToContent },
 		{ "Splitter", 			bSplitter },

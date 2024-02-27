@@ -17,6 +17,7 @@ local create = function(editor)
 	local open_menu_x, open_menu_y
 	local createNewNode = false
 	local newLinkPin
+	local has_open_menu = false
 
 	function graph.on_init()
 		context = ed.CreateEditorContext()
@@ -59,7 +60,7 @@ local create = function(editor)
 
 		-- 绘制连线
 		for _, v in ipairs(graph_data.links) do 
-			ed.Link(v.id, v.startPin, v.endPin)
+			ed.PinLink(v.id, v.startPin, v.endPin, v.type, 2)
 		end
 
 		if not createNewNode then 
@@ -165,6 +166,23 @@ local create = function(editor)
 	function graph.draw_querylink(graph_data)
 		local pox_x, posy_y = ImGui.GetMousePos()
 		if ed.BeginCreate(1, 1, 1, 1, 2) then 
+			local showLabel = function(label, color)
+				color = {0.1, 0.1, 0.1, 1}
+				ImGui.SetCursorPosY(ImGui.GetCursorPosY() - ImGui.GetTextLineHeight());
+				local sizex, sizey = ImGui.CalcTextSize(label)
+				local padding = ImGui.StyleVar.FramePadding
+				local spacing = ImGui.StyleVar.ItemSpacing
+				local px, py = ImGui.GetCursorPos()
+				ImGui.SetCursorPos(px + spacing, py - spacing);
+
+				local p1, p2 = ImGui.GetCursorScreenPos()
+				local rectMin = {p1 - padding,  p2 - padding };
+				local rectMax = {p1 + sizex + padding, p2 + sizey + padding};
+
+				local draw_list = dep.ImGuiExtend.draw_list;
+				draw_list.AddRectFilled({min = rectMin, max = rectMax, col = color, rounding = 10}); 
+				ImGui.Text(label);
+			end
 			local inputPinId, outputPinId = ed.QueryNewLink()
 			local pin1, node1 = editor.data_hander.find_pin(graph_data, inputPinId)
 			local pin2, node2 = editor.data_hander.find_pin(graph_data, outputPinId)
@@ -174,25 +192,68 @@ local create = function(editor)
 			end
 			if pin1 and pin2 then 
 				if pin1 == pin2 then 
-					ed.RejectNewItem(255, 0, 0, 1, 2)
+					ed.RejectNewItem(255, 0, 0, 255, 2)
+				elseif pin2.kind == pin1.kind then 
+					showLabel("端口不匹配");
+					ed.RejectNewItem(255, 0, 0, 255, 2.0);
 				elseif pin2.type ~= pin1.type then 
-					ed.RejectNewItem(255, 128, 128, 1, 1)
+					showLabel("端口不匹配");
+					ed.RejectNewItem(255, 128, 128, 255, 1)
 				else 
+					showLabel("+ 创建连线");
 					if ed.AcceptNewItem(0.5, 1, 0.5, 4) then
-						table.insert(graph_data.links, {id = editor.data_hander.next_id(), startPin = pin1.id, endPin = pin2.id})
+						table.insert(graph_data.links, {id = editor.data_hander.next_id(), startPin = pin1.id, endPin = pin2.id, type = pin1.type})
 						editor.stack.snapshoot(true)
 					end
+				end
+			end
+
+			local pinId = ed.QueryNewNode()
+			if pinId then 
+				newLinkPin = editor.data_hander.find_pin(graph_data, pinId)
+				if newLinkPin then 
+					showLabel("+ 创建节点")
+				end
+				if ed.AcceptNewItem() then 
+					createNewNode = true
+					newNodeLinkPin = newLinkPin and newLinkPin.id or 0
+					newLinkPin = nil
+					ed.Suspend();
+					ImGui.OpenPopup("Create New Node");
+					has_open_menu = true
+					ed.Resume();
 				end
 			end
 		else 
 			newLinkPin = nil
 		end
 		ed.EndCreate();
+
+		if ed.BeginDelete() then 
+			local ok = false
+			local deletedLinkId = ed.QueryDeletedLink()
+			while deletedLinkId do 
+				if ed.AcceptDeletedItem() and editor.data_hander.remove_link(graph_data, deletedLinkId) then 
+					ok = true
+				end
+				deletedLinkId = ed.QueryDeletedLink()
+			end
+			local deletedNodeId = ed.QueryDeletedNode()
+			while deletedNodeId do 
+				if ed.AcceptDeletedItem() and editor.data_hander.remove_node(graph_data, deletedNodeId) then 
+					ok = true
+				end
+				deletedNodeId = ed.QueryDeletedNode()
+			end
+			if ok then 
+				editor.stack.snapshoot(true)
+			end
+		end 
+		ed.EndDelete()
 	end
 
 	function graph.draw_menu() 
 		ed.Suspend()
-		local has_open = false
 		local contextNodeId = ed.ShowNodeContextMenu()
 		local contextPinId = ed.ShowPinContextMenu()
 		local contextLinkId = ed.ShowLinkContextMenu()
@@ -205,11 +266,14 @@ local create = function(editor)
 		elseif ed.ShowBackgroundContextMenu() then
 			ImGui.OpenPopup("Create New Node");
 			newNodeLinkPin = nil;
-			has_open = true
+			has_open_menu = true
 		end
 		ed.Resume()
 
-		if has_open then open_menu_x, open_menu_y = ImGui.GetMousePos(); end
+		if has_open_menu then 
+			open_menu_x, open_menu_y = ImGui.GetMousePos(); 
+			has_open_menu = false
+		end
 
 		ed.Suspend();
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 8, 8);
@@ -232,6 +296,7 @@ local create = function(editor)
     		if ImGui.BeginMenu("创 建") then 
 				for i, data in ipairs(editor.args.blueprint_builder.nodes) do 
 					if ImGui.MenuItem(data.name) then
+						createNewNode = false
 						editor.data_hander.create_node(open_menu_x, open_menu_y, data)
 						editor.stack.snapshoot(true)
 					end

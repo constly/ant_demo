@@ -58,6 +58,7 @@ local blueprint_node_data = {}
 ---@field id number 								唯一id 
 ---@field startPin number							初始点
 ---@field endPin number								结束点
+---@field type ed.PinType							线条类型
 local blueprint_link_data = {}
 
 ---@class node_editor_create_args 编辑器创建参数说明
