@@ -70,6 +70,20 @@ function data_stack:snapshoot()
     print("snapshoot", self.index)
 end
 
+function system.on_entry()
+	if #data.points == 0 then 
+		table.insert(data.points, {x = 314, y = 162})
+		table.insert(data.points, {x = 171, y = 446})
+		data_stack:snapshoot()
+		table.insert(data.points, {x = 319, y = 165})
+		table.insert(data.points, {x = 407, y = 407})
+		data_stack:snapshoot()
+		table.insert(data.points, {x = 229, y = 347})
+		table.insert(data.points, {x = 361, y = 337})
+		data_stack:snapshoot()
+	end
+end
+
 function system.data_changed()
     ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
@@ -184,4 +198,8 @@ function system.data_changed()
     if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) and ImGui.IsKeyPressed(ImGui.Key.Y, false) then 
         data_stack:redo()
     end
+
+	if ImGui.IsKeyPressed(ImGui.Key.P, false) then 
+		dep.common.lib.dump(data.points)
+	end
 end
