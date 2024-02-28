@@ -1538,11 +1538,13 @@ private:
     int                 m_BackgroundDoubleClickButtonIndex;
 
     bool                m_IsInitialized;
-    Settings            m_Settings;
 
     ImDrawList*         m_DrawList;
     int                 m_ExternalChannel;
     ImDrawListSplitter  m_Splitter;
+
+public:
+    Settings            m_Settings;
 };
 
 

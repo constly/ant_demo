@@ -761,6 +761,14 @@ int ax::NodeEditor::GetOrderedNodeIds(NodeId* nodes, int size)
     return s_Editor->GetNodeIds(nodes, size);
 }
 
+ax::NodeEditor::SaveReasonFlags ax::NodeEditor::GetSaveReasonFlags() {
+	return s_Editor->m_Settings.m_DirtyReason;
+}
+
+void ax::NodeEditor::ClearDirty() {
+	if (s_Editor)
+		s_Editor->m_Settings.ClearDirty();
+}
 
 //------------------------------------------------------------------------------
 // 接口扩展

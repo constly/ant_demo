@@ -261,6 +261,14 @@ static int bSetNodePosition(lua_State* L) {
 	return 0;
 }
 
+static int bGetNodePosition(lua_State* L) {
+	int id = (int)luaL_checkinteger(L, 1);
+	ImVec2 pos = ed::GetNodePosition(id);
+	lua_pushnumber(L, pos.x);
+	lua_pushnumber(L, pos.y);
+	return 2;
+}
+
 static int bCheckNodeExist(lua_State* L) {
 	int id = (int)luaL_checkinteger(L, 1);
 	lua_pushboolean(L, ed::CheckNodeExist(id));
@@ -462,6 +470,18 @@ static int bRejectNewItem(lua_State* L) {
 	return 0;
 }
 
+using SaveReasonFlags = ed::SaveReasonFlags;
+static int bGetDirtyReason(lua_State* L) {
+	auto flag = ed::GetSaveReasonFlags();
+	lua_pushinteger(L, (int)flag);
+	return 1;
+}
+
+static int bClearDirty(lua_State* L) {
+	ed::ClearDirty();
+	return 0;
+}
+
 #define DEF_ENUM(CLASS, MEMBER)                                      \
     lua_pushinteger(L, static_cast<lua_Integer>(ed::CLASS::MEMBER)); \
     lua_setfield(L, -2, #MEMBER);
@@ -483,6 +503,7 @@ extern "C" int luaopen_ly_imgui_node_editor(lua_State *L) {
 		{ "BeginCreate", 		bBeginCreate },
 		{ "EndCreate", 			bEndCreate },
 		{ "SetNodePosition", 	bSetNodePosition },
+		{ "GetNodePosition", 	bGetNodePosition },
 		{ "CheckNodeExist", 	bCheckNodeExist },
 		{ "EnableShortcuts", 	bEnableShortcuts },
 		{ "Suspend", 			bSuspend },
@@ -505,7 +526,8 @@ extern "C" int luaopen_ly_imgui_node_editor(lua_State *L) {
 		{ "PinPivotSize", 					bPinPivotSize },
 		{ "DrawPinIcon", 					bDrawPinIcon },
 		{ "RejectNewItem", 					bRejectNewItem },
-		
+		{ "GetDirtyReason", 				bGetDirtyReason },
+		{ "ClearDirty", 					bClearDirty },
 		
 		{ NULL, NULL },
 	};

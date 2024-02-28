@@ -18,6 +18,7 @@ local create = function(editor)
 	local createNewNode = false
 	local newLinkPin
 	local has_open_menu = false
+	local graph_data ---@type blueprint_graph_data
 
 	function graph.on_init()
 		context = ed.CreateEditorContext()
@@ -33,18 +34,20 @@ local create = function(editor)
 	end 
 
 	-- 渲染更新
-	---@param graph_data blueprint_graph_data
-	function graph.on_render(graph_data, deltatime)
+	---@param _graph_data blueprint_graph_data
+	---@param _deltatime number 渲染间隔(秒)
+	---@param params map<string, any> 扩展参数
+	function graph.on_render(_graph_data, _deltatime, params)
+		graph_data = _graph_data
 		ed.SetCurrentEditor(context)
 		ed.Begin("BlueprintGraphDraw", 0, 0)
+		if params.needReload then graph.reload(graph_data) end
+
 		local screen_pos_x, screen_pos_y = ImGui.GetCursorScreenPos()
 		builder:Init(dep.textureman.texture_get(img_bg.id), 64, 64);
 
 		-- 绘制节点
 		for _, node in ipairs(graph_data.nodes) do 
-			local id = node.id
-			if not ed.CheckNodeExist(id) then ed.SetNodePosition(id, node.pos_x, node.pos_y) end
-
 			local node_tpl = editor.data_hander.get_node_tpl(editor.blueprint_builder, node)
 			if node_tpl then 
 				local show_type = node_tpl.show_type 
@@ -69,8 +72,17 @@ local create = function(editor)
 		ImGui.SetCursorScreenPos(screen_pos_x, screen_pos_y)
 		
 		graph.draw_menu();
+		graph.check_dirty();
+		if params.navigateToContent then ed.NavigateToContent() end
 		ed.End()
 		ed.SetCurrentEditor(nil)
+	end
+
+	function graph.reload()
+		for _, node in ipairs(graph_data.nodes) do 
+			ed.SetNodePosition(node.id, node.pos_x, node.pos_y)
+		end
+		ed:ClearDirty()
 	end
 
 	---@param node blueprint_node_data
@@ -162,8 +174,7 @@ local create = function(editor)
 		builder:End()
 	end
 
-	---@param graph_data blueprint_graph_data
-	function graph.draw_querylink(graph_data)
+	function graph.draw_querylink()
 		local pox_x, posy_y = ImGui.GetMousePos()
 		if ed.BeginCreate(1, 1, 1, 1, 2) then 
 			local showLabel = function(label, color)
@@ -245,9 +256,7 @@ local create = function(editor)
 				end
 				deletedNodeId = ed.QueryDeletedNode()
 			end
-			if ok then 
-				editor.stack.snapshoot(true)
-			end
+			if ok then editor.stack.snapshoot(true) end
 		end 
 		ed.EndDelete()
 	end
@@ -304,9 +313,30 @@ local create = function(editor)
 				ImGui.EndMenu()
 			end
 			ImGui.EndPopup()
+		else 
+			createNewNode = false
 		end
 		ImGui.PopStyleVar()
 		ed.Resume()
+	end
+
+	function graph.check_dirty()
+		local n = ed.GetDirtyReason();
+		if n > 0 then 
+			-- add 和 remove 上面已经处理了
+			--if (n & def.dirty_AddNode) or (n & def.dirty_RemoveNode) then 
+			--	editor.stack.snapshoot(true)
+			--else
+			if (n & def.dirty_Position) > 0 then
+				for _, node in ipairs(graph_data.nodes) do 
+					local posx, posy = ed.GetNodePosition(node.id)
+					node.pos_x = posx
+					node.pos_y = posy
+				end
+				editor.stack.snapshoot(false)
+			end
+			ed.ClearDirty()
+		end
 	end
 
 	return graph

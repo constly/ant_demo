@@ -32,24 +32,31 @@ local create = function()
 	end
 
 	function data_stack.undo()
-		local index = index - 1
-		if index >= 0 and index <= #stack then 
-			index = index
-			if index == 0 then 
-				data_hander.init()
-			else 
-				data_hander.data = copy(stack[index])
-			end
+		local _index = index - 1
+		if _index > 0 and _index <= #stack then 
+			index = _index
+			data_hander.data = copy(stack[index])
+			data_hander.stack_version = index
 			print("undo", index)
 		end
 	end 
 
 	function data_stack.redo()
-		local index = index + 1
-		if index >= 1 and index <= #stack then 
-			index = index
+		local _index = index + 1
+		if _index >= 1 and _index <= #stack then 
+			index = _index
 			data_hander.data = copy(stack[index])
+			data_hander.stack_version = index
 			print("redo", index)
+		end
+	end
+
+	function data_stack.pop()
+		if #stack > 0 then 
+			table.remove(stack, #stack);
+			if index > #stack then 
+				index = #stack
+			end
 		end
 	end
 
@@ -59,13 +66,15 @@ local create = function()
 			table.remove(stack, #stack)
 		end
 		data_hander.data.__dirty = dirty									-- 本次是否有数据变动
-		data_hander.data.__isModify = data_stack.get_modify()				-- 遍历所有堆栈，看数据是否有变化
+		data_hander.data.__isModify = data_stack.get_modify()				
 		local new_data = copy(data_hander.data)
 		table.insert(stack, new_data)
 		index = #stack
+		data_hander.stack_version = index
 		print("snapshoot", index)
 	end
 
+	---@return boolean 遍历所有堆栈，看数据是否有变化
 	function data_stack.get_modify()
 		if data_hander.data.__dirty then 
 			return true 

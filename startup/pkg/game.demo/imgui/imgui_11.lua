@@ -16,25 +16,31 @@ local blueprint = dep.blueprint
 local ed = dep.ed
 local editor 		---@type blueprint_graph_main
 local size1 = 200
+local blueprint_builder
 
 function system.on_entry()
-	
+	if not blueprint_builder then 
+		blueprint_builder = system.get_builder()
+	end
 	---@type node_editor_create_args
 	local args = 
 	{
 		graph_count = 1,
-		blueprint_builder = system.get_builder()
+		blueprint_builder = blueprint_builder
 	}
 	editor = blueprint.create_editor(args)
 	editor.on_begin()
-
-	editor.data_hander.create_node(200, 100, args.blueprint_builder.nodes[1])
-	editor.data_hander.create_node(600, 100, args.blueprint_builder.nodes[2])
-	editor.data_hander.create_node(100, 500, args.blueprint_builder.nodes[3])
-	editor.data_hander.create_node(400, 500, args.blueprint_builder.nodes[4])
-	editor.data_hander.create_node(600, 500, args.blueprint_builder.nodes[5])
-	editor.data_hander.create_node(800, 500, args.blueprint_builder.nodes[6])
+	system.create_nodes()
 end 
+
+function system.create_nodes()
+	editor.data_hander.create_node(200, 100, blueprint_builder.nodes[1])
+	editor.data_hander.create_node(600, 100, blueprint_builder.nodes[2])
+	editor.data_hander.create_node(100, 500, blueprint_builder.nodes[3])
+	editor.data_hander.create_node(400, 500, blueprint_builder.nodes[4])
+	editor.data_hander.create_node(600, 500, blueprint_builder.nodes[5])
+	editor.data_hander.create_node(800, 500, blueprint_builder.nodes[6])
+end
 
 function system.on_leave()
 	editor.on_destroy()
@@ -53,8 +59,49 @@ function system.data_changed()
 		if newSize1 then
 			size1 = newSize1 
 		end
+		ImGui.SetCursorPos(30, 50)
+		ImGui.BeginGroup()
+		local navigateToContent = false
+		local size = 90 * mgr.get_dpi_scale()
+		ImGui.PushStyleVarImVec2(ImGui.StyleVar.ItemSpacing, 10, 10);
+		ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.2, 0.2, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
+		ImGui.Text("数据堆栈版本: " .. editor.data_hander.stack_version)
+		if ImGui.ButtonEx("保 存", size) then 
+		end
+		if ImGui.ButtonEx("加 载", size) then 
+		end
+
+		ImGui.Dummy(10, 10)
+		if ImGui.ButtonEx("撤 销", size) then 
+			editor.stack.undo();
+		end
+		if ImGui.ButtonEx("回 退", size) then 
+			editor.stack.redo();
+		end
+
+		ImGui.Dummy(10, 10)
+		if ImGui.ButtonEx("清空数据", size) then 
+			editor.on_reset();
+		end
+		if ImGui.ButtonEx("重置数据", size) then 
+			editor.on_reset();
+			system.create_nodes();
+			editor.stack.pop()
+			editor.stack.snapshoot()
+		end
+
+		ImGui.Dummy(10, 10)
+		if ImGui.ButtonEx("视野回正", size) then 
+			editor.navigateToContent()
+		end
+		ImGui.PopStyleVar(1);
+		ImGui.PopStyleColorEx(3);
+		ImGui.EndGroup()
+
 		ImGui.SetCursorPos(size1 + 20, 8);
-		editor.on_render(0.033);
+		editor.on_render(0.033, navigateToContent);
 	end
 	ImGui.End()
 end

@@ -1,7 +1,6 @@
 local dep = require 'dep'
 local ImGui = dep.ImGui
 local all_data = {}
-local max_id = 0
 local cur_item = nil
 ---@class data_mgr
 local api = {}
@@ -12,12 +11,12 @@ function api.create_system(tbParam)
     local tb = api.find_category(tbParam.category)
     if not tb then 
         tb = {category = tbParam.category, items = {}}
+		tb.min_id = #all_data * 1000
         table.insert(all_data, tb)
     end
     if not tbParam.name then return end
 
     local system = tbParam.ecs and tbParam.ecs.system(tbParam.system_name)
-    max_id = max_id + 1
     local data = {}
     data.name = tbParam.name
     data.world = tbParam.ecs and tbParam.ecs.world
@@ -25,12 +24,12 @@ function api.create_system(tbParam)
     data.ok   = tbParam.ok
     data.system = system
     data.system_name = system and ("game.demo|" .. tbParam.system_name)
-    data.id = max_id
+    data.id = tb.min_id + #tb.items + 1
     data.file = dep.vfs.repopath() .. 'pkg/game.demo/' .. tbParam.file;
     data.file = data.file:gsub("/","\\")
     table.insert(tb.items, data)
     table.sort(tb.items, function(a, b) return a.name < b.name end)
-    return system, max_id
+    return system, data.id
 end
 
 function api.find_category(category_name)
@@ -97,7 +96,7 @@ function api.get_dpi_scale() return ImGui.GetMainViewport().DpiScale end
 local tb_def = {
     {"type_imgui",      "ImGui"},
     {"type_core",       "引擎核心"},
-    {"type_asset",      "资源管理"},
+    {"type_tool",       "工具"},
     {"type_rmlui",      "RmlUI"},
     {"type_scene",      "场景"},
     {"type_renderer",   "渲染"},
@@ -120,12 +119,14 @@ end
 temp_create(api.type_core, "93_性能分析", "帧率，内存使用，cput使用，gpu使用，尚未实现")
 temp_create(api.type_core, "94_PC平台", "当窗口最小化时，当窗口分辨率变化时，修改窗口分辨率，得到窗口分辨率，设置窗口标题")
 
-temp_create(api.type_asset, "01_通过vfs加载", "尚未实现")
-temp_create(api.type_asset, "02_自定义数据存取", "尚未实现") -- 包括字符串/字节流
-temp_create(api.type_asset, "03_单机存档/读档", "尚未实现")
-temp_create(api.type_asset, "04_打/解pack包", "尚未实现")
-temp_create(api.type_asset, "05_加密/解密", "尚未实现")
-temp_create(api.type_asset, "06_压缩/解压", "尚未实现")
+temp_create(api.type_core, "81_自定义数据存取", "尚未实现") -- 包括字符串/字节流
+temp_create(api.type_core, "82_单机存档/读档", "尚未实现")
+temp_create(api.type_core, "83_打/解pack包", "尚未实现")
+temp_create(api.type_core, "84_加密/解密", "尚未实现")
+temp_create(api.type_core, "85_压缩/解压", "尚未实现")
+
+temp_create(api.type_tool, "01_曲线编辑器", "编辑器各种1维2维曲线")
+temp_create(api.type_tool, "02_dotween", "曲线动画")
 
 
 temp_create(api.type_scene, "模型和动画", "尚未实现")

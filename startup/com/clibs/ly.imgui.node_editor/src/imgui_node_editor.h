@@ -437,7 +437,8 @@ IMGUI_NODE_EDITOR_API int GetOrderedNodeIds(NodeId* nodes, int size);    // Fill
 // 接口扩展
 //------------------------------------------------------------------------------
 IMGUI_NODE_EDITOR_API int CheckNodeExist(NodeId Id);
-
+IMGUI_NODE_EDITOR_API SaveReasonFlags GetSaveReasonFlags();
+IMGUI_NODE_EDITOR_API void ClearDirty();
 
 
 //------------------------------------------------------------------------------

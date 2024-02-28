@@ -22,10 +22,12 @@ local create_blueprint_data = function()
 	---@field graphs blueprint_graph_data[] 子图数据列表
 	---@field index number 当前激活的子图
 	---@field number 下个id
+	---@field version 数据版本号
 	local data = {
 		graphs = {},
 		index = 1,
 		next_id = 0,
+		version = 1,	
 	}
 	return data
 end
@@ -33,8 +35,12 @@ end
 -- 图数据处理器
 local create = function()
 	---@class blueprint_data_handler
-	---@field data blueprint_data
-	local handler = {data = {}}
+	---@field data blueprint_data 蓝图数据
+	---@field stack_version number 堆栈版本号,当堆栈版本号发生变化时，需要刷新编辑器
+	local handler = {
+		data = {},
+		stack_version = 0,
+	}
 
 	function handler.next_id()
 		local data = handler.data 
