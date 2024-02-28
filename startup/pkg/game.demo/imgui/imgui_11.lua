@@ -17,6 +17,7 @@ local ed = dep.ed
 local editor 		---@type blueprint_graph_main
 local size1 = 200
 local blueprint_builder
+local file_path = (dep.fs.path(dep.vfs.repopath()) / ".app/temp/"):string() .. "imgui_11.bp_data"
 
 function system.on_entry()
 	if not blueprint_builder then 
@@ -69,8 +70,20 @@ function system.data_changed()
         ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
 		ImGui.Text("数据堆栈版本: " .. editor.data_hander.stack_version)
 		if ImGui.ButtonEx("保 存", size) then 
+			editor.on_save(function(content)
+				local f<close> = assert(io.open(file_path, "w"))
+    			f:write(content)
+			end)
+			print("save to:", file_path)
+			os.execute("code ".. file_path)
 		end
 		if ImGui.ButtonEx("加 载", size) then 
+			local f<close> = io.open(file_path, 'r')
+    		if f then 
+        		local content = f:read "a"
+				local data = dep.datalist.parse(content)
+				editor.set_data(data) 
+    		end 
 		end
 
 		ImGui.Dummy(10, 10)

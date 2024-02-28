@@ -38,6 +38,20 @@ local create = function(args)
 
 	end 
 
+	function editor.on_save(write_callback)
+		local old = data_hander.data.__dirty
+		data_hander.data.__dirty = nil
+		local content = dep.serialize.stringify(data_hander.data)
+		data_hander.data.__dirty = old
+		data_hander.isModify = false
+		write_callback(content)
+	end
+
+	function editor.set_data(data)
+		data_hander.data = data
+		stack.snapshoot(true)
+	end
+
 	function editor.on_destroy()
 		graph_draw.on_destroy()
 	end 

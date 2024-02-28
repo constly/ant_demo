@@ -7,6 +7,7 @@ local dep = {}
 
 dep.fs 				= require "bee.filesystem"
 dep.vfs 			= require "vfs"
+dep.datalist		= require 'datalist'
 
 dep.ImGui  			= require "imgui"
 dep.ImGuiExtend 	= require "ly.imgui.extend"

@@ -66,7 +66,7 @@ local create = function()
 			table.remove(stack, #stack)
 		end
 		data_hander.data.__dirty = dirty									-- 本次是否有数据变动
-		data_hander.data.__isModify = data_stack.get_modify()				
+		data_hander.isModify = data_stack.get_modify()				
 		local new_data = copy(data_hander.data)
 		table.insert(stack, new_data)
 		index = #stack

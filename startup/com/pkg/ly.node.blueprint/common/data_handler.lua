@@ -24,10 +24,10 @@ local create_blueprint_data = function()
 	---@field number 下个id
 	---@field version 数据版本号
 	local data = {
-		graphs = {},
 		index = 1,
 		next_id = 0,
 		version = 1,	
+		graphs = {},
 	}
 	return data
 end
@@ -37,9 +37,11 @@ local create = function()
 	---@class blueprint_data_handler
 	---@field data blueprint_data 蓝图数据
 	---@field stack_version number 堆栈版本号,当堆栈版本号发生变化时，需要刷新编辑器
+	---@field isModify boolean 数据是否有变化
 	local handler = {
 		data = {},
 		stack_version = 0,
+		isModify = false,
 	}
 
 	function handler.next_id()
@@ -87,7 +89,7 @@ local create = function()
 
 	---@param graph_data blueprint_graph_data
 	---@param pinId number
-	---@return blueprint_node_pin_data
+	---@return blueprint_node_pin_data   
 	function handler.find_pin(graph_data, pinId)
 		if not pinId or pinId <= 0 then return end 
 		for i, node in ipairs(graph_data.nodes) do 
@@ -130,8 +132,8 @@ local create = function()
 	---@param pinB blueprint_node_pin_data
 	function handler.can_create_link(graph_data, pinA, pinB, node1, node2)
 		if pinA == pinB or not pinA or not pinB then return false end 
+		if node1 and node1 == node2 then return false end;
 		if pinA.kind == pinB.kind or pinA.type ~= pinB.type then return false end 
-		if node1 == node2 then return false end;
 		return true
 	end
 

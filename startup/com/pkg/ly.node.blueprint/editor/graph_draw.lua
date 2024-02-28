@@ -16,7 +16,9 @@ local create = function(editor)
 	local img_bg
 	local open_menu_x, open_menu_y
 	local createNewNode = false
+	---@type blueprint_node_pin_data
 	local newLinkPin
+	local newLinkPinNode
 	local has_open_menu = false
 	local graph_data ---@type blueprint_graph_data
 
@@ -85,6 +87,10 @@ local create = function(editor)
 		ed:ClearDirty()
 	end
 
+	function graph.can_create_link(pin1, pin2, node1, node2)
+		return editor.data_hander.can_create_link(graph_data, pin1, pin2, node1, node2)
+	end
+
 	---@param node blueprint_node_data
 	---@param node_tpl blueprint_node_tpl_data
 	function graph.draw_blueprint(node, node_tpl)
@@ -116,14 +122,21 @@ local create = function(editor)
 					ImGui.SameLine()
 				end
 
+				local alpha = 1
+				if newLinkPin and not graph.can_create_link(newLinkPin, data, newLinkPinNode, node) and newLinkPin ~= data then 
+					alpha = alpha * 0.188;
+				end
+
 				ed.BeginPin(data.id, ed.PinKind.Output)
 				ed.PinPivotAlignment(1.0, 0.5);
 				ed.PinPivotSize(0, 0);
-				
 				ImGui.BeginGroup()
+				ImGui.PushStyleVar(ImGui.StyleVar.Alpha, alpha)
 				ImGui.Text(data.key)
+				ImGui.PopStyleVar()
 				ImGui.SameLine()
-				ed.DrawPinIcon(ed.PinType.Delegate, false, 255)
+				local is_linked = editor.data_hander.is_pin_linked(graph_data, data)
+				ed.DrawPinIcon(ed.PinType.Delegate, is_linked, math.ceil(alpha * 255))
 				ImGui.EndGroup()
 				ed.EndPin()
 			end
@@ -132,10 +145,16 @@ local create = function(editor)
 
 			if #node.inputs > 0 then
 				for i, pin in ipairs(node.inputs) do 
+					local alpha = 1
+					if newLinkPin and not graph.can_create_link(newLinkPin, pin, newLinkPinNode, node) and pin ~= newLinkPin then 
+						alpha = alpha * 0.188
+					end
 					builder:Input(pin.id)
-					ed.DrawPinIcon(pin.type, false, 255)
+					ed.DrawPinIcon(pin.type, false, math.ceil(alpha * 255))
 					ImGui.SameLine()
+					ImGui.PushStyleVar(ImGui.StyleVar.Alpha, alpha)
 					ImGui.Text(pin.key or "")
+					ImGui.PopStyleVar()
 					builder:EndInput()
 				end
 			elseif #node.outputs > 0 then
@@ -147,13 +166,19 @@ local create = function(editor)
 			end
 
 			for i, pin in ipairs(node.outputs) do 
+				local alpha = 1
+				if newLinkPin and not graph.can_create_link(newLinkPin, pin, newLinkPinNode, node) and pin ~= newLinkPin then 
+					alpha = alpha * 0.188
+				end
 				builder:Output(pin.id)
 				local size = ImGui.CalcTextSize(pin.key)
 				ImGui.Dummy(35 + output_text_max_x, 20)
 				ImGui.SameLineEx(output_text_max_x - size + 1)
+				ImGui.PushStyleVar(ImGui.StyleVar.Alpha, alpha)
 				ImGui.Text(pin.key)
+				ImGui.PopStyleVar()
 				ImGui.SameLineEx(output_text_max_x + 10)
-				ed.DrawPinIcon(pin.type, false, 255)
+				ed.DrawPinIcon(pin.type, false, math.ceil(alpha * 255))
 				
 				builder:EndOutput()
 			end
@@ -175,7 +200,6 @@ local create = function(editor)
 	end
 
 	function graph.draw_querylink()
-		local pox_x, posy_y = ImGui.GetMousePos()
 		if ed.BeginCreate(1, 1, 1, 1, 2) then 
 			local showLabel = function(label, color)
 				color = {0.1, 0.1, 0.1, 1}
@@ -195,26 +219,28 @@ local create = function(editor)
 				ImGui.Text(label);
 			end
 			local inputPinId, outputPinId = ed.QueryNewLink()
-			local pin1, node1 = editor.data_hander.find_pin(graph_data, inputPinId)
-			local pin2, node2 = editor.data_hander.find_pin(graph_data, outputPinId)
-			newLinkPin = pin1 and pin1 or pin2;
-			if pin1 and pin1.kind == ed.PinKind.Input then 
-				pin1, pin2 = pin2, pin1
-			end
-			if pin1 and pin2 then 
-				if pin1 == pin2 then 
-					ed.RejectNewItem(255, 0, 0, 255, 2)
-				elseif pin2.kind == pin1.kind then 
-					showLabel("端口不匹配");
-					ed.RejectNewItem(255, 0, 0, 255, 2.0);
-				elseif pin2.type ~= pin1.type then 
-					showLabel("端口不匹配");
-					ed.RejectNewItem(255, 128, 128, 255, 1)
-				else 
-					showLabel("+ 创建连线");
-					if ed.AcceptNewItem(0.5, 1, 0.5, 4) then
-						table.insert(graph_data.links, {id = editor.data_hander.next_id(), startPin = pin1.id, endPin = pin2.id, type = pin1.type})
-						editor.stack.snapshoot(true)
+			if inputPinId and outputPinId then
+				local pin1, node1 = editor.data_hander.find_pin(graph_data, inputPinId)
+				local pin2, node2 = editor.data_hander.find_pin(graph_data, outputPinId)
+				newLinkPin = pin1 and pin1 or pin2;
+				if pin1 and pin1.kind == ed.PinKind.Input then 
+					pin1, pin2 = pin2, pin1
+				end
+				if pin1 and pin2 then 
+					if pin1 == pin2 then 
+						ed.RejectNewItem(255, 0, 0, 255, 2)
+					elseif pin2.kind == pin1.kind then 
+						showLabel("端口不匹配");
+						ed.RejectNewItem(255, 0, 0, 255, 2.0);
+					elseif pin2.type ~= pin1.type or not graph.can_create_link(pin1, pin2, node1, node2) then 
+						showLabel("端口不匹配");
+						ed.RejectNewItem(255, 128, 128, 255, 1)
+					else 
+						showLabel("+ 创建连线");
+						if ed.AcceptNewItem(0.5, 1, 0.5, 4) then
+							table.insert(graph_data.links, {id = editor.data_hander.next_id(), startPin = pin1.id, endPin = pin2.id, type = pin1.type})
+							editor.stack.snapshoot(true)
+						end
 					end
 				end
 			end
@@ -239,6 +265,12 @@ local create = function(editor)
 			newLinkPin = nil
 		end
 		ed.EndCreate();
+
+		if newLinkPin then 
+			newLinkPin, newLinkPinNode = editor.data_hander.find_pin(graph_data, newLinkPin.id)
+		else 
+			newLinkPinNode = nil
+		end
 
 		if ed.BeginDelete() then 
 			local ok = false
