@@ -482,6 +482,34 @@ static int bClearDirty(lua_State* L) {
 	return 0;
 }
 
+static int bGroup(lua_State* L) {
+	float x = (float)luaL_checknumber(L, 1);
+	float y = (float)luaL_checknumber(L, 2);
+	ed::Group(ImVec2(x, y));
+	return 0;
+}
+
+static int bBeginGroupHint(lua_State* L) {
+	ed::NodeId id = (int)luaL_checkinteger(L, 1);
+	if (ed::BeginGroupHint(id)) {
+		lua_pushboolean(L, true);
+		return 1;
+	}
+	return 0;
+}
+
+static int bEndGroupHint(lua_State* L) {
+	ed::EndGroupHint();
+	return 0;
+}
+
+static int bGetGroupMin(lua_State* L) {
+	auto min = ed::GetGroupMin();
+	lua_pushnumber(L, min.x);
+	lua_pushnumber(L, min.y);
+	return 2;
+}
+
 #define DEF_ENUM(CLASS, MEMBER)                                      \
     lua_pushinteger(L, static_cast<lua_Integer>(ed::CLASS::MEMBER)); \
     lua_setfield(L, -2, #MEMBER);
@@ -528,6 +556,10 @@ extern "C" int luaopen_ly_imgui_node_editor(lua_State *L) {
 		{ "RejectNewItem", 					bRejectNewItem },
 		{ "GetDirtyReason", 				bGetDirtyReason },
 		{ "ClearDirty", 					bClearDirty },
+		{ "Group", 							bGroup },
+		{ "BeginGroupHint", 				bBeginGroupHint },
+		{ "EndGroupHint", 					bEndGroupHint },
+		{ "GetGroupMin", 					bGetGroupMin },
 		
 		{ NULL, NULL },
 	};

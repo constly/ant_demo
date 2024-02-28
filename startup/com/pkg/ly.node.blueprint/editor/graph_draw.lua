@@ -57,6 +57,12 @@ local create = function(editor)
 					graph.draw_blueprint(node, node_tpl)
 				elseif show_type == def.type_simple then 
 					graph.draw_simple(node, node_tpl)
+				elseif show_type == def.type_tree then 
+					graph.draw_tree(node, node_tpl)
+				elseif show_type == def.type_houdini then 
+					graph.draw_houdini(node, node_tpl)
+				elseif show_type == def.type_comment then
+					graph.draw_comment(node, node_tpl)
 				end
 			else 
 				graph.draw_errornode(node)
@@ -186,8 +192,75 @@ local create = function(editor)
 		builder:End()
 	end
 
-	function graph.draw_simple(node)
-		
+	---@param node blueprint_node_data
+	---@param node_tpl blueprint_node_tpl_data
+	function graph.draw_simple(node, node_tpl)
+		builder:Begin(node.id)	
+			builder:Middle()
+			ImGui.Text(node_tpl.name)
+			local output_text_max_x = 0;
+			for i, pin in ipairs(node.outputs) do 
+				output_text_max_x = math.max(output_text_max_x, ImGui.CalcTextSize(pin.key))
+			end
+
+			for i, pin in ipairs(node.outputs) do 
+				local alpha = 1
+				if newLinkPin and not graph.can_create_link(newLinkPin, pin, newLinkPinNode, node) and pin ~= newLinkPin then 
+					alpha = alpha * 0.188
+				end
+				builder:Output(pin.id)
+				local size = ImGui.CalcTextSize(pin.key)
+				ImGui.Dummy(35 + output_text_max_x, 20)
+				ImGui.SameLineEx(output_text_max_x - size + 1)
+				ImGui.PushStyleVar(ImGui.StyleVar.Alpha, alpha)
+				ImGui.Text(pin.key)
+				ImGui.PopStyleVar()
+				ImGui.SameLineEx(output_text_max_x + 10)
+				ed.DrawPinIcon(pin.type, false, math.ceil(alpha * 255))
+				
+				builder:EndOutput()
+			end
+		builder:End()
+	end
+
+	---@param node blueprint_node_data
+	---@param node_tpl blueprint_node_tpl_data
+	function graph.draw_tree(node, node_tpl)
+
+	end
+
+	---@param node blueprint_node_data
+	---@param node_tpl blueprint_node_tpl_data
+	function graph.draw_houdini(node, node_tpl)
+
+	end
+
+	---@param node blueprint_node_data
+	---@param node_tpl blueprint_node_tpl_data
+	function graph.draw_comment(node, node_tpl)
+		builder:Begin(node.id)	
+		ImGui.PushStyleVar(ImGui.StyleVar.Alpha, 0.75)
+		ImGui.PushIDInt(node.id)
+
+		local x, y = node.size_x or 300, node.size_y or 200;
+		ImGui.BeginGroup();
+		ImGui.AlignTextToFramePadding();
+		local size = ImGui.CalcTextSize(node_tpl.name)
+		local posx = (x - size) * 0.5 - 10
+		if posx > 0 then 
+			ImGui.Dummy(posx, 10)
+			ImGui.SameLine();
+		end
+		ImGui.Text(node_tpl.name);
+		ImGui.EndGroup();
+
+		ImGui.BeginGroup();
+		ed.Group(x, y)
+		ImGui.EndGroup();
+
+		ImGui.PopID();
+		ImGui.PopStyleVar()
+		builder:End()
 	end
 
 	---@param node blueprint_node_data
@@ -205,14 +278,14 @@ local create = function(editor)
 				color = {0.1, 0.1, 0.1, 1}
 				ImGui.SetCursorPosY(ImGui.GetCursorPosY() - ImGui.GetTextLineHeight());
 				local sizex, sizey = ImGui.CalcTextSize(label)
-				local padding = ImGui.StyleVar.FramePadding
-				local spacing = ImGui.StyleVar.ItemSpacing
+				local padding = {x = 3, y = 3}
+				local spacing = {x = 3, y = 3}
 				local px, py = ImGui.GetCursorPos()
-				ImGui.SetCursorPos(px + spacing, py - spacing);
+				ImGui.SetCursorPos(px + spacing.y, py - spacing.y);
 
 				local p1, p2 = ImGui.GetCursorScreenPos()
-				local rectMin = {p1 - padding,  p2 - padding };
-				local rectMax = {p1 + sizex + padding, p2 + sizey + padding};
+				local rectMin = {p1 - padding.x,  p2 - padding.y };
+				local rectMax = {p1 + sizex + padding.x, p2 + sizey + padding.y};
 
 				local draw_list = dep.ImGuiExtend.draw_list;
 				draw_list.AddRectFilled({min = rectMin, max = rectMax, col = color, rounding = 10}); 

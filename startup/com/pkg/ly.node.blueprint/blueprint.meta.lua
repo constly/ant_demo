@@ -48,6 +48,8 @@ local blueprint_node_pin_data = {}
 ---@field tplId string								模板名
 ---@field pos_x number								位置x
 ---@field pos_y number								位置y
+---@field size_x number								大小x (只有部分节点有点大小)
+---@field size_y number								大小y
 ---@field inputs blueprint_node_pin_data[]			输入流
 ---@field outputs blueprint_node_pin_data[]			输出流
 ---@field delegates blueprint_node_pin_data[] 		回调列表

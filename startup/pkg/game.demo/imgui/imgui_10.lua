@@ -42,7 +42,7 @@ function system.data_changed()
 		ImGui.Text(string.format("FPS: %.2f (%.2gms)", io.Framerate, io.Framerate > 0 and 1000 / io.Framerate or 0 ))
 		ImGui.SameLineEx(size_x * 0.5 - 150)
 		ImGui.Text("原生节点编辑器使用演示")
-		ImGui.SetCursorPos(size_x - 120, 5)
+		ImGui.SetCursorPos(size_x - 100, 5)
 		if ImGui.ButtonEx("重置视图") then 
 			needNavigateTo = true
 		end
@@ -147,10 +147,10 @@ function system.draw_node2()
 		ImGui.Text("Hold to repeat:");
 		ImGui.SameLine();
 
-		local spacing = ImGui.StyleVar.ItemInnerSpacing;
+		local spacing = {x = 3, y = 3}
 		ImGui.PushButtonRepeat(true);
 		if ImGui.ArrowButton("##left", ImGui.Dir.Left) then counter = counter - 1 end
-		ImGui.SameLine(0.0, spacing);
+		ImGui.SameLine(0.0, spacing.y);
 		if ImGui.ArrowButton("##right", ImGui.Dir.Right) then counter = counter + 1 end
 		ImGui.PopButtonRepeat();
 		ImGui.SameLine();
@@ -344,7 +344,7 @@ function system.draw_node5()
 		-- Typically we would use ImVec2(-1.0f,0.0f) or ImVec2(-FLT_MIN,0.0f) to use all available width,
 		-- or ImVec2(width,0.0f) for a specified width. ImVec2(0.0f,0.0f) uses ItemWidth.
 		ImGui.ProgressBar(progress, 0, 0);
-		ImGui.SameLineEx(0.0, ImGui.StyleVar.ItemInnerSpacing);
+		ImGui.SameLineEx(0.0, 3);
 		ImGui.Text("Progress Bar");
 
 		local progress_saturated = (progress < 0.0) and 0.0 or (progress > 1.0) and 1.0 or progress;
