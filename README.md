@@ -19,8 +19,35 @@ compile.bat
 run.bat 
 
 -- 双击 ant_demo.code-workspace 打开vscode
--- 用Visual Studio打开根目录，将bin/msvc/debug/ant_demo.exe设置为启动项, 启动即可调试C++
 ```
+
+## 工具链相关
+### 一. 如何多开
+1. 运行文件服务器: "./bin/msvc/debug/ant_demo.exe" -s
+2. 启动运行时版本: "./bin/msvc/debug/ant_demo_rt.exe"
+3. 运行时版本可以多开
+4. 日志输出在: startup/.app/log/runtime-1.log
+
+### 二. 如何调试
+1. 用Visual Studio打开项目根目录
+2. 将bin/msvc/debug/ant_demo.exe设置为启动项, 启动即可调试C++
+3. 运行时版本 ant_demo_rt.exe 也可以用同样的方式调试
+
+### 三. 使用的插件
+1. 声音使用的 [cute](https://github.com/RandyGaul/cute_headers)
+2. 节点编辑器使用的 [imgui-node-editor](https://github.com/thedmd/imgui-node-editor.git)
+2. lua语法提示使用的 [EmmyLua](https://github.com/EmmyLua/IntelliJ-EmmyLua)
+
+### 四. 安装特效编辑器Effekseer  
+1. 官方文档 [HowToBuild](https://github.com/effekseer/Effekseer/blob/master/docs/Development/HowToBuild.md)  
+2. 另外需要安装python最新版,以及执行: pip install setuptools
+3. Effekseer/ResourceData/samples目录下有大量示例
+
+### 五. bgfx学习
+1. 如何 [build](https://github.com/bkaradzic/bgfx/blob/master/docs/build.rst)
+1. bgfx下有大量使用示例, 网上也有 [学习笔记](https://hinageshi01.github.io/2022/05/30/bgfx/)
+
+
 
 ## 内容展示
 ![imgui_02](./img/imgui_02.png)
@@ -30,29 +57,6 @@ run.bat
 ![core_10](./img/core_10.png)
 ![core_11](./img/core_11.png)
 
-
-
-
-## 工具链相关
-#### 一. 安装特效编辑器Effekseer  
-1. 官方文档 [HowToBuild](https://github.com/effekseer/Effekseer/blob/master/docs/Development/HowToBuild.md)  
-2. 另外需要安装python最新版,以及执行: pip install setuptools
-3. Effekseer/ResourceData/samples目录下有大量示例
-
-### 二. bgfx学习
-1. 如何 [build](https://github.com/bkaradzic/bgfx/blob/master/docs/build.rst)
-1. bgfx下有大量使用示例, 网上也有 [学习笔记](https://hinageshi01.github.io/2022/05/30/bgfx/)
-
-### 三. 如何多开
-1. 运行文件服务器: "./bin/msvc/debug/ant_demo.exe" -s
-2. 启动运行时版本: "./bin/msvc/debug/ant_demo_rt.exe"
-3. 运行时版本可以多开
-
-
-## 其他说明
-1. 声音使用的 [cute](https://github.com/RandyGaul/cute_headers)
-2. 节点编辑器使用的 [imgui-node-editor](https://github.com/thedmd/imgui-node-editor.git)
-2. lua语法提示使用的 EmmyLua
 
 
 ## 待解决问题
