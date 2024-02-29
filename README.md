@@ -1,5 +1,4 @@
 # Ant Game Engine 学习记录
-## 项目说明
 学习使用[Ant Game Engine](https://github.com/ejoy/ant)，指导方针如下：
 * 尽可能给每一个功能点都加上示例代码
 * 尽可能覆盖游戏开发的方方面面，比如编辑器，UI，渲染，联机，调试，优化，资源管理，对接Steam等等
