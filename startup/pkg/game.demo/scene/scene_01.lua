@@ -53,13 +53,12 @@ function system.on_entry()
 	}
 
 	-- 玩家模型, 挂在player下
-	-- PC:create_instance {
-	-- 	prefab = "/pkg/game.res/npc/test_003/scene.gltf|mesh.prefab",
-    --     on_ready = function (e)
-	-- 		world:instance_set_parent(e, player)
-	-- 	end,
-	-- }
-	print("暂时屏蔽玩家模型，因为加载报错")
+	PC:create_instance {
+		prefab = "/pkg/game.res/npc/test_003/scene.gltf|mesh.prefab",
+        on_ready = function (e)
+			world:instance_set_parent(e, player)
+		end,
+	}
 	
 	
 	local iom = ecs.require "ant.objcontroller|obj_motion"
