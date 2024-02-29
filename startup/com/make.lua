@@ -90,7 +90,7 @@ if lm.os == "macos" then
         sources = "../modules.c"
     }
 
-    lm:exe "ant_demo" {
+    lm:exe "ant_demo" {			-- 编辑器版本
         deps = {
             "ant_editor",
             "bgfx-lib",
@@ -107,7 +107,7 @@ if lm.os == "macos" then
         },
         sources = "../modules.c"
     }
-    lm:exe "ant_demo_rt" {
+    lm:exe "ant_demo_rt" {		-- 运行时版本
         deps = {
             "ant_runtime",
             "bgfx-lib",
@@ -132,7 +132,7 @@ if lm.os == "macos" then
     return
 end
 
-lm:exe "ant_demo" {
+lm:exe "ant_demo" {	-- 编辑器版本
     deps = {
         "ant_editor",
         "bgfx-lib",
@@ -153,7 +153,7 @@ lm:exe "ant_demo" {
     }
 }
 
-lm:exe "ant_demo_rt" {
+lm:exe "ant_demo_rt" {	-- 运行时版本
     deps = {
         "ant_runtime",
         "bgfx-lib",

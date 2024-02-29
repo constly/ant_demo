@@ -43,6 +43,12 @@ run.bat
 1. 如何 [build](https://github.com/bkaradzic/bgfx/blob/master/docs/build.rst)
 1. bgfx下有大量使用示例, 网上也有 [学习笔记](https://hinageshi01.github.io/2022/05/30/bgfx/)
 
+### 三. 如何多开
+1. 运行文件服务器: "./bin/msvc/debug/ant_demo.exe" -s
+2. 启动运行时版本: "./bin/msvc/debug/ant_demo_rt.exe"
+3. 运行时版本可以多开
+
+
 ## 其他说明
 1. 声音使用的 [cute](https://github.com/RandyGaul/cute_headers)
 2. 节点编辑器使用的 [imgui-node-editor](https://github.com/thedmd/imgui-node-editor.git)
