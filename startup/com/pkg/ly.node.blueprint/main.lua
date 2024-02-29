@@ -11,7 +11,7 @@ api.def 					= require 'def'
 
 -- 创建蓝图编辑器
 ---@param args node_editor_create_args
----@return blueprint_graph_main
+---@return blueprint_editor
 function api.create_editor(args)
 	local editor = require 'editor.editor'
 	local base = editor.create(args)

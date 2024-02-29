@@ -1,6 +1,7 @@
-local fs = require "bee.filesystem"
+local dep = require 'dep' ---@type ly.common.dep
+local fs = dep.fs
 
----@class ly.common.path
+---@class ly.common.path_def
 local api = {}
 
 if __ANT_RUNTIME__ then 

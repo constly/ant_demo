@@ -24,6 +24,7 @@ local chess_grid_tpl = {}
 
 -- 棋盘地图区域层数据 模板
 ---@class chess_map_region_layer_tpl 
+---@field height number 层级高度
 ---@field grids table<number, chess_grid_tpl> 格子列表
 local chess_map_region_layer_tpl = {}
 
@@ -43,4 +44,11 @@ local chess_map_region_tpl = {}
 -- 棋盘地图 模板
 ---@class chess_map_tpl 		
 ---@field regions chess_map_region_tpl[] 区域列表
+---@field next_id number 下个id
 local chess_map_tpl = {}
+
+
+--- 棋盘编辑器创建参数
+---@class chess_editor_create_args
+---@field path string
+local chess_editor_create_args = {}

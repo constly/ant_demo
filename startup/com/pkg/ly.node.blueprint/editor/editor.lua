@@ -1,6 +1,5 @@
 ---------------------------------------------------------------------------
--- 编辑器由多个子图组成
--- 图内可以定义局部变量 和 局部函数
+-- 蓝图编辑器
 ---------------------------------------------------------------------------
 local dep = require "dep" ---@type ly.node.blueprint.dep
 local ImGui = dep.ImGui
@@ -9,7 +8,7 @@ local data_hander = require 'common.data_handler'
 
 ---@param args node_editor_create_args
 local create = function(args)
-	---@class blueprint_graph_main
+	---@class blueprint_editor
 	local editor = {}									
 	local stack = dep.common.data_stack.create()		---@type common_data_stack
 	local data_hander = data_hander.create()			---@type blueprint_data_handler
@@ -82,7 +81,6 @@ local create = function(args)
 				--if ImGui.IsKeyPressed(ImGui.Key.C, false) then clipboard.copy() end
 				--if ImGui.IsKeyPressed(ImGui.Key.V, false) then clipboard.paste() end
 				--if ImGui.IsKeyPressed(ImGui.Key.X, false) then clipboard.cut() end
-				
 			end
 
 			_navigateToContent = false

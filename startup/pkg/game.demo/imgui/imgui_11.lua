@@ -14,24 +14,28 @@ local tbParam =
 local system = mgr.create_system(tbParam)
 local blueprint = dep.blueprint
 local ed = dep.ed
-local editor 		---@type blueprint_graph_main
+local editor 		---@type blueprint_editor
 local size1 = 200
 local bp_builder
-local file_path = dep.common.path.data_root .. "imgui_11.bp_data"
+local file_path = dep.common.path_def.data_root .. "imgui_11.bp_data"
 
 function system.on_entry()
 	if not bp_builder then 
 		bp_builder = system.get_builder()
 	end
-	---@type node_editor_create_args
-	local args = 
-	{
-		graph_count = 1,
-		blueprint_builder = bp_builder
-	}
-	editor = blueprint.create_editor(args)
-	editor.on_begin()
-	system.create_nodes()
+	if not editor then
+		---@type node_editor_create_args
+		local args = 
+		{
+			graph_count = 1,
+			blueprint_builder = bp_builder
+		}
+		editor = blueprint.create_editor(args)
+		editor.on_begin()
+		system.create_nodes()
+		editor.stack.snapshoot()
+	end
+	editor.navigateToContent()
 end 
 
 function system.create_nodes()
@@ -49,8 +53,9 @@ function system.create_nodes()
 end
 
 function system.on_leave()
-	editor.on_destroy()
-	editor = nil
+	-- 销毁接口
+	-- editor.on_destroy()
+	-- editor = nil
 end
 
 function system.data_changed()

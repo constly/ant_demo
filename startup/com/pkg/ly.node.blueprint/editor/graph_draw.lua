@@ -6,7 +6,7 @@ local def = require 'def' ---@type ly.node.blueprint.def
 local ImGui = dep.ImGui
 local ed = dep.ed
 
----@param editor blueprint_graph_main
+---@param editor blueprint_editor
 local create = function(editor)
 	---@class blueprint_graph_draw 蓝图绘制
 	local graph = {}
@@ -38,7 +38,7 @@ local create = function(editor)
 	-- 渲染更新
 	---@param _graph_data blueprint_graph_data
 	---@param _deltatime number 渲染间隔(秒)
-	---@param params map<string, any> 扩展参数
+	---@param params table<string, any> 扩展参数
 	function graph.on_render(_graph_data, _deltatime, params)
 		graph_data = _graph_data
 		ed.SetCurrentEditor(context)
@@ -81,8 +81,9 @@ local create = function(editor)
 		
 		graph.draw_menu();
 		graph.check_dirty();
-		if params.navigateToContent then ed.NavigateToContent() end
 		ed.End()
+
+		if params.navigateToContent then ed.NavigateToContent() end
 		ed.SetCurrentEditor(nil)
 	end
 

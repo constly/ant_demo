@@ -18,7 +18,7 @@ local draw_world_state = require "utils.draw_world_state"
 local luaecs = import_package "ant.luaecs"
 local vfs = require "vfs"
 local showtip
-local path = dep.common.path.data_root .. 'world_core_13.bin'
+local path = dep.common.path_def.data_root .. 'world_core_13.bin'
 
 function system.on_entry()
 end 

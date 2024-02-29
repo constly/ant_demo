@@ -1,7 +1,8 @@
-local lib   = require 'tools/lib'
-local fs = require "bee.filesystem"
-local path = require "path"
-local file_path = path.data_root .. 'user_data.txt'
+local lib = require 'tools/lib'
+local dep = require 'dep'
+local fs = dep.fs 
+local path_def = require "path_def"
+local file_path = path_def.data_root .. 'user_data.txt'
 
 local function load_string_from_disk(path)
     local f<close> = io.open(path, 'r')
@@ -12,7 +13,7 @@ local function load_string_from_disk(path)
 end
 
 local function save_string_to_disk(_path, _content)
-	fs.create_directories(path.data_root)
+	fs.create_directories(path_def.data_root)
     local f<close> = io.open(_path, 'wb')
     if f then
         f:write(_content)
