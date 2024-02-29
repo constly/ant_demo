@@ -113,25 +113,27 @@ function system.data_changed()
 				sound.play_sound("/pkg/game.res/sound/click.wav")
             end
             ImGui.PopStyleColorEx(4)
-            local id = string.format("btn_left_pop_id_%d", i)
-            if ImGui.BeginPopupContextItem(id) then 
-                click = true
-                showHover = false
-                if ImGui.MenuItem("打开文件") then 
-                    os.execute("code "..v.file)
-                end
-                if ImGui.MenuItem("选中文件") then 
-                    os.execute("c:\\windows\\explorer.exe /select,"..v.file)
-                end
-                ImGui.EndPopup()
-            else 
-                if showHover and ImGui.IsItemHovered() then
-                    if ImGui.BeginTooltip() then
-                        ImGui.Text("右键可选中/打开所在文件")
-                        ImGui.EndTooltip()
-                    end
-                end
-            end
+			if v.file then
+				local id = string.format("btn_left_pop_id_%d", i)
+				if ImGui.BeginPopupContextItem(id) then 
+					click = true
+					showHover = false
+					if ImGui.MenuItem("打开文件") then 
+						os.execute("code "..v.file)
+					end
+					if ImGui.MenuItem("选中文件") then 
+						os.execute("c:\\windows\\explorer.exe /select,"..v.file)
+					end
+					ImGui.EndPopup()
+				else 
+					if showHover and ImGui.IsItemHovered() then
+						if ImGui.BeginTooltip() then
+							ImGui.Text("右键可选中/打开所在文件")
+							ImGui.EndTooltip()
+						end
+					end
+				end
+			end
 
             if click and selected[category] ~= v.id then 
                 selected[category] = v.id

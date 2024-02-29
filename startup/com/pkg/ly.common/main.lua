@@ -7,5 +7,6 @@ local api = {}
 api.lib         	= require 'tools/lib'
 api.user_data   	= require 'tools/user_data'
 api.data_stack 		= require 'stack/data_stack'
+api.path 			= require 'path'  				---@type ly.common.path
 
 return api

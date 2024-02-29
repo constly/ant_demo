@@ -25,8 +25,10 @@ function api.create_system(tbParam)
     data.system = system
     data.system_name = system and ("game.demo|" .. tbParam.system_name)
     data.id = tb.min_id + #tb.items + 1
-    data.file = dep.vfs.repopath() .. 'pkg/game.demo/' .. tbParam.file;
-    data.file = data.file:gsub("/","\\")
+	if dep.vfs.repopath then 
+    	data.file = dep.vfs.repopath() .. 'pkg/game.demo/' .. tbParam.file;
+		data.file = data.file:gsub("/","\\")
+	end
     table.insert(tb.items, data)
     table.sort(tb.items, function(a, b) return a.name < b.name end)
     return system, data.id
@@ -95,8 +97,8 @@ function api.get_dpi_scale() return ImGui.GetMainViewport().DpiScale end
 -- 类型排版占位
 local tb_def = {
     {"type_imgui",      "ImGui"},
+	{"type_tool",       "工具链"},
     {"type_core",       "引擎核心"},
-    {"type_tool",       "工具"},
     {"type_rmlui",      "RmlUI"},
     {"type_scene",      "场景"},
     {"type_renderer",   "渲染"},
@@ -127,14 +129,18 @@ temp_create(api.type_core, "85_压缩/解压", "尚未实现")
 
 temp_create(api.type_tool, "01_曲线编辑器", "编辑器各种1维2维曲线")
 temp_create(api.type_tool, "02_dotween", "曲线动画")
-
+temp_create(api.type_tool, "03_ini编辑器", "")
+temp_create(api.type_tool, "04_csv编辑器", "")
+temp_create(api.type_tool, "05_多语言编辑器", "")
+temp_create(api.type_tool, "06_棋盘地图编辑器", "")
+temp_create(api.type_tool, "07_技能编辑器", "")
+temp_create(api.type_tool, "08_剧情编辑器", "")
 
 temp_create(api.type_scene, "模型和动画", "尚未实现")
 temp_create(api.type_scene, "海量对象", "尚未实现")
 temp_create(api.type_scene, "多点触屏", "尚未实现")
 temp_create(api.type_scene, "手柄", "尚未实现")
 temp_create(api.type_scene, "选中场景物件", "尚未实现")
-
 
 temp_create("渲染", "01_LOD", "尚未实现")
 temp_create("渲染", "02_光影/迷雾", "尚未实现")
@@ -150,7 +156,7 @@ temp_create(api.type_net, "WebServer", "尚未实现")
 temp_create(api.type_net, "Socket通信", "尚未实现")
 temp_create(api.type_net, "简单多人游戏", "尚未实现")
 
-temp_create(api.type_minigame, "待定", "尚未实现")
+temp_create(api.type_minigame, "大富翁", "尚未实现")
 
 
 return api;

@@ -1,5 +1,6 @@
 local ecs = ...
-local ImGui = require "imgui"
+local dep = require 'dep' ---@type game.demo.dep
+local ImGui = dep.ImGui
 local mgr = require "data_mgr"
 local tbParam = 
 {
@@ -17,7 +18,7 @@ local draw_world_state = require "utils.draw_world_state"
 local luaecs = import_package "ant.luaecs"
 local vfs = require "vfs"
 local showtip
-local path = vfs.repopath() .. '.app/temp/world_core_13.bin'
+local path = dep.common.path.data_root .. 'world_core_13.bin'
 
 function system.on_entry()
 end 

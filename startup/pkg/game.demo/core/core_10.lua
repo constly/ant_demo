@@ -28,7 +28,7 @@ local iplayback = ecs.require "ant.animation|playback"
 local e_light = nil;
 local e_plane = nil
 local ins_model = nil
-local entities
+local entities = {}
 
 local model_index 
 local glbs
@@ -48,25 +48,29 @@ function system.on_entry()
 
 	-- 遍历得到目录下所有glb文件
 	glbs = {}
-	local repo = vfs.repopath()
-	local pkg_name = "/pkg/game.res"
-	local root = repo .. pkg_name 
-	local files = {}
-	system.get_all_files(root, files)
-	local tb_ext = {".glb", ".gltf"}
-	for _, path in ipairs(files) do 
-		for _, ext in ipairs(tb_ext) do 
-			if dep.common.lib.end_with(path, ext) then 
-				local path = string.gsub(path, repo, "");
-				local shortpath = string.gsub(path, pkg_name, "")
-				local name = dep.common.lib.get_filename(shortpath)
-				table.insert(glbs, {name = name, tip = path, path = path .. "|mesh.prefab"})
-				break;
+	if vfs.repopath then
+		local repo = vfs.repopath()
+		local pkg_name = "/pkg/game.res"
+		local root = repo .. pkg_name 
+		local files = {}
+		system.get_all_files(root, files)
+		local tb_ext = {".glb", ".gltf"}
+		for _, path in ipairs(files) do 
+			for _, ext in ipairs(tb_ext) do 
+				if dep.common.lib.end_with(path, ext) then 
+					local path = string.gsub(path, repo, "");
+					local shortpath = string.gsub(path, pkg_name, "")
+					local name = dep.common.lib.get_filename(shortpath)
+					table.insert(glbs, {name = name, tip = path, path = path .. "|mesh.prefab"})
+					break;
+				end
 			end
 		end
+	else 
+		glbs[1] = {name = "运行时版本不支持"}
 	end
 	table.sort(glbs, function (a, b) return a.name < b.name end)
-	dep.common.lib.dump(glbs)
+	--dep.common.lib.dump(glbs)
 	system.show_model(model_index or 1)
 end
 
@@ -85,7 +89,9 @@ end
 function system.on_leave()
 	world:remove_entity(e_plane)
 	world:remove_instance(e_light)
-	world:remove_instance(ins_model)
+	if ins_model then 
+		world:remove_instance(ins_model)
+	end
 end
 
 function system.data_changed()
@@ -96,7 +102,7 @@ end
 function system.show_model(index)
 	model_index = index
 	local data = glbs[index]
-	if not data then return end 
+	if not data or not data.path then return end 
 	if ins_model then world:remove_instance(ins_model) end
 
 	local mathpkg   = import_package "ant.math"
@@ -169,7 +175,7 @@ function system.draw_filelist()
 				system.show_model(i)
 			end
 			if ImGui.IsItemHovered() and ImGui.BeginTooltip() then
-				ImGui.Text(data.path)
+				ImGui.Text(data.path or "")
 				ImGui.EndTooltip()
 			end
 			ImGui.PopStyleColorEx(3)
