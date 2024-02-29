@@ -16,18 +16,18 @@ local blueprint = dep.blueprint
 local ed = dep.ed
 local editor 		---@type blueprint_graph_main
 local size1 = 200
-local blueprint_builder
-local file_path = (dep.fs.path(dep.vfs.repopath()) / ".app/temp/"):string() .. "imgui_11.bp_data"
+local bp_builder
+local file_path = dep.common.path.data_root .. "imgui_11.bp_data"
 
 function system.on_entry()
-	if not blueprint_builder then 
-		blueprint_builder = system.get_builder()
+	if not bp_builder then 
+		bp_builder = system.get_builder()
 	end
 	---@type node_editor_create_args
 	local args = 
 	{
 		graph_count = 1,
-		blueprint_builder = blueprint_builder
+		blueprint_builder = bp_builder
 	}
 	editor = blueprint.create_editor(args)
 	editor.on_begin()
@@ -35,12 +35,17 @@ function system.on_entry()
 end 
 
 function system.create_nodes()
-	editor.data_hander.create_node(200, 100, blueprint_builder.nodes[1])
-	editor.data_hander.create_node(600, 100, blueprint_builder.nodes[2])
-	editor.data_hander.create_node(100, 500, blueprint_builder.nodes[3])
-	editor.data_hander.create_node(400, 500, blueprint_builder.nodes[4])
-	editor.data_hander.create_node(600, 500, blueprint_builder.nodes[5])
-	editor.data_hander.create_node(800, 500, blueprint_builder.nodes[6])
+	local handler = editor.data_hander
+	handler.create_node(100, 100, bp_builder.nodes[1])
+	handler.create_node(450, 30, bp_builder.nodes[2])
+	handler.create_node(50, 340, bp_builder.nodes[3])
+	handler.create_node(400, 350, bp_builder.nodes[4])
+	handler.create_node(450, 450, bp_builder.nodes[5])
+	handler.create_node(700, 450, bp_builder.nodes[6])
+	
+	local graph_data = handler.get_cur_graph()
+	table.insert(graph_data.links, {id = handler.next_id(), startPin = 2, endPin = 6, type = 4})
+	table.insert(graph_data.links, {id = handler.next_id(), startPin = 23, endPin = 4, type = 0})
 end
 
 function system.on_leave()
@@ -62,7 +67,6 @@ function system.data_changed()
 		end
 		ImGui.SetCursorPos(30, 50)
 		ImGui.BeginGroup()
-		local navigateToContent = false
 		local size = 90 * mgr.get_dpi_scale()
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.ItemSpacing, 10, 10);
 		ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.2, 0.2, 0.25, 1)
@@ -114,7 +118,7 @@ function system.data_changed()
 		ImGui.EndGroup()
 
 		ImGui.SetCursorPos(size1 + 20, 8);
-		editor.on_render(0.033, navigateToContent);
+		editor.on_render(0.033);
 	end
 	ImGui.End()
 end
@@ -122,6 +126,12 @@ end
 function system.get_builder()
 	local blueprint = dep.blueprint.blueprint_builder.create() ---@type blueprint_builder
 	local def = dep.blueprint.def
+	
+	blueprint.create_node "Input String "
+		.set_show_type(def.type_simple)
+		.set_group("default", "test")
+		.set_attr("key", "value")		
+		.add_output_var("string", "flag")
 
 	blueprint.create_node "MoveTo"
 		.set_show_type(def.type_blueprint)
@@ -132,67 +142,59 @@ function system.get_builder()
 		.add_input_var("string", "name name name")
 
 		.add_output("Exit")
-		.add_output_var("int", "value")
-		.add_output_var("string", "flag")
-		.add_output_var("float", "test2 flag2")
-		.add_output_var("object", "test2 flag2")
-		.add_output_var("function", "v3")
-		.add_output_var("delegate", "vd")
+		.add_output_var("int", "speed")
+		.add_output_var("string", "tag")
+		.add_output_var("float", "time", "移动时间")
+		.add_output_var("object", "target", "目标点")
+		.add_output_var("function", "update", "更新")
+		.add_output_var("delegate", "complete", "移动完成回调")
 		
 		.add_delegate("call", "回调1")
+	
 
-
-	blueprint.create_node "InputAction "
+	blueprint.create_node "TakeDamage "
 		.set_show_type(def.type_blueprint)
 		.set_group("default", "test")
 		.set_attr("key", "value")
+		.set_header_color({0.2, 0.6, 0.95, 1})
+		.add_input("Entry")
+		.add_input_var("int", "damage")
+		.add_input_var("string", "npc tags")
+		.add_input_var("float", "rate")
+		.add_input_var("object", "ignore")
+		.add_input_var("function", "check")
+		.add_input_var("delegate", "complete")
+
+		.add_output("Exit")
+		.add_output_var("int", "damage")
+		.add_output_var("string", "log")
+		.add_output_var("float", "damage float")
+		.add_output_var("object", "npc object")
+		.add_output_var("function", "function")
+		.add_output_var("delegate", "delegate")
 		
+
+	blueprint.create_node "填写注释"
+		.set_show_type(def.type_comment)
+		.set_group("default", "test")
+		.set_size(500, 300)
+		
+
+	blueprint.create_node "当开火时"
+		.set_show_type(def.type_blueprint)
+		.set_group("default", "test")
+		.set_header_color({0.8, 0, 0, 1})
+		.set_attr("key", "value")
 		.add_output("Pressed")
 		.add_output("Released")
-		
 		.add_delegate("call", "回调1")
 
 
-	blueprint.create_node "InputAction2 "
-		.set_show_type(def.type_blueprint)
-		.set_group("default", "test")
-		.set_attr("key", "value")
-		.add_input("Pressed")
-		.add_input("Released")
-		.add_input_var("string", "flag")
-		.add_input_var("float", "test2 flag2")
-		.add_input_var("object", "test2 flag2")
-		.add_input_var("function", "v3")
-		.add_input_var("delegate", "vd")
-
-		.add_output_var("string", "flag")
-		.add_output_var("float", "test2 flag2")
-		.add_output_var("object", "test2 flag2")
-		.add_output_var("function", "v3")
-		.add_output_var("delegate", "vd")
-		.add_delegate("call", "回调1")
-
-
-	blueprint.create_node "InputAction3 "
-		.set_show_type(def.type_blueprint)
-		.set_group("default", "test")
-		.set_attr("key", "value")
-		.add_input("Pressed")
-		.add_input("Released")
-
-	blueprint.create_node "InputAction4 "
+	blueprint.create_node "OnEnd "
 		.set_show_type(def.type_blueprint)
 		.set_group("default", "test")
 		.set_attr("key", "value")
 		.add_input("Entry")
-		.add_output("Exit")
-
-	blueprint.create_node "InputAction5 "
-		.set_show_type(def.type_blueprint)
-		.set_group("default", "test")
-		.set_attr("key", "value")
-		.add_output("Entry")
-		.add_output("Exit")
 
 
 	blueprint.on_create_complete()

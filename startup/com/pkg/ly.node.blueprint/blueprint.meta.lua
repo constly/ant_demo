@@ -32,6 +32,9 @@ local blueprint_node_pin_tpl_data = {}
 ---@field pins blueprint_node_pin_tpl_data[]                pin列表
 ---@field show_type string 									节点显示类型
 ---@field groups map										分组信息
+---@field size_x number 									大小x - 可选
+---@field size_y number 									大小y - 可选
+---@field header_color number[]								节点头部颜色
 local blueprint_node_tpl_data = {}
 
 ---@class blueprint_node_pin_data

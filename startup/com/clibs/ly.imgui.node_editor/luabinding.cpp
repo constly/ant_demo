@@ -510,9 +510,43 @@ static int bGetGroupMin(lua_State* L) {
 	return 2;
 }
 
+static int bPushStyleColor(lua_State* L) {
+	ed::StyleColor index = (ed::StyleColor)luaL_checkinteger(L, 1);
+	float r = (float)luaL_checknumber(L, 2);
+	float g = (float)luaL_checknumber(L, 3);
+	float b = (float)luaL_checknumber(L, 4);
+	float a = (float)luaL_checknumber(L, 5);
+	ed::PushStyleColor(index, ImColor(r, g, b, a));
+	return 0;
+}
+
+static int bPopStyleColor(lua_State* L) {
+	int count = (int)luaL_optinteger(L, 1, 1);
+	ed::PopStyleColor(count);
+	return 0;
+}
+
+static int bPushStyleVar(lua_State* L) {
+	ed::StyleVar index = (ed::StyleVar)luaL_checkinteger(L, 1);
+	float x = (float)luaL_checknumber(L, 2);
+	float y = (float)luaL_checknumber(L, 3);
+	ed::PushStyleVar(index, ImVec2(x, y));
+	return 0;
+}
+
+static int bPopStyleVar(lua_State* L) {
+	int count = (int)luaL_optinteger(L, 1, 1);
+	ed::PopStyleVar(count);
+	return 0;
+}
+
 #define DEF_ENUM(CLASS, MEMBER)                                      \
     lua_pushinteger(L, static_cast<lua_Integer>(ed::CLASS::MEMBER)); \
     lua_setfield(L, -2, #MEMBER);
+
+#define DEF_ENUM2(CLASS, MEMBER, NAME)                                      \
+    lua_pushinteger(L, static_cast<lua_Integer>(ed::CLASS::MEMBER)); \
+    lua_setfield(L, -2, #NAME);
 
 extern "C" int luaopen_ly_imgui_node_editor(lua_State *L) {
 	luaL_Reg lib[] = {
@@ -560,6 +594,10 @@ extern "C" int luaopen_ly_imgui_node_editor(lua_State *L) {
 		{ "BeginGroupHint", 				bBeginGroupHint },
 		{ "EndGroupHint", 					bEndGroupHint },
 		{ "GetGroupMin", 					bGetGroupMin },
+		{ "PushStyleColor", 				bPushStyleColor },
+		{ "PopStyleColor", 					bPopStyleColor },
+		{ "PushStyleVar", 					bPushStyleVar },
+		{ "PopStyleVar", 					bPopStyleVar },
 		
 		{ NULL, NULL },
 	};
@@ -586,6 +624,39 @@ extern "C" int luaopen_ly_imgui_node_editor(lua_State *L) {
 	DEF_ENUM(PinType, Function);
 	DEF_ENUM(PinType, Delegate);
 	lua_setfield(L, -2, "PinType");
+
+	lua_newtable(L);
+	DEF_ENUM2(StyleColor, StyleColor_Bg, Bg);
+	DEF_ENUM2(StyleColor, StyleColor_Grid, Grid);
+	DEF_ENUM2(StyleColor, StyleColor_NodeBg, NodeBg);
+	DEF_ENUM2(StyleColor, StyleColor_NodeBorder, NodeBorder);
+	DEF_ENUM2(StyleColor, StyleColor_HovNodeBorder, HovNodeBorder);
+	DEF_ENUM2(StyleColor, StyleColor_SelNodeBorder, SelNodeBorder);
+	DEF_ENUM2(StyleColor, StyleColor_NodeSelRect, NodeSelRect);
+	DEF_ENUM2(StyleColor, StyleColor_NodeSelRectBorder, NodeSelRectBorder);
+	DEF_ENUM2(StyleColor, StyleColor_HovLinkBorder, HovLinkBorder);
+	DEF_ENUM2(StyleColor, StyleColor_SelLinkBorder, SelLinkBorder);
+	DEF_ENUM2(StyleColor, StyleColor_HighlightLinkBorder, HighlightLinkBorder);
+	DEF_ENUM2(StyleColor, StyleColor_LinkSelRect, LinkSelRect);
+	DEF_ENUM2(StyleColor, StyleColor_LinkSelRectBorder, LinkSelRectBorder);
+	DEF_ENUM2(StyleColor, StyleColor_PinRect, PinRect);
+	DEF_ENUM2(StyleColor, StyleColor_PinRectBorder, PinRectBorder);
+	DEF_ENUM2(StyleColor, StyleColor_Flow, Flow);
+	DEF_ENUM2(StyleColor, StyleColor_FlowMarker, FlowMarker);
+	DEF_ENUM2(StyleColor, StyleColor_GroupBg, GroupBg);
+	DEF_ENUM2(StyleColor, StyleColor_GroupBorder, GroupBorder);
+	lua_setfield(L, -2, "StyleColor");
+
+	lua_newtable(L);
+	DEF_ENUM2(StyleVar, StyleVar_NodePadding, NodePadding);
+	DEF_ENUM2(StyleVar, StyleVar_NodeRounding, NodeRounding);
+	DEF_ENUM2(StyleVar, StyleVar_NodeBorderWidth, NodeBorderWidth);
+	DEF_ENUM2(StyleVar, StyleVar_SourceDirection, NodeBorderWidth);
+	DEF_ENUM2(StyleVar, StyleVar_TargetDirection, NodeBorderWidth);
+	DEF_ENUM2(StyleVar, StyleVar_LinkStrength, NodeBorderWidth);
+	DEF_ENUM2(StyleVar, StyleVar_PinBorderWidth, NodeBorderWidth);
+	DEF_ENUM2(StyleVar, StyleVar_PinRadius, NodeBorderWidth);
+	lua_setfield(L, -2, "StyleVar");
 
     return 1;
 }

@@ -60,6 +60,18 @@ function builder.add_output_var(data_type, name, desc, meta)
 	return builder
 end
 
+---@return blueprint_node_builder
+function builder.set_size(x, y)
+	data.size = {x = x, y = y}
+	return builder
+end
+
+---@return blueprint_node_builder
+function builder.set_header_color(color)
+	data.header_color = color
+	return builder
+end
+
 local create = function()
 	---@class blueprint_builder
 	local blueprint = {}

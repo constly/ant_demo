@@ -60,7 +60,7 @@ local create = function(args)
 		_navigateToContent = true
 	end
 
-	function editor.on_render(deltatime, navigateToContent)
+	function editor.on_render(deltatime)
 		local data = data_hander.get_cur_graph()
 		if data then
 			local needReload = false

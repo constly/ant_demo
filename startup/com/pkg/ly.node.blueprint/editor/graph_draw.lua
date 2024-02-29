@@ -112,7 +112,11 @@ local create = function(editor)
 			end
 
 			-- draw header
-			builder:Header(0.5, 0.5, 0.5, 1)
+			if node_tpl.header_color then 
+				builder:Header(table.unpack(node_tpl.header_color))
+			else 
+				builder:Header(0.5, 0.5, 0.5, 1)
+			end
 			local pos1 = ImGui.GetCursorPosX()
 			ImGui.Text(node_tpl.name);
 			ImGui.SameLine()
@@ -238,11 +242,14 @@ local create = function(editor)
 	---@param node blueprint_node_data
 	---@param node_tpl blueprint_node_tpl_data
 	function graph.draw_comment(node, node_tpl)
-		builder:Begin(node.id)	
 		ImGui.PushStyleVar(ImGui.StyleVar.Alpha, 0.75)
+		ed.PushStyleColor(ed.StyleColor.NodeBg, 0.3, 0.3, 0.3, 0.7)
+		ed.PushStyleColor(ed.StyleColor.NodeBorder, 0.8, 0.8, 0.8, 1)
+		ed.BeginNode(node.id)	
 		ImGui.PushIDInt(node.id)
 
-		local x, y = node.size_x or 300, node.size_y or 200;
+		node_tpl.size = node_tpl.size or {}
+		local x, y = node_tpl.size.x or 300, node_tpl.size.y or 300
 		ImGui.BeginGroup();
 		ImGui.AlignTextToFramePadding();
 		local size = ImGui.CalcTextSize(node_tpl.name)
@@ -259,8 +266,9 @@ local create = function(editor)
 		ImGui.EndGroup();
 
 		ImGui.PopID();
+		ed.EndNode()
+		ed.PopStyleColor(2);
 		ImGui.PopStyleVar()
-		builder:End()
 	end
 
 	---@param node blueprint_node_data
@@ -312,6 +320,7 @@ local create = function(editor)
 						showLabel("+ 创建连线");
 						if ed.AcceptNewItem(0.5, 1, 0.5, 4) then
 							table.insert(graph_data.links, {id = editor.data_hander.next_id(), startPin = pin1.id, endPin = pin2.id, type = pin1.type})
+							dep.common.lib.dump(graph_data.links)
 							editor.stack.snapshoot(true)
 						end
 					end
