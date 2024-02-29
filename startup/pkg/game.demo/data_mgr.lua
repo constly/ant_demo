@@ -97,7 +97,7 @@ function api.get_dpi_scale() return ImGui.GetMainViewport().DpiScale end
 -- 类型排版占位
 local tb_def = {
     {"type_imgui",      "ImGui"},
-	{"type_tool",       "工具链"},
+	{"type_designer",   "设计工具"},
     {"type_core",       "引擎核心"},
     {"type_rmlui",      "RmlUI"},
     {"type_scene",      "场景"},
@@ -127,14 +127,13 @@ temp_create(api.type_core, "83_打/解pack包", "尚未实现")
 temp_create(api.type_core, "84_加密/解密", "尚未实现")
 temp_create(api.type_core, "85_压缩/解压", "尚未实现")
 
-temp_create(api.type_tool, "01_曲线编辑器", "编辑器各种1维2维曲线")
-temp_create(api.type_tool, "02_dotween", "曲线动画")
-temp_create(api.type_tool, "03_ini编辑器", "")
-temp_create(api.type_tool, "04_csv编辑器", "")
-temp_create(api.type_tool, "05_多语言编辑器", "")
-temp_create(api.type_tool, "06_棋盘地图编辑器", "")
-temp_create(api.type_tool, "07_技能编辑器", "")
-temp_create(api.type_tool, "08_剧情编辑器", "")
+temp_create(api.type_designer, "01_曲线编辑器", "编辑器各种1维2维曲线")
+temp_create(api.type_designer, "02_dotween", "曲线动画")
+temp_create(api.type_designer, "03_ini编辑器", "")
+temp_create(api.type_designer, "04_csv编辑器", "")
+temp_create(api.type_designer, "05_多语言编辑器", "")
+temp_create(api.type_designer, "07_技能编辑器", "")
+temp_create(api.type_designer, "08_剧情编辑器", "")
 
 temp_create(api.type_scene, "模型和动画", "尚未实现")
 temp_create(api.type_scene, "海量对象", "尚未实现")

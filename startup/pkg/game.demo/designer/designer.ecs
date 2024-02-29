@@ -1,0 +1,4 @@
+for i = 6, 6 do
+	local name = ("designer_%02d"):format(i)
+	system(name).implement(("designer/%s.lua"):format(name))	
+end
