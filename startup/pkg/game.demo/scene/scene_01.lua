@@ -19,8 +19,13 @@ local math3d = require "math3d"
 local PC  = ecs.require("utils.world_handler").proxy_creator()
 local timer = ecs.require "ant.timer|timer_system"
 local iom = ecs.require "ant.objcontroller|obj_motion"
+local iplayback = ecs.require "ant.animation|playback"
+local ianimation = ecs.require "ant.animation|animation"
 
 local player
+local moving
+local pre_anim_name  ---@type string 动画名
+local p_model;  ---@type any 玩家模型
 local kb_mb
 local mouse_mb
 local mouse_lastx, mouse_lasty
@@ -53,7 +58,7 @@ function system.on_entry()
 	}
 
 	-- 玩家模型, 挂在player下
-	PC:create_instance {
+	p_model = PC:create_instance {
 		prefab = "/pkg/game.res/npc/test_003/scene.gltf|mesh.prefab",
         on_ready = function (e)
 			world:instance_set_parent(e, player)
@@ -126,6 +131,7 @@ function system.data_changed()
 
 	-- 处理玩家移动
 	local pe <close> = world:entity(player)
+	local _moving = false
 	if move_dir.x ~= 0 or move_dir.z ~= 0 then 
 		move_dir.x = move_dir.x * delta * move_speed
 		move_dir.z = move_dir.z * delta * move_speed
@@ -134,17 +140,49 @@ function system.data_changed()
 		local degree = system.get_camera_degree(90)
 		local x = move_dir.x * math.cos(degree) - move_dir.z * math.sin(degree)
 		local z = move_dir.z * math.cos(degree) + move_dir.x * math.sin(degree)
+		if x ~= 0 or z ~= 0 then
+			local pos = iom.get_position(pe)
+			local add = math3d.vector(x, 0, z, 1)
+			local new_pos = math3d.add(pos, add)
+			local dir = math3d.vector(-x, 0, -z)
 
-		local pos = iom.get_position(pe)
-		local add = math3d.vector(x, 0, z, 1)
-		local new_pos = math3d.add(pos, add)
+			-- 设置玩家位置和朝向
+			iom.set_view(pe, new_pos, dir)
+		end
+		_moving = true
+	end
 
-		-- 设置玩家位置
-		iom.set_position(pe, new_pos)
+	if moving ~= _moving then 
+		moving = _moving
+		if moving then 
+			system.play_anim("run2_loop")
+		else 
+			system.play_anim("idle_loop")
+		end
 	end
 
 	system.update_camera_(pe, delta)
 	system.draw_ui_debug()
+end
+
+function system.play_anim(name)
+	if name == pre_anim_name then return end 
+
+	local entities = p_model.tag['*']
+	for i = 1, #entities do
+		local eid = entities[i]
+		local e <close> = world:entity(eid, "animation?in")
+		if e.animation then
+			if pre_anim_name then 
+				iplayback.set_play(e, pre_anim_name, false)
+				ianimation.set_weight(e, pre_anim_name, 0)
+			end
+			iplayback.set_play(e, name, true)
+			iplayback.completion_loop(e, name)
+			ianimation.set_weight(e, name, 1)
+		end
+	end
+	pre_anim_name = name
 end
 
 ------------------------------------------------------------------------------

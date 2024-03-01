@@ -212,6 +212,7 @@ function system.draw_anim()
                 local e <close> = world:entity(eid, "animation?in")
                 if e.animation then
                     table.insert(animation_eid, eid)
+					break
                 end
             end
         end
@@ -219,10 +220,10 @@ function system.draw_anim()
             local e <close> = world:entity(animation_eid[1], "animation:in")
             local animation = e.animation
 
-			local set_play = function(list, name, v)
+			local set_play = function(list, name, value)
 				for _, v in ipairs(list) do 
 					local e <close> = world:entity(v, "animation:in")
-					iplayback.set_play(e, name, v)
+					iplayback.set_play(e, name, value)
 				end
 			end
 			local completion_hide = function(list, name)
@@ -237,28 +238,28 @@ function system.draw_anim()
 					iplayback.completion_loop(e, name)
 				end
 			end
-			local completion_stop = function(list, name)
+			local completion_stop = function(list, name, value)
 				for _, v in ipairs(list) do 
 					local e <close> = world:entity(v, "animation:in")
-					iplayback.completion_stop(e, name)
+					iplayback.completion_stop(e, name, value)
 				end
 			end
-			local set_speed = function(list, name, v)
+			local set_speed = function(list, name, value)
 				for _, v in ipairs(list) do 
 					local e <close> = world:entity(v, "animation:in")
-					iplayback.set_speed(e, name, v)
+					iplayback.set_speed(e, name, value)
 				end
 			end
-			local set_weight = function(list, name, v)
+			local set_weight = function(list, name, value)
 				for _, v in ipairs(list) do 
 					local e <close> = world:entity(v, "animation:in")
-					ianimation.set_weight(e, name, v)
+					ianimation.set_weight(e, name, value)
 				end
 			end
-			local set_ratio = function(list, name, v)
+			local set_ratio = function(list, name, value)
 				for _, v in ipairs(list) do 
 					local e <close> = world:entity(v, "animation:in")
-					ianimation.set_ratio(e, name, v)
+					ianimation.set_ratio(e, name, value)
 				end
 			end
 
