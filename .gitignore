@@ -5,3 +5,4 @@ bin/
 build/
 startup/pkg/game.res/test/
 .log
+lua.booster.lint.json

@@ -85,6 +85,9 @@ function system.on_entry()
 end 
 
 function system.on_leave()
+	moving = nil
+	pre_anim_name = nil
+	tb_keydown = {}
 	PC:clear()
 	world:unsub(kb_mb)
 	world:unsub(mouse_mb)
