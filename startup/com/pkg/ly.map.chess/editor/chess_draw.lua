@@ -56,17 +56,40 @@ local create = function(editor)
 	end
 
 	function chess.draw_middle()
-		ImGui.Text("middle")
-		ImGui.SetCursorPos(100, 100)
+		local size_x, size_y = ImGui.GetContentRegionAvail()
+
+		ImGui.Button("设置")
+		ImGui.SameLine()
+		ImGui.Button("配置")
+
+		ImGui.SameLine()
 		local nums = {-3, -2, -1, -0.01, 0, 0.01, 1, 1, 3}
 		for i, v in ipairs(nums) do 
 			ImGui.Button(v)
 			ImGui.SameLine()
 		end
+		local top = 31
+		size_y = size_y - top
+		ImGui.SetCursorPos(0, top)
+		ImGui.BeginChild("##chess_middle_2", size_x, size_y, ImGui.ChildFlags({"Border"}))
+		ImGui.Text("Draw Content");
+		ImGui.EndChild()
 	end
 
 	function chess.draw_right()
-		ImGui.Text("right")
+		local size_x, size_y = ImGui.GetContentRegionAvail()
+		ImGui.Dummy(2, 2);
+		ImGui.Dummy(20, 3);
+		ImGui.SameLine()
+		ImGui.Button("保 存")
+		ImGui.SameLine()
+		ImGui.Button("清 空")
+		local top = 31
+		size_y = size_y - top
+		ImGui.SetCursorPos(0, top)
+		ImGui.BeginChild("##chess_right_1", size_x, size_y, ImGui.ChildFlags({"Border"}))
+		ImGui.Text("Inspector");
+		ImGui.EndChild()
 	end
 
 	return chess
