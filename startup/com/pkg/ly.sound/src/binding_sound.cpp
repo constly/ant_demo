@@ -7,10 +7,11 @@
 #include "fastio.h"
 
 struct CuteSoundMgr {	
-	// 当前缓存的资源列表
+	// audio list
 	std::map<std::string, cs_audio_source_t*> assets;
 
 	// 播放的声音 (每隔一段时间更新一次，更新时会把已经播放完毕的移除)
+	// 
 	std::map<int64_t, cs_playing_sound_t> sounds;
 
 	int64_t register_sound(const cs_playing_sound_t& sound) {
@@ -132,7 +133,7 @@ namespace bind::CuteSound {
 	}
 
 	//----------------------------------------------------------
-	// music 接口
+	// music api
 	//----------------------------------------------------------
 	static int sPlayMusic(lua_State* L) {
 		CuteSoundMgr& mgr = bee::lua::checkudata<CuteSoundMgr>(L, 1);
@@ -202,7 +203,7 @@ namespace bind::CuteSound {
 	}
 
 	//----------------------------------------------------------
-	// sound 接口
+	// sound api
 	//----------------------------------------------------------
 	static int sPlaySound(lua_State* L) {
 		CuteSoundMgr& mgr = bee::lua::checkudata<CuteSoundMgr>(L, 1);
@@ -314,7 +315,7 @@ namespace bind::CuteSound {
 			{ "Init", 					sInit },
 			{ "SetGlobalVolume", 		sSetGlobalVolume },
 			{ "SetPause", 				sSetPause },
-			{ "SetPan", 				sSetPan }, // 声相, 0-1 表示从左声道到右声道, 0.5表示在中间
+			{ "SetPan", 				sSetPan }, 
 			{ "Update", 				sUpdate },
 			{ "Shutdown",				sShutdown },
 
@@ -370,7 +371,8 @@ static int create_sound_mgr(lua_State* L) {
 extern "C" int luaopen_ly_sound_impl(lua_State *L) {
 	lua_newtable(L);
 
-	// sound mgr 全局只能有一个
+	// sound mgr, 全局唯一
+	// 
 	lua_pushcfunction(L, create_sound_mgr);
 	lua_setfield(L, -2, "CreateSoundMgr");
 	return 1;

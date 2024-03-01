@@ -4,7 +4,6 @@
 namespace imguilua::bind::TextEditor {
 	using PaletteIndex = imguilua::TextEditor::PaletteIndex;
 
-	// 这个还是定义在C++中，只提供选择接口比较好
 	static int SetLanguageDefinition(lua_State* L) {
 		auto& editor = bee::lua::checkudata<imguilua::TextEditor>(L, 1);
 		if (lua_type(L, 2) == LUA_TTABLE) {
