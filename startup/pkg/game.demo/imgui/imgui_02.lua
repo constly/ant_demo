@@ -17,6 +17,7 @@ local ImGui     = require "imgui"
 local dep = require "dep"
 local textureman = require "textureman.client"
 local input_content = ImGui.StringBuf()
+input_content:Assgin "default"
 
 local flag = {}
 local icon_btn
@@ -155,7 +156,9 @@ function system.init_world()
                     cur_combo = name
                 end
                 if ImGui.IsItemHovered() and ImGui.BeginTooltip() then
-                    ImGui.TextWrapped(name .. "的描述", (i - 1) * 40 + 10)
+					ImGui.PushTextWrapPos((i - 1) * 40 + 10)
+                    ImGui.TextWrapped(name .. "的描述")
+					ImGui.PopTextWrapPos()
                     ImGui.EndTooltip()
                 end
             end
