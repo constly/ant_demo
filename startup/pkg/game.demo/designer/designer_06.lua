@@ -15,9 +15,23 @@ local ImGui = dep.ImGui
 ---@type chess_editor
 local editor 
 
+---@type chess_object_tpl[] 物件定义
+local tb_object_def = 
+{
+	{id = 1, name = "地面", size = {x = 1, y = 1}, bg_color = {0.8, 0.8, 0.8, 1}, txt_color = {0, 0, 0, 0}},
+	{id = 2, name = "草原", size = {x = 1, y = 1}, bg_color = {0.8, 0.8, 0.8, 1}, txt_color = {0, 0.8, 0, 1}},
+	{id = 3, name = "阻挡", size = {x = 1, y = 1}, bg_color = {0.8, 0.8, 0.8, 1}, txt_color = {0, 0.8, 0, 1}},
+	{id = 4, name = "饭店", size = {x = 2, y = 2}, bg_color = {0.8, 0.8, 0.8, 1}, txt_color = {0, 0.8, 0, 1}},
+	{id = 5, name = "别墅", size = {x = 3, y = 3}, bg_color = {0.8, 0.8, 0.8, 1}, txt_color = {0, 0.8, 0, 1}},
+}
+
 function system.on_entry()
 	if not editor then 
-		editor = dep.chess_map.create({});
+		---@type chess_editor_create_args
+		local params = {}
+		params.path = ""
+		params.tb_objects = tb_object_def
+		editor = dep.chess_map.create(params);
 	end
 end
 

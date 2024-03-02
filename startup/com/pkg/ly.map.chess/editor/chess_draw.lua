@@ -1,5 +1,5 @@
 ---------------------------------------------------------------------------
--- 编辑器绘制
+-- 编辑器主框架绘制
 ---------------------------------------------------------------------------
 local dep = require 'dep' ---@type ly.map.chess.dep 
 local ImGui = dep.ImGui
@@ -41,20 +41,69 @@ local create = function(editor)
 	end
 
 	function chess.draw_left()
+		local len = 135;
+		local data = editor.data_hander.data
 		local size_x, size_y = ImGui.GetContentRegionAvail()
 		ImGui.Dummy(2, 3);
 		imgui_utils.draw_text_center("物件列表")
 
 		local h1 = size_y * 0.7
 		ImGui.BeginChild("##chess_left_1", size_x, h1, ImGui.ChildFlags({"Border"}))
-			
+			ImGui.SetCursorPos(5, 5)
+			ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
+			ImGui.BeginGroup()
+			for i, def in ipairs(editor.args.tb_objects) do 
+				local label = string.format("L%d: [%d]%s##btn_obj_def_%d", def.nLayer or 1, def.id, def.name, def.id)
+				if imgui_utils.draw_btn(label, data.cur_object_id == def.id, {size_x = len}) then 
+					if data.cur_object_id ~= def.id then 
+						data.cur_object_id = def.id
+						editor.stack.snapshoot(false)
+					end
+				end
+			end	
+			ImGui.EndGroup()
+			ImGui.PopStyleVar()
 		ImGui.EndChild()
 
 		ImGui.Dummy(5, 3);
-		imgui_utils.draw_text_center("区 域")
+		imgui_utils.draw_text_center("区域列表")
 		local size_x, size_y = ImGui.GetContentRegionAvail()
 		ImGui.BeginChild("##chess_left_2", size_x, size_y, ImGui.ChildFlags({"Border"}))
-			
+			local regions = data.regions
+			ImGui.SetCursorPos(5, 5)
+			ImGui.BeginGroup()
+			local count = #regions + 1
+			for i = 1, count do 
+				if i < count then 
+					local label = string.format("区域 %d##btn_region_idx_%d", i, i)
+					if imgui_utils.draw_btn(label, i == data.region_index, {size_x = len}) and i ~= data.region_index then 
+						data.region_index = i
+						editor.stack.snapshoot(false)
+					end
+					ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 5, 5)
+					if count > 2 and ImGui.BeginPopupContextItem() then 
+						data.region_index = i
+						if ImGui.MenuItem("删 除") then 
+							table.remove(regions, i)
+							if data.region_index > #regions then
+								data.region_index = #regions
+							end
+							editor.stack.snapshoot(true)
+						end
+						ImGui.EndPopup()
+					end
+					ImGui.PopStyleVar()
+				else 
+					local label = "+##btn_region_add"
+					if imgui_utils.draw_btn(label, false, {size_x = len}) then 
+						local region = editor.data_hander.create_region()
+						table.insert(data.regions, region)
+						data.region_index = #data.regions
+						editor.stack.snapshoot(true)
+					end
+				end
+			end
+			ImGui.EndGroup()
 		ImGui.EndChild()
 	end
 
@@ -83,12 +132,13 @@ local create = function(editor)
 			local modify_h = false
 			if ImGui.BeginPopupContextItem("layer_pop") then 
 				if v.height then 
-					ImGui.Text("高度: " .. v.height)
+					ImGui.Text("表现层, 高度: " .. v.height)
 				else 
-					local height = editor.data_hander.get_logic_layer_height(region, v)
-					ImGui.Text("逻辑层级, 高度: " .. height)
+					--ImGui.PushStyleColorImVec4(ImGui.Col.Text, 1, 1, 0, 1)
+					ImGui.Text("逻辑层")
+					--ImGui.PopStyleColor()
 				end
-				if #region.layers > 0 and ImGui.MenuItem("删 除") then 
+				if #region.layers > 1 and ImGui.MenuItem("删 除") then 
 					table.remove(region.layers, i)
 					editor.stack.snapshoot(true)
 				end
@@ -105,9 +155,21 @@ local create = function(editor)
 				if v.height and ImGui.MenuItem("修改高度") then 
 					modify_h = true;
 				end
-				if v.height and ImGui.MenuItem("添加逻辑层级") then 
+				if v.height and ImGui.MenuItem("后增 逻辑层") then 
 					local tb = editor.data_hander.create_region_layer(nil, false)
 					table.insert(region.layers, i + 1, tb)
+					editor.stack.snapshoot(true)
+				end
+				if ImGui.MenuItem("后增 表现层") then 
+					local height = editor.data_hander.get_next_height(region, #region.layers, 1)
+					local tb = editor.data_hander.create_region_layer(height, true)
+					table.insert(region.layers, i + 1, tb)
+					editor.stack.snapshoot(true)
+				end
+				if ImGui.MenuItem("前增 表现层") then 
+					local height = editor.data_hander.get_next_height(region, 1, -1)
+					local tb = editor.data_hander.create_region_layer(height, true)
+					table.insert(region.layers, i, tb)
 					editor.stack.snapshoot(true)
 				end
 				ImGui.EndPopup()
@@ -145,27 +207,6 @@ local create = function(editor)
 
 			ImGui.SameLine()
 		end
-		ImGui.SameLine()
-		if imgui_utils.draw_btn(" + ##add_layer2") then 
-			ImGui.OpenPopup("layer_pop2", ImGui.PopupFlags { "None" });
-		end
-		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 5, 5)
-		if ImGui.BeginPopupContextItemEx("layer_pop2") then 
-			if ImGui.MenuItem("前增层级") then 
-				local height = editor.data_hander.get_next_height(region, 1, -1)
-				local tb = editor.data_hander.create_region_layer(height, true)
-				table.insert(region.layers, 1, tb)
-				editor.stack.snapshoot(true)
-			end
-			if ImGui.MenuItem("后增层级") then 
-				local height = editor.data_hander.get_next_height(region, #region.layers, 1)
-				local tb = editor.data_hander.create_region_layer(height, true)
-				table.insert(region.layers, tb)
-				editor.stack.snapshoot(true)
-			end
-			ImGui.EndPopup()
-		end
-		ImGui.PopStyleVar()
 		
 		local top = 31
 		size_y = size_y - top

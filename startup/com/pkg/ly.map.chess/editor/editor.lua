@@ -13,6 +13,7 @@ local create = function(args)
 
 	editor.data_hander = data_hander
 	editor.stack = stack
+	editor.args = args
 
 	function editor.on_init()
 		stack.set_data_handler(data_hander)	

@@ -47,10 +47,23 @@ local chess_map_region_tpl = {}
 ---@field regions chess_map_region_tpl[] 区域列表
 ---@field region_index number 当前选中的区域索引
 ---@field next_id number 下个id
+---@field cur_object_id number 当前选中的物件id
 local chess_map_tpl = {}
 
+
+--- 棋盘物件模板
+---@class chess_object_tpl
+---@field id number 唯一id
+---@field name string 名字
+---@field size chess_vec2 物件大小
+---@field bg_color number[] 物件背景颜色
+---@field txt_color number[] 文本颜色
+---@field bLogic boolean 是不是逻辑物件
+---@field nLayer number 层级（用于显示过滤）
+local chess_object_tpl = {}
 
 --- 棋盘编辑器创建参数
 ---@class chess_editor_create_args
 ---@field path string
+---@field tb_objects chess_object_tpl[]
 local chess_editor_create_args = {}
