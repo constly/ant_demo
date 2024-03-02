@@ -13,4 +13,29 @@ function api.draw_text_center(text)
 	ImGui.Text(text)
 end
 
+--- 绘制按钮
+---@param label string 
+---@param selected boolean 是否选中
+---@param tbParams table 扩展参数{size_x = 100, size_y = 100}
+function api.draw_btn(label, selected, tbParams)
+	if selected then 
+		ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.6, 0.6, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.5, 0.5, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.5, 0.5, 0.25, 1)
+	else  
+		ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.2, 0.2, 0.25, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
+        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
+	end
+
+	tbParams = tbParams or {}
+	local ok = false
+	if ImGui.ButtonEx(label, tbParams.size_x, tbParams.size_y) then 
+		ok = true;
+	end
+
+	ImGui.PopStyleColorEx(3)
+	return ok;
+end
+
 return api;

@@ -25,6 +25,7 @@ local chess_grid_tpl = {}
 -- 棋盘地图区域层数据 模板
 ---@class chess_map_region_layer_tpl 
 ---@field height number 层级高度
+---@field active boolean 是否激活
 ---@field grids table<number, chess_grid_tpl> 格子列表
 local chess_map_region_layer_tpl = {}
 
@@ -37,13 +38,14 @@ local chess_map_region_layer_tpl = {}
 ---@field position chess_vec3 世界坐标
 ---@field rotate number 世界旋转
 ---@field params table<string,string> 区域参数
----@field layers chess_map_region_layer_tpl[] 层级列表
+---@field layers table<number, chess_map_region_layer_tpl> 层级列表
 local chess_map_region_tpl = {}
 
 
 -- 棋盘地图 模板
 ---@class chess_map_tpl 		
 ---@field regions chess_map_region_tpl[] 区域列表
+---@field region_index number 当前选中的区域索引
 ---@field next_id number 下个id
 local chess_map_tpl = {}
 

@@ -6,7 +6,7 @@ local tbParam =
     ecs             = ecs,
     system_name     = "designer_06_system",
     category        = mgr.type_designer,
-    name            = "06_逻辑地图编辑",
+    name            = "06_地图编辑器",
     file            = "designer/designer_06.lua",
     ok              = true
 }
