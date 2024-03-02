@@ -32,17 +32,20 @@ run.bat
 2. 将bin/msvc/debug/ant_demo.exe设置为启动项, 启动即可调试C++
 3. 运行时版本 ant_demo_rt.exe 也可以用同样的方式调试
 
-### 三. 使用的插件
+### 三. 关于编译
+1. 某些情况下会报奇怪的编译报错，这时可以看文件中是否有中文，改下文件的编码或者把中文删掉试试
+
+### 四. 使用的插件
 1. 声音使用的 [cute](https://github.com/RandyGaul/cute_headers)
 2. 节点编辑器使用的 [imgui-node-editor](https://github.com/thedmd/imgui-node-editor.git)
 2. lua语法提示使用的 [EmmyLua](https://github.com/EmmyLua/IntelliJ-EmmyLua)
 
-### 四. 安装特效编辑器Effekseer  
+### 五. 安装特效编辑器Effekseer  
 1. 官方文档 [HowToBuild](https://github.com/effekseer/Effekseer/blob/master/docs/Development/HowToBuild.md)  
 2. 另外需要安装python最新版,以及执行: pip install setuptools
 3. Effekseer/ResourceData/samples目录下有大量示例
 
-### 五. bgfx学习
+### 六. bgfx学习
 1. 如何 [build](https://github.com/bkaradzic/bgfx/blob/master/docs/build.rst)
 1. bgfx下有大量使用示例, 网上也有 [学习笔记](https://hinageshi01.github.io/2022/05/30/bgfx/)
 
@@ -60,3 +63,4 @@ run.bat
 
 ## 待解决问题
 3. 如何遍历场景中所有entity, 以及他们身上有什么组件, 并且展示出组件属性字段
+4. 建议：引擎相关类定义时能否加上 ---@class 标识， 这样方便代码跳转
