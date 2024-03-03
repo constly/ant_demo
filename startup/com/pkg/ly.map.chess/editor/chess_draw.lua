@@ -58,13 +58,22 @@ local create = function(editor)
 			ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
 			ImGui.BeginGroup()
 			for i, def in ipairs(editor.args.tb_objects) do 
-				local label = string.format("L%d: [%d]%s##btn_obj_def_%d", def.nLayer or 1, def.id, def.name, def.id)
+				local label = string.format("L%d: [%d]%s(%d*%d)##btn_obj_def_%d", def.nLayer or 1, def.id, def.name, def.size.x, def.size.y, def.id)
 				if imgui_utils.draw_btn(label, data.cur_object_id == def.id, {size_x = len}) then 
 					if data.cur_object_id ~= def.id then 
 						data.cur_object_id = def.id
 						editor.stack.snapshoot(false)
 					end
 				end
+				ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 5, 5)
+				if ImGui.BeginDragDropSource() then 
+					data.cur_object_id = def.id
+					ImGui.SetDragDropPayload("DragObject", tostring(def.id));
+					ImGui.Text("正在拖动 " .. def.name .. " 到层级1");
+					ImGui.EndDragDropSource();
+				end
+				ImGui.PopStyleVar()
+	
 			end	
 			ImGui.EndGroup()
 			ImGui.PopStyleVar()

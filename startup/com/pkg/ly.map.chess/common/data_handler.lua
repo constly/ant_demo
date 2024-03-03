@@ -32,8 +32,8 @@ local create = function()
 	function handler.create_region() 
 		---@type chess_map_region_tpl
 		local region = {}
-		region.min = {x = -5, y = -5}
-		region.max = {x = 5, y = 5}
+		region.min = {x = -2, y = -2}
+		region.max = {x = 2, y = 2}
 		region.id = handler.next_id()
 		region.layers = {}
 		table.insert(region.layers, handler.create_region_layer(-1, false))

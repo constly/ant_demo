@@ -34,4 +34,22 @@ function api.draw_style_btn(label, style_type, tbParams)
 	return ImGui.ButtonEx(label, tbParams.size_x, tbParams.size_y) 
 end
 
+--- 绘制按钮
+---@param label string 
+---@param bg_color number[] 背景颜色
+---@param txt_clor number[] 背景颜色
+---@param tbParams table 扩展参数{size_x = 100, size_y = 100}
+function api.draw_color_btn(label, bg_color, txt_clor, tbParams)
+	local hover_color = {bg_color[1] * 1.12, bg_color[2] * 1.12, bg_color[3] * 1.12, bg_color[4] * 1.12}
+	ImGui.PushStyleColorImVec4(ImGui.Col.Button, table.unpack(bg_color))
+	ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, table.unpack(hover_color))
+	ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, table.unpack(hover_color))
+	ImGui.PushStyleColorImVec4(ImGui.Col.Text, table.unpack(txt_clor))
+	local ok = false
+	tbParams = tbParams or {}
+	if ImGui.ButtonEx(label, tbParams.size_x, tbParams.size_y) then ok = true end
+	ImGui.PopStyleColorEx(4)
+	return ok
+end
+
 return api;
