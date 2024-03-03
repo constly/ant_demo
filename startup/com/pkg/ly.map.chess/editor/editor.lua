@@ -21,6 +21,10 @@ local create = function(args)
 		stack.snapshoot()
 	end
 
+	function editor.on_destroy()
+		draw.on_destroy()
+	end
+
 	function editor.on_reset()
 		data_hander.init(args)
 		stack.snapshoot()

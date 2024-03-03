@@ -4,6 +4,7 @@
 local dep = require 'dep' ---@type ly.map.chess.dep 
 local ImGui = dep.ImGui
 local imgui_utils = dep.common.imgui_utils
+local imgui_styles = dep.common.imgui_styles
 local chess_region_draw = require 'editor/chess_region_draw'
 
 ---@param editor chess_editor
@@ -12,6 +13,10 @@ local create = function(editor)
 	local chess = {}
 	local region_draw = chess_region_draw.create(editor)
 	local input_content = ImGui.StringBuf()
+
+	function chess.on_destroy()
+		region_draw.on_destroy()
+	end
 
 	function chess.on_render(_deltatime)
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 0, 0)
@@ -120,7 +125,7 @@ local create = function(editor)
 	
 		--ImGui.SameLine()
 		for i, v in ipairs(region.layers) do 
-			local str = v.height and tostring(v.height) or "L"
+			local str = tostring(v.height)
 			if #str == 1 then str = " " .. str .. " " end
 			local label = string.format("%s##id_btn_layer_%d", str, i)
 			if imgui_utils.draw_btn(label, v.active) then 
@@ -131,17 +136,18 @@ local create = function(editor)
 			ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 5, 5)
 			local modify_h = false
 			if ImGui.BeginPopupContextItem("layer_pop") then 
-				if v.height then 
-					ImGui.Text("表现层, 高度: " .. v.height)
-				else 
-					--ImGui.PushStyleColorImVec4(ImGui.Col.Text, 1, 1, 0, 1)
-					ImGui.Text("逻辑层")
-					--ImGui.PopStyleColor()
+				editor.data_hander.clear_all_selected(region)
+				v.active = true;
+				ImGui.Text("层级高度: " .. v.height)
+				if ImGui.MenuItem("修改高度") then 
+					modify_h = true;
 				end
+				ImGui.Separator()
 				if #region.layers > 1 and ImGui.MenuItem("删 除") then 
 					table.remove(region.layers, i)
 					editor.stack.snapshoot(true)
 				end
+				ImGui.Separator()
 				if i > 1 and ImGui.MenuItem("前 移") then 
 					local v = table.remove(region.layers, i)
 					table.insert(region.layers, i - 1, v)
@@ -152,26 +158,19 @@ local create = function(editor)
 					table.insert(region.layers, i + 1, v)
 					editor.stack.snapshoot(true)
 				end
-				if v.height and ImGui.MenuItem("修改高度") then 
-					modify_h = true;
-				end
-				if v.height and ImGui.MenuItem("后增 逻辑层") then 
-					local tb = editor.data_hander.create_region_layer(nil, false)
-					table.insert(region.layers, i + 1, tb)
-					editor.stack.snapshoot(true)
-				end
-				if ImGui.MenuItem("后增 表现层") then 
-					local height = editor.data_hander.get_next_height(region, #region.layers, 1)
-					local tb = editor.data_hander.create_region_layer(height, true)
-					table.insert(region.layers, i + 1, tb)
-					editor.stack.snapshoot(true)
-				end
-				if ImGui.MenuItem("前增 表现层") then 
-					local height = editor.data_hander.get_next_height(region, 1, -1)
-					local tb = editor.data_hander.create_region_layer(height, true)
+				ImGui.Separator()
+				if ImGui.MenuItem("前 增") then 
+					editor.data_hander.clear_all_selected(region)
+					local tb = editor.data_hander.create_region_layer(v.height - 1, true)
 					table.insert(region.layers, i, tb)
 					editor.stack.snapshoot(true)
 				end
+				if ImGui.MenuItem("后 增") then 
+					editor.data_hander.clear_all_selected(region)
+					local tb = editor.data_hander.create_region_layer(v.height + 1, true)
+					table.insert(region.layers, i + 1, tb)
+					editor.stack.snapshoot(true)
+				end				
 				ImGui.EndPopup()
 			end
 			local pop_label = string.format("修改层级高度##modify_layer_height_%d", i)

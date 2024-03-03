@@ -61,47 +61,15 @@ local create = function()
 		local data = handler.data
 		return data.regions[data.region_index]
 	end
-	
-	--- 得到下个层级的高度
-	---@param region chess_map_region_tpl
-	---@param from number 起始位置
-	---@param dir number 方向
-	function handler.get_next_height(region, from, dir)
-		local layer = region.layers[from]
-		if not layer then 
-			return 0;
-		end
-		local height = layer.height + dir
-		return math.ceil(height)
-	end
 
-	--- 得到逻辑层级的高度
+	--- 清空所有选择的层级
 	---@param region chess_map_region_tpl
-	---@param layer chess_map_region_layer_tpl
-	function handler.get_logic_layer_height(region, layer)
-		if layer.height then return layer.height end 
-		local idx = handler.get_layer_index(region, layer)
-		if not idx then return "?" end
-		for i = idx, 1, -1 do 
-			local l = region.layers[i]
-			if l.height then 
-				return l.height
-			end
-		end
-		return "?"
-	end
-
-	--- 得到层级在数组中的索引
-	---@param region chess_map_region_tpl
-	---@param layer chess_map_region_layer_tpl
-	function handler.get_layer_index(region, layer)
+	function handler.clear_all_selected(region)
 		for i, v in ipairs(region.layers) do 
-			if v == layer then 
-				return i
-			end
+			v.active = false
 		end
 	end
-
+	
 	return handler
 end 
 

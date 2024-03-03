@@ -1,5 +1,6 @@
 local dep = require 'dep' ---@type ly.common.dep
 local ImGui = dep.ImGui
+local style = require 'imgui.imgui_styles'  ---@type ly.common.imgui_styles
 
 ---@class ly.common.imgui_utils
 local api = {}
@@ -18,24 +19,19 @@ end
 ---@param selected boolean 是否选中
 ---@param tbParams table 扩展参数{size_x = 100, size_y = 100}
 function api.draw_btn(label, selected, tbParams)
-	if selected then 
-		ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.6, 0.6, 0.25, 1)
-        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.5, 0.5, 0.25, 1)
-        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.5, 0.5, 0.25, 1)
-	else  
-		ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.2, 0.2, 0.25, 1)
-        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.3, 0.3, 0.3, 1)
-        ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
-	end
-
+	local use<close> = style.use(selected and style.btn_blue or style.btn_normal)
 	tbParams = tbParams or {}
-	local ok = false
-	if ImGui.ButtonEx(label, tbParams.size_x, tbParams.size_y) then 
-		ok = true;
-	end
+	return ImGui.ButtonEx(label, tbParams.size_x, tbParams.size_y)
+end
 
-	ImGui.PopStyleColorEx(3)
-	return ok;
+--- 绘制按钮
+---@param label string 
+---@param style_type ly.common.imgui_styles
+---@param tbParams table 扩展参数{size_x = 100, size_y = 100}
+function api.draw_style_btn(label, style_type, tbParams)
+	local use<close> = style.use(style_type)
+	tbParams = tbParams or {}
+	return ImGui.ButtonEx(label, tbParams.size_x, tbParams.size_y) 
 end
 
 return api;

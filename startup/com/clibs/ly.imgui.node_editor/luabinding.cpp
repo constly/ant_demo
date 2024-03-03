@@ -3,6 +3,7 @@
 #include "backend/imgui_impl_bgfx.h"
 #include <bee/nonstd/unreachable.h>
 #include "src/imgui_node_editor.h"
+#include "src/imgui_canvas.h"
 #include "bp/blueprint.h"
 #include "bp/builders.h"
 
@@ -181,7 +182,126 @@ static int bCreateBlueprintNodeBuilder(lua_State* L) {
 	return 1;
 }
 
+//--------------------------------------------------------------------
+// canvas 接口绑定
+//--------------------------------------------------------------------
+namespace imguilua {
+	struct CanvasContext {	
+		ImGuiEx::Canvas canvas;
+	};
+}
 
+namespace imguilua::canvasbind {
+
+	static int bBegin(lua_State* L) {
+		imguilua::CanvasContext& context = bee::lua::checkudata<imguilua::CanvasContext>(L, 1);
+		auto str = luaL_checkstring(L, 2);
+		float x = (float)luaL_checknumber(L, 3);
+		float y = (float)luaL_checknumber(L, 4);
+		context.canvas.Begin(str, ImVec2(x, y));
+		return 0;
+	}
+
+	static int bEnd(lua_State* L) {
+		imguilua::CanvasContext& context = bee::lua::checkudata<imguilua::CanvasContext>(L, 1);
+		context.canvas.End();
+		return 0;
+	}
+
+	static int bSetView(lua_State* L) {
+		imguilua::CanvasContext& context = bee::lua::checkudata<imguilua::CanvasContext>(L, 1);
+		float x = (float)luaL_checknumber(L, 2);
+		float y = (float)luaL_checknumber(L, 3);
+		float scale = (float)luaL_checknumber(L, 4);
+		context.canvas.SetView(ImVec2(x, y), scale);
+		return 0;
+	}
+
+	static int bViewOrigin(lua_State* L) {
+		imguilua::CanvasContext& context = bee::lua::checkudata<imguilua::CanvasContext>(L, 1);
+		const ImVec2& value = context.canvas.ViewOrigin();
+		lua_pushnumber(L, value.x);
+		lua_pushnumber(L, value.y);
+		return 2;
+	}
+
+	static int bViewScale(lua_State* L) {
+		imguilua::CanvasContext& context = bee::lua::checkudata<imguilua::CanvasContext>(L, 1);
+		float scale = context.canvas.ViewScale();
+		lua_pushnumber(L, scale);
+		return 1;
+	}
+
+	static int bToLocal(lua_State* L) {
+		imguilua::CanvasContext& context = bee::lua::checkudata<imguilua::CanvasContext>(L, 1);
+		float x = (float)luaL_checknumber(L, 2);
+		float y = (float)luaL_checknumber(L, 3);
+		ImVec2 value = context.canvas.ToLocal(ImVec2(x, y));
+		lua_pushnumber(L, value.x);
+		lua_pushnumber(L, value.y);
+		return 2;
+	}
+
+	static int bCenterView(lua_State* L) {
+		imguilua::CanvasContext& context = bee::lua::checkudata<imguilua::CanvasContext>(L, 1);
+		float x = (float)luaL_checknumber(L, 2);
+		float y = (float)luaL_checknumber(L, 3);
+		context.canvas.CenterView(ImVec2(x, y));
+		return 0;
+	}
+
+	static int bRect(lua_State* L) {
+		imguilua::CanvasContext& context = bee::lua::checkudata<imguilua::CanvasContext>(L, 1);
+		ImRect rect = context.canvas.Rect();
+		lua_pushnumber(L, rect.Min.x);
+		lua_pushnumber(L, rect.Min.y);
+		lua_pushnumber(L, rect.Max.x);
+		lua_pushnumber(L, rect.Max.y);
+		return 4;
+	}
+
+	static int bSuspend(lua_State* L) {
+		imguilua::CanvasContext& context = bee::lua::checkudata<imguilua::CanvasContext>(L, 1);
+		context.canvas.Suspend();
+		return 0;
+	}
+	
+	static int bResume(lua_State* L) {
+		imguilua::CanvasContext& context = bee::lua::checkudata<imguilua::CanvasContext>(L, 1);
+		context.canvas.Resume();
+		return 0;
+	}
+
+	//----------------------------------------------------------
+	// metatable
+	//----------------------------------------------------------
+	static void metatable(lua_State* L) {
+		static luaL_Reg lib[] = {
+			{"Begin", bBegin},
+			{"End", bEnd},
+			{"SetView", bSetView},
+			{"ViewOrigin", bViewOrigin},
+			{"ViewScale", bViewScale},
+			{"ToLocal", bToLocal},
+			{"CenterView", bCenterView},
+			{"Rect", bRect},
+			{"Resume", bResume},
+			{"Suspend", bSuspend},
+
+			{nullptr, nullptr},
+		};
+		luaL_newlib(L, lib);
+		lua_setfield(L, -2, "__index");
+	}
+}
+static int bCreateCanvasContext(lua_State* L) {
+	bee::lua::newudata<imguilua::CanvasContext>(L);
+	return 1;
+}
+
+//------------------------------------------------------------------------
+// ed 接口绑定
+//------------------------------------------------------------------------
 static int bSetCurrentEditor(lua_State* L) {
 	if (lua_isuserdata(L, 1)) {
 		imguilua::NodeEditorContext& context = bee::lua::checkudata<imguilua::NodeEditorContext>(L, 1);
@@ -552,7 +672,8 @@ extern "C" int luaopen_ly_imgui_node_editor(lua_State *L) {
 	luaL_Reg lib[] = {
 		{ "CreateEditorContext", bCreateEditorContext },
 		{ "CreateBlueprintNodeBuilder", bCreateBlueprintNodeBuilder },
-	
+		{ "CreateCanvasContext", bCreateCanvasContext },
+		
 		{ "SetCurrentEditor", 	bSetCurrentEditor },
 		{ "Begin", 				bBegin },
 		{ "End", 				bEnd },
@@ -672,5 +793,11 @@ namespace bee::lua {
 	struct udata<util::BlueprintNodeBuilder> {
 		static inline auto name = "util::BlueprintNodeBuilder";
 		static inline auto metatable = imguilua::bindutils::metatable;
+	};
+
+	template <>
+	struct udata<imguilua::CanvasContext> {
+		static inline auto name = "imguilua::CanvasContext";
+		static inline auto metatable = imguilua::canvasbind::metatable;
 	};
 }
