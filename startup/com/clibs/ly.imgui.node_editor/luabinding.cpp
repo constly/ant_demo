@@ -198,7 +198,10 @@ namespace imguilua::canvasbind {
 		auto str = luaL_checkstring(L, 2);
 		float x = (float)luaL_checknumber(L, 3);
 		float y = (float)luaL_checknumber(L, 4);
-		context.canvas.Begin(str, ImVec2(x, y));
+		if (context.canvas.Begin(str, ImVec2(x, y))) {
+			lua_pushboolean(L, true);
+			return 1;
+		}
 		return 0;
 	}
 

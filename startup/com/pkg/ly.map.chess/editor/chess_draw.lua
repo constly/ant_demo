@@ -145,7 +145,7 @@ local create = function(editor)
 			ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 5, 5)
 			local modify_h = false
 			if ImGui.BeginPopupContextItem("layer_pop") then 
-				editor.data_hander.clear_all_selected(region)
+				editor.data_hander.clear_all_selected_layer(region)
 				v.active = true;
 				ImGui.Text("层级高度: " .. v.height)
 				if ImGui.MenuItem("修改高度") then 
@@ -169,13 +169,13 @@ local create = function(editor)
 				end
 				ImGui.Separator()
 				if ImGui.MenuItem("前 增") then 
-					editor.data_hander.clear_all_selected(region)
+					editor.data_hander.clear_all_selected_layer(region)
 					local tb = editor.data_hander.create_region_layer(v.height - 1, true)
 					table.insert(region.layers, i, tb)
 					editor.stack.snapshoot(true)
 				end
 				if ImGui.MenuItem("后 增") then 
-					editor.data_hander.clear_all_selected(region)
+					editor.data_hander.clear_all_selected_layer(region)
 					local tb = editor.data_hander.create_region_layer(v.height + 1, true)
 					table.insert(region.layers, i + 1, tb)
 					editor.stack.snapshoot(true)

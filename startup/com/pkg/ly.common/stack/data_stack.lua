@@ -65,7 +65,7 @@ local create = function()
 		while(index >= 0 and #stack > index) do 
 			table.remove(stack, #stack)
 		end
-		data_hander.data.__dirty = dirty									-- 本次是否有数据变动
+		data_hander.data.cache.__dirty = dirty									-- 本次是否有数据变动
 		data_hander.isModify = data_stack.get_modify()				
 		local new_data = copy(data_hander.data)
 		table.insert(stack, new_data)
@@ -76,12 +76,12 @@ local create = function()
 
 	---@return boolean 遍历所有堆栈，看数据是否有变化
 	function data_stack.get_modify()
-		if data_hander.data.__dirty then 
+		if data_hander.data.cache.__dirty then 
 			return true 
 		end
 		for i = 1,  index do 
 			local data = stack[i]
-			if data and data.__dirty then 
+			if data and data.cache.__dirty then 
 				return true 
 			end
 		end

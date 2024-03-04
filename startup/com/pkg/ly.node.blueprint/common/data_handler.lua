@@ -21,13 +21,15 @@ local create_blueprint_data = function()
 	---@class blueprint_data 
 	---@field graphs blueprint_graph_data[] 子图数据列表
 	---@field index number 当前激活的子图
-	---@field number 下个id
-	---@field version 数据版本号
+	---@field number number 下个id
+	---@field version number 数据版本号
+	---@field cache table 缓存数据
 	local data = {
 		index = 1,
 		next_id = 0,
 		version = 1,	
 		graphs = {},
+		cache = {}
 	}
 	return data
 end

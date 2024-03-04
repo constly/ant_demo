@@ -8,12 +8,12 @@ local create = function(args)
 	---@class chess_editor
 	local editor = {}	
 	local stack = dep.common.data_stack.create()		---@type common_data_stack
-	local data_hander = _data_hander.create() 			---@type chess_data_handler	
-	local draw = _chess_draw.create(editor)				---@type chess_editor_draw
-
+	local data_hander = _data_hander.create() 			---@type chess_data_handler
 	editor.data_hander = data_hander
 	editor.stack = stack
 	editor.args = args
+		
+	local draw = _chess_draw.create(editor)				---@type chess_editor_draw
 
 	function editor.on_init()
 		stack.set_data_handler(data_hander)	
@@ -28,6 +28,15 @@ local create = function(args)
 	function editor.on_reset()
 		data_hander.init(args)
 		stack.snapshoot()
+	end
+
+	function editor.on_save(write_callback)
+		local cache = data_hander.data.cache
+		data_hander.data.cache = {}
+		local content = dep.serialize.stringify(data_hander.data)
+		data_hander.data.cache = cache
+		data_hander.isModify = false
+		write_callback(content)
 	end
 
 	function editor.on_render(deltatime)

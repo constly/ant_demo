@@ -2,6 +2,8 @@ local dep = require 'dep' ---@type ly.map.chess.dep
 local ImGui = dep.ImGui
 local ed = dep.ed
 local imgui_utils = dep.common.imgui_utils
+local ImGuiExtend = dep.ImGuiExtend
+local draw_list = ImGuiExtend.draw_list;
 
 ---@param editor chess_editor
 ---@return chess_region_draw
@@ -13,6 +15,7 @@ local create = function(editor)
 	local needNavigateTo
 	local is_dragging = false
 	local drag_start_point
+	local data_hander = editor.data_hander
 
 	function api.on_init()
 		if not context then 
@@ -28,14 +31,16 @@ local create = function(editor)
 	end
 
 	function api.on_render(deltatime)
-		region = editor.data_hander.cur_region()
+		region = data_hander.cur_region()
 		api.process_scale()
-		context:Begin("chess_canvas", 0, 0)
-		api.process_drag()
-		api.draw_grounds()
-
-		if needNavigateTo or ImGui.IsKeyPressed(ImGui.Key.Space, false) then api.NavigateToContent(); needNavigateTo = false end
-		context:End()
+		if context:Begin("chess_canvas", 0, 0) then
+			api.process_drag()
+			api.draw_selected()
+			api.draw_grounds()
+			api.draw_layers()
+			if needNavigateTo or ImGui.IsKeyPressed(ImGui.Key.Space, false) then api.NavigateToContent(); needNavigateTo = false end
+			context:End()
+		end
 	end
 
 	function api.process_scale()
@@ -87,16 +92,19 @@ local create = function(editor)
 		local bg_color = {0.15, 0.15, 0.15, 0.3}
 		local txt_color = {0.8, 0.8, 0.8, 0.8}
 		local draw_ground = function(x, y, pos)
-			ImGui.SetCursorPos(pos.x, pos.y);
+			ImGui.SetCursorPos(pos.x + 2.5, pos.y + 2.5);
 			local label = string.format("(%d,%d)##btn_g_%d_%d", x, y, x, y)
-			imgui_utils.draw_color_btn(label, bg_color, txt_color, {size_x = 95, size_y = 95})
+			ImGui.SetNextItemAllowOverlap();
+			if imgui_utils.draw_color_btn(label, bg_color, txt_color, {size_x = 95, size_y = 95}) then 
+				api.notify_click_ground(x, y)
+			end
 
 			if ImGui.BeginDragDropTarget() then 
 				local payload = ImGui.AcceptDragDropPayload("DragObject")
             	if payload then
-					local idx = tonumber(payload)
-					if idx then 
-						print("idx is", idx)
+					local objId = tonumber(payload)
+					if objId then 
+						api.notify_drop_object_to_grid(objId, x, y)
 					end
 				end
 				ImGui.EndDragDropTarget()
@@ -136,10 +144,10 @@ local create = function(editor)
 			if imgui_utils.draw_btn("-5##region_rem2" .. dir, false, {size_x = 50, size_y = 50}) then flag = -5 end
 
 			if flag ~= 0 then 
-				if dir == "up" then region.min.y = math.max(-10000, math.min(region.max.y, region.min.y - flag))
-				elseif dir == "down" then region.max.y = math.max(-10000, math.max(region.min.y, region.max.y + flag))
-				elseif dir == "left" then region.min.x = math.max(-10000, math.min(region.max.x, region.min.x - flag))
-				elseif dir == "right" then region.max.x = math.max(-10000, math.max(region.min.x, region.max.x + flag))
+				if dir == "up" then region.min.y = math.min(10000, math.max(-10000, math.min(region.max.y, region.min.y - flag)))
+				elseif dir == "down" then region.max.y = math.min(10000, math.max(-10000, math.max(region.min.y, region.max.y + flag)))
+				elseif dir == "left" then region.min.x = math.min(10000, math.max(-10000, math.min(region.max.x, region.min.x - flag)))
+				elseif dir == "right" then region.max.x = math.min(10000, math.max(-10000, math.max(region.min.x, region.max.x + flag)))
 				end
 				editor.stack.snapshoot(true)
 			end
@@ -151,6 +159,91 @@ local create = function(editor)
 		draw_btns({x = (start_x + end_x) * 0.5 * 100 + 25, y = (end_y + 1) * 100 + 25}, "down")
 	end
 
+	function api.draw_layers( )
+		local draw_object = function(layerId, gridId, text, bg_color, txt_color, size)
+			local label = string.format("%s##btn_grid_%d_%d", text, layerId, gridId)
+			local size_x = size.x * 100
+			local size_y = size.y * 100
+			local pos_x, pos_y = data_hander.grid_id_to_grid_pos(gridId)
+			ImGui.SetNextItemAllowOverlap();
+			ImGui.SetCursorPos(pos_x * 100 + 2.5, pos_y * 100 + 2.5);
+			if imgui_utils.draw_color_btn(label, bg_color, txt_color, {size_x = size_x - 5, size_y = size_y - 5}) then 
+				api.notify_click_object(layerId, gridId)
+			end
+		end 
+
+		for _, layer in ipairs(region.layers) do 
+			if layer.active then 
+				for gridId, grid in pairs(layer.grids) do 
+					local tpl = data_hander.get_object_tpl(grid.tpl) 
+					if tpl then 
+						draw_object(layer.id, gridId, tpl.name, tpl.bg_color, tpl.txt_color, tpl.size)
+					else 
+						draw_object(layer.id, gridId, "ID:" .. grid.tpl .. "丢失", {1, 0, 0, 1}, {1, 1, 1, 1}, {x = 3, y = 3})
+					end
+				end
+			end
+		end
+	end
+
+	-- 显示选中的格子/物件
+	function api.draw_selected()
+		local draw = function(x, y, size)
+			local pos_x, pos_y = x * 100, y * 100
+			ImGui.SetCursorPos(pos_x, pos_y);
+			local bg_color = {0, 0.75, 0, 1.0}
+			local p1, p2 = ImGui.GetCursorScreenPos()
+			draw_list.AddRectFilled({min = {p1, p2}, max = {p1 + size.x * 100, p2 + size.y * 100}, col = bg_color});      
+		end
+
+		local list = data_hander.data.cache.selects[region.id] or {}
+		
+		for i, v in ipairs(list) do 
+			if v.type == "ground" then 
+				local x, y = data_hander.grid_id_to_grid_pos(v.id)
+				draw(x, y, {x = 1, y = 1})
+
+			elseif v.type == "object" then
+				local layer = data_hander.get_layer_by_id(region, v.layer)
+				if layer and layer.active then 
+					local data = layer.grids[v.id]
+					if data then 
+						local x, y = data_hander.grid_id_to_grid_pos(v.id)
+						local tpl = data_hander.get_object_tpl(data.tpl)
+						if tpl then 
+							draw(x, y, tpl.size)
+						end
+					end
+				end
+			end
+		end
+	end
+
+	-- 点击地面格子
+	function api.notify_click_ground(x, y)
+		local id = data_hander.grid_pos_to_grid_id(x, y)
+		data_hander.clear_selected(region)
+		data_hander.add_selected(region, "ground", id, nil)
+	end
+
+	-- 点击物件
+	function api.notify_click_object(layerId, gridId)
+		data_hander.clear_selected(region)
+		data_hander.add_selected(region, "object", gridId, layerId)
+	end
+
+	-- 拖动物件到格子
+	function api.notify_drop_object_to_grid(objId, x, y)
+		local top = data_hander.get_top_active_layer(region)
+		if top then 
+			local gridId = data_hander.grid_pos_to_grid_id(x, y)
+			local data = top.grids[gridId]
+			if not data or data.tpl ~= objId then 
+				top.grids[gridId] = data_hander.create_grid_tpl(objId)
+				editor.stack.snapshoot(true)
+			end
+		end
+	end
 
 	api.on_init()
 	return api

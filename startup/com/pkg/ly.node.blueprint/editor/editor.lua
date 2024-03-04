@@ -38,10 +38,10 @@ local create = function(args)
 	end 
 
 	function editor.on_save(write_callback)
-		local old = data_hander.data.__dirty
-		data_hander.data.__dirty = nil
+		local cache = data_hander.data.cache
+		data_hander.data.cache = {}
 		local content = dep.serialize.stringify(data_hander.data)
-		data_hander.data.__dirty = old
+		data_hander.data.cache = cache
 		data_hander.isModify = false
 		write_callback(content)
 	end

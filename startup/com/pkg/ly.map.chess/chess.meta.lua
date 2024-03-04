@@ -16,7 +16,7 @@ local chess_vec3 = {}
 -- 棋盘格子数据
 ---@class chess_grid_tpl 
 ---@field id number 在地图上的唯一id
----@field tpl number 模板id
+---@field tpl number 物件模板id
 ---@field height number 高度偏移
 ---@field rotate number 物件旋转
 local chess_grid_tpl = {}
@@ -24,6 +24,7 @@ local chess_grid_tpl = {}
 
 -- 棋盘地图区域层数据 模板
 ---@class chess_map_region_layer_tpl 
+---@field id number 层级id
 ---@field height number 层级高度
 ---@field active boolean 是否激活
 ---@field grids table<number, chess_grid_tpl> 格子列表
@@ -42,13 +43,28 @@ local chess_map_region_layer_tpl = {}
 local chess_map_region_tpl = {}
 
 
+---@class chess_map_tpl_cache
+---@field selects table<number, chess_selected_grid[]> regionId -> 选中的格子列表
+local chess_map_tpl_cache = {}
+
+
 -- 棋盘地图 模板
 ---@class chess_map_tpl 		
 ---@field regions chess_map_region_tpl[] 区域列表
 ---@field region_index number 当前选中的区域索引
 ---@field next_id number 下个id
 ---@field cur_object_id number 当前选中的物件id
+---@field cache chess_map_tpl_cache 缓存数据
 local chess_map_tpl = {}
+
+
+
+--- 选中的格子/物件数据
+---@class chess_selected_grid
+---@field type string 类型,ground or object
+---@field id number 选中的id
+---@field layer number 所属层级
+local chess_selected_grid = {}
 
 
 --- 棋盘物件模板
