@@ -4,6 +4,7 @@ local ed = dep.ed
 local imgui_utils = dep.common.imgui_utils
 local ImGuiExtend = dep.ImGuiExtend
 local draw_list = ImGuiExtend.draw_list;
+local tb_drag_data = {}
 
 ---@param editor chess_editor
 ---@return chess_region_draw
@@ -82,10 +83,13 @@ local create = function(editor)
 	function api.NavigateToContent()
 		local min_x = region.min.x * 100
 		local min_y = region.min.y * 100
-		local max_x = (region.max.x - 1) * 100 
-		local max_y = (region.max.y - 1) * 100
+		local max_x = (region.max.x + 1) * 100 
+		local max_y = (region.max.y + 1) * 100
 		local size_x, size_y = ImGui.GetWindowSize()
-		context:SetView((min_x + max_x) * 0.5 + size_x * 0.5, (min_y + max_y) * 0.5 + size_y * 0.5, 0.5)
+		local scale = 0.5
+		local offset_x = (min_x + max_x) * -0.5 * scale + size_x * 0.5 
+		local offset_y = (min_y + max_y) * -0.5 * scale + size_y * 0.5
+		context:SetView(offset_x, offset_y, scale)
 	end
 
 	function api.draw_grounds()
@@ -101,11 +105,22 @@ local create = function(editor)
 			end
 
 			if ImGui.BeginDragDropTarget() then 
-				local payload = ImGui.AcceptDragDropPayload("DragObject")
+				local payload = ImGui.AcceptDragDropPayload("PutObject")
             	if payload then
 					local objId = tonumber(payload)
 					if objId then 
 						api.notify_drop_object_to_grid(objId, x, y)
+					end
+				end
+
+				payload = ImGui.AcceptDragDropPayload("DragObject")
+				if payload then
+					local layerId, gridId = tb_drag_data[1], tb_drag_data[2]
+					local layer = data_hander.get_layer_by_id(region, layerId)
+					local newGridId = data_hander.grid_pos_to_grid_id(x, y)
+					if gridId and layer and newGridId ~= gridId then 
+						layer.grids[gridId], layer.grids[newGridId] = layer.grids[newGridId], layer.grids[gridId]
+						editor.stack.snapshoot(true)
 					end
 				end
 				ImGui.EndDragDropTarget()
@@ -161,15 +176,29 @@ local create = function(editor)
 	end
 
 	function api.draw_layers( )
-		local draw_object = function(layerId, gridId, text, bg_color, txt_color, size)
+		local draw_object = function(layerId, gridId, text, bg_color, txt_color, size, uid)
 			local label = string.format("%s##btn_grid_%d_%s", text, layerId, gridId)
 			local size_x = size.x * 100
 			local size_y = size.y * 100
 			local pos_x, pos_y = data_hander.grid_id_to_grid_pos(gridId)
 			ImGui.SetNextItemAllowOverlap();
 			ImGui.SetCursorPos(pos_x * 100 + 2.5, pos_y * 100 + 2.5);
+			local isDraging = ImGui.IsMouseDragging(0)
+			if isDraging then 
+				bg_color = {table.unpack(bg_color)}; bg_color[4] = bg_color[4] * 0.5
+				txt_color = {table.unpack(txt_color)}; txt_color[4] = txt_color[4] * 0.1
+			end
 			if imgui_utils.draw_color_btn(label, bg_color, txt_color, {size_x = size_x - 5, size_y = size_y - 5}) then 
-				api.notify_click_object(layerId, gridId)
+				api.notify_click_object(layerId, uid)
+			end
+
+			if ImGui.BeginDragDropSource() then 
+				if not data_hander.has_selected(region, "object", gridId, layerId) then 
+					api.notify_click_object(layerId, uid)
+				end
+				tb_drag_data = {layerId, gridId}
+				ImGui.SetDragDropPayload("DragObject", string.format("%s,%s", layerId, gridId));
+				ImGui.EndDragDropSource();
 			end
 		end 
 
@@ -179,9 +208,9 @@ local create = function(editor)
 					if not data_hander.is_invisible(region, grid.id) then
 						local tpl = data_hander.get_object_tpl(grid.tpl) 
 						if tpl then 
-							draw_object(layer.id, gridId, tpl.name, tpl.bg_color, tpl.txt_color, tpl.size)
+							draw_object(layer.id, gridId, tpl.name, tpl.bg_color, tpl.txt_color, tpl.size, grid.id)
 						else 
-							draw_object(layer.id, gridId, "ID:" .. grid.tpl .. "丢失", {1, 0, 0, 1}, {1, 1, 1, 1}, {x = 3, y = 3})
+							draw_object(layer.id, gridId, "ID:" .. grid.tpl .. "丢失", {1, 0, 0, 1}, {1, 1, 1, 1}, {x = 3, y = 3}, 0)
 						end
 					end
 				end
@@ -209,9 +238,9 @@ local create = function(editor)
 			elseif v.type == "object" then
 				local layer = data_hander.get_layer_by_id(region, v.layer)
 				if layer and layer.active then 
-					local data = layer.grids[v.id]
+					local data, gridId = data_hander.get_grid_data_by_uid(region, v.layer, v.id)
 					if data then 
-						local x, y = data_hander.grid_id_to_grid_pos(v.id)
+						local x, y = data_hander.grid_id_to_grid_pos(gridId)
 						local tpl = data_hander.get_object_tpl(data.tpl)
 						if tpl then 
 							draw(x, y, tpl.size)
@@ -230,9 +259,9 @@ local create = function(editor)
 	end
 
 	-- 点击物件
-	function api.notify_click_object(layerId, gridId)
+	function api.notify_click_object(layerId, uid)
 		data_hander.clear_selected(region)
-		data_hander.add_selected(region, "object", gridId, layerId)
+		data_hander.add_selected(region, "object", uid, layerId)
 	end
 
 	-- 拖动物件到格子

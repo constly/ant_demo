@@ -187,7 +187,7 @@ local create = function()
 	--- 添加选中的物件
 	---@param region chess_map_region_tpl
 	---@param type string ground or object 
-	---@param id number id
+	---@param id number|string id
 	---@param layerId number 层级id
 	function handler.add_selected(region, type, id, layerId)
 		if handler.has_selected(region, type, id, layerId) then return end
@@ -238,6 +238,18 @@ local create = function()
 		local layer = handler.get_layer_by_id(region, layerId)
 		if layer then 
 			return layer.grids[gridId]
+		end
+	end
+
+	--- 得到格子数据
+	function handler.get_grid_data_by_uid(region, layerId, uid)
+		local layer = handler.get_layer_by_id(region, layerId)
+		if layer then 
+			for gridId, v in pairs(layer.grids) do 
+				if v.id == uid then 
+					return v, gridId
+				end
+			end
 		end
 	end
 

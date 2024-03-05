@@ -69,10 +69,11 @@ local create = function(editor)
 				end
 				ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 5, 5)
 				if ImGui.BeginDragDropSource() then 
+					editor.isPuttingObject = true
 					data.cur_object_id = def.id
-					ImGui.SetDragDropPayload("DragObject", tostring(def.id));
+					ImGui.SetDragDropPayload("PutObject", tostring(def.id));
 					ImGui.Text("正在拖动 " .. def.name .. " 到层级1");
-					ImGui.EndDragDropSource();
+					ImGui.EndDragDropSource();	
 				end
 				ImGui.PopStyleVar()
 	

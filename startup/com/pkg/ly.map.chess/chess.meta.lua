@@ -19,6 +19,7 @@ local chess_vec3 = {}
 ---@field tpl number 物件模板id
 ---@field height number 高度偏移
 ---@field rotate number 物件旋转
+---@field hidden boolean 运行时是否默认隐藏
 local chess_grid_tpl = {}
 
 
@@ -65,7 +66,7 @@ local chess_map_tpl = {}
 --- 选中的格子/物件数据
 ---@class chess_selected_grid
 ---@field type string 类型,ground or object
----@field id string 选中的id
+---@field id number|string 选中的id
 ---@field layer number 所属层级
 local chess_selected_grid = {}
 

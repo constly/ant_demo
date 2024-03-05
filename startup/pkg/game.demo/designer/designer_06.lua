@@ -20,13 +20,35 @@ local editor
 ---@type chess_object_tpl[] 物件定义
 local tb_object_def = 
 {
-	{id = 1, name = "地面", size = {x = 1, y = 1}, bg_color = {0.35, 0.35, 0.35, 1}, txt_color = {0, 0, 0, 0}},
-	{id = 2, name = "草原", size = {x = 1, y = 1}, bg_color = {0.3, 0.3, 0.3, 1}, txt_color = {0, 0.8, 0, 1}},
-	{id = 3, name = "阻挡", size = {x = 1, y = 1}, bg_color = {0.8, 0.8, 0.8, 1}, txt_color = {0, 0.8, 0, 1}},
-	{id = 4, name = "饭店", size = {x = 2, y = 2}, bg_color = {0.8, 0.8, 0.8, 1}, txt_color = {0, 0.8, 0, 1}},
-	{id = 5, name = "别墅", size = {x = 3, y = 3}, bg_color = {0.8, 0.8, 0.8, 1}, txt_color = {0, 0.8, 0, 1}},
-	{id = 99, name = "出生点", size = {x = 1, y = 1}, bg_color = {0.3, 0.3, 0.3, 1}, txt_color = {1, 1, 0, 1}},
+	{id = 1, name = "地面", size = {x = 1, y = 1}, bg_color = {45, 45, 45,255}, txt_color = {200, 200, 200}},
+	{id = 2, name = "阻挡", size = {x = 1, y = 1}, bg_color = {180, 0, 0}, txt_color = {0, 0, 0}},
+	{id = 3, name = "空地皮", size = {x = 2, y = 2}, bg_color = {70,50,30}, txt_color = {255,255,255}},
+
+	{id = 10, name = "装甲车", size = {x = 2, y = 2}, bg_color = {128,225,242,255}, txt_color = {0,0,0}},
+	{id = 11, name = "战斗事件", size = {x = 2, y = 2}, bg_color = {241,133,208,255}, txt_color = {0,0,0}},
+	{id = 12, name = "外交事件", size = {x = 2, y = 2}, bg_color = {242,241,128,255}, txt_color = {200,45,0}},
+	{id = 13, name = "传送门", size = {x = 2, y = 2}, bg_color = {241,133,208,255}, txt_color = {200,25,0}},
+	{id = 14, name = "休息事件", size = {x = 2, y = 2}, bg_color = {205,133,63}, txt_color = {0,0,0}},
+	{id = 15, name = "巡航导弹", size = {x = 2, y = 2}, bg_color = {255,255,255,128}, txt_color = {0,0,0}},
+
+	{id = 20, name = "睡眠舱", size = {x = 2, y = 2}, bg_color = {75,0,0,255}, txt_color = {200,0,0}},
+	{id = 21, name = "寻路方向", size = {x = 2, y = 2}, bg_color = {75,75,75,255}, txt_color = {200,200,200}},
+
+	{id = 30, name = "商业楼", size = {x = 2, y = 2}, bg_color = {100,80,60}, txt_color = {255,255,255}},
+
+	{id = 99, name = "出生点", size = {x = 1, y = 1}, bg_color = {128,128,128,200}, txt_color = {240,240,0}},
 }
+for i, v in ipairs(tb_object_def) do 
+	local process = function(tb)
+		for i, t in ipairs(tb) do 
+			tb[i] = t / 255
+		end
+		tb[4] = tb[4] or 1
+	end
+	process(v.bg_color)
+	process(v.txt_color)
+end
+
 
 function system.on_entry()
 	if not editor then 
