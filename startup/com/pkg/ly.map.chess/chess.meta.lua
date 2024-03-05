@@ -27,7 +27,7 @@ local chess_grid_tpl = {}
 ---@field id number 层级id
 ---@field height number 层级高度
 ---@field active boolean 是否激活
----@field grids table<number, chess_grid_tpl> 格子列表
+---@field grids table<string, chess_grid_tpl> 格子列表
 local chess_map_region_layer_tpl = {}
 
 
@@ -44,7 +44,8 @@ local chess_map_region_tpl = {}
 
 
 ---@class chess_map_tpl_cache
----@field selects table<number, chess_selected_grid[]> regionId -> 选中的格子列表
+---@field selects table<number, chess_selected_grid[]> 		regionId -> 选中的格子列表
+---@field invisibles table<number, chess_selected_grid>  	regionId -> 不可见的格子列表
 local chess_map_tpl_cache = {}
 
 
@@ -55,6 +56,8 @@ local chess_map_tpl_cache = {}
 ---@field next_id number 下个id
 ---@field cur_object_id number 当前选中的物件id
 ---@field cache chess_map_tpl_cache 缓存数据
+---@field show_ground boolean 是否显示地形
+---@field version number 数据版本号
 local chess_map_tpl = {}
 
 
@@ -62,7 +65,7 @@ local chess_map_tpl = {}
 --- 选中的格子/物件数据
 ---@class chess_selected_grid
 ---@field type string 类型,ground or object
----@field id number 选中的id
+---@field id string 选中的id
 ---@field layer number 所属层级
 local chess_selected_grid = {}
 

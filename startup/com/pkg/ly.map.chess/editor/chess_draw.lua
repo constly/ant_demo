@@ -6,6 +6,7 @@ local ImGui = dep.ImGui
 local imgui_utils = dep.common.imgui_utils
 local imgui_styles = dep.common.imgui_styles
 local chess_region_draw = require 'editor/chess_region_draw'
+local chess_inspector_draw = require 'editor/chess_inspector'
 
 ---@param editor chess_editor
 local create = function(editor)
@@ -13,6 +14,7 @@ local create = function(editor)
 	local chess = {}
 	local region_draw = chess_region_draw.create(editor)
 	local input_content = ImGui.StringBuf()
+	local inspector = chess_inspector_draw.create(editor)
 
 	function chess.on_destroy()
 		region_draw.on_destroy()
@@ -40,7 +42,7 @@ local create = function(editor)
 
 		ImGui.SetCursorPos(size_left + size + offset_x * 2 + start_x, 0)
 		ImGui.BeginChild("##chess_right", size_right + fix_x, size_y, ImGui.ChildFlags({"Border"}))
-			chess.draw_right()
+			chess.draw_right(_deltatime)
 		ImGui.EndChild()
 		ImGui.PopStyleVar()
 	end
@@ -224,19 +226,28 @@ local create = function(editor)
 		ImGui.EndChild()
 	end
 
-	function chess.draw_right()
+	function chess.draw_right(_deltatime)
 		local size_x, size_y = ImGui.GetContentRegionAvail()
-		ImGui.Dummy(2, 1);
-		ImGui.Dummy(20, 3);
+		ImGui.SetCursorPos(3.5, 5)
+		if imgui_utils.draw_btn("Reload", false) then 
+			editor.on_init()
+		end
 		ImGui.SameLine()
-		imgui_utils.draw_btn("保 存", false)
+		if imgui_utils.draw_btn("Save", false) then 
+			editor.on_save(function(content)
+				local f<close> = assert(io.open(editor.args.path, "w"))
+    			f:write(content)
+			end)
+		end
 		ImGui.SameLine()
-		imgui_utils.draw_btn("清 空", false)
+		if imgui_utils.draw_btn("Clear", false) then 
+			editor.on_reset()
+		end
 		local top = 31
 		size_y = size_y - top
 		ImGui.SetCursorPos(0, top)
 		ImGui.BeginChild("##chess_right_1", size_x, size_y, ImGui.ChildFlags({"Border"}))
-		ImGui.Text("Inspector");
+			inspector.on_render(_deltatime)
 		ImGui.EndChild()
 	end
 

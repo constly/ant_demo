@@ -2,7 +2,7 @@ local lib = require 'tools/lib'
 local dep = require 'dep'
 local fs = dep.fs 
 local path_def = require "path_def"
-local file_path = path_def.data_root .. 'user_data.txt'
+local file_path = path_def.cache_root .. 'user_data.txt'
 
 local function load_string_from_disk(path)
     local f<close> = io.open(path, 'r')
@@ -13,7 +13,7 @@ local function load_string_from_disk(path)
 end
 
 local function save_string_to_disk(_path, _content)
-	fs.create_directories(path_def.data_root)
+	fs.create_directories(path_def.cache_root)
     local f<close> = io.open(_path, 'wb')
     if f then
         f:write(_content)

@@ -89,6 +89,7 @@ local create = function(editor)
 	end
 
 	function api.draw_grounds()
+		if not data_hander.data.show_ground then return end
 		local bg_color = {0.15, 0.15, 0.15, 0.3}
 		local txt_color = {0.8, 0.8, 0.8, 0.8}
 		local draw_ground = function(x, y, pos)
@@ -161,7 +162,7 @@ local create = function(editor)
 
 	function api.draw_layers( )
 		local draw_object = function(layerId, gridId, text, bg_color, txt_color, size)
-			local label = string.format("%s##btn_grid_%d_%d", text, layerId, gridId)
+			local label = string.format("%s##btn_grid_%d_%s", text, layerId, gridId)
 			local size_x = size.x * 100
 			local size_y = size.y * 100
 			local pos_x, pos_y = data_hander.grid_id_to_grid_pos(gridId)
@@ -175,11 +176,13 @@ local create = function(editor)
 		for _, layer in ipairs(region.layers) do 
 			if layer.active then 
 				for gridId, grid in pairs(layer.grids) do 
-					local tpl = data_hander.get_object_tpl(grid.tpl) 
-					if tpl then 
-						draw_object(layer.id, gridId, tpl.name, tpl.bg_color, tpl.txt_color, tpl.size)
-					else 
-						draw_object(layer.id, gridId, "ID:" .. grid.tpl .. "丢失", {1, 0, 0, 1}, {1, 1, 1, 1}, {x = 3, y = 3})
+					if not data_hander.is_invisible(region, grid.id) then
+						local tpl = data_hander.get_object_tpl(grid.tpl) 
+						if tpl then 
+							draw_object(layer.id, gridId, tpl.name, tpl.bg_color, tpl.txt_color, tpl.size)
+						else 
+							draw_object(layer.id, gridId, "ID:" .. grid.tpl .. "丢失", {1, 0, 0, 1}, {1, 1, 1, 1}, {x = 3, y = 3})
+						end
 					end
 				end
 			end

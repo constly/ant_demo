@@ -12,6 +12,8 @@ local tbParam =
 }
 local system = mgr.create_system(tbParam)
 local ImGui = dep.ImGui
+local file_path = dep.common.path_def.data_root .. "/chess/map_01.ant"
+
 ---@type chess_editor
 local editor 
 
@@ -30,7 +32,7 @@ function system.on_entry()
 	if not editor then 
 		---@type chess_editor_create_args
 		local params = {}
-		params.path = ""
+		params.path = file_path
 		params.tb_objects = tb_object_def
 		editor = dep.chess_map.create(params);
 	end

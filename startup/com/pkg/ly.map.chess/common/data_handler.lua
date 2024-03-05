@@ -1,3 +1,4 @@
+local dep = require("dep")
 
 -- 图数据处理器
 local create = function()
@@ -15,9 +16,18 @@ local create = function()
 		tb_cache_object_def = {}
 	}
 
+	local DATA_VERSION = 1
+
 	---@param args chess_editor_create_args
 	function handler.init(args)
 		local data = {} ---@type chess_map_tpl
+		if args.path then 
+			local f<close> = io.open(args.path, 'r')
+    		if f then 
+        		local content = f:read "a"
+				data = dep.datalist.parse(content)
+    		end 
+		end
 		handler.data = data
 		handler.max_object_size_x = 1
 		handler.max_object_size_y = 1
@@ -28,11 +38,15 @@ local create = function()
 			handler.max_object_size_y = math.max(handler.max_object_size_y, v.size.y)
 		end
 
-		data.next_id = 0;
-		data.regions = {}
-		data.regions[1] = handler.create_region()
-		data.cache = {selects = {}}
-		data.region_index = 1
+		if not data.regions then 
+			data.next_id = 0;
+			data.regions = {}
+			data.regions[1] = handler.create_region()
+			data.show_ground = true
+			data.region_index = 1
+		end
+		data.version = DATA_VERSION
+		data.cache = {selects = {}, invisibles = {}}
 	end
 
 	function handler.next_id()
@@ -49,8 +63,8 @@ local create = function()
 		region.max = {x = 2, y = 2}
 		region.id = handler.next_id()
 		region.layers = {}
-		table.insert(region.layers, handler.create_region_layer(-1, false))
-		table.insert(region.layers, handler.create_region_layer(0, true))
+		table.insert(region.layers, handler.create_region_layer(-1, true))
+		table.insert(region.layers, handler.create_region_layer(0, false))
 		table.insert(region.layers, handler.create_region_layer(1, false))
 		return region
 	end
@@ -145,17 +159,19 @@ local create = function()
 	---@param pos_y number 格子坐标y
 	---@return number 格子id
 	function handler.grid_pos_to_grid_id(pos_x, pos_y)
-		pos_x = pos_x + 10000
-		pos_y = pos_y + 10000
-		return (pos_x << 16) + pos_y
+		return string.format("%d_%d", pos_x, pos_y) 
 	end
 
 	--- 将格子id转换为格子坐标
-	---@return number pos_x,pos_y
+	---@return number, number pos_x,pos_y
 	function handler.grid_id_to_grid_pos(gridId)
-		local pos_x = (gridId >> 16)  - 10000
-		local pos_y = (gridId & 0xffff) - 10000
-		return pos_x, pos_y
+		local pos = string.find(gridId, "_")
+		if pos then
+			local x = string.sub(gridId, 1, pos - 1)
+			local y = string.sub(gridId, pos + 1)
+			return tonumber(x), tonumber(y)
+		end
+		return 0, 0
 	end
 
 	--- 得到物件模板
@@ -197,6 +213,8 @@ local create = function()
 	end
 
 	-- 得到首个选中的
+	---@param region chess_map_region_tpl
+	---@return string, string, number
 	function handler.get_first_selected(region)
 		local list = handler.data.cache.selects[region.id] or {}
 		for i, v in ipairs(list) do 
@@ -207,15 +225,69 @@ local create = function()
 		end
 	end
 
+	-- 是不是多选
+	---@param region chess_map_region_tpl
+	function handler.is_multi_selected(region)
+		local list = handler.data.cache.selects[region.id] or {}
+		return #list > 1
+	end
+
+	--- 得到格子数据
+	---@param region chess_map_region_tpl
+	function handler.get_grid_data(region, layerId, gridId)
+		local layer = handler.get_layer_by_id(region, layerId)
+		if layer then 
+			return layer.grids[gridId]
+		end
+	end
+
 	-- 清空所有选中的物件
 	function handler.clear_selected(region)
 		handler.data.cache.selects[region.id] = {}
 	end
 
 	-------------------------------------------------------------------
-	-- 其他
+	-- invisibles（不可见维护）
 	-------------------------------------------------------------------
+	---@param region chess_map_region_tpl
+	---@param uid number 唯一id
+	function handler.add_invisible(region, uid)
+		local cache = handler.data.cache
+		local list = cache.invisibles[region.id] or {}
+		cache.invisibles[region.id] = list
+		list[uid] = true
+	end
 
+	---@param region chess_map_region_tpl
+	---@param uid number 唯一id
+	function handler.is_invisible(region, uid)
+		local list = handler.data.cache.invisibles[region.id] or {}
+		return list[uid] == true
+	end
+
+	---@param region chess_map_region_tpl
+	---@param uid number 唯一id
+	function handler.remove_invisible(region, uid)
+		local list = handler.data.cache.invisibles[region.id] or {}
+		list[uid] = nil
+	end
+
+	--- 得到不可见数量
+	---@param region chess_map_region_tpl
+	function handler.get_invisible_count(region)
+		local list = handler.data.cache.invisibles[region.id] or {}
+		local n = 0;
+		for _, _ in pairs(list) do 
+			n = n + 1
+		end 
+		return n;
+	end
+
+	---@param region chess_map_region_tpl
+	function handler.clear_invisible(region)
+		handler.data.cache.invisibles[region.id] = {}
+	end
+	
 	return handler
 end 
 

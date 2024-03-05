@@ -17,7 +17,7 @@ local ed = dep.ed
 local editor 		---@type blueprint_editor
 local size1 = 200
 local bp_builder
-local file_path = dep.common.path_def.data_root .. "imgui_11.bp_data"
+local file_path = dep.common.path_def.cache_root .. "imgui_11.bp_data"
 
 function system.on_entry()
 	if not bp_builder then 

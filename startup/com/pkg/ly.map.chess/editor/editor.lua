@@ -26,7 +26,9 @@ local create = function(args)
 	end
 
 	function editor.on_reset()
-		data_hander.init(args)
+		local _args = dep.common.lib.copy(args)  		---@type chess_editor_create_args
+		_args.path = nil
+		data_hander.init(_args)
 		stack.snapshoot()
 	end
 

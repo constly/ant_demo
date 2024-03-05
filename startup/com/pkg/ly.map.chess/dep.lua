@@ -3,6 +3,8 @@ local dep = {}
 
 -- 系统依赖
 dep.ImGui  			= require "imgui"
+dep.serialize 		= import_package "ant.serialize"
+dep.datalist		= require 'datalist'
 
 -- 项目依赖
 dep.common 			= import_package 'ly.common' 			---@type ly.common.main

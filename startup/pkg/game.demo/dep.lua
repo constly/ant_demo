@@ -10,6 +10,7 @@ dep.fs 				= require "bee.filesystem"
 dep.vfs 			= require "vfs"
 dep.datalist		= require 'datalist'
 dep.ImGui  			= require "imgui"
+dep.serialize 		= import_package "ant.serialize"
 
 --- 项目依赖
 dep.ImGuiExtend 	= require "ly.imgui.extend"
