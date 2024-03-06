@@ -16,7 +16,8 @@ local run_type
 local session = 0
 local port = 17668
 local last_error
-local send_msg = "hello, i'm lan server."
+local idx = 1
+local send_msg = "hello, i'm lan server, idx = " ..idx
 local recv_msg = nil
 
 
@@ -52,7 +53,12 @@ function system.data_changed()
 		elseif run_type == 1 then 
 			if last_error == 0 then 
 				ImGui.Text("程序正在局域网中广播以下消息:")
-				ImGui.Text(send_msg)
+				ImGui.Text(send_msg) 
+				ImGui.SameLine()
+				if ImGui.Button(" Add ") then 
+					idx = idx + 1
+					send_msg = "hello, i'm lan server, idx = " .. idx
+				end
 			else 
 				ImGui.Text("服务器广播失败, 错误码: " .. (last_error or "nil"))
 			end
@@ -80,6 +86,7 @@ end
 function system.create_server()
 	session = session + 1
 	local _session = session
+	-- 注意，这里的fork实际是启动一个协程，并不是新起了一个线程
 	ltask.fork(function()
 		local ly_net 	= require 'ly.net'
 		local broadcast = ly_net.CreateBroadCast()
@@ -99,6 +106,7 @@ end
 function system.create_client()
 	session = session + 1
 	local _session = session
+	-- 注意，这里的fork实际是启动一个协程，并不是新起了一个线程
 	ltask.fork(function()
 		local ly_net 	= require 'ly.net'
 		local broadcast = ly_net.CreateBroadCast()
