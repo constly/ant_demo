@@ -11,6 +11,7 @@ dep.vfs 			= require "vfs"
 dep.datalist		= require 'datalist'
 dep.ImGui  			= require "imgui"
 dep.serialize 		= import_package "ant.serialize"
+dep.net 			= import_package "ant.net"
 
 --- 项目依赖
 dep.ImGuiExtend 	= require "ly.imgui.extend"
