@@ -1,0 +1,4 @@
+for i = 1, 1 do
+	local name = ("minigame_%02d"):format(i)
+	system(name).implement(("minigame/%s.lua"):format(name))	
+end

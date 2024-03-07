@@ -1,9 +1,5 @@
-system "data_system" .implement "data_system.lua"
-system "auto_test" .implement "utils/auto_test.lua"
+-- 定义feature
+feature "gameplay".import "gameplay.ecs"
 
-import "imgui/imgui.ecs"
-import "core/core.ecs"
-import "rmlui/rmlui.ecs"
-import "scene/scene.ecs"
-import "designer/designer.ecs"
-import "net/net.ecs"
+-- 默认导入feature
+import_feature "game.demo|gameplay"
