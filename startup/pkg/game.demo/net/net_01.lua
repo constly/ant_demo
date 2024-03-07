@@ -13,7 +13,7 @@ local system = mgr.create_system(tbParam)
 local ImGui     = require "imgui"
 local ltask 	= require "ltask"
 local run_type
-local session = 0
+local order = 0
 local port = 17668
 local last_error
 local idx = 1
@@ -27,7 +27,7 @@ end
 
 function system.on_leave()
 	run_type = nil 
-	session = 0
+	order = 0
 	recv_msg = nil
 	last_error = nil
 end 
@@ -63,7 +63,7 @@ function system.data_changed()
 				ImGui.Text("服务器广播失败, 错误码: " .. (last_error or "nil"))
 			end
 			if ImGui.ButtonEx(" 返 回 ") then 
-				session = session + 1
+				order = order + 1
 				run_type = nil
 			end 
 		elseif run_type == 2 then 
@@ -74,7 +74,7 @@ function system.data_changed()
 				ImGui.Text("未收到任何消息, 错误码: " .. (last_error or "nil")) 
 			end 
 			if ImGui.ButtonEx(" 返 回 ") then 
-				session = session + 1
+				order = order + 1
 				run_type = nil
 			end 
 		end 
@@ -84,14 +84,14 @@ function system.data_changed()
 end
 
 function system.create_server()
-	session = session + 1
-	local _session = session
+	order = order + 1
+	local _order = order
 	-- 注意，这里的fork实际是启动一个协程，并不是新起了一个线程
 	ltask.fork(function()
 		local ly_net 	= require 'ly.net'
 		local broadcast = ly_net.CreateBroadCast()
 		print("create_server", broadcast:init_server("255.255.255.255", port), broadcast:last_error())
-		while _session == session do 
+		while _order == order do 
 			last_error = broadcast:send(send_msg) 
 			if last_error ~= 0 then 
 				last_error = broadcast:last_error()
@@ -104,14 +104,14 @@ function system.create_server()
 end 
 
 function system.create_client()
-	session = session + 1
-	local _session = session
+	order = order + 1
+	local _order = order
 	-- 注意，这里的fork实际是启动一个协程，并不是新起了一个线程
 	ltask.fork(function()
 		local ly_net 	= require 'ly.net'
 		local broadcast = ly_net.CreateBroadCast()
 		print("create_client", broadcast:init_client(port), broadcast:last_error())
-		while _session == session do 
+		while _order == order do 
 			local ip, port, msg = broadcast:receive()
 			if ip then 
 				recv_msg = string.format("ip:  %s \nport: %d \nmsg: %s", ip, port, msg)

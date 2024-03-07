@@ -1,5 +1,4 @@
-
-for i = 1, 1 do
+for i = 1, 2 do
 	local name = ("net_%02d"):format(i)
 	system(name).implement(("net/%s.lua"):format(name))	
 end
