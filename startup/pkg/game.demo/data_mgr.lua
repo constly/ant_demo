@@ -94,68 +94,71 @@ function api.set_content_size(x, y) content_size = {x, y} end
 
 function api.get_dpi_scale() return ImGui.GetMainViewport().DpiScale end
 
--- 类型排版占位
-local tb_def = {
-    {"type_imgui",      "ImGui"},
-	{"type_designer",   "设计工具"},
-    {"type_core",       "引擎核心"},
-    {"type_rmlui",      "RmlUI"},
-    {"type_scene",      "场景"},
-    {"type_renderer",   "渲染"},
-    {"type_net",        "网络"},
-    {"type_minigame",   "完整示例"},
-}
-for i, v in ipairs(tb_def) do 
-    api[v[1]] = v[2]    
-    local tbParam = { category = v[2] }
-    api.create_system(tbParam)
+function api.reset()
+	all_data = {}
+	cur_item = nil 
+
+	-- 类型排版占位
+	local tb_def = {
+		{"type_imgui",      "ImGui"},
+		{"type_designer",   "设计工具"},
+		{"type_core",       "引擎核心"},
+		{"type_rmlui",      "RmlUI"},
+		{"type_scene",      "场景"},
+		{"type_renderer",   "渲染"},
+		{"type_net",        "网络"},
+		{"type_minigame",   "完整示例"},
+	}
+	for i, v in ipairs(tb_def) do 
+		api[v[1]] = v[2]    
+		local tbParam = { category = v[2] }
+		api.create_system(tbParam)
+	end
+
+	-- 下面是测试占位
+	local temp_create = function(category, name, desc)
+		local tbParam = { category = category, name = name, desc = desc, file = "data_system.lua" }
+		api.create_system(tbParam)
+	end
+
+
+	temp_create(api.type_core, "93_性能分析", "帧率，内存使用，cput使用，gpu使用，尚未实现")
+	temp_create(api.type_core, "94_PC平台", "当窗口最小化时，当窗口分辨率变化时，修改窗口分辨率，得到窗口分辨率，设置窗口标题")
+
+	temp_create(api.type_core, "81_自定义数据存取", "尚未实现") -- 包括字符串/字节流
+	temp_create(api.type_core, "82_单机存档/读档", "尚未实现")
+	temp_create(api.type_core, "83_打/解pack包", "尚未实现")
+	temp_create(api.type_core, "84_加密/解密", "尚未实现")
+	temp_create(api.type_core, "85_压缩/解压", "尚未实现")
+
+	temp_create(api.type_designer, "01_曲线编辑器", "编辑器各种1维2维曲线")
+	temp_create(api.type_designer, "02_dotween", "曲线动画")
+	temp_create(api.type_designer, "03_ini编辑器", "")
+	temp_create(api.type_designer, "04_csv编辑器", "")
+	temp_create(api.type_designer, "05_多语言编辑器", "")
+	temp_create(api.type_designer, "07_技能编辑器", "")
+	temp_create(api.type_designer, "08_剧情编辑器", "")
+
+	temp_create(api.type_scene, "模型和动画", "尚未实现")
+	temp_create(api.type_scene, "海量对象", "尚未实现")
+	temp_create(api.type_scene, "多点触屏", "尚未实现")
+	temp_create(api.type_scene, "手柄", "尚未实现")
+	temp_create(api.type_scene, "选中场景物件", "尚未实现")
+
+	temp_create("渲染", "01_LOD", "尚未实现")
+	temp_create("渲染", "02_光影/迷雾", "尚未实现")
+	temp_create("渲染", "03_森林/草原", "尚未实现")
+	temp_create("渲染", "04_河流/瀑布", "尚未实现")
+	temp_create("渲染", "05_下雪和脚印", "尚未实现")
+	temp_create("渲染", "06_下雨和涟漪", "尚未实现")
+	temp_create("渲染", "07_RenderTexture", "通过RT反向操作物体")
+	temp_create("渲染", "08_卡通渲染", "尚未实现")
+	temp_create("渲染", "09_画质设置", "尚未实现")
+
+	temp_create(api.type_net, "WebServer", "尚未实现")
+	temp_create(api.type_net, "Socket通信", "尚未实现")
+	temp_create(api.type_net, "简单多人游戏", "尚未实现")
 end
-
--- 下面是测试占位
-local temp_create = function(category, name, desc)
-    local tbParam = { category = category, name = name, desc = desc, file = "data_system.lua" }
-    api.create_system(tbParam)
-end
-
-
-temp_create(api.type_core, "93_性能分析", "帧率，内存使用，cput使用，gpu使用，尚未实现")
-temp_create(api.type_core, "94_PC平台", "当窗口最小化时，当窗口分辨率变化时，修改窗口分辨率，得到窗口分辨率，设置窗口标题")
-
-temp_create(api.type_core, "81_自定义数据存取", "尚未实现") -- 包括字符串/字节流
-temp_create(api.type_core, "82_单机存档/读档", "尚未实现")
-temp_create(api.type_core, "83_打/解pack包", "尚未实现")
-temp_create(api.type_core, "84_加密/解密", "尚未实现")
-temp_create(api.type_core, "85_压缩/解压", "尚未实现")
-
-temp_create(api.type_designer, "01_曲线编辑器", "编辑器各种1维2维曲线")
-temp_create(api.type_designer, "02_dotween", "曲线动画")
-temp_create(api.type_designer, "03_ini编辑器", "")
-temp_create(api.type_designer, "04_csv编辑器", "")
-temp_create(api.type_designer, "05_多语言编辑器", "")
-temp_create(api.type_designer, "07_技能编辑器", "")
-temp_create(api.type_designer, "08_剧情编辑器", "")
-
-temp_create(api.type_scene, "模型和动画", "尚未实现")
-temp_create(api.type_scene, "海量对象", "尚未实现")
-temp_create(api.type_scene, "多点触屏", "尚未实现")
-temp_create(api.type_scene, "手柄", "尚未实现")
-temp_create(api.type_scene, "选中场景物件", "尚未实现")
-
-temp_create("渲染", "01_LOD", "尚未实现")
-temp_create("渲染", "02_光影/迷雾", "尚未实现")
-temp_create("渲染", "03_森林/草原", "尚未实现")
-temp_create("渲染", "04_河流/瀑布", "尚未实现")
-temp_create("渲染", "05_下雪和脚印", "尚未实现")
-temp_create("渲染", "06_下雨和涟漪", "尚未实现")
-temp_create("渲染", "07_RenderTexture", "通过RT反向操作物体")
-temp_create("渲染", "08_卡通渲染", "尚未实现")
-temp_create("渲染", "09_画质设置", "尚未实现")
-
-temp_create(api.type_net, "WebServer", "尚未实现")
-temp_create(api.type_net, "Socket通信", "尚未实现")
-temp_create(api.type_net, "简单多人游戏", "尚未实现")
-
-temp_create(api.type_minigame, "大富翁", "尚未实现")
-
+api.reset()
 
 return api;

@@ -49,6 +49,7 @@ end
 
 function system.exit()
 	sound.exit()
+	data_mgr.reset()
 end
 
 function system.data_changed()
