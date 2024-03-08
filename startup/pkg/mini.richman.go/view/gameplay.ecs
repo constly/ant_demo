@@ -1,4 +1,4 @@
-system "main_loop" .implement "main_loop.lua"
+system "startup" .implement "view/startup.lua"
 
 import_feature "ant.render"
 import_feature "ant.pipeline"

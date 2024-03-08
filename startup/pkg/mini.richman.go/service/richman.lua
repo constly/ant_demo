@@ -1,2 +1,2 @@
-
+ServiceWindow = ...
 return require 'logic.startup'

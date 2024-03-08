@@ -21,6 +21,11 @@ function S.shutdown()
     ltask.wait(quit)
 end
 
+function S.message_process(cmd, tbParams)
+
+end 
+
+
 ltask.fork(Update)
 
 return S;
