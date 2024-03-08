@@ -42,25 +42,24 @@ function system.on_entry()
             },
 			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
 			visible_state= "main_view",
-			simplemesh 	= imesh.init_mesh(ientity.plane_mesh()),
-			on_ready = function(e)
-			end,
+			mesh_result = imesh.init_mesh(ientity.plane_mesh(), true),
+			owned_mesh_buffer = true,
 		}
 	}
 
-	PC:create_entity {
-		policy = {
-			"ant.scene|scene_object",
-			"ant.efk|efk",
-		},
-		data = {
-			scene = {t = {0, 0.5, 0}, r = {0, 230, 0}, s = 0.5},
-			efk = {
-				path = "/pkg/game.res/efk/00_Basic/Laser01.efk",
-			},
-			visible_state = "main_queue",
-		}
-	}
+	-- PC:create_entity {
+	-- 	policy = {
+	-- 		"ant.scene|scene_object",
+	-- 		"ant.efk|efk",
+	-- 	},
+	-- 	data = {
+	-- 		scene = {t = {0, 0.5, 0}, r = {0, 230, 0}, s = 0.5},
+	-- 		efk = {
+	-- 			path = "/pkg/game.res/efk/00_Basic/Laser01.efk",
+	-- 		},
+	-- 		visible_state = "main_queue",
+	-- 	}
+	-- }
 	
 	
 end

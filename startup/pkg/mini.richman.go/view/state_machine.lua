@@ -2,7 +2,7 @@
 --- 客户端 游戏流程 状态机
 -----------------------------------------------------------------------
 
-local net_client = require 'view.new_client' 	---@type mini.richman.go.net_client
+local net_client = require 'view.net_client' 	---@type mini.richman.go.net_client
 local def = require 'core.def'					---@type mini.richman.go.def.api
 
 local api = {}									---@class mini.richman.go.view.state_machine

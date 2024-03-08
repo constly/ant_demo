@@ -17,8 +17,18 @@ function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     ImGui.SetNextWindowSize(mgr.get_content_size())
     if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoScrollWithMouse", "NoCollapse", "NoTitleBar"}) then 
-		ImGui.Text("大富翁go")
-		if ImGui.ButtonEx(" 开 始 ") then 
+		
+		ImGui.SetCursorPos(200, 100)
+		ImGui.BeginGroup()
+		ImGui.Text("1. 青春版大富翁Go")
+		ImGui.Text("2. 探索在Ant中进行联机开发")
+		ImGui.Text("3. 只有运行时版本才能多开联机")
+		ImGui.EndGroup()
+
+
+		ImGui.SetCursorPos(200, 250)
+		ImGui.BeginGroup()
+		if ImGui.ButtonEx("单 机", 150, 60) then 
 			richman.entry({
 				leaveCB = function()
 					local window = import_package "ant.window"
@@ -26,6 +36,18 @@ function system.data_changed()
 				end
 			});
 		end
+		
+		ImGui.Dummy(10, 10)
+		if ImGui.ButtonEx("局域网联机", 150, 60) then 
+			richman.entry({
+				leaveCB = function()
+					local window = import_package "ant.window"
+					window.reboot({feature = { "game.demo|gameplay" }})
+				end
+			});
+		end
+		ImGui.EndGroup()
+		
 	end 
 	ImGui.End()
 end

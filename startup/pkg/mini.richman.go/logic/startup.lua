@@ -2,13 +2,12 @@
 --- 逻辑层入口
 ------------------------------------------------------
 
-local dep = require 'dep' ---@type mini.richman.go.dep 
-local ltask = dep.ltask
+local ltask = require "ltask"
 local quit 
 
 local function Update()
 	while not quit do 
-		print("logic update", os.clock())
+		--print("logic update", os.clock())
 		ltask.sleep(5)
 	end
 	ltask.wakeup(quit)
@@ -22,7 +21,7 @@ function S.shutdown()
 end
 
 function S.message_process(cmd, tbParams)
-
+	print("logic message_process", cmd ,tbParams)
 end 
 
 

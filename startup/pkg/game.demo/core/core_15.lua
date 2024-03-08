@@ -50,9 +50,8 @@ function system.on_entry()
             },
 			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
 			visible_state= "main_view",
-			simplemesh 	= imesh.init_mesh(ientity.plane_mesh()),
-			on_ready = function(e)
-			end,
+			mesh_result = imesh.init_mesh(ientity.plane_mesh(), true),
+			owned_mesh_buffer = true,
 		}
 	}
 
@@ -80,8 +79,10 @@ function system.on_entry()
 				hitch = {
 					group = hitch_test_group_id
 				},
-				visible_state = "main_view",
-				hitch_create = TEST_INDIRECT,
+				visible_state = "main_view|cast_shadow|selectable",
+				receive_shadow = true,
+				cast_shadow = true,
+				hitch_update = TEST_INDIRECT,
 			}
 		}
 		table.insert(hitchs, {h = h, angle = i * 45, pos = {posx, posy, posz}} )

@@ -9,7 +9,7 @@ local is_local_player = true
 function net.set_is_local_player(v)
 	is_local_player = v
 	if v then 
-		service = ltask.queryservice "mini.richman.go|richman"
+		service = ltask.uniqueservice "mini.richman.go|richman"
 	end
 end 
 

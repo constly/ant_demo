@@ -41,8 +41,8 @@ function system.on_entry()
 			scene = { s = {250, 1, 250}, },
 			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
 			visible_state= "main_view",
-			simplemesh 	= imesh.init_mesh(ientity.plane_mesh()),
-			on_ready = function(e) end,
+			mesh_result = imesh.init_mesh(ientity.plane_mesh(), true),
+			owned_mesh_buffer = true,
 		}
 	}
 

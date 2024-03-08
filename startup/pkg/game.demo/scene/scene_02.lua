@@ -40,7 +40,8 @@ function system.on_entry()
 			scene = { s = {250, 1, 250}, },
 			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
 			visible_state= "main_view",
-			simplemesh 	= imesh.init_mesh(ientity.plane_mesh()),
+			mesh_result = imesh.init_mesh(ientity.plane_mesh(), true),
+			owned_mesh_buffer = true,
 			on_ready = function(e) 
 				local main_queue = w:first "main_queue camera_ref:in"
 				local main_camera <close> = world:entity(main_queue.camera_ref, "camera:in")
