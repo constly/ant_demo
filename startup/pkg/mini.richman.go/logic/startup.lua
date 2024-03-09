@@ -20,8 +20,8 @@ function S.shutdown()
     ltask.wait(quit)
 end
 
-function S.message_process(cmd, tbParams)
-	print("logic message_process", cmd ,tbParams)
+function S.dispatch_netmsg(cmd, tbParams)
+	print("logic dispatch_netmsg", cmd ,tbParams)
 end 
 
 

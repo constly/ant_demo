@@ -24,7 +24,7 @@ end
 local function send(player, tbData)
 	if player.isLocal then 
 		local ltask = require "ltask"
-		ltask.call(ServiceWindow, "message_handle", tbData)
+		ltask.call(ServiceWindow, "dispatch_netmsg", tbData)
 	else 
 		print("这里需要通过网络发送")
 	end

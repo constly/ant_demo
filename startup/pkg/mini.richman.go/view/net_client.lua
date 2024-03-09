@@ -17,7 +17,7 @@ end
 ---@param cmd mini.richman.go.def.cmd
 function net.call_server(cmd, tbParam)
 	if is_local_player then 
-		ltask.send(service, "message_process", cmd, tbParam)
+		ltask.send(service, "dispatch_netmsg", cmd, tbParam)
 	else 
 		print("通过网络发送")
 	end
