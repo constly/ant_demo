@@ -1,7 +1,7 @@
 local ecs = ...
 local system = ecs.system "data_system"
 local window = require "window"
-local dep = require 'dep'
+local dep = require 'dep'				---@type game.demo.dep
 local ImGui = dep.ImGui
 local data_mgr  = require "data_mgr" 	---@type data_mgr
 local auto_test = ecs.require 'utils.auto_test'

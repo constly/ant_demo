@@ -12,6 +12,7 @@ local tbParam =
 local system 		= mgr.create_system(tbParam)
 local ImGui     	= require "imgui"
 local richman 		= import_package 'mini.richman.go' ---@type mini.richman.go.main
+local window 		= import_package "ant.window"
 
 function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
@@ -22,29 +23,35 @@ function system.data_changed()
 		ImGui.BeginGroup()
 		ImGui.Text("1. 青春版大富翁Go")
 		ImGui.Text("2. 探索在Ant中进行联机开发")
-		ImGui.Text("3. 只有运行时版本才能多开联机")
 		ImGui.EndGroup()
 
 
 		ImGui.SetCursorPos(200, 250)
 		ImGui.BeginGroup()
-		if ImGui.ButtonEx("单 机", 150, 60) then 
+		if ImGui.ButtonEx("单 机", 200, 60) then 
 			richman.entry({
 				leaveCB = function()
-					local window = import_package "ant.window"
 					window.reboot({feature = { "game.demo|gameplay" }})
 				end
 			});
 		end
 		
 		ImGui.Dummy(10, 10)
-		if ImGui.ButtonEx("局域网联机", 150, 60) then 
-			richman.entry({
-				leaveCB = function()
-					local window = import_package "ant.window"
+		if ImGui.ButtonEx("局域网联机\n(需使用运行时版本)", 200, 60) then 
+			local match = import_package "ly.room.match" 		---@type ly.room.match.main 
+			match.entry({
+				name = "大富翁Go局域网联机",
+				entryCB = function()		-- 匹配成功后 进入房间
+					richman.entry({
+						leaveCB = function()--- 房间退出时 回来
+							window.reboot({feature = { "game.demo|gameplay" }})
+						end
+					});
+				end,
+				leaveCB = function()		-- 中断匹配时 回来
 					window.reboot({feature = { "game.demo|gameplay" }})
 				end
-			});
+			})
 		end
 		ImGui.EndGroup()
 		
