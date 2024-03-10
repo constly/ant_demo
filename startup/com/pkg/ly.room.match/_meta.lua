@@ -16,6 +16,7 @@ local tb_match_member = {}
 
 ---@class ly.room.match.room_list_one 局域网内广播的房间简略数据
 ---@field ip string 房间id 
+---@field type string ip类型: IPv4 or IPv6
 ---@field port number 房间端口号
 ---@field name string 房间名 
 ---@field update_time number 最近更新时间

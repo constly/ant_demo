@@ -2,12 +2,11 @@
 // Local area network (LAN) broadcasting
 // for LAN room discovery functionality.
 //-------------------------------------------------------------
-
 #include <lua.hpp>
 #include <bee/lua/binding.h>
 
 #if defined(_WIN32)
-#    include <Ws2tcpip.h>
+#   include <Ws2tcpip.h>
 #else
 #    include <arpa/inet.h>
 #    include <netdb.h>
@@ -85,8 +84,8 @@ namespace luabind {
 
 	static int bInitServer(lua_State* L) {
 		luabind::BroadCast& Ins = bee::lua::checkudata<luabind::BroadCast>(L, 1);
-		const char* ip = luaL_checkstring(L, 2);	// ip : 255.255.255.255
-		int port = (int)luaL_checkinteger(L, 3);  	// port: 32111
+		const char* ip = luaL_checkstring(L, 2);	
+		int port = (int)luaL_checkinteger(L, 3);  	
 		Ins.Close();
 		Ins.sock = socket(AF_INET, SOCK_DGRAM, 0);
 		if (Ins.sock < 0) return 0;
@@ -106,7 +105,7 @@ namespace luabind {
 
 	static int bInitClient(lua_State* L) {
 		luabind::BroadCast& Ins = bee::lua::checkudata<luabind::BroadCast>(L, 1);
-		int port = (int)luaL_checkinteger(L, 2);  	// port: 32111
+		int port = (int)luaL_checkinteger(L, 2);  	
 		Ins.Close();
 
 		Ins.sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -200,10 +199,58 @@ namespace luabind {
 	}
 }
 
+static int bGetLanIpList(lua_State* L) {
+	char buffer[1024];
+	gethostname(buffer, 1024);
+
+	addrinfo hints, *res;
+	int status;
+	char ipstr[INET6_ADDRSTRLEN];
+	memset(&hints, 0, sizeof hints); 
+	hints.ai_family = AF_UNSPEC;     
+	hints.ai_socktype = SOCK_STREAM;
+	if ((status = getaddrinfo(buffer, NULL, &hints, &res)) != 0) {
+		fprintf(stderr, "getaddrinfo: %s; hostname: %s\n", gai_strerror(status), buffer);
+		return 0;
+	}
+	printf("get ip addresses for hostname %s:\n", buffer);
+	lua_newtable(L);
+	int index = 0;
+	for (addrinfo *p = res; p != NULL; p = p->ai_next) {
+		void *addr;
+		const char *ipver;
+		auto bytes = (const std::byte*)p->ai_addr;
+		if (p->ai_family == AF_INET) { // IPv4
+			struct sockaddr_in *ipv4 = (struct sockaddr_in*)bytes;
+			addr = &(ipv4->sin_addr);
+			ipver = "IPv4";
+		} else { // IPv6
+			struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)bytes;
+			addr = &(ipv6->sin6_addr);
+			ipver = "IPv6";
+		}
+
+		inet_ntop(p->ai_family, addr, ipstr, sizeof ipstr);
+		printf("  %s: %s\n", ipver, ipstr);
+
+		lua_newtable(L);
+		lua_pushstring(L, ipver);
+		lua_setfield(L, -2, "type");
+		lua_pushstring(L, ipstr);
+		lua_setfield(L, -2, "ip");
+		lua_seti(L, -2, ++index); 
+	}
+	freeaddrinfo(res); 
+	printf("get end.\n");
+	return 1;
+}
+
 extern "C" int luaopen_ly_net(lua_State *L) {
 	lua_newtable(L);
 	lua_pushcfunction(L, luabind::create);
 	lua_setfield(L, -2, "CreateBroadCast");
+	lua_pushcfunction(L, bGetLanIpList);
+	lua_setfield(L, -2, "get_lan_ip_list");
 	return 1;
 }
 

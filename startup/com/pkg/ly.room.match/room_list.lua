@@ -73,7 +73,7 @@ function api.tick()
 				remove_room(ip)
 			else 
 				local list = common.lib.split(msg, ";")
-				local room = find_or_add_room(ip)
+				local room = {}
 				for i, v in ipairs(list) do 
 					local arr = common.lib.split(v, ":");
 					if #arr == 2 then 
@@ -81,6 +81,10 @@ function api.tick()
 					end 
 				end 
 				room.update_time = os.clock()
+				local tb = find_or_add_room(room.ip)
+				for key, v in pairs(room) do 
+					tb[key] = v
+				end
 			end
 		else
 			break; 

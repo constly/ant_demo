@@ -7,9 +7,10 @@ local net = import_package "ant.net"
 local ltask = require "ltask"
 local seri = require "bee.serialization"
 local protocol = require "protocol"
+local ly_net = require 'ly.net'
 local port = 9843
---local ip = "127.0.0.1"
-local ip = "192.168.1.4"
+local server_ip
+local server_ip_type
 local room_name 
 local room_type = 0; -- 1 or 2; 1-服务器房间; 2-客户端房间
 local quit
@@ -27,6 +28,8 @@ local function reset_data()
 	need_exit = nil
 	client_fd = nil
 	room_name = nil
+	server_ip = nil 
+	server_ip_type = nil
 	next_id = 0;
 end
 
@@ -150,15 +153,25 @@ init()
 --------------------------------------------------------------
 --- 房间服务器端
 local function create_server()
+	server_ip = "127.0.0.1"
+	server_ip_type = 'IPv4'
+	local list = ly_net.get_lan_ip_list() or {}
+	for i, v in ipairs(list) do 
+		if v.type == "IPv4" then 	-- 监听ipv4地址, ipv6暂未处理
+			server_ip = v.ip
+			server_ip_type = "IPv4"
+			break
+		end
+	end
 	local session_id = 0;
 	local sessions = {}
-	local listen_fd, error = net.listen(ip, port) 
+	local listen_fd, error = net.listen(server_ip, port) 
 	if not listen_fd then 
-		log.warn("failed to create room, error = ", error or "")
+		log.warn(string.format("failed to create room, addr = %s, error = %s", string.format("%s:%s", server_ip, port), error or ""))
 		return false
 	end 
 
-	print("create server ok, addr = ", string.format("%s:%s", ip, port))
+	print("create server ok, addr = ", string.format("%s:%s", server_ip, port))
 	local close_session = function(s, notify)
 		if s.fd then 
 			net.close(s.fd)
@@ -315,7 +328,7 @@ end
 function api.tick()
 	-- 如果是服务器房间，则向局域网内广播自身信息
 	if room_type == 1 then 
-		local msg = string.format("port:%d;name:%s", port, room_name or "")
+		local msg = string.format("port:%s;name:%s;ip:%s;type:%s", port, room_name or "", server_ip, server_ip_type)
 		room_list.broadcast(msg);
 	end
 end 
