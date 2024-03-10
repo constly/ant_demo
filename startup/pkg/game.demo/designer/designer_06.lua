@@ -22,19 +22,19 @@ local tb_object_def =
 {
 	{id = 1, name = "地面", size = {x = 1, y = 1}, bg_color = {45, 45, 45,255}, txt_color = {200, 200, 200}},
 	{id = 2, name = "阻挡", size = {x = 1, y = 1}, bg_color = {180, 0, 0}, txt_color = {0, 0, 0}},
-	{id = 3, name = "空地皮", size = {x = 2, y = 2}, bg_color = {70,50,30}, txt_color = {255,255,255}},
+	{id = 3, name = "空地", size = {x = 1, y = 1}, bg_color = {70,50,30}, txt_color = {255,255,255}},
 
-	{id = 10, name = "装甲车", size = {x = 2, y = 2}, bg_color = {128,225,242,255}, txt_color = {0,0,0}},
-	{id = 11, name = "战斗事件", size = {x = 2, y = 2}, bg_color = {241,133,208,255}, txt_color = {0,0,0}},
-	{id = 12, name = "外交事件", size = {x = 2, y = 2}, bg_color = {242,241,128,255}, txt_color = {200,45,0}},
-	{id = 13, name = "传送门", size = {x = 2, y = 2}, bg_color = {241,133,208,255}, txt_color = {200,25,0}},
-	{id = 14, name = "休息事件", size = {x = 2, y = 2}, bg_color = {205,133,63}, txt_color = {0,0,0}},
-	{id = 15, name = "巡航导弹", size = {x = 2, y = 2}, bg_color = {255,255,255,128}, txt_color = {0,0,0}},
+	{id = 10, name = "内政", size = {x = 1, y = 1}, bg_color = {128,225,242,255}, txt_color = {0,0,0}},
+	{id = 11, name = "战斗", size = {x = 1, y = 1}, bg_color = {241,133,208,255}, txt_color = {0,0,0}},
+	{id = 12, name = "外交", size = {x = 1, y = 1}, bg_color = {242,241,128,255}, txt_color = {200,45,0}},
+	{id = 13, name = "传送门", size = {x = 1, y = 1}, bg_color = {241,133,208,255}, txt_color = {200,25,0}},
+	{id = 14, name = "休息", size = {x = 1, y = 1}, bg_color = {205,133,63}, txt_color = {0,0,0}},
+	{id = 15, name = "陷阱", size = {x = 1, y = 1}, bg_color = {255,255,255,128}, txt_color = {0,0,0}},
 
-	{id = 20, name = "睡眠舱", size = {x = 2, y = 2}, bg_color = {75,0,0,255}, txt_color = {200,0,0}},
-	{id = 21, name = "寻路方向", size = {x = 2, y = 2}, bg_color = {75,75,75,255}, txt_color = {200,200,200}},
+	{id = 20, name = "抽奖", size = {x = 1, y = 1}, bg_color = {75,0,0,255}, txt_color = {200,0,0}},
+	{id = 21, name = "寻路", size = {x = 1, y = 1}, bg_color = {75,75,75,255}, txt_color = {200,200,200}},
 
-	{id = 30, name = "商业楼", size = {x = 2, y = 2}, bg_color = {100,80,60}, txt_color = {255,255,255}},
+	{id = 30, name = "写字楼", size = {x = 2, y = 2}, bg_color = {100,80,60}, txt_color = {255,255,255}},
 
 	{id = 99, name = "出生点", size = {x = 1, y = 1}, bg_color = {128,128,128,200}, txt_color = {240,240,0}},
 }
