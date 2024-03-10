@@ -10,9 +10,12 @@ local create = function(editor)
 	local data_hander = editor.data_hander
 	local stack = editor.stack
 	local region; ---@type chess_map_region_tpl
+	local header_x
+	local size_x, size_y
 
 	function api.on_render()
-		local size_x, size_y = ImGui.GetContentRegionAvail()
+		header_x = 70 * ImGui.GetMainViewport().DpiScale
+		size_x, size_y = ImGui.GetContentRegionAvail()
 		local h1 = size_y * 0.7
 		region = data_hander.cur_region()
 		if not region then return end 
@@ -59,7 +62,7 @@ local create = function(editor)
 	---@param gridData chess_grid_tpl
 	function api.draw_checkbox_invisible(gridData)
 		ImGui.Text("不可见")
-		ImGui.SameLineEx(70)
+		ImGui.SameLineEx(header_x)
 		local checkbox_value = {data_hander.is_invisible(region, gridData.id)}
 		local change, v = ImGui.Checkbox("##checkbox_visible_obj", checkbox_value)
         if change then 
@@ -75,7 +78,7 @@ local create = function(editor)
 
 	function api.draw_inspec_bool(gridData, key, name, tip)
 		ImGui.Text(name)
-		ImGui.SameLineEx(70)
+		ImGui.SameLineEx(header_x)
 		local value = {gridData[key] or false}
 		if ImGui.Checkbox("##inspec_checkbox_" .. key, value) then 
 			if value then 
@@ -90,8 +93,8 @@ local create = function(editor)
 
 	function api.draw_inspec_float(gridData, key, name, speed, tip)
 		ImGui.Text(name)
-		ImGui.SameLineEx(70)
-		ImGui.SetNextItemWidth(70)
+		ImGui.SameLineEx(header_x)
+		ImGui.SetNextItemWidth(size_x - header_x - 20)
 		local drag_value = {gridData[key] or 0}
 		if ImGui.DragFloatEx("##drag_" .. key, drag_value, speed, nil, nil, "%.03f") then
 			if drag_value[1] ~= 0 then 

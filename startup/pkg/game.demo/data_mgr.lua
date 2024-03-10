@@ -138,6 +138,7 @@ function api.reset()
 	temp_create(api.type_designer, "05_多语言编辑器", "")
 	temp_create(api.type_designer, "07_技能编辑器", "")
 	temp_create(api.type_designer, "08_剧情编辑器", "")
+	temp_create(api.type_designer, "09_UI编辑器", "")
 
 	temp_create(api.type_scene, "模型和动画", "尚未实现")
 	temp_create(api.type_scene, "海量对象", "尚未实现")

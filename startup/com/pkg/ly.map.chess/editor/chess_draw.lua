@@ -15,19 +15,22 @@ local create = function(editor)
 	local region_draw = chess_region_draw.create(editor)
 	local input_content = ImGui.StringBuf()
 	local inspector = chess_inspector_draw.create(editor)
+	local dpiScale
+	local header_y
 
 	function chess.on_destroy()
 		region_draw.on_destroy()
 	end
 
 	function chess.on_render(_deltatime)
+		dpiScale = ImGui.GetMainViewport().DpiScale
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 0, 0)
 		local start_x = 3
 		local fix_x, fix_y = 6, 7;
 		ImGui.SetCursorPos(start_x, 0)
 		local size_x, size_y = ImGui.GetContentRegionMax()
-		local size_left = 150;
-		local size_right = 150;
+		local size_left = 150 * dpiScale;
+		local size_right = 150 * dpiScale;
 		local offset_x = 0
 		size_y = size_y + fix_y
 		ImGui.BeginChild("##chess_left", size_left, size_y, ImGui.ChildFlags({"Border"}))
@@ -48,11 +51,12 @@ local create = function(editor)
 	end
 
 	function chess.draw_left()
-		local len = 135;
+		local len = 135 * dpiScale;
 		local data = editor.data_hander.data
 		local size_x, size_y = ImGui.GetContentRegionAvail()
 		ImGui.Dummy(2, 3);
 		imgui_utils.draw_text_center("物件列表")
+		header_y = ImGui.GetCursorPosY()
 
 		local h1 = size_y * 0.7
 		ImGui.BeginChild("##chess_left_1", size_x, h1, ImGui.ChildFlags({"Border"}))
@@ -76,8 +80,8 @@ local create = function(editor)
 					ImGui.EndDragDropSource();	
 				end
 				ImGui.PopStyleVar()
-	
 			end	
+			ImGui.Dummy(10, 10)
 			ImGui.EndGroup()
 			ImGui.PopStyleVar()
 		ImGui.EndChild()
@@ -120,6 +124,7 @@ local create = function(editor)
 					end
 				end
 			end
+			ImGui.Dummy(10, 10)
 			ImGui.EndGroup()
 		ImGui.EndChild()
 	end
@@ -219,7 +224,7 @@ local create = function(editor)
 			ImGui.SameLine()
 		end
 		
-		local top = 31
+		local top = header_y
 		size_y = size_y - top
 		ImGui.SetCursorPos(0, top)
 		ImGui.BeginChild("##chess_middle_2", size_x, size_y, ImGui.ChildFlags({"Border"}))
@@ -244,7 +249,7 @@ local create = function(editor)
 		if imgui_utils.draw_btn("Clear", false) then 
 			editor.on_reset()
 		end
-		local top = 31
+		local top = header_y
 		size_y = size_y - top
 		ImGui.SetCursorPos(0, top)
 		ImGui.BeginChild("##chess_right_1", size_x, size_y, ImGui.ChildFlags({"Border"}))
