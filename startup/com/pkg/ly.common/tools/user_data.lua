@@ -1,4 +1,4 @@
-local lib = require 'tools/lib'
+local lib = require 'tools.lib'
 local dep = require 'dep'
 local fs = dep.fs 
 local path_def = require "path_def"

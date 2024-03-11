@@ -5,8 +5,8 @@ local dep = require 'dep' ---@type ly.map.chess.dep
 local ImGui = dep.ImGui
 local imgui_utils = dep.common.imgui_utils
 local imgui_styles = dep.common.imgui_styles
-local chess_region_draw = require 'editor/chess_region_draw'
-local chess_inspector_draw = require 'editor/chess_inspector'
+local chess_region_draw = require 'editor.chess_region_draw'
+local chess_inspector_draw = require 'editor.chess_inspector'
 
 ---@param editor chess_editor
 local create = function(editor)
