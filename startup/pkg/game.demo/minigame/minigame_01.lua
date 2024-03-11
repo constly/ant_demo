@@ -21,8 +21,9 @@ function system.data_changed()
 		
 		ImGui.SetCursorPos(200, 100)
 		ImGui.BeginGroup()
-		ImGui.Text("1. 青春版大富翁Go")
-		ImGui.Text("2. 探索在Ant中进行联机开发")
+		ImGui.Text("1. 魔改版大富翁Go")
+		ImGui.Text("2. 探索使用Ant进行游戏开发")
+		ImGui.Text("3. 探索联机开发框架")
 		ImGui.EndGroup()
 
 
@@ -38,8 +39,8 @@ function system.data_changed()
 		
 		ImGui.Dummy(10, 10)
 		if ImGui.ButtonEx("局域网联机\n(需使用运行时版本)", 200, 60) then 
-			local match = import_package "ly.room.match" 		---@type ly.room.match.main 
-			match.entry({
+			local room = import_package "ly.room" 		---@type ly.room.main 
+			room.entry({
 				name = "大富翁Go局域网联机",
 				entryCB = function()		-- 匹配成功后 进入房间
 					richman.entry({
