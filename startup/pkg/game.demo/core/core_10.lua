@@ -21,7 +21,7 @@ local ientity = ecs.require "ant.entity|entity"
 local dep = require "dep"
 local vfs = require "vfs"
 local lfs = require "bee.filesystem"
-local ivs = ecs.require "ant.render|visible_state"
+local irender       = ecs.require "ant.render|render"
 local ianimation = ecs.require "ant.animation|animation"
 local iplayback = ecs.require "ant.animation|playback"
 
@@ -40,7 +40,7 @@ function system.on_entry()
 		data = {
 			scene = { s = {250, 1, 250}, },
 			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
-			visible_state= "main_view",
+			visible	= true,
 			mesh_result = imesh.init_mesh(ientity.plane_mesh(), true),
 			owned_mesh_buffer = true,
 		}
@@ -193,12 +193,11 @@ function system.draw_anim()
         if ImGui.TreeNode "mesh" then
             for i = 1, #entities do
                 local eid = entities[i]
-                local e <close> = world:entity(eid, "render_object?in animation?in")
+                local e <close> = world:entity(eid, "render_object?in animation?in visible?in")
                 if e.render_object then
-                    local value = { ivs.has_state(e, "main_view") }
+					local value = { e.visible }
                     if ImGui.Checkbox(""..eid, value) then
-                        ivs.set_state(e, "main_view", value[1])
-                        ivs.set_state(e, "cast_shadow", value[1])
+                        irender.set_visible(e, value[1])
                     end
                 end
                 if e.animation then

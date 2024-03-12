@@ -45,7 +45,7 @@ function system.on_entry()
 				s = {30, 1, 30},	-- 缩放
             },
 			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
-			visible_state= "main_view",
+			visible	= true,
 			mesh_result = imesh.init_mesh(ientity.plane_mesh(), true),
 			owned_mesh_buffer = true,
 		}

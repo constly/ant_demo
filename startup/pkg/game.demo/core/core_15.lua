@@ -49,7 +49,7 @@ function system.on_entry()
 				s = {30, 1, 30},	-- 缩放
             },
 			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
-			visible_state= "main_view",
+			visible	= true,
 			mesh_result = imesh.init_mesh(ientity.plane_mesh(), true),
 			owned_mesh_buffer = true,
 		}
@@ -65,6 +65,8 @@ function system.on_entry()
     }
 
 	hitchs = {}
+	do return end 
+	
 	for i = 1, 10 do 
 		local posx, posy, posz = i * 2 - 10, 5, 1
 		local h = PC:create_entity {
@@ -79,9 +81,10 @@ function system.on_entry()
 				hitch = {
 					group = hitch_test_group_id
 				},
-				visible_state = "main_view|cast_shadow|selectable",
-				receive_shadow = true,
-				cast_shadow = true,
+				visible_masks = "main_view|cast_shadow",
+            	visible = true,
+            	receive_shadow = true,
+            	cast_shadow = true,
 				hitch_update = TEST_INDIRECT,
 			}
 		}

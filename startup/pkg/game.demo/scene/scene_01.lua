@@ -39,7 +39,7 @@ function system.on_entry()
 		data = {
 			scene = { s = {250, 1, 250}, },
 			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
-			visible_state= "main_view",
+			visible	= true,
 			mesh_result = imesh.init_mesh(ientity.plane_mesh(), true),
 			owned_mesh_buffer = true,
 		}
