@@ -2,11 +2,10 @@ local ecs = ...
 local system 		= ecs.system "startup"
 local dep 			= require 'dep'
 local ImGui 		= dep.ImGui
-local statemachine 	= require 'view.state_machine'  ---@type mini.richman.go.view.state_machine
-local init  		= ecs.require 'view.init_system'
+local statemachine 	= require 'client.state_machine'  ---@type mini.richman.go.view.state_machine
 
 function system.init()
-	print("system.init", init)
+	print("system.init")
 end 
 
 function system.post_init()
@@ -15,7 +14,7 @@ end
 
 function system.init_world()
 	print("system.init_world")
-	statemachine.init(false, true)
+	statemachine.init(false, RichmanMgr.is_listen_player)
 end
 
 function system.exit()

@@ -1,5 +1,5 @@
-system "init_system".implement "view/init_system.lua"
-system "startup" .implement "view/startup.lua"
+system "init_system".implement "client/init_system.lua"
+system "startup" .implement "client/startup.lua"
 
 import_feature "ant.render"
 import_feature "ant.pipeline"

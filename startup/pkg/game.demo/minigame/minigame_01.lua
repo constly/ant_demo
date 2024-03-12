@@ -30,7 +30,7 @@ function system.data_changed()
 		ImGui.SetCursorPos(200, 250)
 		ImGui.BeginGroup()
 		if ImGui.ButtonEx("单 机", 200, 60) then 
-			map.load({feature = { "mini.richman.go|gameplay" }})
+			map.load({feature = { "mini.richman.go|gameplay" }, is_standalone = true})
 		end
 		
 		ImGui.Dummy(10, 10)

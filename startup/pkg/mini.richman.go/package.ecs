@@ -1,1 +1,1 @@
-feature "gameplay".import "view/gameplay.ecs"
+feature "gameplay".import "client/gameplay.ecs"

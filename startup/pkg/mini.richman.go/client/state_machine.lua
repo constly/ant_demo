@@ -1,9 +1,8 @@
 -----------------------------------------------------------------------
 --- 客户端 游戏流程 状态机
 -----------------------------------------------------------------------
-
-local net_client = require 'view.net_client' 	---@type mini.richman.go.net_client
-local def = require 'core.def'					---@type mini.richman.go.def.api
+local client = require 'client.room.client_room'	---@type mrg.client_room
+local msg = require '_core.msg'						---@type mrg.msg
 
 local api = {}									---@class mini.richman.go.view.state_machine
 api.state_ready 		= 1
@@ -32,7 +31,7 @@ end
 do 
 	local s = register(api.state_ready)
 	function s:on_entry()
-		net_client.call_server(def.cmd.login)
+		client.call_rpc(msg.rpc_login)
 	end
 
 	function s:on_update()
@@ -53,10 +52,10 @@ end
 
 
 
-function api.init(is_reconnect, is_local_player)
+function api.init(is_reconnect, is_listen_player)
 	cur_state = nil
-	if is_local_player then 
-		net_client.set_is_local_player(true)
+	if is_listen_player then 
+		--net_client.set_is_local_player(true)
 	end 
 	if is_reconnect then 
 		api.goto_state(api.state_reconnect)
