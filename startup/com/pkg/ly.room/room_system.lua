@@ -1,12 +1,16 @@
 local ecs = ...
 local system 	= ecs.system "room_system"
 local ImGui 	= require 'imgui'
-local main 		= require 'main'  				---@type ly.room.main
 local common 	= import_package 'ly.common'	---@type ly.common.main
 local show_type = 1
 local room_list = require 'room_list' 			---@type ly.room.room_list
 local mgr = require 'src.room_mgr'				---@type ly.room.room_mgr
+local openParams
 
+function system.preinit()
+	local map = common.map
+	openParams = map.tbParam
+end
 
 function system.init_world()
 	room_list.init()
@@ -44,11 +48,11 @@ end
 
 function system.draw_room_list()
 	local x, y = ImGui.GetContentRegionAvail()
-	common.imgui_utils.draw_text_center(main.tbParam.name or "局域网联机")
+	common.imgui_utils.draw_text_center(openParams.name or "局域网联机")
 	ImGui.SetCursorPos(x - 20, 5)
 	if common.imgui_utils.draw_btn(" X ###btn_close", false, {size_x = 30, size_y = 30}) then 
 		mgr.close()
-		main.leave()
+		openParams.leaveCB()
 	end
 
 	ImGui.SetCursorPos(60, 80)
@@ -86,7 +90,7 @@ end
 
 function system.draw_room_data()
 	local x, y = ImGui.GetContentRegionAvail()
-	common.imgui_utils.draw_text_center(main.tbParam.name or "局域网联机")
+	common.imgui_utils.draw_text_center(openParams.name or "局域网联机")
 
 	ImGui.SetCursorPos(60, 80)
 	ImGui.BeginChild("##child_1", x - 100, y - 180, ImGui.ChildFlags({"Border"}))

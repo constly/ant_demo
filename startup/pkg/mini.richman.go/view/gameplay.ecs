@@ -1,3 +1,4 @@
+system "init_system".implement "view/init_system.lua"
 system "startup" .implement "view/startup.lua"
 
 import_feature "ant.render"

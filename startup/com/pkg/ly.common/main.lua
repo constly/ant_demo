@@ -11,5 +11,6 @@ api.imgui_styles 	= require 'imgui.imgui_styles'		---@type ly.common.imgui_style
 
 api.data_stack 		= require 'stack.data_stack'		---@type common_data_stack
 api.path_def 		= require 'path_def'  				---@type ly.common.path_def
+api.map 			= require 'map.map'					---@type ly.common.map
 
 return api

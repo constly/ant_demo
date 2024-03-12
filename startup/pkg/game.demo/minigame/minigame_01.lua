@@ -10,9 +10,9 @@ local tbParam =
 	ok 				= false
 }
 local system 		= mgr.create_system(tbParam)
-local ImGui     	= require "imgui"
-local richman 		= import_package 'mini.richman.go' ---@type mini.richman.go.main
-local window 		= import_package "ant.window"
+local dep 			= require 'dep' 	---@type game.demo.dep
+local ImGui     	= dep.ImGui
+local map 			= dep.common.map
 
 function system.data_changed()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
@@ -30,27 +30,19 @@ function system.data_changed()
 		ImGui.SetCursorPos(200, 250)
 		ImGui.BeginGroup()
 		if ImGui.ButtonEx("单 机", 200, 60) then 
-			richman.entry({
-				leaveCB = function()
-					window.reboot({feature = { "game.demo|gameplay" }})
-				end
-			});
+			map.load({feature = { "mini.richman.go|gameplay" }})
 		end
 		
 		ImGui.Dummy(10, 10)
 		if ImGui.ButtonEx("局域网联机\n(需使用运行时版本)", 200, 60) then 
-			local room = import_package "ly.room" 		---@type ly.room.main 
-			room.entry({
-				name = "大富翁Go局域网联机",
-				entryCB = function()		-- 匹配成功后 进入房间
-					richman.entry({
-						leaveCB = function()--- 房间退出时 回来
-							window.reboot({feature = { "game.demo|gameplay" }})
-						end
-					});
+			map.load({
+				feature = { "ly.room" },
+				name = "大富翁局域网联机",
+				entryCB = function()			-- 匹配成功后 进入房间
+					map.load({feature = { "mini.richman.go|gameplay" }})
 				end,
-				leaveCB = function()		-- 中断匹配时 回来
-					window.reboot({feature = { "game.demo|gameplay" }})
+				leaveCB = function()			-- 中断匹配时 回来
+					map.load({feature = { "game.demo|gameplay" }})
 				end
 			})
 		end
