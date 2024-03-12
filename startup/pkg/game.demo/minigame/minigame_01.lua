@@ -38,9 +38,7 @@ function system.data_changed()
 			map.load({
 				feature = { "ly.room" },
 				name = "大富翁局域网联机",
-				entryCB = function()			-- 匹配成功后 进入房间
-					map.load({feature = { "mini.richman.go|gameplay" }})
-				end,
+				room_feature = {"mini.richman.go|gameplay" }, -- 匹配成功后 进入房间
 				leaveCB = function()			-- 中断匹配时 回来
 					map.load({feature = { "game.demo|gameplay" }})
 				end

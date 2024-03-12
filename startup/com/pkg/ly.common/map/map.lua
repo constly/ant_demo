@@ -14,6 +14,7 @@ local api 			= {}
 ---@param tbParam ly.common.map.params 参数
 function api.load(tbParam)
 	api.tbParam = tbParam
+	print("laod map", tbParam.feature[1])
 	window.reboot({feature = tbParam.feature})
 end
 

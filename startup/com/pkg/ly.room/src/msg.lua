@@ -1,6 +1,8 @@
 --------------------------------------------------------------
 --- 房间消息定义 和 通用协议注册
 --------------------------------------------------------------
+local common = import_package 'ly.common'
+local map = common.map ---@type ly.common.map
 local players = require 'src.players'  		---@type ly.room.players
 local api = {tb_s2c = {}, tb_rpc = {}} 		---@class ly.room.msg
 
@@ -19,6 +21,7 @@ api.rpc_room_begin = 3				-- 房间战斗开始
 api.s2c_room_members = 1			-- 通知房间成员列表
 api.s2c_room_begin = 2				-- 通知房间开始
 api.s2c_kick = 3;					-- 通知踢人
+api.s2c_entry_room = 4;				-- 通知进入房间
 
 local reg_common_rpc 
 local reg_common_s2c
@@ -81,6 +84,14 @@ reg_common_rpc = function()
 				api.client.close()
 			end
 		end)
+
+	-- 房间开始 
+	api.reg_rpc(api.rpc_room_begin, 
+		function(client_fd, tbParam)
+			api.server.begin()
+		end,
+		function(tbParam)
+		end)
 end
 
 --- 注册通用s2c，以下回调全在客户端执行
@@ -105,6 +116,12 @@ reg_common_s2c = function()
 		if tbParam.id == api.local_player_id then 
 			api.client.close()
 		end 
+	end)
+
+	-- 通知进入房间
+	api.reg_s2c(api.s2c_entry_room, function(tbParam)
+		local mgr = require 'src.room_mgr'
+		map.load({feature = tbParam.feature, room_mgr = mgr})
 	end)
 end 
 

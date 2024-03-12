@@ -175,6 +175,8 @@ end
 
 --- 房间战斗开始
 function api.begin()
+	local tbParam = {feature = RoomMgr.tbParam.room_feature}
+	notify_to_all_client(msg.s2c_entry_room, tbParam)
 end
 
 
