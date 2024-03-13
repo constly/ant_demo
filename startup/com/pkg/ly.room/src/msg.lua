@@ -120,8 +120,18 @@ reg_common_s2c = function()
 
 	-- 通知进入房间
 	api.reg_s2c(api.s2c_entry_room, function(tbParam)
-		local mgr = require 'src.room_mgr'
-		map.load({feature = tbParam.feature, room_mgr = mgr, is_listen_player = api.is_local_player})
+		local args = {
+			feature = tbParam.feature, 
+			is_listen_player = api.is_local_player,
+			ip = tbParam.ip,
+			port = tbParam.port,
+			code = tbParam.code,
+			id = tbParam.id,
+		}
+		if api.is_local_player then 
+			args.tb_members = players.tb_members  -- 玩家列表
+		end
+		map.load(args)
 	end)
 end 
 

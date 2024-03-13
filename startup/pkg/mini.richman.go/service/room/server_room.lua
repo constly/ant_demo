@@ -9,14 +9,14 @@ local room_list = ly_room.get_room_list()
 local seri = require "bee.serialization"
 local protocol = require "protocol"
 local ltask = require "ltask"
-local ly_net = require 'ly.net'
-local players = require 'service.room.server_players'  		---@type mgr.server_players
+local players = require 'service.room.server_players'  		---@type mrg.server_players
 local msg = require '_core.msg' 							---@type mrg.msg
 local api = {}												---@class mrg.server_room
-local port = 9743
 local server_ip
+local server_port
 local server_ip_type
 local room_name 
+local room_state = 2  ---@type number 房间状态(1-匹配中;2-战斗中;3-战斗结束)
 local listen_fd
 local quit = false
 
@@ -24,7 +24,7 @@ msg.server = api
 
 api.players = players
 
-local function dispatch_rpc(client_fd, cmd, tbParam)
+function api.dispatch_rpc(client_fd, cmd, tbParam)
 	local tb = msg.tb_rpc[cmd]
 	if not tb then return end
 
@@ -34,19 +34,23 @@ local function dispatch_rpc(client_fd, cmd, tbParam)
 			local pack = string.pack("<s2", seri.packstring(1, cmd, ret))
 			net.send(client_fd, pack);
 		else
-			tb.client(ret) 
+			ltask.send(ServiceWindow, "exec_richman_client_rpc", cmd, ret)
 		end 
 	end 
 end
 
-local function notify_to_all_client(cmd, tbParam)
+function api.notify_to_all_client(cmd, tbParam)
 	for i, v in ipairs(players.tb_members) do 
 		api.send_to_client(v.fd, cmd, tbParam)
 	end
 end
 
 function api.refresh_members()
-	notify_to_all_client(msg.s2c_room_members, players.tb_members)
+	api.notify_to_all_client(msg.s2c_room_members, players.tb_members)
+end
+
+function api.test() 
+	api.notify_to_all_client(msg.s2c_ping, {v = "1"})
 end
 
 
@@ -82,24 +86,17 @@ function api.send_to_client(fd, cmd, tbParam)
 end
 
 --- 初始化服务器
-function api.init_server()
+function api.init_server(ip, port)
 	players.reset()
 	msg.init()
 	quit = false
-	server_ip = "127.0.0.1"
+	server_ip = ip
+	server_port = tonumber(port)
 	server_ip_type = 'IPv4'
-	local list = ly_net.get_lan_ip_list() or {}
-	for i, v in ipairs(list) do 
-		if v.type == "IPv4" then 	-- 监听ipv4地址, ipv6暂未处理
-			server_ip = v.ip
-			server_ip_type = "IPv4"
-			break
-		end
-	end
 	local session_id = 0;
 	local sessions = {}
 	local error
-	listen_fd, error = net.listen(server_ip, port) 
+	listen_fd, error = net.listen(server_ip, server_port) 
 	if not listen_fd then 
 		log.warn(string.format("failed to create room, addr = %s, error = %s", string.format("%s:%s", server_ip, port), error or ""))
 		return false
@@ -144,7 +141,7 @@ function api.init_server()
 				local msg = protocol.readchunk(s.reading)
 				if not msg then break end
 				local cmd, tbParam = seri.unpack(msg)
-				dispatch_rpc(client_fd, cmd, tbParam)
+				api.dispatch_rpc(client_fd, cmd, tbParam)
 			end
 		end 
 		print("Close client", currrent_session)
@@ -167,15 +164,16 @@ function api.init_server()
 	end)
 
 	local tb = players.add_member(nil, true)
-	msg.local_player_id = tb.id
-	msg.is_local_player = true;
+	tb.is_leader = true 
+	tb.is_local = true
 	return true;
 end 
 
 --- 每帧更新
 function api.tick()
+	if not server_ip then return end 
 	-- 向局域网内广播自身信息
-	local msg = string.format("port&%s;name&%s;ip&%s;type&%s", port, room_name or "", server_ip, server_ip_type)
+	local msg = string.format("port&%s;name&%s;ip&%s;type&%s;state&%d", server_port, room_name or "", server_ip, server_ip_type, room_state)
 	room_list.broadcast(msg);
 end 
 

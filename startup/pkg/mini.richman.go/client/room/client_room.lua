@@ -12,6 +12,7 @@ local api = {} 											---@class mrg.client_room
 msg.client = api
 api.players = players 
 api.self_player_id = 0;			--- 自己的角色id
+api.local_player = nil 			---@type mrg.client_player 本地玩家对象
 
 local client_fd
 local quit = false
@@ -53,7 +54,7 @@ function api.call_rpc(cmd, tbParam)
 	net.send(client_fd, pack)
 end
 
-function api.apply_login() api.call_rpc(msg.rpc_login) end
+function api.apply_login(code) api.call_rpc(msg.rpc_login, {code = code}) end
 function api.apply_exit() api.call_rpc(msg.rpc_exit) end 
 function api.apply_begin() api.call_rpc(msg.rpc_room_begin) end
 

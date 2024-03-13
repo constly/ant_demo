@@ -10,12 +10,13 @@ api.server = nil 				---@type mrg.server_room
 api.rpc_login = 1					-- 登录
 api.rpc_exit = 2					-- 退出房间
 api.rpc_room_begin = 3				-- 房间战斗开始
+api.rpc_ping = 4
 
 --- 服务器全是主动通知 
 api.s2c_room_members = 1			-- 通知房间成员列表
-api.s2c_room_begin = 2				-- 通知房间开始
 api.s2c_kick = 3;					-- 通知踢人
 api.s2c_entry_room = 4;				-- 通知进入房间
+api.s2c_ping = 5
 
 local reg_rpc
 local reg_s2c
@@ -61,10 +62,10 @@ reg_rpc = function()
 		end, 
 		function(tbParam)				--- 服务器返回后，客户端执行
 			if tbParam and tbParam.id then
-				api.local_player_id = tbParam.id
 				local player = client.players.find_by_id(tbParam.id)
 				if player then 
 					player.is_self = true
+					client.local_player = player
 				end
 			end
 		end)
@@ -82,12 +83,14 @@ reg_rpc = function()
 			end
 		end)
 
-	-- 房间开始 
-	api.reg_rpc(api.rpc_room_begin, 
+	-- ping
+	api.reg_rpc(api.rpc_ping, 
 		function(client_fd, tbParam)
-			server.begin()
+			print("[rpc_ping] recv client ping", client_fd, tbParam.v)
+			return {ret = "succ"}
 		end,
 		function(tbParam)
+			print("recv rpc ping", tbParam.ret)
 		end)
 end
 
@@ -102,9 +105,9 @@ reg_s2c = function()
 		if player then player.is_self = true end
 	end)
 
-	-- 通知房间开始
-	api.reg_s2c(api.s2c_room_begin, function(tbParam)
-		
+	-- ping
+	api.reg_s2c(api.s2c_ping, function(tbParam)
+		print("ping", tbParam.v)
 	end)
 
 	-- 通知踢人

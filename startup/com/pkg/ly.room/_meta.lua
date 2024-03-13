@@ -11,6 +11,7 @@ local tbParam = {}
 ---@field fd number					socket id
 ---@field is_self boolean			是不是自己
 ---@field is_leader boolean			是不是房主
+---@field code number				通信验证码
 local tb_match_member = {}
 
 

@@ -11,7 +11,7 @@ function api.reset()
 	api.tb_members = {}
 end
 
----@return ly.room.member 查找房间成员
+---@return mrg.server_player 添加成员
 function api.add_member(fd, is_leader)
 	next_id = next_id + 1;
 	local tb = {} ---@type ly.room.member
@@ -24,6 +24,7 @@ function api.add_member(fd, is_leader)
 	return tb;
 end
 
+---@return mrg.server_player 查找房间成员
 function api.find_by_id(id)
 	for i, v in ipairs(api.tb_members) do 
 		if v.id == id then 

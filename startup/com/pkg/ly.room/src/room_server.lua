@@ -14,6 +14,7 @@ local port = 9843
 local server_ip
 local server_ip_type
 local room_name 
+local room_state = 1  	---@type number 房间状态: 1 - 匹配中; 2 - 战斗中
 local listen_fd
 local quit = false
 
@@ -56,6 +57,7 @@ function api.close()
 		listen_fd = nil
 	end
 	quit = true
+	room_state = 1
 end
 
 --- 服务器是否开启
@@ -80,6 +82,7 @@ function api.init_server()
 	players.reset()
 	msg.init()
 	quit = false
+	room_state = 1
 	server_ip = "127.0.0.1"
 	server_ip_type = 'IPv4'
 	local list = ly_net.get_lan_ip_list() or {}
@@ -134,7 +137,7 @@ function api.init_server()
 			local data = net.recv(client_fd)
 			if data == nil then break end
 			table.insert(s.reading, data)
-			while true do
+			while room_state == 1 do
 				local msg = protocol.readchunk(s.reading)
 				if not msg then break end
 				local cmd, tbParam = seri.unpack(msg)
@@ -169,14 +172,30 @@ end
 --- 每帧更新
 function api.tick()
 	-- 向局域网内广播自身信息
-	local msg = string.format("port&%s;name&%s;ip&%s;type&%s", port, room_name or "", server_ip, server_ip_type)
+	local msg = string.format("port&%s;name&%s;ip&%s;type&%s;state&%d", port, room_name or "", server_ip, server_ip_type, room_state)
 	room_list.broadcast(msg);
 end 
 
 --- 房间战斗开始
 function api.begin()
-	local tbParam = {feature = RoomMgr.tbParam.room_feature}
-	notify_to_all_client(msg.s2c_entry_room, tbParam)
+	if room_state == 2 then 
+		return 
+	end 
+	for i, v in ipairs(players.tb_members) do 
+		v.code = math.random(1 << 31)
+	end
+	for i, v in ipairs(players.tb_members) do 
+		local tbParam = {
+			feature = RoomMgr.tbParam.room_feature,
+			ip = server_ip,							-- 服务器ip
+			port = port + 1234,						-- 服务器端口号
+			code = v.code,							-- 连接验证码
+			id = v.id,								-- 玩家id
+		}
+		print("code is", i, v.code)
+		api.send_to_client(v.fd, msg.s2c_entry_room, tbParam)
+	end
+	room_state = 2
 end
 
 
