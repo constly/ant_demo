@@ -29,6 +29,7 @@ function system.preinit()
 	RichmanMgr.is_listen_player = tbParam.is_listen_player or tbParam.is_standalone
 	if RichmanMgr.is_listen_player then 
 		RichmanMgr.serviceId = ltask.uniqueservice("mini.richman.go|server", ltask.self())
+		print ("RichmanMgr.serviceId is", RichmanMgr.serviceId)
 		if tbParam.is_standalone then
 			ltask.send(RichmanMgr.serviceId, "init_standalone")
 		else
@@ -50,7 +51,7 @@ end
 
 function system.exit()
 	if RichmanMgr.serviceId then
-		ltask.kill(RichmanMgr.serviceId)
+		ltask.send(RichmanMgr.serviceId, "shutdown")
 	end
 	RichmanMgr = nil
 end

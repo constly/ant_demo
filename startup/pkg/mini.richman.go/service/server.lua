@@ -3,26 +3,23 @@
 ------------------------------------------------------
 ServiceWindow = ...
 
+print("ServiceWindow ", ServiceWindow)
+
 local ltask = require "ltask"
 local room = require 'service.room.server_room'  ---@type mrg.server_room
-local quit 
+local quit
 
 local function Update()
 	while not quit do 
 		room.tick()
 		room.test()
-		--print("logic update", os.clock())
+		print("logic update", os.clock())
 		ltask.sleep(5)
 	end
 	ltask.wakeup(quit)
 end
 
 local S = {}
-
-function S.shutdown()
-    quit = {}
-    ltask.wait(quit)
-end
 
 function S.init_standalone()
 	local tb = room.players.add_member(nil, true)
@@ -41,6 +38,12 @@ function S.dispatch_netmsg(cmd, tbParams)
 	print("logic dispatch_netmsg", cmd ,tbParams)
 	room.dispatch_rpc(nil, cmd, tbParams)
 end 
+
+function S.shutdown()
+	quit = {}
+    ltask.wait(quit)
+    ltask.quit()
+end
 
 
 ltask.fork(Update)
