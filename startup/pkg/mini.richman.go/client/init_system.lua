@@ -8,7 +8,7 @@ local room = require 'client.room.client_room'
 function system.preinit()
 	RichmanMgr = {}
 	local map = dep.common.map
-	local tbParam = map.tbParam
+	local tbParam = map.tbParam or {is_standalone = true}
 	print("init_system.preinit, open param is", tbParam, RichmanMgr)
 
 	RichmanMgr.exitCB = function()
@@ -66,5 +66,5 @@ function system.exit()
 end
 
 function system.data_changed()
-	RichmanMgr.call_server(msg.rpc_ping, {v = "2"})
+	--RichmanMgr.call_server(msg.rpc_ping, {v = "2"})
 end

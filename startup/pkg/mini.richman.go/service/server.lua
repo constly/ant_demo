@@ -12,7 +12,7 @@ local quit
 local function Update()
 	while not quit do 
 		room.tick()
-		room.test()
+		--room.test()
 		--print("logic update", os.clock())
 		ltask.sleep(5)
 	end
