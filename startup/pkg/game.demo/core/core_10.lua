@@ -209,7 +209,7 @@ function system.draw_anim()
             for i = 1, #entities do
                 local eid = entities[i]
                 local e <close> = world:entity(eid, "animation?in")
-                if e.animation then
+                if e and e.animation then
                     table.insert(animation_eid, eid)
 					break
                 end

@@ -85,6 +85,7 @@ function system.on_entry()
 end 
 
 function system.on_leave()
+	player = nil
 	moving = nil
 	pre_anim_name = nil
 	tb_keydown = {}
@@ -97,6 +98,8 @@ end
 
 
 function system.data_changed()
+	if not player then return end 
+	
 	local move_speed = 8
 	for _, key, press, status in kb_mb:unpack() do
 		--[[ 
@@ -175,7 +178,7 @@ function system.play_anim(name)
 	for i = 1, #entities do
 		local eid = entities[i]
 		local e <close> = world:entity(eid, "animation?in")
-		if e.animation then
+		if e and e.animation then
 			if pre_anim_name then 
 				iplayback.set_play(e, pre_anim_name, false)
 				ianimation.set_weight(e, pre_anim_name, 0)

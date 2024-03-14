@@ -36,7 +36,7 @@ function system.preinit()
 
 	RichmanMgr.is_listen_player = tbParam.is_listen_player or tbParam.is_standalone
 	if RichmanMgr.is_listen_player then 
-		RichmanMgr.serviceId = ltask.uniqueservice("mini.richman.go|server", ltask.self())
+		RichmanMgr.serviceId = ltask.spawn("mini.richman.go|server", ltask.self())
 		print ("RichmanMgr.serviceId is", RichmanMgr.serviceId)
 		msg.init(true)
 		if tbParam.is_standalone then

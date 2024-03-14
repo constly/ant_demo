@@ -64,9 +64,7 @@ function system.on_entry()
         end,
     }
 
-	hitchs = {}
-	do return end 
-	
+	hitchs = {}	
 	for i = 1, 10 do 
 		local posx, posy, posz = i * 2 - 10, 5, 1
 		local h = PC:create_entity {
@@ -81,10 +79,9 @@ function system.on_entry()
 				hitch = {
 					group = hitch_test_group_id
 				},
-				visible_masks = "main_view|cast_shadow",
-            	visible = true,
-            	receive_shadow = true,
-            	cast_shadow = true,
+				visible = true,
+				receive_shadow = true,
+				cast_shadow = true,
 				hitch_update = TEST_INDIRECT,
 			}
 		}

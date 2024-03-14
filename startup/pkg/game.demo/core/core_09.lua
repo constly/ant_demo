@@ -56,23 +56,6 @@ function system.on_entry()
 	local hide = false
 	local e = ientity.create_line_entity(p0, p1, scene, color, hide)
 	table.insert(entities, e)
-
-	-- local e = world:create_entity{
-	-- 	policy = { "ant.render|simplerender" },
-	-- 	data = {
-	-- 		scene 		= {
-	-- 			s = {1, 1, 1},
-    --         },
-	-- 		material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
-	-- 		visible_state= "main_view",
-	-- 		simplemesh 	= ientity.arrow_mesh(),
-	-- 		on_ready = function(e)
-	-- 		end,
-	-- 	}
-	-- }
-	-- table.insert(entities, e)
-	
-	
 end
 
 function system.on_leave()

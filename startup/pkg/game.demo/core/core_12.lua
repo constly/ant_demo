@@ -47,19 +47,19 @@ function system.on_entry()
 		}
 	}
 
-	-- PC:create_entity {
-	-- 	policy = {
-	-- 		"ant.scene|scene_object",
-	-- 		"ant.efk|efk",
-	-- 	},
-	-- 	data = {
-	-- 		scene = {t = {0, 0.5, 0}, r = {0, 230, 0}, s = 0.5},
-	-- 		efk = {
-	-- 			path = "/pkg/game.res/efk/00_Basic/Laser01.efk",
-	-- 		},
-	-- 		visible_state = "main_queue",
-	-- 	}
-	-- }
+	PC:create_entity {
+		policy = {
+			"ant.scene|scene_object",
+			"ant.efk|efk",
+		},
+		data = {
+			scene = {t = {0, 0.5, 0}, r = {0, 230, 0}, s = 0.5},
+			efk = {
+				path = "/pkg/game.res/efk/00_Basic/Laser01.efk",
+			},
+			visible = true,
+		}
+	}
 	
 	
 end
