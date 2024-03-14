@@ -1,8 +1,8 @@
 local ecs = ...
 local system = ecs.system "init_system"
 local ltask = require "ltask"
-local dep = require 'dep'
-local msg = require '_core.msg'
+local dep = require 'client.dep'
+local msg = require '_core.msg'  ---@type mrg.msg
 local room = require 'client.room.client_room'
 
 function system.preinit()
@@ -25,11 +25,20 @@ function system.preinit()
 			end
 		end
 	end
+	function S.exec_richman_client_s2c(cmd, tbParam)
+		if RichmanMgr then 
+			local tb = msg.tb_s2c[cmd]
+			if tb then 
+				tb(tbParam) 
+			end
+		end
+	end
 
 	RichmanMgr.is_listen_player = tbParam.is_listen_player or tbParam.is_standalone
 	if RichmanMgr.is_listen_player then 
 		RichmanMgr.serviceId = ltask.uniqueservice("mini.richman.go|server", ltask.self())
 		print ("RichmanMgr.serviceId is", RichmanMgr.serviceId)
+		msg.init(true)
 		if tbParam.is_standalone then
 			ltask.send(RichmanMgr.serviceId, "init_standalone")
 		else

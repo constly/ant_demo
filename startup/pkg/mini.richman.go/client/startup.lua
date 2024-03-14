@@ -1,6 +1,6 @@
 local ecs = ...
 local system 		= ecs.system "startup"
-local dep 			= require 'dep'
+local dep 			= require 'client.dep'
 local ImGui 		= dep.ImGui
 local statemachine 	= require 'client.state_machine'  ---@type mini.richman.go.view.state_machine
 

@@ -23,17 +23,22 @@ local quit = false
 msg.server = api
 
 api.players = players
+api.msg = msg
 
 function api.dispatch_rpc(client_fd, cmd, tbParam)
 	local tb = msg.tb_rpc[cmd]
 	if not tb then return end
 
-	local ret = tb.server(client_fd, tbParam)
-	if ret then 
-		if client_fd then 
+	client_fd = client_fd or 0
+	local p = players.find_by_fd(client_fd)
+	if not p and cmd ~= msg.rpc_login then return end 
+
+	local ret = tb.server(p, tbParam, client_fd)
+	if ret and (not p or p.is_online) then 
+		if client_fd > 0 then 
 			local pack = string.pack("<s2", seri.packstring(1, cmd, ret))
 			net.send(client_fd, pack);
-		else
+		elseif client_fd == 0 then
 			ltask.send(ServiceWindow, "exec_richman_client_rpc", cmd, ret)
 		end 
 	end 
@@ -74,14 +79,11 @@ function api.is_open()
 end
 
 function api.send_to_client(fd, cmd, tbParam)
-	if fd then 
+	if fd > 0 then 
 		local pack = string.pack("<s2", seri.packstring(2, cmd, tbParam))
 		net.send(fd, pack);
-	else 
-		local cb = msg.tb_s2c[cmd]
-		if cb then 
-			cb(tbParam)
-		end
+	elseif fd == 0 then 
+		ltask.send(ServiceWindow, "exec_richman_client_s2c", cmd, tbParam)
 	end
 end
 
@@ -163,7 +165,7 @@ function api.init_server(ip, port)
 		close_all_session();
 	end)
 
-	local tb = players.add_member(nil, true)
+	local tb = players.add_member(0, 0)
 	tb.is_leader = true 
 	tb.is_local = true
 	return true;

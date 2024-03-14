@@ -55,10 +55,16 @@ reg_rpc = function()
 
 	-- 登录
 	api.reg_rpc(api.rpc_login, 
-		function(client_fd, tbParam)  	-- 服务器执行
-			local player = server.players.add_member(client_fd, false)
-			server.refresh_members()
-			return {id = player.id}
+		function(player, tbParam, fd)  	-- 服务器执行
+			player = client.players.find_by_code(tbParam.code)
+			if player then 
+				player.fd = fd
+				player.is_online = true
+				server.refresh_members()
+				return {id = player.id}
+			else
+				return {} 
+			end
 		end, 
 		function(tbParam)				--- 服务器返回后，客户端执行
 			if tbParam and tbParam.id then
@@ -67,13 +73,15 @@ reg_rpc = function()
 					player.is_self = true
 					client.local_player = player
 				end
+			else 
+				client.need_exit = true
 			end
 		end)
 
 	-- 退出房间
 	api.reg_rpc(api.rpc_exit, 
-		function(client_fd, tbParam)
-			server.players.remove_member(client_fd)
+		function(player, tbParam)
+			server.players.remove_member(player.fd)
 			server.refresh_members() 
 			return {ok = true}
 		end,
@@ -85,12 +93,12 @@ reg_rpc = function()
 
 	-- ping
 	api.reg_rpc(api.rpc_ping, 
-		function(client_fd, tbParam)
-			print("[rpc_ping] recv client ping", client_fd, tbParam.v)
+		function(player, tbParam)
+			print("server recv client ping", tbParam.v)
 			return {ret = "succ"}
 		end,
 		function(tbParam)
-			print("recv rpc ping", tbParam.ret)
+			print("client recv rpc ping", tbParam.ret)
 		end)
 end
 
@@ -107,7 +115,7 @@ reg_s2c = function()
 
 	-- ping
 	api.reg_s2c(api.s2c_ping, function(tbParam)
-		print("ping", tbParam.v)
+		print("client recv s2c ping", tbParam.v)
 	end)
 
 	-- 通知踢人
