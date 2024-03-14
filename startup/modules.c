@@ -23,17 +23,20 @@ static const luaL_Reg loadedlibs[] = {
 
 
 int luaopen_ly_imgui_extend(lua_State* L);
-int luaopen_ly_sound_impl(lua_State* L);
 int luaopen_ly_imgui_node_editor(lua_State* L);
 int luaopen_ly_net(lua_State *L);
+int luaopen_ly_sound_impl(lua_State* L);
+int luaopen_ly_dotween_impl(lua_State *L);
+
 
 static void loadmodules(lua_State* L) {
 	static const luaL_Reg modules[] = {
 		{ "ly.imgui.extend", luaopen_ly_imgui_extend },
 		{ "ly.imgui.node_editor", luaopen_ly_imgui_node_editor },
-		{ "ly.sound.impl", luaopen_ly_sound_impl},
 		{ "ly.net", luaopen_ly_net},
-
+		{ "ly.sound.impl", luaopen_ly_sound_impl},
+		{ "ly.dotween.impl", luaopen_ly_dotween_impl},
+		
         { NULL, NULL},
 	};
 
