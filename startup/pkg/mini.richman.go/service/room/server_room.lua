@@ -10,7 +10,7 @@ local seri = require "bee.serialization"
 local protocol = require "protocol"
 local ltask = require "ltask"
 local players = require 'service.room.server_players'  		---@type mrg.server_players
-local msg = require '_core.msg' 							---@type mrg.msg
+local msg = require 'core.msg' 							---@type mrg.msg
 local api = {}												---@class mrg.server_room
 local server_ip
 local server_port

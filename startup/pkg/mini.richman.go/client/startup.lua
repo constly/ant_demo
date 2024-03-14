@@ -24,25 +24,45 @@ function system.init_world()
 	statemachine.init(false, RichmanMgr.is_listen_player)
 
 	world:create_instance { prefab = "/pkg/game.res/light_skybox.prefab" }
-	world:create_entity{
-		policy = { "ant.render|simplerender", },
-		data = {
-			scene = { s = {250, 1, 250}, },
-			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
-			visible	= true,
-			mesh_result = imesh.init_mesh(ientity.plane_mesh(), true),
-			owned_mesh_buffer = true,
-			on_ready = function(e) 
-				local main_queue = w:first "main_queue camera_ref:in"
-				local main_camera <close> = world:entity(main_queue.camera_ref, "camera:in")
-				local dir = math3d.vector(0, -1, 1)
-				local size = 40
-				local boxcorners = {math3d.vector(-size, -size, -size), math3d.vector(size, size, size)}
-				local aabb = math3d.aabb(boxcorners[1], boxcorners[2])
-				icamera.focus_aabb(main_camera, aabb, dir)
-			end,
+	-- world:create_entity{
+	-- 	policy = { "ant.render|simplerender", },
+	-- 	data = {
+	-- 		scene = { s = {250, 1, 250}, },
+	-- 		material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
+	-- 		visible	= true,
+	-- 		mesh_result = imesh.init_mesh(ientity.plane_mesh(), true),
+	-- 		owned_mesh_buffer = true,
+	-- 		on_ready = function(e) 
+	-- 			local main_queue = w:first "main_queue camera_ref:in"
+	-- 			local main_camera <close> = world:entity(main_queue.camera_ref, "camera:in")
+	-- 			local dir = math3d.vector(0, -1, 1)
+	-- 			local size = 4
+	-- 			local boxcorners = {math3d.vector(-size, -size, -size), math3d.vector(size, size, size)}
+	-- 			local aabb = math3d.aabb(boxcorners[1], boxcorners[2])
+	-- 			icamera.focus_aabb(main_camera, aabb, dir)
+	-- 		end,
+	-- 	}
+	-- }
+
+	local iom = ecs.require "ant.objcontroller|obj_motion"
+	for i = 1, 5 do 
+		world:create_instance {
+			prefab = "/pkg/game.res/npc/cube/cube_green.glb|mesh.prefab",
+			on_ready = function(e)
+				local eid = e.tag['*'][1]
+				local ee<close> = world:entity(eid)
+				iom.set_position(ee, math3d.vector(i * 2.5 - 10, 0, 0))
+			end
 		}
-	}
+	end
+
+	local main_queue = w:first "main_queue camera_ref:in"
+	local main_camera <close> = world:entity(main_queue.camera_ref, "camera:in")
+	local dir = math3d.vector(0, -1, 1)
+	local size = 4
+	local boxcorners = {math3d.vector(-size, -size, -size), math3d.vector(size, size, size)}
+	local aabb = math3d.aabb(boxcorners[1], boxcorners[2])
+	icamera.focus_aabb(main_camera, aabb, dir)
 end
 
 function system.exit()
@@ -50,13 +70,17 @@ function system.exit()
 	statemachine.reset()
 end
 
-
 function system.data_changed()
+	local dpi = ImGui.GetMainViewport().DpiScale
 	ImGui.SetNextWindowPos(10, 10)
-	ImGui.SetNextWindowSize(100, 60);
+	ImGui.SetNextWindowSize(130 * dpi, 40 * dpi);
 	if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoScrollWithMouse", "NoCollapse", "NoTitleBar"}) then 
 		if ImGui.ButtonEx(" 返 回 ") then 
 			RichmanMgr.exitCB()
+		end
+		ImGui.SameLine()
+		if ImGui.ButtonEx(" 编辑器 ") then 
+			
 		end
 	end 
 	ImGui.End()

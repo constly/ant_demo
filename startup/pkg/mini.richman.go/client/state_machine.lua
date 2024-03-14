@@ -2,7 +2,7 @@
 --- 客户端 游戏流程 状态机
 -----------------------------------------------------------------------
 local client = require 'client.room.client_room'	---@type mrg.client_room
-local msg = require '_core.msg'						---@type mrg.msg
+local msg = require 'core.msg'						---@type mrg.msg
 
 local api = {}									---@class mini.richman.go.view.state_machine
 api.state_ready 		= 1

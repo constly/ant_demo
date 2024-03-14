@@ -2,7 +2,7 @@ local ecs = ...
 local system = ecs.system "init_system"
 local ltask = require "ltask"
 local dep = require 'client.dep'
-local msg = require '_core.msg'  ---@type mrg.msg
+local msg = require 'core.msg'  ---@type mrg.msg
 local room = require 'client.room.client_room'
 
 function system.preinit()
