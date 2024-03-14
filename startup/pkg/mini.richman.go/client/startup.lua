@@ -10,6 +10,7 @@ local imesh = ecs.require "ant.asset|mesh"
 local ientity = ecs.require "ant.entity|entity"
 local math3d = require "math3d"
 local icamera = ecs.require "ant.camera|camera"
+local expand = false
 
 function system.init()
 	print("system.init")
@@ -72,15 +73,21 @@ end
 
 function system.data_changed()
 	local dpi = ImGui.GetMainViewport().DpiScale
-	ImGui.SetNextWindowPos(10, 10)
-	ImGui.SetNextWindowSize(130 * dpi, 40 * dpi);
+	if expand then 
+		local viewport = ImGui.GetMainViewport();
+    	local size_x, size_y = viewport.WorkSize.x, viewport.WorkSize.y
+		ImGui.SetNextWindowSize(size_x - 20, size_y - 20);
+	else 
+		ImGui.SetNextWindowPos(10, 10)
+		ImGui.SetNextWindowSize(120 * dpi, 40 * dpi);
+	end
 	if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoScrollWithMouse", "NoCollapse", "NoTitleBar"}) then 
 		if ImGui.ButtonEx(" 返 回 ") then 
 			RichmanMgr.exitCB()
 		end
 		ImGui.SameLine()
-		if ImGui.ButtonEx(" 编辑器 ") then 
-			
+		if ImGui.ButtonEx(expand and " 收 拢 " or " 展 开 ") then 
+			expand = not expand
 		end
 	end 
 	ImGui.End()
