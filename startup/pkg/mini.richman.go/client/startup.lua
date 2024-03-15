@@ -83,7 +83,7 @@ function system.data_changed()
 		ImGui.SetNextWindowSize(120 * dpi, 40 * dpi);
 	end
 	if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoScrollWithMouse", "NoCollapse", "NoTitleBar"}) then 
-		if dep.common.imgui_utils.draw_btn(" 返 回 ", true) then 
+		if dep.common.imgui_utils.draw_btn(" 返 回 ", not expand) and not expand then 
 			RichmanMgr.exitCB()
 		end
 		ImGui.SameLine()
@@ -92,7 +92,10 @@ function system.data_changed()
 		end
 		if expand then 
 			if not editor then 
-				editor = dep.game_editor.create({})
+				---@type ly.game_editor.create_params
+				local tbParams = {}
+				tbParams.module_name = "richmango"
+				editor = dep.game_editor.create(tbParams)
 			end
 			local x, y = ImGui.GetContentRegionAvail()
 			ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 0, 0)

@@ -30,11 +30,20 @@ function lib.map_key_to_array(list)
 	return array
 end
 
-function lib.get_filename(path)
+--- 得到文件名，包含扩展名
+function lib.get_file_name(path)
 	--local path = "/path/to/your/file.txt"
 	local filename = path:match("^.+/([^/]+)$")
 	--print(filename)  -- 输出 "file.txt"
 	return filename
+end
+
+--- 得到文件扩展名
+function lib.get_file_ext(path)
+	--local filename = "myfile.txt"
+	local extension = path:match(".*%.([^.]+)$")
+	--print(extension) -- 输出 "txt"
+	return extension
 end
 
 function lib.table2string(obj)

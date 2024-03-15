@@ -60,7 +60,7 @@ function system.on_entry()
 				if dep.common.lib.end_with(path, ext) then 
 					local path = string.gsub(path, repo, "");
 					local shortpath = string.gsub(path, pkg_name, "")
-					local name = dep.common.lib.get_filename(shortpath)
+					local name = dep.common.lib.get_file_name(shortpath)
 					table.insert(glbs, {name = name, tip = path, path = path .. "|mesh.prefab"})
 					break;
 				end

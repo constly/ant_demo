@@ -67,11 +67,9 @@ local function create(tbParams)
 
 	function api.draw()
 		size_x, size_y = ImGui.GetContentRegionAvail()
-		--ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 0, 0)
 		draw_title()
 		draw_middle()
 		draw_bottom()
-		--ImGui.PopStyleVar()
 	end
 	return api
 end
