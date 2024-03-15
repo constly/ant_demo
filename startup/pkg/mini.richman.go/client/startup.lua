@@ -1,6 +1,6 @@
 local ecs = ...
 local system 		= ecs.system "startup"
-local dep 			= require 'client.dep'
+local dep 			= require 'client.dep' ---@type mini.richman.go.dep
 local ImGui 		= dep.ImGui
 local statemachine 	= require 'client.state_machine'  ---@type mini.richman.go.view.state_machine
 
@@ -10,7 +10,8 @@ local imesh = ecs.require "ant.asset|mesh"
 local ientity = ecs.require "ant.entity|entity"
 local math3d = require "math3d"
 local icamera = ecs.require "ant.camera|camera"
-local expand = false
+local expand = true
+local editor  ---@type ly.game_editor.editor
 
 function system.init()
 	print("system.init")
@@ -72,22 +73,33 @@ function system.exit()
 end
 
 function system.data_changed()
+	ImGui.SetNextWindowPos(0, 0)
 	local dpi = ImGui.GetMainViewport().DpiScale
 	if expand then 
 		local viewport = ImGui.GetMainViewport();
     	local size_x, size_y = viewport.WorkSize.x, viewport.WorkSize.y
-		ImGui.SetNextWindowSize(size_x - 20, size_y - 20);
+		ImGui.SetNextWindowSize(size_x, size_y);
 	else 
-		ImGui.SetNextWindowPos(10, 10)
 		ImGui.SetNextWindowSize(120 * dpi, 40 * dpi);
 	end
 	if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoScrollWithMouse", "NoCollapse", "NoTitleBar"}) then 
-		if ImGui.ButtonEx(" 返 回 ") then 
+		if dep.common.imgui_utils.draw_btn(" 返 回 ", true) then 
 			RichmanMgr.exitCB()
 		end
 		ImGui.SameLine()
-		if ImGui.ButtonEx(expand and " 收 拢 " or " 展 开 ") then 
+		if dep.common.imgui_utils.draw_btn("编辑器", expand) then 
 			expand = not expand
+		end
+		if expand then 
+			if not editor then 
+				editor = dep.game_editor.create({})
+			end
+			local x, y = ImGui.GetContentRegionAvail()
+			ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 0, 0)
+			ImGui.BeginChild("ImGui.BeginChild", x, y, ImGui.ChildFlags({"Border"}))
+			editor.draw()
+			ImGui.EndChild()
+			ImGui.PopStyleVar()
 		end
 	end 
 	ImGui.End()
