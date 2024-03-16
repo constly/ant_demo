@@ -1,7 +1,13 @@
+---@type ly.common.lib
 local lib = require 'tools.lib'
+
+---@type ly.common.dep
 local dep = require 'dep'
-local fs = dep.fs 
+
+---@type ly.common.path_def
 local path_def = require "path_def"
+
+local fs = dep.fs 
 local file_path = path_def.cache_root .. 'user_data.txt'
 
 local function load_string_from_disk(path)
@@ -34,6 +40,7 @@ do
     end
 end
 
+---@class ly.common.user_data
 local api = {}
 function api.get_number(key, default)
     return tonumber(api.get(key)) or default or 0

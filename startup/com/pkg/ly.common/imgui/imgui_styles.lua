@@ -6,6 +6,7 @@ local api = {}
 local styles = {}
 api.btn_blue = 1
 api.btn_normal = 2
+api.popup = 3
 
 
 local register = function(type, on_push, on_pop) 
@@ -27,6 +28,13 @@ local init = function()
         ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.25, 0.25, 0.25, 1)
 	end, function()
 		ImGui.PopStyleColorEx(3)
+	end)
+
+	register(api.popup, function()
+		ImGui.PushStyleColorImVec4(ImGui.Col.ModalWindowDimBg, 0.5, 0.5, 0.5, 0.35)
+		ImGui.PushStyleColorImVec4(ImGui.Col.WindowBg, 0.15, 0.15, 0.15, 1)
+	end, function()
+		ImGui.PopStyleColorEx(2)
 	end)
 end
 init()

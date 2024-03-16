@@ -1,3 +1,4 @@
+---@class ly.common.lib
 local lib = {}
 
 function lib.split(content, delim)

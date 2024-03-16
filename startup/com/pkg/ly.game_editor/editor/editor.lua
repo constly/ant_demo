@@ -70,6 +70,10 @@ local function create(tbParams)
 		draw_title()
 		draw_middle()
 		draw_bottom()
+
+		api.dialogue_input.update()
+		api.dialogue_msgbox.update()
+		api.msg_hints.update(0.04)
 	end
 	return api
 end

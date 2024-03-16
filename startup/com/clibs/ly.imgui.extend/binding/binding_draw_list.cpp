@@ -449,12 +449,16 @@ static int
 dlAddText(lua_State* L) {
 	ImVec2 pos = { 0.0f, 0.0f };
 	ImVec4 col = { 1.0f, 1.0f, 1.0f, 1.0f };
-	ImDrawList* draw_list = ImGui::GetWindowDrawList();
-	if (lua_type(L, 1) == LUA_TTABLE && draw_list) {
+	if (lua_type(L, 1) == LUA_TTABLE) {
 		pos = read_field_vec2(L, "pos", pos, 1);
 		col = read_field_vec4(L, "col", col, 1);
-		const char * text = read_field_string(L, "text", NULL, 1);
-		draw_list->AddText(pos, ImGui::ColorConvertFloat4ToU32(col), text);
+		const char *text = read_field_string(L, "text", NULL, 1);
+		const char *type = read_field_string(L, "type", NULL, 1);
+		ImDrawList* draw_list = ImGui::GetWindowDrawList();
+		if (type && std::string(type) == std::string("foreground"))
+			draw_list = ImGui::GetForegroundDrawList();
+		if (draw_list)
+			draw_list->AddText(pos, ImGui::ColorConvertFloat4ToU32(col), text);
 	}
 	return 0;
 }
@@ -521,6 +525,7 @@ static int dlEndColumns(lua_State* L) {
 	ImGui::EndColumns();
 	return 0;
 }
+
 
 void init_draw_list(lua_State* L) {
 	luaL_Reg draw_list[] = {

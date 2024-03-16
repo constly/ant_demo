@@ -2,7 +2,8 @@
 local dep = {}  ---@class ly.game_editor.dep
 
 --- 系统依赖
-dep.ImGui  		= require "imgui"
+dep.ImGui  			= require "imgui"
+dep.ImGuiExtend 	= require "ly.imgui.extend"
 
 --- 项目依赖
 ---@type ly.common.main

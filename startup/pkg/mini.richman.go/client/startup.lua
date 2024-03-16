@@ -83,8 +83,12 @@ function system.data_changed()
 		ImGui.SetNextWindowSize(120 * dpi, 40 * dpi);
 	end
 	if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoScrollWithMouse", "NoCollapse", "NoTitleBar"}) then 
-		if dep.common.imgui_utils.draw_btn(" 返 回 ", not expand) and not expand then 
-			RichmanMgr.exitCB()
+		if dep.common.imgui_utils.draw_btn(" 返 回 ", not expand) then 
+			if expand then 
+				expand = not expand
+			else 
+				RichmanMgr.exitCB()
+			end
 		end
 		ImGui.SameLine()
 		if dep.common.imgui_utils.draw_btn("编辑器", expand) then 

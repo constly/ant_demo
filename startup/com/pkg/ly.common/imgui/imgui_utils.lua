@@ -5,6 +5,12 @@ local style = require 'imgui.imgui_styles'  ---@type ly.common.imgui_styles
 ---@class ly.common.imgui_utils
 local api = {}
 
+---@return number,number 得到显示窗口大小
+function api.get_display_size()
+	local viewport = ImGui.GetMainViewport();
+    return viewport.WorkSize.x, viewport.WorkSize.y
+end
+
 --- 中间居中绘制文本
 function api.draw_text_center(text)
 	local size_x, _ = ImGui.GetContentRegionAvail()
