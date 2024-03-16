@@ -1,0 +1,20 @@
+--------------------------------------------------------
+-- 窗口 日志列表
+--------------------------------------------------------
+---@type ly.game_editor.dep
+local dep = require 'dep'
+local imgui_utils = dep.common.imgui_utils
+local ImGui = dep.ImGui
+
+local function create()
+	---@class ly.game_editor.wnd_log
+	local api = {}
+
+	function api.draw(deltatime)
+		ImGui.Text("日志列表")
+	end
+
+	return api
+end
+
+return {create = create}

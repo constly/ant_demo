@@ -1,4 +1,6 @@
+---@type ly.game_editor.dep
 local dep = require 'dep'
+local imgui_utils = dep.common.imgui_utils
 local ImGui = dep.ImGui
 
 ---@param tbParams ly.game_editor.create_params
@@ -10,13 +12,19 @@ local function create(tbParams)
 	api.dialogue_msgbox = (require 'com_ui.dialogue_msgbox').create()
 	api.msg_hints = (require 'com_ui.msg_hints').create()
 	api.i18n = (require 'com_data.i18n').create()
+	api.files = (require 'com_data.files').create(api)
+
+	api.wnd_files = (require 'editor.widgets.wnd_files').create(api)
+	api.wnd_log = (require 'editor.widgets.wnd_log').create(api)
+	api.wnd_portal = (require 'editor.widgets.wnd_portal').create(api)
 
 	local height_title = 30
 	local height_bottom = 200
 	local bottom_header_y = 30
 	local size_portal_x = 400  --- 传送门
 	local size_x, size_y
-	
+	local show_type = 1
+
 	local function draw_title()
 		--ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
         ImGui.BeginChild("panel_window_title", size_x, height_title, ImGui.ChildFlags({"Border"}))
@@ -38,24 +46,33 @@ local function create(tbParams)
 		ImGui.EndChild()
 	end
 
-	local function draw_bottom()
+	local function draw_bottom(deltatime)
 		ImGui.SetCursorPos(0, size_y - height_bottom)
 		ImGui.BeginChild("wnd_bottom", size_x, height_bottom, ImGui.ChildFlags({"Border"}))
 			ImGui.SetCursorPos(5, 3)
-			ImGui.Button("文件")
+			if imgui_utils.draw_btn(" 文 件 ", show_type == 1) then 
+				show_type = 1
+			end
 			ImGui.SameLine()
-			ImGui.Button("日志")
-			
+			if imgui_utils.draw_btn(" 日 志 ", show_type == 2) then 
+				show_type = 2
+			end
+			ImGui.SameLineEx(size_x - size_portal_x - 70)
+			if imgui_utils.draw_btn(" 查 找 ") then 
+				
+			end
+
 			ImGui.SetCursorPos(0, bottom_header_y)
 			ImGui.BeginChild("wnd_bottom_1", size_x - size_portal_x, height_bottom - bottom_header_y, ImGui.ChildFlags({"Border"}))
 			ImGui.SetCursorPos(5, 3)
-			ImGui.Text("文件列表/日志")
+			if show_type == 1 then api.wnd_files.draw(deltatime) 
+			elseif show_type == 2 then api.wnd_log.draw(deltatime) end
 			ImGui.EndChild()
 
 			ImGui.SetCursorPos(size_x - size_portal_x, 0)
 			ImGui.BeginChild("wnd_portal", size_portal_x, height_bottom, ImGui.ChildFlags({"Border"}))
 			ImGui.SetCursorPos(5, 3)
-			ImGui.Button("传送门")
+			imgui_utils.draw_btn(" 收 藏 ", true)
 				ImGui.SetCursorPos(0, bottom_header_y)
 				ImGui.BeginChild("wnd_portal_1", size_portal_x, height_bottom - bottom_header_y, ImGui.ChildFlags({"Border"}))
 				ImGui.SetCursorPos(5, 3)
