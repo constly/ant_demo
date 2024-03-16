@@ -31,16 +31,14 @@ antdir = antdir and fs.path(antdir) or (ProjectDir / ".." / "ant")
 fs.current_path(antdir)
 if arg[0] == "-s" then
     arg[0] = "../ant/tools/fileserver/main.lua"
-    table.insert(arg, 1, tostring(ProjectDir) .. "/startup")
 elseif arg[0] == "-p" then
     arg[0] = "../ant/tools/filepack/main.lua"
-    table.insert(arg, 1, tostring(ProjectDir) .. "/startup")
 elseif arg[0] == "-d" then
     arg[0] = "../ant/tools/editor/main.lua"
-	table.insert(arg, 1, tostring(ProjectDir) .. "/startup")
 elseif arg[0] == nil or arg[0] == "" then
     arg[0] = "startup/main.lua"
 end
+table.insert(arg, 1, tostring(ProjectDir) .. "/startup")
 
 local MainPath = fs.relative(ProjectDir / arg[0], antdir)
 arg[0] = MainPath:string()
