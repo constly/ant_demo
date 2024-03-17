@@ -11,6 +11,11 @@ function api.get_display_size()
     return viewport.WorkSize.x, viewport.WorkSize.y
 end
 
+---@return number 
+function api.get_dpi_scale()
+	return ImGui.GetMainViewport().DpiScale
+end
+
 --- 中间居中绘制文本
 function api.draw_text_center(text)
 	local size_x, _ = ImGui.GetContentRegionAvail()

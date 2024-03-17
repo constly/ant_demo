@@ -14,14 +14,14 @@ local lib = dep.common.lib
 ---@field window table 窗口
 local tb_tab_data 
 
----@param editor ly.game_editor.editor
-local function create(editor)
-	local api = {}		---@type ly.game_editor.tabs
+---@param tabId string 
+local function new(tabId)
+	local api = {}		---@class ly.game_editor.tabs
 	api.list = {}		---@type ly.game_editor.tab_item[]
 	api.index = 0		---@type number 当前选中的tab
 
-	local save_key = editor.tbParams.module_name  .. "_tabs_"
-	local save_idx = save_key .. "index"
+	--local save_key = tabId
+	--local save_idx = tabId .. "_index"
 	local function add_tab(path)
 		local arr = lib.split(path, "/")
 		local tb = {}
@@ -33,22 +33,41 @@ local function create(editor)
 	end
 
 	local function init()
-		local str = user_data.get(save_key, "")
-		local array = lib.split(str, ";")
-		for _, v in ipairs(array) do 
-			add_tab(v)
-		end
-		api.index = user_data.get_number(save_idx, 0)
+		-- local str = user_data.get(save_key, "")
+		-- local array = lib.split(str, ";")
+		-- for _, v in ipairs(array) do 
+		-- 	add_tab(v)
+		-- end
+		-- api.index = user_data.get_number(save_idx, 0)
 	end
 
 	local function save()
-		local tb = {}
+		-- local tb = {}
+		-- for i, v in ipairs(api.list) do 
+		-- 	table.insert(tb, v.path)
+		-- end
+		-- user_data.set(save_key, table.concat(tb, ";"))
+		-- user_data.set(save_idx, api.index)
+		-- user_data.save()
+	end
+
+	function api.tostring()
+	end
+	function api.init_from_string()
+	end
+
+	function api.reset()
+		api.list = {}
+		api.index = 0
+	end 
+
+	---@param _tabs ly.game_editor.tabs
+	function api.copy_to(_tabs)
+		_tabs.list = {}
 		for i, v in ipairs(api.list) do 
-			table.insert(tb, v.path)
+			_tabs.list[i] = v
 		end
-		user_data.set(save_key, table.concat(tb, ";"))
-		user_data.set(save_idx, api.index)
-		user_data.save()
+		_tabs.index = api.index
 	end
 
 	function api.close_others(tab)
@@ -96,4 +115,4 @@ local function create(editor)
 	init()
 	return api
 end
-return {create = create}
+return {new = new}
