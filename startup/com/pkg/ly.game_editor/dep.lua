@@ -9,4 +9,7 @@ dep.ImGuiExtend 	= require "ly.imgui.extend"
 ---@type ly.common.main
 dep.common 		= import_package 'ly.common' 	
 
+---@type blueprint_ed
+dep.ed = require "ly.imgui.node_editor"  		
+
 return dep

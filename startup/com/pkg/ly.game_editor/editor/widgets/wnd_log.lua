@@ -6,7 +6,7 @@ local dep = require 'dep'
 local imgui_utils = dep.common.imgui_utils
 local ImGui = dep.ImGui
 
-local function create()
+local function new()
 	---@class ly.game_editor.wnd_log
 	local api = {}
 
@@ -17,4 +17,4 @@ local function create()
 	return api
 end
 
-return {create = create}
+return {new = new}

@@ -6,7 +6,7 @@ local dep = require 'dep'
 local ImGui = dep.ImGui
 
 ---@param editor ly.game_editor.editor
-local function create(editor)
+local function new(editor)
 	---@class ly.game_editor.wnd_files
 	local api = {}
 
@@ -24,4 +24,4 @@ local function create(editor)
 	return api
 end
 
-return {create = create}
+return {new = new}

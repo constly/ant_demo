@@ -15,9 +15,10 @@ local function create(tbParams)
 	api.files = (require 'com_data.files').create(api)
 	api.workspaces = (require 'com_data.workspaces').new(api)
 
-	api.wnd_files = (require 'editor.widgets.wnd_files').create(api)
-	api.wnd_log = (require 'editor.widgets.wnd_log').create(api)
-	api.wnd_portal = (require 'editor.widgets.wnd_portal').create(api)
+	api.wnd_files = (require 'editor.widgets.wnd_files').new(api)
+	api.wnd_space = (require 'editor.widgets.wnd_space').new(api)
+	api.wnd_log = (require 'editor.widgets.wnd_log').new(api)
+	api.wnd_portal = (require 'editor.widgets.wnd_portal').new(api)
 
 	--local height_title = 30 
 	local height_bottom = 200
@@ -25,6 +26,7 @@ local function create(tbParams)
 	local size_portal_x = 400  --- 传送门
 	local size_x, size_y
 	local show_type = 1
+	local line_y = 30
 
 	-- local function draw_title()
 	-- 	--ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
@@ -47,25 +49,30 @@ local function create(tbParams)
 	-- 	ImGui.EndChild()
 	-- end
 
-	local function draw_viewports()
-		local height = is_buttom_collapse and (size_y - 40) or (size_y - height_bottom) 
+	local function draw_viewports(deltatime)
+		local height = is_buttom_collapse and (size_y - line_y) or (size_y - height_bottom) 
 		ImGui.BeginChild("panel_viewports", size_x, height, ImGui.ChildFlags({"Border"}))
-		ImGui.SetCursorPos(5, 3)
+		ImGui.SetCursorPos(5, 0)
 		ImGui.BeginGroup()
-		imgui_utils.draw_btn("Space1", true)
-		ImGui.SameLine()
-		imgui_utils.draw_btn("Space2", false)
+		ImGui.Dummy(0, 0)
+		local cur = api.workspaces.current_space()
+		for i, space in ipairs(api.workspaces.items) do 
+			if imgui_utils.draw_btn(string.format("Space%02d", i), space == cur)	then 
+				api.workspaces.set_current_space(i)
+			end
+		end
+		local x, y = ImGui.GetItemRectSize();
+		line_y = y + 4
+		if #api.workspaces.items < 15 and imgui_utils.draw_btn(" + ##btn_add_workspace" , false, {size_x = x})	then 
+			api.workspaces.add()
+		end
 		ImGui.EndGroup()
 
+		ImGui.SameLine()
 
 		local x, y = ImGui.GetContentRegionAvail()
 		ImGui.BeginChild("panel_viewports_body", x, y, ImGui.ChildFlags({"Border"}))
-		ImGui.SetCursorPos(5, 3)
-		ImGui.BeginGroup()
-		ImGui.Button("config")
-		ImGui.SameLine()
-		ImGui.Button("map_01")
-		ImGui.EndGroup()
+			api.wnd_space.draw(deltatime)
 		ImGui.EndChild()
 
 		ImGui.EndChild()
@@ -73,7 +80,7 @@ local function create(tbParams)
 
 	local function draw_bottom(deltatime)
 		if is_buttom_collapse then 
-			ImGui.SetCursorPos(size_x - 70, size_y - 38)
+			ImGui.SetCursorPos(size_x - 70, size_y - line_y + 1.5)
 			if imgui_utils.draw_btn(" ↑↑ ") then 
 				is_buttom_collapse = false
 			end

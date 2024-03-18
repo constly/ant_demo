@@ -2,7 +2,7 @@
 -- 窗口 收藏列表
 --------------------------------------------------------
 
-local function create()
+local function new()
 	---@class ly.game_editor.wnd_portal
 	local api = {}
 
@@ -12,4 +12,4 @@ local function create()
 	return api
 end
 
-return {create = create}
+return {new = new}
