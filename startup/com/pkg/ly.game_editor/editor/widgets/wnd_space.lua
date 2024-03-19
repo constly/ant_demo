@@ -44,11 +44,10 @@ local function new(editor)
 				two.size_x = view.size_x * two.size_rate
 				two.size_y = view.size_y
 			end
+			api.draw_splitter(view, one, two)
 			draw(one)
 			draw(two)
 		end
-
-		local newSize1, newSize2 = ed.Splitter(false, 4, 200, 100, 10, 10)
 
 		local size_x, size_y = ImGui.GetContentRegionAvail()
 		local root = space.view
@@ -56,18 +55,40 @@ local function new(editor)
 		root.pos_y = 0
 		root.size_x = size_x
 		root.size_y = size_y
-		draw(root)
+		draw(root)		
+	end
 
-		
+	---@param view ly.game_editor.viewport  要渲染的窗口自身
+	---@param second ly.game_editor.viewport  第二个子节点
+	function api.draw_splitter(view, one, two) 
+		ImGui.SetCursorPos(view.pos_x, view.pos_y)
+		ImGui.BeginChild("viewport_" .. view.id , view.size_x, view.size_y, ImGui.ChildFlags({}))
+		if view.type == 1 then 
+			local size1 = two.pos_y - view.pos_y - 2
+			local size2 = two.size_y
+			local newSize1, newSize2 = ed.Splitter(false, 4, size1, size2, 15, 15)
+			if newSize1 and newSize1 ~= size1 then 
+				one.size_rate = (newSize1 + 2) / view.size_y
+				two.size_rate = 1 - one.size_rate
+			end
+		else
+			local size1 = two.pos_x - view.pos_x - 2
+			local size2 = two.size_x
+			local newSize1, newSize2 = ed.Splitter(true, 4, size1, size2, 15, 15)
+			if newSize1 and newSize1 ~= size1 then 
+				one.size_rate = (newSize1 + 2) / view.size_x
+				two.size_rate = 1 - one.size_rate
+			end
+		end
+		ImGui.EndChild()
 	end
 
 	---@param view ly.game_editor.viewport  要渲染的窗口自身
 	function api.draw_viewport(view)
 		ImGui.SetCursorPos(view.pos_x, view.pos_y)
-
-		ImGui.BeginChild("panel_window_middle_" .. view.id , view.size_x, view.size_y, ImGui.ChildFlags({"Border"}))
+		ImGui.BeginChild("viewport_" .. view.id , view.size_x, view.size_y, ImGui.ChildFlags({"Border"}))
 		ImGui.BeginGroup()
-		ImGui.Button("config")
+		ImGui.Button("config" .. view.id)
 		ImGui.SameLine()
 		ImGui.Button("map_01")
 		ImGui.EndGroup()

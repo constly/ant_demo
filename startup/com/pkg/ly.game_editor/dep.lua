@@ -3,13 +3,17 @@ local dep = {}  ---@class ly.game_editor.dep
 
 --- 系统依赖
 dep.ImGui  			= require "imgui"
-dep.ImGuiExtend 	= require "ly.imgui.extend"
+dep.serialize 		= import_package "ant.serialize"
+dep.fs  			= require "filesystem"
+dep.datalist		= require 'datalist'
 
 --- 项目依赖
+dep.ImGuiExtend 	= require "ly.imgui.extend"
+
 ---@type ly.common.main
-dep.common 		= import_package 'ly.common' 	
+dep.common 			= import_package 'ly.common' 	
 
 ---@type blueprint_ed
-dep.ed = require "ly.imgui.node_editor"  		
+dep.ed 				= require "ly.imgui.node_editor"  		
 
 return dep

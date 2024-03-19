@@ -1,7 +1,8 @@
 ---------------------------------------------------------------------------
 -- 蓝图编辑器
 ---------------------------------------------------------------------------
-local dep = require "dep" ---@type ly.node.blueprint.dep
+---@type ly.node.blueprint.dep
+local dep = require "dep" 
 local ImGui = dep.ImGui
 local graph_draw = require 'editor.graph_draw'
 local data_hander = require 'common.data_handler'
