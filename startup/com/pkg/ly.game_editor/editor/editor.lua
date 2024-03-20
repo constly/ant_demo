@@ -28,27 +28,6 @@ local function create(tbParams)
 	local show_type = 1
 	local line_y = 30
 
-	-- local function draw_title()
-	-- 	--ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
-    --     ImGui.BeginChild("panel_window_title", size_x, height_title, ImGui.ChildFlags({"Border"}))
-	-- 	ImGui.SetCursorPos(5, 3)
-	-- 	ImGui.BeginGroup()
-	-- 	ImGui.Button("config")
-	-- 	ImGui.SameLine()
-	-- 	ImGui.Button("map_01")
-	-- 	ImGui.EndGroup()
-	-- 	ImGui.EndChild()
-	-- 	--ImGui.PopStyleVar()
-	-- end
-
-	-- local function draw_middle()
-	-- 	ImGui.SetCursorPos(0, height_title)
-	-- 	ImGui.BeginChild("panel_window_middle", size_x, size_y - height_bottom - height_title, ImGui.ChildFlags({"Border"}))
-	-- 	ImGui.SetCursorPos(5, 3)
-	-- 	ImGui.Text("各种编辑器绘制")
-	-- 	ImGui.EndChild()
-	-- end
-
 	local function draw_viewports(deltatime)
 		local height = is_buttom_collapse and (size_y - line_y) or (size_y - height_bottom) 
 		ImGui.BeginChild("panel_viewports", size_x, height, ImGui.ChildFlags({"Border"}))
@@ -102,9 +81,8 @@ local function create(tbParams)
 			end
 			local x, y = ImGui.GetContentRegionAvail()
 			ImGui.BeginChild("wnd_bottom_1", size_x - size_portal_x, y, ImGui.ChildFlags({"Border"}))
-			ImGui.SetCursorPos(5, 3)
-			if show_type == 1 then api.wnd_files.draw(deltatime) 
-			elseif show_type == 2 then api.wnd_log.draw(deltatime) end
+			if show_type == 1 then api.wnd_files.draw(deltatime, line_y) 
+			elseif show_type == 2 then api.wnd_log.draw(deltatime, line_y) end
 			ImGui.EndChild()
 
 			ImGui.SetCursorPos(size_x - size_portal_x, 0)

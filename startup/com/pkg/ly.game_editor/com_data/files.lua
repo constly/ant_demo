@@ -11,10 +11,22 @@ local imgui_utils = dep.common.imgui_utils
 ---@field path string 
 local tb_package_item = {}
 
+---@class ly.game_editor.file_data
+---@field full_path string 全路径
+---@field r_path string 相对路径
+---@field name string 文件名
+
 ---@class ly.game_editor.tree_item
----@field files string[]
----@field dirs ly.game_editor.tree_item[]
+---@field files ly.game_editor.file_data[]
+---@field dirs ly.game_editor.tree
 local tb_tree_item = {}
+
+---@class ly.game_editor.tree
+---@field full_path string 文件全路径
+---@field r_path string 文件相对路径
+---@field tree ly.game_editor.tree_item
+---@field parent ly.game_editor.tree_item
+local tb_tree = {}
 
 ---@return ly.game_editor.files
 ---@param editor ly.game_editor.editor
@@ -22,9 +34,9 @@ local function create(editor)
 	---@class ly.game_editor.files
 	local api = {} 	
 	api.packages = {}  			---@type ly.game_editor.package_item[]
-	api.resource_tree = {}		---@type ly.game_editor.tree_item[]
+	api.resource_tree = {}		---@type map<string, ly.game_editor.tree>
 
-	local function construct_resource_tree(fspath)
+	local function construct_resource_tree(fspath, root)
 		local tree = {files = {}, dirs = {}}
 		if fspath then
 			local sorted_path = {}
@@ -34,10 +46,17 @@ local function create(editor)
 			table.sort(sorted_path, function(a, b) return string.lower(tostring(a)) < string.lower(tostring(b)) end)
 			for _, item in ipairs(sorted_path) do
 				--local ext = item:extension():string()
+				local p = tostring(item)
+				local r_path = string.gsub(p, root, "");
 				if lfs.is_directory(item) then
-					table.insert(tree.dirs, {item, construct_resource_tree(item), parent = {tree}})
+					table.insert(tree.dirs, {
+						full_path = p, 
+						r_path = r_path,
+						tree = construct_resource_tree(item, root), 
+						parent = tree
+					})
 				else
-					table.insert(tree.files, item)
+					table.insert(tree.files, {full_path = p, r_path = r_path})
 				end
 			end
 		end
@@ -55,7 +74,7 @@ local function create(editor)
 		for _, item in ipairs(packages) do
 			if tb_show[item.name] then
 				local vpath = fs.path("/pkg") / fs.path(item.name)
-				resource_tree[#resource_tree + 1] = {vpath, construct_resource_tree(item.path)}
+				resource_tree[item.name] = {full_path = tostring(vpath), r_path = "", tree = construct_resource_tree(item.path, tostring(item.path) .. "/")}
 			end
 		end
 		dep.common.lib.dump(resource_tree)

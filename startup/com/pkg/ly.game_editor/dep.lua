@@ -6,6 +6,8 @@ dep.ImGui  			= require "imgui"
 dep.serialize 		= import_package "ant.serialize"
 dep.fs  			= require "filesystem"
 dep.datalist		= require 'datalist'
+dep.assetmgr  		= import_package "ant.asset"
+dep.textureman 		= require "textureman.client"
 
 --- 项目依赖
 dep.ImGuiExtend 	= require "ly.imgui.extend"
