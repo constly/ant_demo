@@ -70,6 +70,9 @@ end
 function system.exit()
 	print("system.exit")
 	statemachine.reset()
+	if editor then 
+		editor.exit()
+	end
 end
 
 function system.data_changed()
@@ -99,6 +102,7 @@ function system.data_changed()
 				---@type ly.game_editor.create_params
 				local tbParams = {}
 				tbParams.module_name = "richmango"
+				tbParams.pkgs = {"mini.richman.res"}
 				editor = dep.game_editor.create(tbParams)
 			end
 			local x, y = ImGui.GetContentRegionAvail()

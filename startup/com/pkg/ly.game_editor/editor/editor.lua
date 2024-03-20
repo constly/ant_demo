@@ -124,6 +124,10 @@ local function create(tbParams)
 		ImGui.EndChild()
 	end
 
+	function api.exit()
+		api.workspaces.exit()
+	end
+
 	function api.draw()
 		size_x, size_y = ImGui.GetContentRegionAvail()
 		-- draw_title()

@@ -229,22 +229,21 @@ local function new(editor)
 
 	-- 初始化
 	local function init()
-		-- local f<close> = io.open(file_path, 'r')
-		-- if f then 
-		-- 	local content = f:read "a"
-		-- 	local tb_save = dep.datalist.parse(content) or {}
-		-- 	for i, v in ipairs(tb_save.items) do 
-		-- 		local space = create_space()
-		-- 		space.set_data(v)
-		-- 		table.insert(api.items, v)
-		-- 	end
-		-- 	api.index = tb_save.index or 1
-		-- end 
+		local f<close> = io.open(file_path, 'r')
+		if f then 
+			local content = f:read "a"
+			local tb_save = dep.datalist.parse(content) or {}
+			for i, v in ipairs(tb_save.items) do 
+				local space = create_space()
+				space.set_data(v)
+				table.insert(api.items, space)
+			end
+			api.index = tb_save.index or 1
+		end 
 
 		if #api.items == 0 then
 			api.items = {}
 			api.add()
-			api.save()
 		end
 	end 
 
@@ -259,6 +258,10 @@ local function new(editor)
     	f:write(content)
 	end
 
+	function api.exit()
+		api.save()
+	end
+
 	function api.add()
 		local space = create_space()
 		space.init()
@@ -269,6 +272,7 @@ local function new(editor)
 		space.split(9, 2)
 		space.split(8, 1)
 		table.insert(api.items, space)
+		api.index = #api.items
 	end
 
 	function api.current_space()

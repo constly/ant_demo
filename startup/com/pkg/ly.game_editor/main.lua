@@ -6,6 +6,7 @@ local api = {}
 ---@field roots string[] 文件根目录列表
 ---@field cb_file_saved function 通知文件保存
 ---@field module_name string 模块名
+---@field pkgs string[] 资源包
 local create_params = {}
 
 --- 创建游戏编辑器
