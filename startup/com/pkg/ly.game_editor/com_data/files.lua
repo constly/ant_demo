@@ -5,6 +5,7 @@ local dep 		= require 'dep'
 local fs 		= require "filesystem"
 local lfs       = require "bee.filesystem"
 local imgui_utils = dep.common.imgui_utils
+local lib 		= dep.common.lib
 
 ---@class ly.game_editor.package_item
 ---@field name string
@@ -15,6 +16,8 @@ local tb_package_item = {}
 ---@field full_path string 全路径
 ---@field r_path string 相对路径
 ---@field name string 文件名
+---@field ext string 后缀名
+local tb_file_data = {}
 
 ---@class ly.game_editor.tree_item
 ---@field files ly.game_editor.file_data[]
@@ -24,6 +27,7 @@ local tb_tree_item = {}
 ---@class ly.game_editor.tree
 ---@field full_path string 文件全路径
 ---@field r_path string 文件相对路径
+---@field name string 文件名
 ---@field tree ly.game_editor.tree_item
 ---@field parent ly.game_editor.tree_item
 local tb_tree = {}
@@ -45,18 +49,19 @@ local function create(editor)
 			end
 			table.sort(sorted_path, function(a, b) return string.lower(tostring(a)) < string.lower(tostring(b)) end)
 			for _, item in ipairs(sorted_path) do
-				--local ext = item:extension():string()
 				local p = tostring(item)
 				local r_path = string.gsub(p, root, "");
 				if lfs.is_directory(item) then
 					table.insert(tree.dirs, {
 						full_path = p, 
 						r_path = r_path,
+						name = lib.get_file_name(r_path),
 						tree = construct_resource_tree(item, root), 
 						parent = tree
 					})
 				else
-					table.insert(tree.files, {full_path = p, r_path = r_path})
+					--local ext = item:extension():string()
+					table.insert(tree.files, {full_path = p, r_path = r_path, ext = lib.get_file_ext(r_path), name = lib.get_filename_without_ext(r_path)})
 				end
 			end
 		end

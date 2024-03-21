@@ -33,18 +33,28 @@ end
 
 --- 得到文件名，包含扩展名
 function lib.get_file_name(path)
-	--local path = "/path/to/your/file.txt"
-	local filename = path:match("^.+/([^/]+)$")
-	--print(filename)  -- 输出 "file.txt"
-	return filename
+	if string.find(path, "/") then 
+		if string.find(path, "%.") then
+			return path:match("^.+/([^/]+)$")
+		end 
+		local arr = lib.split(path, "/")
+		return arr[#arr]
+	end 
+	return path
+end
+
+--- 得到文件名，不包含扩展名
+function lib.get_filename_without_ext(path)
+	local file = lib.get_file_name(path)
+	if string.find(path, "%.") then
+		return file:match("^(.*)%.([^.]+)$")
+	end 
+	return file
 end
 
 --- 得到文件扩展名
 function lib.get_file_ext(path)
-	--local filename = "myfile.txt"
-	local extension = path:match(".*%.([^.]+)$")
-	--print(extension) -- 输出 "txt"
-	return extension
+	return path:match(".*%.([^.]+)$")
 end
 
 function lib.table2string(obj)
