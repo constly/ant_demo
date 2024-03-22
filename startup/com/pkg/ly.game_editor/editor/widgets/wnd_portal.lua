@@ -37,23 +37,29 @@ local function new(editor)
 		local wnd_files = editor.wnd_files
 		ImGui.BeginGroup()
 		for i, path in ipairs(list) do 
-			local name = lib.get_filename_without_ext(path) or ""
+			local name = lib.get_file_name(path)
 			local ext = lib.get_file_ext(path) or "folder"
 			local id = wnd_files.get_icon_id_by_ext(ext) or 0
 			ImGui.BeginGroup()
 			local x, y = ImGui.GetCursorScreenPos()
 			if i == hover_idx then 
-				draw_list.AddRectFilled({min = {x, y}, max = {x + size_x - 20, y + line_y}, col = {0.35, 0.35, 0.35, 1}});                                    
+				draw_list.AddRectFilled({min = {x, y}, max = {x + size_x - 20, y + line_y}, col = {0.25, 0.25, 0.25, 1}});                                    
 			end
 			ImGui.Image(dep.textureman.texture_get(id), 23, 23)
 			ImGui.SameLineEx(45)
 			if imgui_utils.draw_style_btn(name .. "##btn_none", imgui_styles.btn_transparency_left) then 
 			end
-			ImGui.SameLineEx(160)
-			if imgui_utils.draw_btn(" Open ##btn_portal_open", true) then 
+			ImGui.SameLineEx(190)
+			if imgui_utils.draw_btn(" 打 开 ##btn_portal_open_" .. i, true) then 
+				if ext == "folder" then 
+					editor.wnd_files.browse(path)
+				else 
+					editor.open_tab(path)
+				end
 			end
 			ImGui.SameLine()
-			if imgui_utils.draw_btn(" Browse ##btn_portal_browse") then 
+			if imgui_utils.draw_btn(" 选 中 ##btn_portal_browse_" .. i) then 
+				editor.wnd_files.browse(path)
 			end
 			ImGui.EndGroup()
 			if ImGui.IsItemHovered() then 

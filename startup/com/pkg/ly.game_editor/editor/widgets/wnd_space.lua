@@ -5,20 +5,28 @@
 local dep = require 'dep'
 local ed = dep.ed 
 local ImGui = dep.ImGui
+local imgui_utils = dep.common.imgui_utils
 
 ---@param editor ly.game_editor.editor
 local function new(editor)
 	local api = {}			---@class ly.game_editor.wnd_space
 	local space 			---@type ly.game_editor.space
+	local mouse_x, mouse_y 
 
-	function api.draw(deltatime)
+	function api.draw(deltatime, line_y)
 		space = editor.workspaces.current_space()
 		if not space then return end 
 		
+		if ImGui.IsMouseClicked(ImGui.MouseButton.Left) or ImGui.IsMouseClicked(ImGui.MouseButton.Right) then
+			mouse_x, mouse_y = ImGui.GetMousePos()
+		else 
+			mouse_x, mouse_y = nil, nil
+		end
+
 		---@param view ly.game_editor.viewport  要渲染的窗口自身
 		local function draw (view)
 			if view.type == 0 then 		-- 全屏
-				return api.draw_viewport(view)
+				return api.draw_viewport(view, line_y)
 			end 
 			
 			local one = view.children[1]
@@ -84,15 +92,35 @@ local function new(editor)
 	end
 
 	---@param view ly.game_editor.viewport  要渲染的窗口自身
-	function api.draw_viewport(view)
+	function api.draw_viewport(view, line_y)
 		ImGui.SetCursorPos(view.pos_x, view.pos_y)
+		local pos_x, pos_y = ImGui.GetCursorScreenPos()
 		ImGui.BeginChild("viewport_" .. view.id , view.size_x, view.size_y, ImGui.ChildFlags({"Border"}))
+		ImGui.SetCursorPos(3, 3)
 		ImGui.BeginGroup()
-		ImGui.Button("config" .. view.id)
-		ImGui.SameLine()
-		ImGui.Button("map_01")
+		local cur = view.tabs.get_active_path()
+		for i, v in ipairs(view.tabs.list) do 
+			local label = string.format("%s##btn_view_%d_%s", v.name, view.id, v.name)
+			if imgui_utils.draw_btn(label, cur == v.path) then
+				view.tabs.set_active_path(v.path)
+			end
+			ImGui.SameLine()
+		end
 		ImGui.EndGroup()
+
+		local body_y = view.size_y - line_y
+		if body_y > 3 then
+			ImGui.SetCursorPos(0, line_y)
+			ImGui.BeginChild("viewport_content_" .. view.id, view.size_x, body_y, ImGui.ChildFlags({"Border"}))
+			ImGui.Text("content")
+			ImGui.EndChild()
+		end
+
 		ImGui.EndChild()
+
+		if mouse_x and mouse_x >= pos_x and mouse_x <= (pos_x + view.size_x) and mouse_y >= pos_y and mouse_y <= (pos_y + view.size_y) then 
+			space.set_active_viewport(view.id)
+		end
 	end
 
 	return api

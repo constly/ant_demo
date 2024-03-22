@@ -17,11 +17,10 @@ local tb_tab_data
 
 ---@param content string tab内容
 local function create_tab(content)
-	local api = {}		---@class ly.game_editor.tabs
-	api.list = {}		---@type ly.game_editor.tab_item[]
-	api.index = 0		---@type number 当前选中的tab
+	local api = {}			---@class ly.game_editor.tabs
+	api.list = {}			---@type ly.game_editor.tab_item[]
+	api.active_path = ""		---@type string 当前选中的tab
 	api.dirty = false
-
 	
 	local function save()
 		api.dirty = true
@@ -35,6 +34,7 @@ local function create_tab(content)
 		tb.fileType = lib.get_file_ext(path)
 		tb.root = arr[1]
 		table.insert(api.list, tb)
+		return tb
 	end
 
 	function api.set_data(content)
@@ -43,19 +43,18 @@ local function create_tab(content)
 		for i = 2, #array  do 
 			add_tab(array[i])
 		end
-		api.index = tonumber(array[1])
+		api.active_path = array[1]
+		print("set_data", content)
 	end
 
 	function api.tostring()
-		local tb = {api.index}
+		local tb = {api.active_path}
 		for i, v in ipairs(api.list) do 
 			table.insert(tb, v.path)
 		end
 		return table.concat(tb, ";")
 	end
 
-	function api.tostring()
-	end
 	function api.init_from_string()
 	end
 
@@ -82,13 +81,13 @@ local function create_tab(content)
 		save()
 	end
 
-	function api.get_index()
-		return api.index
+	function api.get_active_path()
+		return api.active_path
 	end
 
-	function api.set_index(index)
-		if index ~= api.index then 
-			api.index = index
+	function api.set_active_path(path)
+		if path ~= api.active_path then 
+			api.active_path = path
 			save()
 		end
 	end
@@ -103,6 +102,11 @@ local function create_tab(content)
 	end
 
 	function api.open_tab(path)
+		local tab = api.find_by_path(path) 
+		if not tab then 
+			tab = add_tab(path)
+		end
+		api.set_active_path(path)
 	end
 
 	function api.close_tab(tab)
@@ -158,6 +162,7 @@ local function create_space()
 	local space = {} 				---@class ly.game_editor.space
 	space.view = {} 				---@type ly.game_editor.viewport
 	space.next_id = 0
+	space.active_viewport = nil  	---@type ly.game_editor.viewport
 
 	function space.init()
 		space.view = space.create_viewport(0, 1)
@@ -212,6 +217,17 @@ local function create_space()
 			end
 		end
 		return find(space.view)
+	end
+
+	function space.set_active_viewport(viewport_id)
+		if space.active_viewport and space.active_viewport.id == viewport_id then 
+			return
+		end
+		space.active_viewport = space.find_viewport_by_id(viewport_id)
+	end
+
+	function space.get_active_viewport()
+		return space.active_viewport
 	end
 
 	return space

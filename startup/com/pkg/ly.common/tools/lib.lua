@@ -56,6 +56,12 @@ function lib.get_file_ext(path)
 	return file:match(".*%.([^.]+)$")
 end
 
+--- 得到文件路径名 (去除文件名)
+function lib.get_file_root(file)
+	local arr = lib.split(file, "/")
+	return table.concat(arr, "/", 1, #arr - 1)
+end
+
 function lib.table2string(obj)
 	if not obj then return "nil" end;
         

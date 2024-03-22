@@ -117,6 +117,14 @@ local function create(tbParams)
 		api.dialogue_msgbox.update()
 		api.msg_hints.update(0.04)
 	end
+
+	function api.open_tab(path)
+		local space = api.workspaces.current_space()
+		local viewport = space and space.get_active_viewport()
+		if viewport then 
+			viewport.tabs.open_tab(path)
+		end
+	end
 	return api
 end
 
