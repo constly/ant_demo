@@ -7,12 +7,12 @@ local user_data = dep.common.user_data
 local lib = dep.common.lib
 
 ---@param editor ly.game_editor.editor
-local function create(editor)
+local function new(editor)
 	local api = {} 		---@type ly.game_editor.portal
 	api.pages = {}		---@type table[] 页面列表
-	api.cur_page = 0  	---@type number 当前选中的页面索引
+	api.cur_page = 1  	---@type number 当前选中的页面索引
 
-	local max_page = 6
+	local max_page = 5
 	local save_key = editor.tbParams.module_name  .. "_portal_"
 	local function load()
 		for i = 1, max_page do 
@@ -20,7 +20,7 @@ local function create(editor)
 			local array = lib.split(str, ";")
 			api.pages[i] = array
 		end
-		api.cur_page = user_data.get_number(save_key .. "cur", 0)
+		api.cur_page = user_data.get_number(save_key .. "cur", 1)
 	end
 
 	--- 保存数据
@@ -42,6 +42,7 @@ local function create(editor)
 				return 
 			end 
 		end
+		print("path is", path)
 		table.insert(list, path)
 		save()
 	end
@@ -71,4 +72,4 @@ local function create(editor)
 	return api
 end 
 
-return {create = create}
+return {new = new}

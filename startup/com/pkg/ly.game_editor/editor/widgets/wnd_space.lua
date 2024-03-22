@@ -8,7 +8,7 @@ local ImGui = dep.ImGui
 
 ---@param editor ly.game_editor.editor
 local function new(editor)
-	local api = {}			---@class ly.game_editor.wnd_files
+	local api = {}			---@class ly.game_editor.wnd_space
 	local space 			---@type ly.game_editor.space
 
 	function api.draw(deltatime)

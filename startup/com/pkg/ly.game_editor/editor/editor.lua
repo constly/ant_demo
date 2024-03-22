@@ -12,7 +12,8 @@ local function create(tbParams)
 	api.dialogue_msgbox = (require 'com_ui.dialogue_msgbox').create()
 	api.msg_hints = (require 'com_ui.msg_hints').create()
 	api.i18n = (require 'com_data.i18n').create()
-	api.files = (require 'com_data.files').create(api)
+	api.files = (require 'com_data.files').new(api)
+	api.portal = (require 'com_data.portal').new(api)
 	api.workspaces = (require 'com_data.workspaces').new(api)
 
 	api.wnd_files = (require 'editor.widgets.wnd_files').new(api)
@@ -23,7 +24,7 @@ local function create(tbParams)
 	--local height_title = 30 
 	local height_bottom = 200
 	local is_buttom_collapse = false
-	local size_portal_x = 400  --- 传送门
+	local size_portal_x = 300  --- 传送门
 	local size_x, size_y
 	local show_type = 1
 	local line_y = 30
@@ -51,7 +52,7 @@ local function create(tbParams)
 
 		local x, y = ImGui.GetContentRegionAvail()
 		ImGui.BeginChild("panel_viewports_body", x, y, ImGui.ChildFlags({"Border"}))
-			api.wnd_space.draw(deltatime)
+			api.wnd_space.draw(deltatime, line_y)
 		ImGui.EndChild()
 
 		ImGui.EndChild()
@@ -95,8 +96,7 @@ local function create(tbParams)
 			end
 				local x, y = ImGui.GetContentRegionAvail()
 				ImGui.BeginChild("wnd_portal_1", size_portal_x, y, ImGui.ChildFlags({"Border"}))
-				ImGui.SetCursorPos(5, 3)
-				ImGui.Text("传送门文件列表")
+				api.wnd_portal.draw(deltatime, line_y)
 				ImGui.EndChild()
 			ImGui.EndChild()
 		ImGui.EndChild()

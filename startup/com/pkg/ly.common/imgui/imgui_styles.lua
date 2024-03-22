@@ -8,6 +8,7 @@ api.btn_blue = 1
 api.btn_normal = 2
 api.btn_transparency_center = 3
 api.btn_transparency_center_selected = 4
+api.btn_transparency_left = 5
 
 api.popup = 20
 
@@ -25,7 +26,7 @@ local init = function()
 		ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, x1, y1, z1, a1)
 	end
 	register(api.btn_blue, function()
-		ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.16, 0.484, 0.81, 1)
+		ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.16, 0.4, 0.51, 1)
 		ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.3, 0.484, 0.81, 1)
 		ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.3, 0.484, 0.81, 1)
 		ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.9, 0.9, 0.9, 1)
@@ -34,7 +35,7 @@ local init = function()
 	end)
 
 	register(api.btn_normal, function()
-		draw_btn(0.2, 0.2, 0.25, 1)
+		draw_btn(0.3, 0.3, 0.25, 1)
 	end, function()
 		ImGui.PopStyleColorEx(3)
 	end)
@@ -57,6 +58,15 @@ local init = function()
 		ImGui.PopStyleVarEx(1)
 	end)
 
+	register(api.btn_transparency_left, function()
+		draw_btn(0, 0, 0, 0);
+		ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
+		ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.8, 0.8, 0.8, 1)
+	end, function()
+		ImGui.PopStyleColorEx(4)
+		ImGui.PopStyleVarEx(1)
+	end)
+	
 	register(api.popup, function()
 		ImGui.PushStyleColorImVec4(ImGui.Col.ModalWindowDimBg, 0.5, 0.5, 0.5, 0.35)
 		ImGui.PushStyleColorImVec4(ImGui.Col.WindowBg, 0.15, 0.15, 0.15, 1)

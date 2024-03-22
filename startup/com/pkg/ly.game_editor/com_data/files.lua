@@ -15,7 +15,8 @@ local tb_package_item = {}
 ---@class ly.game_editor.file_data
 ---@field full_path string 全路径
 ---@field r_path string 相对路径
----@field name string 文件名
+---@field name string 文件名有后缀名
+---@field short_name string 文件名没有后缀名
 ---@field ext string 后缀名
 local tb_file_data = {}
 
@@ -34,7 +35,7 @@ local tb_tree = {}
 
 ---@return ly.game_editor.files
 ---@param editor ly.game_editor.editor
-local function create(editor)
+local function new(editor)
 	---@class ly.game_editor.files
 	local api = {} 	
 	api.packages = {}  			---@type ly.game_editor.package_item[]
@@ -61,7 +62,13 @@ local function create(editor)
 					})
 				else
 					--local ext = item:extension():string()
-					table.insert(tree.files, {full_path = p, r_path = r_path, ext = lib.get_file_ext(r_path), name = lib.get_filename_without_ext(r_path)})
+					table.insert(tree.files, {
+						full_path = p, 
+						r_path = r_path, 
+						ext = lib.get_file_ext(r_path), 
+						name = lib.get_file_name(r_path),
+						short_name = lib.get_filename_without_ext(r_path),
+					})
 				end
 			end
 		end
@@ -87,8 +94,23 @@ local function create(editor)
 		api.packages = packages
 	end
 
+	---@return ly.game_editor.tree_item
+	function api.find_tree_by_path(root, path)
+		if not path or path == "" then return root.tree end 
+		---@param tree ly.game_editor.tree_item
+		local function find(tree)
+			for i, dir in ipairs(tree.dirs) do 
+				if dir.r_path == path then 
+					return dir.tree
+				end
+				return find(dir.tree)
+			end
+		end
+		return find(root.tree)
+	end
+
 	init()
 	return api
 end
 
-return {create = create}
+return {new = new}
