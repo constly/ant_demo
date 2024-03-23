@@ -28,7 +28,7 @@ local function new(editor)
 		---@param view ly.game_editor.viewport  要渲染的窗口自身
 		local function draw (view)
 			if view.type == 0 then 		-- 全屏
-				return api.draw_viewport(view, line_y)
+				return api.draw_viewport(deltatime, view, line_y)
 			end 
 			
 			local one = view.children[1]
@@ -94,7 +94,7 @@ local function new(editor)
 	end
 
 	---@param view ly.game_editor.viewport  要渲染的窗口自身
-	function api.draw_viewport(view, line_y)
+	function api.draw_viewport(deltatime, view, line_y)
 		ImGui.SetCursorPos(view.pos_x, view.pos_y)
 		local pos_x, pos_y = ImGui.GetCursorScreenPos()
 		ImGui.BeginChild("viewport_" .. view.id , view.size_x, view.size_y, ImGui.ChildFlags({"Border"}))
@@ -110,11 +110,8 @@ local function new(editor)
 				ImGui.SetCursorPos(0, line_y)
 				ImGui.BeginChild("viewport_content_" .. view.id, view.size_x, body_y, ImGui.ChildFlags({"Border"}))
 					local start_x, start_y = ImGui.GetWindowPos()
-
-					for i = 1, 15 do 
-						ImGui.Text("天姥连天向天横 势拔五岳掩赤城")
-					end
-
+					editor.wnd_mgr.render(deltatime, view)
+					
 					local payload = ImGui.GetDragDropPayload("DragViewTab")
 					if payload then 
 						local x, y = ImGui.GetMousePos()
@@ -178,7 +175,10 @@ local function new(editor)
 			end
 			if ImGui.BeginPopupContextItem() then 
 				view.tabs.set_active_path(v.path)
-				if ImGui.MenuItem("关闭") then 
+				if ImGui.MenuItem("克 隆") then 
+					space.clone_tab(view, v.path)
+				end
+				if ImGui.MenuItem("关 闭") then 
 					view.tabs.close_tab(v)
 				end
 				if ImGui.MenuItem("关闭其他") then 

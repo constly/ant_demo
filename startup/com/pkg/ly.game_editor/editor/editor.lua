@@ -20,6 +20,7 @@ local function create(tbParams)
 	api.wnd_space = (require 'editor.widgets.wnd_space').new(api)
 	api.wnd_log = (require 'editor.widgets.wnd_log').new(api)
 	api.wnd_portal = (require 'editor.widgets.wnd_portal').new(api)
+	api.wnd_mgr = (require 'editor.wnd_mgr').new(api)
 
 	--local height_title = 30 
 	local height_bottom = 200

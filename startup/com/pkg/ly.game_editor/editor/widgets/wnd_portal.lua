@@ -43,7 +43,7 @@ local function new(editor)
 			ImGui.BeginGroup()
 			local x, y = ImGui.GetCursorScreenPos()
 			if i == hover_idx then 
-				draw_list.AddRectFilled({min = {x, y}, max = {x + size_x - 20, y + line_y}, col = {0.25, 0.25, 0.25, 1}});                                    
+				draw_list.AddRectFilled({min = {x, y}, max = {x + size_x - 10, y + line_y}, col = {0.25, 0.25, 0.25, 1}});                                    
 			end
 			ImGui.Image(dep.textureman.texture_get(id), 23, 23)
 			ImGui.SameLineEx(45)

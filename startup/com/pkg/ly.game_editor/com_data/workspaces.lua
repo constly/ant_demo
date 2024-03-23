@@ -97,6 +97,7 @@ local function create_tab(content)
 
 	---@return ly.game_editor.tab_item
 	function api.find_by_path(path)
+		if not path then return end
 		for i, v in ipairs(api.list) do 
 			if v.path == path then 
 				return v
@@ -193,6 +194,7 @@ local function create_space()
 		space.lock = tb_save.lock
 		space.view = create_viewport() 
 		space.view.set_data(tb_save.view)
+		space.active_viewport = space.find_valid_child_viewport(space.view)
 	end
 
 	function space.is_lock() return space.lock end 
@@ -228,6 +230,7 @@ local function create_space()
 		return view
 	end
 
+	-- 查找窗口
 	---@return ly.game_editor.viewport
 	function space.find_viewport_by_id(id)
 		---@param views ly.game_editor.viewport
@@ -243,6 +246,35 @@ local function create_space()
 			end
 		end
 		return find(space.view)
+	end
+
+	-- 查找视口的父视口
+	---@return ly.game_editor.viewport
+	function space.find_parent_viewport(viewport_id) 
+		---@param view ly.game_editor.viewport
+		local function find(view)
+			if view.type == 0 then return end
+			for i, v in ipairs(view.children) do 
+				if v.id == viewport_id then 
+					return view
+				end 
+				local ret = find(v)
+				if ret then 
+					return ret
+				end
+			end
+		end
+		return find(space.view)
+	end
+
+	--- 查找指定视口下第一个真实显示的视口
+	function space.find_valid_child_viewport(view)
+		---@param child ly.game_editor.viewport
+		local function find(child)
+			if child.type == 0 then return child end 
+			return find(child.children[1]) or find(child.children[2])
+		end
+		return find(view)
 	end
 
 	function space.set_active_viewport(viewport_id)
@@ -288,6 +320,29 @@ local function create_space()
 			remove(right)
 		end
 		remove(space.view)
+	end
+
+	---@param view ly.game_editor.viewport
+	function space.clone_tab(view, path)
+		local parent = space.find_parent_viewport(view.id)
+		if parent then 
+			local child1 = parent.children[1]
+			local child2 = parent.children[2]
+			if child1 == view then 
+				local v = space.find_valid_child_viewport(child2)
+				if v then 
+					v.tabs.open_tab(path)
+				end
+			else 
+				local v = space.find_valid_child_viewport(child1)
+				if v then 
+					v.tabs.open_tab(path)
+				end
+			end
+		else
+			parent = space.split(view.id, 2)
+			parent.children[2].tabs.open_tab(path)
+		end
 	end
 
 	return space
