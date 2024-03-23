@@ -6,6 +6,8 @@ local dep = require 'dep'
 local ed = dep.ed 
 local ImGui = dep.ImGui
 local imgui_utils = dep.common.imgui_utils
+local imgui_styles = dep.common.imgui_styles
+local lib = dep.common.lib
 
 ---@param editor ly.game_editor.editor
 local function new(editor)
@@ -96,10 +98,71 @@ local function new(editor)
 		ImGui.SetCursorPos(view.pos_x, view.pos_y)
 		local pos_x, pos_y = ImGui.GetCursorScreenPos()
 		ImGui.BeginChild("viewport_" .. view.id , view.size_x, view.size_y, ImGui.ChildFlags({"Border"}))
-		ImGui.SetCursorPos(3, 3)
-		ImGui.BeginGroup()
+			ImGui.SetCursorPos(3, 3)
+			ImGui.BeginGroup()
+				ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
+				api.draw_tabs(view, line_y)
+				ImGui.PopStyleVar()
+			ImGui.EndGroup()
+
+			local body_y = view.size_y - line_y
+			if body_y > 3 then
+				ImGui.SetCursorPos(0, line_y)
+				ImGui.BeginChild("viewport_content_" .. view.id, view.size_x, body_y, ImGui.ChildFlags({"Border"}))
+					local start_x, start_y = ImGui.GetWindowPos()
+
+					for i = 1, 15 do 
+						ImGui.Text("天姥连天向天横 势拔五岳掩赤城")
+					end
+
+					local payload = ImGui.GetDragDropPayload("DragViewTab")
+					if payload then 
+						local x, y = ImGui.GetMousePos()
+						local rate_x = (x - start_x) / view.size_x
+						local rate_y = (y - start_y) / view.size_y
+						if rate_x >= 0 and rate_y >= 0 and rate_x <= 1 and rate_y <= 1 then 
+							api.draw_dropview_hint(view, payload, rate_x, rate_y, start_x, start_y)
+						end
+					end
+				ImGui.EndChild()
+			end
+		ImGui.EndChild()
+		-- 判断鼠标当前点击在哪个viewport上
+		if mouse_x and mouse_x >= pos_x and mouse_x <= (pos_x + view.size_x) and mouse_y >= pos_y and mouse_y <= (pos_y + view.size_y) then 
+			space.set_active_viewport(view.id)
+		end
+	end
+
+	--- 绘制窗口tab列表
+	---@param view ly.game_editor.viewport  窗口
+	function api.draw_tabs(view, line_y)
+		do 
+			local payload = ImGui.GetDragDropPayload("DragViewTab")
+			local arr = lib.split(payload, ";")
+			local fromViewId = tonumber(arr[1])
+			if fromViewId and fromViewId ~= view.id then
+				local pos_x, pos_y = ImGui.GetCursorPos()
+				ImGui.SetNextItemAllowOverlap();
+				ImGui.InvisibleButton("##btn_drop_to_tab_" .. view.id, view.size_x - 5, line_y - 5) 
+				if ImGui.BeginDragDropTarget() then 
+					local payload = ImGui.AcceptDragDropPayload("DragViewTab")
+					if payload then
+						local arr = lib.split(payload, ";")
+						local fromViewId = tonumber(arr[1])
+						local fromPath = arr[2]
+						view.tabs.open_tab(fromPath)
+						local view = space.find_viewport_by_id(fromViewId)
+						if view then 
+							view.tabs.close_tab(fromPath)
+						end
+					end
+					ImGui.EndDragDropTarget()
+				end
+				ImGui.SetCursorPos(pos_x, pos_y)
+			end
+		end
+
 		local cur = view.tabs.get_active_path()
-		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		for i, v in ipairs(view.tabs.list) do 
 			local label = string.format("%s##btn_view_%d_%s", v.name, view.id, v.name)
 			if imgui_utils.draw_btn(label, cur == v.path) then
@@ -115,8 +178,46 @@ local function new(editor)
 				end
 				ImGui.EndPopup()
 			end
+
+			if ImGui.BeginDragDropSource() then 
+				view.tabs.set_active_path(v.path)
+				ImGui.SetDragDropPayload("DragViewTab", string.format("%d;%s;%d", view.id, v.path, i));
+				ImGui.Text("正在拖动 " .. v.name);
+				ImGui.EndDragDropSource();
+			end
+
+			if ImGui.GetDragDropPayload("DragViewTab") and ImGui.BeginDragDropTarget() then 
+				local payload = ImGui.AcceptDragDropPayload("DragViewTab")
+            	if payload then
+					local arr = lib.split(payload, ";")
+					local fromViewId = tonumber(arr[1])
+					local fromPath = arr[2]
+					local index = tonumber(arr[3])
+
+					if fromViewId == view.id then 
+						local tb = table.remove(view.tabs.list, index)
+						table.insert(view.tabs.list, i, tb)
+					else
+						view.tabs.open_tab(fromPath, i)
+						local view = space.find_viewport_by_id(fromViewId)
+						if view then 
+							view.tabs.close_tab(fromPath)
+						end
+					end
+				end
+				ImGui.EndDragDropTarget()
+			end
 			ImGui.SameLine()
 		end
+
+		if #view.tabs.list == 0 then 
+			local label = string.format(" 移 除 ##btn_remove_view_%d", view.id)
+			if imgui_utils.draw_btn(label) then
+				space.remove_viewport(view.id)
+			end
+			ImGui.SameLine()
+		end
+
 		local menu = "viewport_add_tab_" .. view.id
 		if imgui_utils.draw_btn(" + ##btn_add_tab_" .. view.id) then
 			ImGui.OpenPopup(menu, ImGui.PopupFlags { "None" });
@@ -130,21 +231,71 @@ local function new(editor)
 			end
 			ImGui.EndPopup();
 		end
-		ImGui.PopStyleVar()
-		ImGui.EndGroup()
+	end
 
-		local body_y = view.size_y - line_y
-		if body_y > 3 then
-			ImGui.SetCursorPos(0, line_y)
-			ImGui.BeginChild("viewport_content_" .. view.id, view.size_x, body_y, ImGui.ChildFlags({"Border"}))
-			ImGui.Text("content")
-			ImGui.EndChild()
+	---@param view ly.game_editor.viewport  窗口
+	---@param drop_content string 拖动内容
+	function api.draw_dropview_hint(view, drop_content, rate_x, rate_y, start_x, start_y)
+		local size_x, size_y	
+		local type 
+		if rate_x > 0.3 and rate_x < 0.7 then 
+			type = rate_y < 0.5 and "up" or "down"
+		else
+			if rate_y < 0.3 then 
+				type = "up"
+			elseif rate_y < 0.7 then  	-- 继续判断左右
+				type = rate_x < 0.5 and "left" or "right"
+			else 
+				type = "down"
+			end
+		end
+		if type == "up" then
+			size_x = view.size_x
+			size_y = view.size_y * 0.5
+		elseif type == "down" then 
+			start_y = start_y + view.size_y * 0.5 - 30
+			size_x = view.size_x
+			size_y = view.size_y * 0.5
+		elseif type == "left" then 
+			size_x = view.size_x * 0.5
+			size_y = view.size_y - 30
+		elseif type == "right" then 
+			start_x = start_x + view.size_x * 0.5
+			size_x = view.size_x * 0.5
+			size_y = view.size_y - 30
 		end
 
-		ImGui.EndChild()
+		ImGui.SetCursorScreenPos(start_x, start_y)
+		imgui_utils.draw_style_btn("##btn_dropview_hint", imgui_styles.btn_drop_hint, {size_x = size_x, size_y = size_y})
+		if ImGui.BeginDragDropTarget() then 
+			local payload = ImGui.AcceptDragDropPayload("DragViewTab")
+			if payload then
+				local arr = lib.split(payload, ";")
+				local fromViewId = tonumber(arr[1])
+				local fromPath = arr[2]
+				local src_view = space.find_viewport_by_id(fromViewId)
+				if src_view then 
+					src_view.tabs.close_tab(fromPath)
+				end
 
-		if mouse_x and mouse_x >= pos_x and mouse_x <= (pos_x + view.size_x) and mouse_y >= pos_y and mouse_y <= (pos_y + view.size_y) then 
-			space.set_active_viewport(view.id)
+				local dest_view
+				if type == "left" or type == "right" then 
+					dest_view = space.split(view.id, 2)
+				else
+					dest_view = space.split(view.id, 1)
+				end
+				if type == "left" or type == "up" then 
+					dest_view.children[1].tabs.open_tab(fromPath)
+				else 
+					dest_view.children[2].tabs.open_tab(fromPath)
+				end
+
+				local src_view = space.find_viewport_by_id(fromViewId)
+				if src_view and #src_view.tabs.list == 0 and src_view.type == 0 then 
+					space.remove_viewport(src_view.id)
+				end
+			end
+			ImGui.EndDragDropTarget()
 		end
 	end
 

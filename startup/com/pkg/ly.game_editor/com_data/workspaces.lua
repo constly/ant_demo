@@ -26,14 +26,18 @@ local function create_tab(content)
 		api.dirty = true
 	end
 
-	local function add_tab(path)
+	local function add_tab(path, insert_index)
 		local arr = lib.split(path, "/")
 		local tb = {}
 		tb.path = path
 		tb.name = lib.get_file_name(path)
 		tb.fileType = lib.get_file_ext(path)
 		tb.root = arr[1]
-		table.insert(api.list, tb)
+		if insert_index then 
+			table.insert(api.list, insert_index, tb)
+		else 
+			table.insert(api.list, tb)
+		end		
 		return tb
 	end
 
@@ -60,7 +64,7 @@ local function create_tab(content)
 
 	function api.reset()
 		api.list = {}
-		api.index = 0
+		api.active_path = nil
 	end 
 
 	---@param _tabs ly.game_editor.tabs
@@ -69,7 +73,7 @@ local function create_tab(content)
 		for i, v in ipairs(api.list) do 
 			_tabs.list[i] = v
 		end
-		_tabs.index = api.index
+		_tabs.active_path = api.active_path
 	end
 
 	function api.close_others(tab)
@@ -101,24 +105,28 @@ local function create_tab(content)
 		end
 	end
 
-	function api.open_tab(path)
+	function api.has_tab(path)
+		return api.find_by_path(path) ~= nil
+	end
+
+	function api.open_tab(path, insert_index)
 		local tab = api.find_by_path(path) 
 		if not tab then 
-			tab = add_tab(path)
+			tab = add_tab(path, insert_index)
 		end
 		api.set_active_path(path)
 	end
 
+	---@param tab ly.game_editor.tab_item|string 
 	function api.close_tab(tab)
 		for i, v in ipairs(api.list) do 
-			if v == tab then 
+			if v == tab or v.path == tab then 
 				table.remove(api.list, i)
+				save()
 				break
 			end
 		end
-		save()
 	end
-
 	return api
 end
 
@@ -126,7 +134,7 @@ end
 local function create_viewport(id)
 	local viewport = {} 			---@class ly.game_editor.viewport
 	viewport.tabs = create_tab()   	---@type ly.game_editor.tabs
-	viewport.id = id; 				---@type number 在flow下的唯一id
+	viewport.id = id; 				---@type number 在space下的唯一id
 	viewport.children = {};			---@type ly.game_editor.viewport[] 子窗口列表
 	viewport.type = 0 				---@type number 视口类型: 0-全屏 1-左右分割 2-上下分割
 	viewport.size_rate = 1			---@type number 所占百分比大小		
@@ -190,6 +198,7 @@ local function create_space()
 	-- 分割viewport
 	---@param viewport_id number 视口id
 	---@param type number 说明:1-水平分割;2-竖直分割
+	---@return ly.game_editor.viewport
 	function space.split(viewport_id, type)
 		local view = space.find_viewport_by_id(viewport_id)
 		if not view then return end
@@ -201,8 +210,10 @@ local function create_space()
 		view.tabs.reset()
 		view.children[1] = view1
 		view.children[2] = view2
+		return view
 	end
 
+	---@return ly.game_editor.viewport
 	function space.find_viewport_by_id(id)
 		---@param views ly.game_editor.viewport
 		local function find(view)
@@ -228,6 +239,37 @@ local function create_space()
 
 	function space.get_active_viewport()
 		return space.active_viewport or space.view
+	end
+
+	-- 移除视口
+	---@param viewport_id number 视口id
+	function space.remove_viewport(viewport_id)
+		---@param from ly.game_editor.viewport
+		---@param to ly.game_editor.viewport
+		local function merge(from, to)
+			if from.type == 0 then 
+				from.tabs.copy_to(to.tabs)
+				to.type = 0
+			else 
+				to.type = from.type
+				to.tabs = from.tabs
+				to.children = from.children
+			end
+		end 
+		---@param view ly.game_editor.viewport
+		local function remove(view)
+			if view.type == 0 then return end
+			local left = view.children[1]
+			local right = view.children[2]
+			if left.id == viewport_id then 
+				return merge(right, view)
+			elseif right.id == viewport_id then
+				return merge(left, view)
+			end 
+			remove(left)
+			remove(right)
+		end
+		remove(space.view)
 	end
 
 	return space

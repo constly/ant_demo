@@ -10,7 +10,9 @@ api.btn_transparency_center = 3
 api.btn_transparency_center_selected = 4
 api.btn_transparency_left = 5
 
-api.popup = 20
+api.btn_drop_hint = 50
+
+api.popup = 100
 
 
 local register = function(type, on_push, on_pop) 
@@ -27,8 +29,8 @@ local init = function()
 	end
 	register(api.btn_blue, function()
 		ImGui.PushStyleColorImVec4(ImGui.Col.Button, 0.16, 0.4, 0.51, 1)
-		ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.3, 0.484, 0.81, 1)
-		ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.3, 0.484, 0.81, 1)
+		ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, 0.3, 0.484, 0.61, 1)
+		ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, 0.3, 0.484, 0.61, 1)
 		ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.9, 0.9, 0.9, 1)
 	end, function()
 		ImGui.PopStyleColorEx(4)
@@ -65,6 +67,12 @@ local init = function()
 	end, function()
 		ImGui.PopStyleColorEx(4)
 		ImGui.PopStyleVarEx(1)
+	end)
+
+	register(api.btn_drop_hint, function()
+		draw_btn(0, 0.8, 0.8, 0.5);
+	end, function()
+		ImGui.PopStyleColorEx(3)
 	end)
 	
 	register(api.popup, function()

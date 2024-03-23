@@ -103,7 +103,10 @@ local function new(editor)
 				if dir.r_path == path then 
 					return dir.tree
 				end
-				return find(dir.tree)
+				local ret = find(dir.tree)
+				if ret then 
+					return ret
+				end
 			end
 		end
 		return find(root.tree)
