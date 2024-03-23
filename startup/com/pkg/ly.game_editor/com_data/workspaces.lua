@@ -227,7 +227,7 @@ local function create_space()
 	end
 
 	function space.get_active_viewport()
-		return space.active_viewport
+		return space.active_viewport or space.view
 	end
 
 	return space
@@ -238,8 +238,8 @@ end
 ---@return ly.game_editor.workspaces
 local function new(editor)
 	local api = {} 		---@class ly.game_editor.workspaces
-	api.items = {} 		---@type ly.game_editor.space[]
-	api.index = 1; 		---@type number 当前选中的space
+	api.works = {} 		---@type ly.game_editor.space[]
+	api.index = 1; 		---@type number 当前选中的work
 
 	local file_path = string.format("%s/%s_workspace.ant", path_def.cache_root, editor.tbParams.module_name) 
 
@@ -252,13 +252,13 @@ local function new(editor)
 			for i, v in ipairs(tb_save.items) do 
 				local space = create_space()
 				space.set_data(v)
-				table.insert(api.items, space)
+				table.insert(api.works, space)
 			end
 			api.index = tb_save.index or 1
 		end 
 
-		if #api.items == 0 then
-			api.items = {}
+		if #api.works == 0 then
+			api.works = {}
 			api.add()
 		end
 	end 
@@ -266,7 +266,7 @@ local function new(editor)
 	-- 保存
 	function api.save()
 		local tb_save = {items = {}, index = api.index}
-		for i, v in ipairs(api.items) do 
+		for i, v in ipairs(api.works) do 
 			tb_save.items[i] = v.get_data()
 		end
 		local content = dep.serialize.stringify(tb_save)
@@ -281,22 +281,27 @@ local function new(editor)
 	function api.add()
 		local space = create_space()
 		space.init()
-		space.split(1, 1)
-		space.split(3, 2)
-		space.split(4, 2)
-		space.split(5, 1)
-		space.split(9, 2)
-		space.split(8, 1)
-		table.insert(api.items, space)
-		api.index = #api.items
+		table.insert(api.works, space)
+		api.index = #api.works
 	end
 
 	function api.current_space()
-		return api.items[api.index]
+		return api.works[api.index]
 	end
 
 	function api.set_current_space(index)
-		api.index = index
+		if index ~= api.index then 
+			api.index = index
+		end
+	end
+
+	function api.close_self(index, space)
+		table.remove(api.works, index)
+	end 
+
+	function api.close_others(index, space)
+		api.works = {space}
+		api.index = 1
 	end
 
 	init()

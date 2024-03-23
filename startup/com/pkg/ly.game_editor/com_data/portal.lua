@@ -68,6 +68,10 @@ local function new(editor)
 		end
 	end
 
+	function api.save()
+		save()
+	end
+
 	load()
 	return api
 end 

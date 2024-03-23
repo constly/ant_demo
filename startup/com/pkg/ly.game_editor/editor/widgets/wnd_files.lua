@@ -73,20 +73,25 @@ local function new(editor)
 		end
 	end
 
-	local function draw_file_menu(ext, display, isDir, path)
+	local function draw_file_menu(ext, display, isDir, path, file)
 		if ImGui.BeginPopupContextItem() then
 			set_selected_file(display)
-			
+			if not isDir and ImGui.MenuItem("打 开") then
+				editor.open_tab(selected_pkg .. "/" .. path)
+			end
+			if ImGui.MenuItem("收 藏") then
+				editor.portal.add(selected_pkg .. "/" .. path)
+			end
+			ImGui.Separator()
 			if ImGui.MenuItem("改 名") then
 			end
 			if ImGui.MenuItem("删 除") then
 			end
 			if ImGui.MenuItem("克 隆") then
 			end
-			if ImGui.MenuItem("收 藏") then
-				editor.portal.add(selected_pkg .. "/" .. path)
-			end
-			if ImGui.MenuItem("在文件浏览器中打开") then
+			if ImGui.MenuItem("在文件浏览器中查看") then
+				local path = file.full_path:gsub("/","\\")
+				os.execute("c:\\windows\\explorer.exe /select,".. path)
 			end
 			ImGui.EndPopup()
 		end
@@ -122,7 +127,7 @@ local function new(editor)
 		local maskSize = {x = 65, y = 40}
 		local btnSize = {x = 70, y = 22}
 		local index = 0
-		local function draw_file(ext, name, display, isDir, path)
+		local function draw_file(ext, name, display, isDir, path, file)
 			index = index + 1
 			local temp = {x = pos.x + cell.x * 0.5, y = pos.y}
 			ImGui.SetCursorPos(temp.x - texSize.x * 0.5, temp.y)
@@ -143,7 +148,7 @@ local function new(editor)
 					end
 				end
 			end
-			draw_file_menu(ext, display, isDir, path)
+			draw_file_menu(ext, display, isDir, path, file)
 			do
 				ImGui.SetCursorPos(pos.x + 5, pos.y + 35)
 				local style<close> = imgui_styles.use(display == selected_file and imgui_styles.btn_transparency_center_selected or imgui_styles.btn_transparency_center)
@@ -162,11 +167,11 @@ local function new(editor)
 		end
 		
 		for i, v in ipairs(tree.dirs) do 
-			draw_file('folder', v.name, v.name, true, v.r_path)
+			draw_file('folder', v.name, v.name, true, v.r_path, v)
 		end
 
 		for i, v in ipairs(tree.files) do 
-			draw_file(v.ext, v.name, v.short_name, false, v.r_path)
+			draw_file(v.ext, v.name, v.short_name, false, v.r_path, v)
 		end
 		-- for i = 1, 10 do 
 		-- 	draw_file('folder', "文件名字")

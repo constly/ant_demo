@@ -62,12 +62,48 @@ local function new(editor)
 				editor.wnd_files.browse(path)
 			end
 			ImGui.EndGroup()
+			local label = "popup_item_modal_" .. i
+			ImGui.OpenPopupOnItemClick(label, 1);
 			if ImGui.IsItemHovered() then 
-				if ImGui.IsMouseClicked(ImGui.MouseButton.Right) then 
-					print("11")
-				end
 				hover_idx = i
 			end
+			ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
+			if ImGui.BeginPopupContextItemEx(label) then 
+				if i > 1 and ImGui.MenuItem(" 上 移 ") then 
+					table.remove(list, i)
+					table.insert(list, i - 1, path)
+					portal.save()
+				end
+				if i > 1 and ImGui.MenuItem(" 置 顶 ") then 
+					table.remove(list, i)
+					table.insert(list, 1, path)
+					portal.save()
+				end
+				if i < #list then
+					if i > 1 then 
+						ImGui.Separator()
+					end
+					if ImGui.MenuItem(" 下 移 ") then 
+						table.remove(list, i)
+						table.insert(list, i + 1, path)
+						portal.save()
+					end
+					if ImGui.MenuItem(" 置 底 ") then 
+						table.remove(list, i)
+						table.insert(list, path)
+						portal.save()
+					end
+				end
+				if #list > 1 then
+					ImGui.Separator()
+				end
+				if ImGui.MenuItem(" 移 除 ") then 
+					table.remove(list, i)
+					portal.save()
+				end
+				ImGui.EndPopup();
+			end
+			ImGui.PopStyleVar()
 		end		
 		ImGui.Dummy(10, 5)
 		ImGui.EndGroup()

@@ -36,14 +36,26 @@ local function create(tbParams)
 		ImGui.BeginGroup()
 		ImGui.Dummy(0, 0)
 		local cur = api.workspaces.current_space()
-		for i, space in ipairs(api.workspaces.items) do 
+		for i, space in ipairs(api.workspaces.works) do 
 			if imgui_utils.draw_btn(string.format("Space%02d", i), space == cur)	then 
 				api.workspaces.set_current_space(i)
 			end
+			ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
+			if ImGui.BeginPopupContextItem() then 
+				api.workspaces.set_current_space(i)
+				if ImGui.MenuItem("关闭") then 
+					api.workspaces.close_self(i, space)
+				end
+				if ImGui.MenuItem("关闭其他") then 
+					api.workspaces.close_others(i, space)
+				end
+				ImGui.EndPopup()
+			end
+			ImGui.PopStyleVar()
 		end
 		local x, y = ImGui.GetItemRectSize();
 		line_y = y + 4
-		if #api.workspaces.items < 15 and imgui_utils.draw_btn(" + ##btn_add_workspace" , false, {size_x = x})	then 
+		if #api.workspaces.works < 15 and imgui_utils.draw_btn(" + ##btn_add_workspace" , false, {size_x = x})	then 
 			api.workspaces.add()
 		end
 		ImGui.EndGroup()

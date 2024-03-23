@@ -99,13 +99,38 @@ local function new(editor)
 		ImGui.SetCursorPos(3, 3)
 		ImGui.BeginGroup()
 		local cur = view.tabs.get_active_path()
+		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		for i, v in ipairs(view.tabs.list) do 
 			local label = string.format("%s##btn_view_%d_%s", v.name, view.id, v.name)
 			if imgui_utils.draw_btn(label, cur == v.path) then
 				view.tabs.set_active_path(v.path)
 			end
+			if ImGui.BeginPopupContextItem() then 
+				view.tabs.set_active_path(v.path)
+				if ImGui.MenuItem("关闭") then 
+					view.tabs.close_tab(v)
+				end
+				if ImGui.MenuItem("关闭其他") then 
+					view.tabs.close_others(v)
+				end
+				ImGui.EndPopup()
+			end
 			ImGui.SameLine()
 		end
+		local menu = "viewport_add_tab_" .. view.id
+		if imgui_utils.draw_btn(" + ##btn_add_tab_" .. view.id) then
+			ImGui.OpenPopup(menu, ImGui.PopupFlags { "None" });
+		end
+		if ImGui.BeginPopupContextItemEx(menu) then 
+			if ImGui.MenuItem("+ GM界面") then 
+
+			end
+			if ImGui.MenuItem("+ 自定义界面") then 
+
+			end
+			ImGui.EndPopup();
+		end
+		ImGui.PopStyleVar()
 		ImGui.EndGroup()
 
 		local body_y = view.size_y - line_y
