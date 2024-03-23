@@ -1,10 +1,28 @@
+local function LoadFile(path, env)
+    local fastio = require "fastio"
+    local data = fastio.readall_v(path, path)
+    local func, err = fastio.loadlua(data, path, env)
+    if not func then
+        error(err)
+    end
+    return func
+end
+
+local function LoadDbg(expr)
+    local env = setmetatable({}, {__index = _G})
+    function env.dofile(path)
+        return LoadFile(path, env)()
+    end
+    assert(load(expr, "=(expr)", "t", env))()
+end
+
 local i = 1
 while true do
     if arg[i] == '-E' then
     elseif arg[i] == '-e' then
         i = i + 1
         assert(arg[i], "'-e' needs argument")
-        load(arg[i], "=(expr)")()
+        LoadDbg(arg[i])
     else
         break
     end
@@ -37,10 +55,13 @@ elseif arg[0] == "-d" then
     arg[0] = "../ant/tools/editor/main.lua"
 elseif arg[0] == nil or arg[0] == "" then
     arg[0] = "startup/main.lua"
+elseif arg[0]:sub(1,1) == "-" then
+	table.move(arg, 0, #arg, 1)
+	arg[0] = "startup/main.lua"
 end
 table.insert(arg, 1, tostring(ProjectDir) .. "/startup")
 
 local MainPath = fs.relative(ProjectDir / arg[0], antdir)
 arg[0] = MainPath:string()
 
-assert(loadfile(arg[0]))(table.unpack(arg))
+dofile "/engine/console/bootstrap.lua"

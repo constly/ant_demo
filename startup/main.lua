@@ -1,5 +1,5 @@
+local arg = ...
 __ANT_EDITOR__ = arg[1]  --- 如: F:/ant/ant_demo/startup
-
 package.path = "/engine/?.lua"
 require "bootstrap"
 
