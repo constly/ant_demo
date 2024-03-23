@@ -1,5 +1,4 @@
 local arg = ...
-__ANT_EDITOR__ = arg[1]  --- 如: F:/ant/ant_demo/startup
 package.path = "/engine/?.lua"
 require "bootstrap"
 
@@ -8,4 +7,5 @@ import_package "ant.window".start {
     enable_mouse = true,
     --feature = { "game.demo" },
 	feature = { "mini.richman.go|gameplay" },
+	project_root = arg[1], 		--- 项目根目录，如: F:/ant/ant_demo/startup
 }

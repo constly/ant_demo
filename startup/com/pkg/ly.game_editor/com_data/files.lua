@@ -81,7 +81,7 @@ local function new(editor)
 			tb_show[pkg] = true
 		end
 
-		local packages = dep.common.path_def.get_packages()
+		local packages = dep.common.path_def.get_packages(editor.tbParams.project_root)
 		local resource_tree = {}
 		for _, item in ipairs(packages) do
 			if tb_show[item.name] then

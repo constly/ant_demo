@@ -102,6 +102,7 @@ function system.data_changed()
 				---@type ly.game_editor.create_params
 				local tbParams = {}
 				tbParams.module_name = "richmango"
+				tbParams.project_root = world.args.ecs.project_root
 				tbParams.pkgs = {"mini.richman.res"}
 				editor = dep.game_editor.create(tbParams)
 			end

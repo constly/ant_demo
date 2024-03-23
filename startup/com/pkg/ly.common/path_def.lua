@@ -22,10 +22,9 @@ else
 end
 
 --- 得到所有package包
-function api.get_packages()
-	print("api.get_packages", __ANT_EDITOR__)
-	if not __ANT_EDITOR__ then return {} end
-	local fullpath      = lfs.absolute(__ANT_EDITOR__)
+function api.get_packages(project_root)
+	print("api.get_packages", project_root)
+	local fullpath      = lfs.absolute(project_root)
 	local repo = {_root = fullpath}
 	local mount = dofile "/engine/mount.lua"
 	mount.read(repo)

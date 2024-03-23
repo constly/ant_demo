@@ -48,7 +48,6 @@ local function create_tab(content)
 			add_tab(array[i])
 		end
 		api.active_path = array[1]
-		print("set_data", content)
 	end
 
 	function api.tostring()
