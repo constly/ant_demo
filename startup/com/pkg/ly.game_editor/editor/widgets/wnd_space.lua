@@ -151,6 +151,7 @@ local function new(editor)
 						local fromViewId = tonumber(arr[1])
 						local fromPath = arr[2]
 						view.tabs.open_tab(fromPath)
+						space.set_active_viewport(view.id)
 						local view = space.find_viewport_by_id(fromViewId)
 						if view then 
 							view.tabs.close_tab(fromPath)
@@ -163,9 +164,16 @@ local function new(editor)
 		end
 
 		local cur = view.tabs.get_active_path()
+		local is_current_view = view == space.get_active_viewport()
 		for i, v in ipairs(view.tabs.list) do 
 			local label = string.format("%s##btn_view_%d_%s", v.name, view.id, v.name)
-			if imgui_utils.draw_btn(label, cur == v.path) then
+			local style
+			if is_current_view then 
+				style = cur == v.path and imgui_styles.btn_yellow or imgui_styles.btn_normal
+			else 
+				style = cur == v.path and imgui_styles.btn_blue or imgui_styles.btn_normal
+			end
+			if imgui_utils.draw_style_btn(label, style) then
 				view.tabs.set_active_path(v.path)
 			end
 			if ImGui.BeginPopupContextItem() then 
@@ -223,11 +231,13 @@ local function new(editor)
 			ImGui.OpenPopup(menu, ImGui.PopupFlags { "None" });
 		end
 		if ImGui.BeginPopupContextItemEx(menu) then 
+			if ImGui.MenuItem("+ 收藏") then 
+			end
+			if ImGui.MenuItem("+ 文件夹") then 
+			end
 			if ImGui.MenuItem("+ GM界面") then 
-
 			end
 			if ImGui.MenuItem("+ 自定义界面") then 
-
 			end
 			ImGui.EndPopup();
 		end
@@ -278,6 +288,7 @@ local function new(editor)
 					src_view.tabs.close_tab(fromPath)
 				end
 
+				---@type ly.game_editor.viewport
 				local dest_view
 				if type == "left" or type == "right" then 
 					dest_view = space.split(view.id, 2)
@@ -285,10 +296,12 @@ local function new(editor)
 					dest_view = space.split(view.id, 1)
 				end
 				if type == "left" or type == "up" then 
-					dest_view.children[1].tabs.open_tab(fromPath)
+					dest_view = dest_view.children[1]
 				else 
-					dest_view.children[2].tabs.open_tab(fromPath)
+					dest_view = dest_view.children[2]
 				end
+				dest_view.tabs.open_tab(fromPath)
+				space.set_active_viewport(dest_view.id)
 
 				local src_view = space.find_viewport_by_id(fromViewId)
 				if src_view and #src_view.tabs.list == 0 and src_view.type == 0 then 

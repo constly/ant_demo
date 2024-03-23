@@ -122,6 +122,13 @@ local function create_tab(content)
 		for i, v in ipairs(api.list) do 
 			if v == tab or v.path == tab then 
 				table.remove(api.list, i)
+				if v.path == api.active_path then 
+					if i > 1 then 
+						api.active_path = api.list[i - 1].path
+					elseif #api.list >= i then  
+						api.active_path = api.list[i].path
+					end
+				end
 				save()
 				break
 			end
@@ -171,21 +178,26 @@ local function create_space()
 	space.view = {} 				---@type ly.game_editor.viewport
 	space.next_id = 0
 	space.active_viewport = nil  	---@type ly.game_editor.viewport
+	space.lock = false				---@type boolean 是否锁定
 
 	function space.init()
 		space.view = space.create_viewport(0, 1)
 	end
 
 	function space.get_data()
-		local tb_save = {view = space.view.get_data(), next_id = space.next_id}
+		local tb_save = {view = space.view.get_data(), next_id = space.next_id, lock = space.lock}
 		return tb_save
 	end
 
 	function space.set_data(tb_save)
 		space.next_id = tb_save.next_id
+		space.lock = tb_save.lock
 		space.view = create_viewport() 
 		space.view.set_data(tb_save.view)
 	end
+
+	function space.is_lock() return space.lock end 
+	function space.set_lock(v) space.lock = v end
 
 	function space.create_viewport(type, size_rate)
 		space.next_id = space.next_id + 1
@@ -210,6 +222,10 @@ local function create_space()
 		view.tabs.reset()
 		view.children[1] = view1
 		view.children[2] = view2
+
+		if space.active_viewport == view then 
+			space.active_viewport = view1
+		end
 		return view
 	end
 
@@ -246,7 +262,7 @@ local function create_space()
 	function space.remove_viewport(viewport_id)
 		---@param from ly.game_editor.viewport
 		---@param to ly.game_editor.viewport
-		local function merge(from, to)
+		local function merge(from, to, other)
 			if from.type == 0 then 
 				from.tabs.copy_to(to.tabs)
 				to.type = 0
@@ -255,6 +271,9 @@ local function create_space()
 				to.tabs = from.tabs
 				to.children = from.children
 			end
+			if space.active_viewport == from or space.active_viewport == other then 
+				space.active_viewport = to
+			end
 		end 
 		---@param view ly.game_editor.viewport
 		local function remove(view)
@@ -262,9 +281,9 @@ local function create_space()
 			local left = view.children[1]
 			local right = view.children[2]
 			if left.id == viewport_id then 
-				return merge(right, view)
+				return merge(right, view, left)
 			elseif right.id == viewport_id then
-				return merge(left, view)
+				return merge(left, view, right)
 			end 
 			remove(left)
 			remove(right)
@@ -342,8 +361,13 @@ local function new(editor)
 	end 
 
 	function api.close_others(index, space)
-		api.works = {space}
-		api.index = 1
+		for i, v in ipairs(api.works) do 
+			if v == space then 
+				api.index = i
+			elseif not v.lock then 
+				table.remove(api.works, i)
+			end
+		end
 	end
 
 	init()

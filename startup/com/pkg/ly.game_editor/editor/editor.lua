@@ -43,7 +43,16 @@ local function create(tbParams)
 			ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 			if ImGui.BeginPopupContextItem() then 
 				api.workspaces.set_current_space(i)
-				if ImGui.MenuItem("关闭") then 
+				if space.is_lock() then 
+					if ImGui.MenuItem("解 锁") then 
+						space.set_lock(false)
+					end
+				else 
+					if ImGui.MenuItem("锁 定") then 
+						space.set_lock(true)
+					end
+				end
+				if ImGui.MenuItem("关 闭") then 
 					api.workspaces.close_self(i, space)
 				end
 				if ImGui.MenuItem("关闭其他") then 
