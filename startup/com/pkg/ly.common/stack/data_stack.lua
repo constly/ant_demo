@@ -37,6 +37,7 @@ local create = function()
 			index = _index
 			data_hander.data = copy(stack[index])
 			data_hander.stack_version = index
+			data_hander.isModify = data_stack.get_modify()
 			print("undo", index)
 		end
 	end 
@@ -47,6 +48,7 @@ local create = function()
 			index = _index
 			data_hander.data = copy(stack[index])
 			data_hander.stack_version = index
+			data_hander.isModify = data_stack.get_modify()
 			print("redo", index)
 		end
 	end

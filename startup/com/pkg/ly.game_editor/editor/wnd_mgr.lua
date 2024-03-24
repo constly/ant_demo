@@ -14,6 +14,7 @@ local lib = dep.common.lib
 ---@field update function 更新
 ---@field close function 关闭窗口，释放资源
 ---@field save function 保存数据
+---@field reload function 重新加载文件
 local tb_wnd_base = {}
 
 ---@param editor ly.game_editor.editor
@@ -27,9 +28,11 @@ local function new(editor)
 		local path = view.tabs.get_active_path()
 		if not view.tabs.has_tab(path) then return end
 		local window = api.get_or_create_window(path)
-		if not window then return end
-
-		window.update(deltatime);
+		if window then 
+			window.update(deltatime);
+		else 
+			ImGui.Text("功能未实现: " .. path)
+		end		
 	end
 
 	---@return ly.game_editor.wnd_base
@@ -47,6 +50,8 @@ local function new(editor)
 			window = require 'windows.csv.wnd_csv' .new(vfs_path, full_path)
 		elseif ext == "map" then
 			window = require 'windows.map.wnd_map' .new(vfs_path, full_path)
+		elseif ext == "def" then
+			window = require 'windows.def.wnd_def' .new(vfs_path, full_path)
 		end
 		if window then 
 			api.windows[vfs_path] = window

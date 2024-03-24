@@ -47,18 +47,16 @@ local function new(vfs_path, full_path)
 			process(v.txt_color)
 		end
 
-		
-		local data
 		local f<close> = io.open(full_path, 'r')
-		if f then 
-			data = dep.datalist.parse( f:read "a" )
-		end 
-
+		local data = f and dep.datalist.parse( f:read "a" )
+	
 		---@type chess_editor_create_args
 		local params = {}
 		params.data = data
 		params.tb_objects = tb_object_def
-		editor = chess_map.create(params);
+		if not editor then 
+			editor = chess_map.create(params);
+		end
 	end
 
 	function api.update(deltatime)
@@ -84,6 +82,9 @@ local function new(vfs_path, full_path)
 	---@return boolean 文件是否有修改
 	function api.is_dirty()
 		return editor.is_dirty()
+	end
+
+	function api.reload()
 	end
 
 	init()

@@ -30,6 +30,9 @@ local function new(vfs_path, full_path)
 		return false
 	end
 
+	function api.reload()
+	end
+
 	return api 
 end
 

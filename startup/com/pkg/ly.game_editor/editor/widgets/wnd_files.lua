@@ -18,7 +18,7 @@ local function new(editor)
 	local view_path
 
 	local function init()
-		for i, name in ipairs({"ai", "csv", "folder", "ini", "map", "mod", "room"}) do 
+		for i, name in ipairs({"ai", "csv", "folder", "ini", "map", "mod", "room", "def"}) do 
 			icons[name] = dep.assetmgr.resource(string.format("/pkg/ly.game_editor/assets/icon/icon_%s.texture", name), { compile = true })
 		end
 	end
@@ -197,6 +197,12 @@ local function new(editor)
 		else
 			set_view_path(r_path)
 		end
+	end
+
+	function api.select_in_folder(vfs_path)
+		local full_path = editor.files.vfs_path_to_full_path(vfs_path)
+		local path = full_path:gsub("/","\\")
+		os.execute("c:\\windows\\explorer.exe /select,".. path)
 	end
 
 	init()

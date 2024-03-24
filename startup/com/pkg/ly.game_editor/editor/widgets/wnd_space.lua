@@ -184,18 +184,26 @@ local function new(editor)
 			if ImGui.BeginPopupContextItem() then 
 				view.tabs.set_active_path(v.path)
 				if ImGui.MenuItem("保 存") then 
-					if wnd then 
-						wnd.save()
-					end
-				end
-				if ImGui.MenuItem("克 隆") then 
-					space.clone_tab(view, v.path)
+					if wnd then wnd.save() end
 				end
 				if ImGui.MenuItem("关 闭") then 
 					view.tabs.close_tab(v)
 				end
-				if ImGui.MenuItem("关闭其他") then 
+				if ImGui.MenuItem("关闭其他所有") then 
 					view.tabs.close_others(v)
+				end
+				ImGui.Separator()
+				if ImGui.MenuItem("克 隆") then 
+					space.clone_tab(view, v.path)
+				end
+				if ImGui.MenuItem("定 位") then 
+					editor.wnd_files.browse(v.path)
+				end
+				if ImGui.MenuItem("重新加载") then 
+					if wnd then wnd.reload() end
+				end
+				if ImGui.MenuItem("在文件浏览器中显示") then 
+					editor.wnd_files.select_in_folder(v.path)
 				end
 				ImGui.EndPopup()
 			end

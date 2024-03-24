@@ -53,12 +53,9 @@ end
 
 function system.on_entry()
 	if not editor then 
-		local data
 		local f<close> = io.open(file_path, 'r')
-		if f then 
-			data = dep.datalist.parse( f:read "a" )
-		end 
-
+		local data = f and dep.datalist.parse( f:read "a" )
+		
 		---@type chess_editor_create_args
 		local params = {}
 		params.data = data

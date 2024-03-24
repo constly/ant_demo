@@ -3,4 +3,5 @@ whitelist:
 	map
 	ini
 	csv
+	def
 	
