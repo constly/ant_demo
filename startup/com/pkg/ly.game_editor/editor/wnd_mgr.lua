@@ -15,6 +15,7 @@ local lib = dep.common.lib
 ---@field close function 关闭窗口，释放资源
 ---@field save function 保存数据
 ---@field reload function 重新加载文件
+---@field handleKeyEvent function 处理键盘事件
 local tb_wnd_base = {}
 
 ---@param editor ly.game_editor.editor
@@ -22,14 +23,18 @@ local function new(editor)
 	local api = {}  	---@class ly.game_editor.wnd_mgr
 	api.windows = {}	---@type map<string, ly.game_editor.wnd_base> 所有窗口
 
-	---@param deltatime number 更新间隔,单位秒
+	---@param delta_time number 更新间隔,单位秒
 	---@param view ly.game_editor.viewport  要渲染的窗口自身
-	function api.render(deltatime, view)
+	---@param is_active boolean 窗口是否激活
+	function api.render(delta_time, view, is_active)
 		local path = view.tabs.get_active_path()
 		if not view.tabs.has_tab(path) then return end
 		local window = api.get_or_create_window(path)
 		if window then 
-			window.update(deltatime);
+			window.update(delta_time);
+			if is_active then 
+				window.handleKeyEvent()
+			end
 		else 
 			ImGui.Text("功能未实现: " .. path)
 		end		

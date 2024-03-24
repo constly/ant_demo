@@ -77,6 +77,7 @@ function system.data_changed()
 		ImGui.SetCursorPos(5, 30)
 		ImGui.BeginChild("##child", size_x, size_y, ImGui.ChildFlags({"Border"}), ImGui.WindowFlags {"NoScrollbar", "NoScrollWithMouse"})
 			editor.on_render(0.033)	
+			editor.handleKeyEvent()
 		ImGui.EndChild()	
 
 		ImGui.SetCursorPos(size_x + 20, 30)

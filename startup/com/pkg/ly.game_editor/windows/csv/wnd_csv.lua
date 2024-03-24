@@ -8,7 +8,7 @@ local ImGui = dep.ImGui
 local function new(vfs_path, full_path)
 	local api = {} 				---@class ly.game_editor.wnd_csv
 	
-	function api.update(deltatime)
+	function api.update(delta_time)
 		ImGui.Text("csv 绘制")
 	end 
 
@@ -18,12 +18,15 @@ local function new(vfs_path, full_path)
 	function api.save()
 	end 
 
-	---@return boolean 文件是否有修改
 	function api.is_dirty()
 		return false
 	end
 
 	function api.reload()
+	end
+
+	function api.handleKeyEvent()
+		
 	end
 	
 	return api 

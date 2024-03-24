@@ -67,6 +67,7 @@ local create = function()
 		while(index >= 0 and #stack > index) do 
 			table.remove(stack, #stack)
 		end
+		data_hander.data.cache = data_hander.data.cache or {}
 		data_hander.data.cache.__dirty = dirty									-- 本次是否有数据变动
 		data_hander.isModify = data_stack.get_modify()				
 		local new_data = copy(data_hander.data)

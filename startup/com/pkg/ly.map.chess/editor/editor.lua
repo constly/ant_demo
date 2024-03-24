@@ -43,12 +43,14 @@ local create = function(args)
 
 	function editor.on_render(deltatime)
 		draw.on_render(deltatime)
+	end 
 
+	function editor.handleKeyEvent()
 		if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
 			if ImGui.IsKeyPressed(ImGui.Key.Z, false) then stack.undo() end
 			if ImGui.IsKeyPressed(ImGui.Key.Y, false) then stack.redo() end
 		end
-	end 
+	end
 
 	function editor.is_dirty()
 		return data_hander.isModify;

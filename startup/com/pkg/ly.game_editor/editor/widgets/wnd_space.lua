@@ -109,7 +109,7 @@ local function new(editor)
 			if body_y > 3 then
 				ImGui.SetCursorPos(0, line_y)
 				ImGui.BeginChild("viewport_content_" .. view.id, view.size_x, body_y, ImGui.ChildFlags({"Border"}))
-				editor.wnd_mgr.render(deltatime, view)
+				editor.wnd_mgr.render(deltatime, view, space.get_active_viewport() == view)
 				ImGui.EndChild()
 
 				local payload = imgui_utils.GetDragDropPayload("DragViewTab")
@@ -196,7 +196,7 @@ local function new(editor)
 				if ImGui.MenuItem("克 隆") then 
 					space.clone_tab(view, v.path)
 				end
-				if ImGui.MenuItem("定 位") then 
+				if ImGui.MenuItem("选 中") then 
 					editor.wnd_files.browse(v.path)
 				end
 				if ImGui.MenuItem("重新加载") then 

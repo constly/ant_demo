@@ -5,6 +5,7 @@ local dep = {}  ---@class ly.game_editor.dep
 dep.ImGui  			= require "imgui"
 dep.serialize 		= import_package "ant.serialize"
 dep.fs  			= require "filesystem"
+dep.bfs 			= require "bee.filesystem"
 dep.datalist		= require 'datalist'
 dep.assetmgr  		= import_package "ant.asset"
 dep.textureman 		= require "textureman.client"
