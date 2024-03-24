@@ -5,7 +5,8 @@ local dep = require 'dep'
 local ed = dep.ed 
 local ImGui = dep.ImGui
 
-local function new(vfs_path, full_path)
+---@param editor ly.game_editor.editor
+local function new(editor, vfs_path, full_path)
 	local api = {} 				---@class ly.game_editor.wnd_csv
 	
 	function api.update(delta_time)

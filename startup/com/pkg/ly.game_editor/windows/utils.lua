@@ -17,6 +17,7 @@ function api.save_file(full_path, data_hander)
 	local f<close> = assert(io.open(full_path, "w"))
 	f:write(content)
 	data.cache = cache
+	data_hander.isModify = false
 end
 
 return api

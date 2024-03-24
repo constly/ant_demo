@@ -50,13 +50,13 @@ local function new(editor)
 
 		local full_path = editor.files.vfs_path_to_full_path(vfs_path)
 		if ext == "ini" then 
-			window = require 'windows.ini.wnd_ini' .new(vfs_path, full_path)
+			window = require 'windows.ini.wnd_ini' .new(editor, vfs_path, full_path)
 		elseif ext == "csv" then
-			window = require 'windows.csv.wnd_csv' .new(vfs_path, full_path)
+			window = require 'windows.csv.wnd_csv' .new(editor, vfs_path, full_path)
 		elseif ext == "map" then
-			window = require 'windows.map.wnd_map' .new(vfs_path, full_path)
+			window = require 'windows.map.wnd_map' .new(editor, vfs_path, full_path)
 		elseif ext == "def" then
-			window = require 'windows.def.wnd_def' .new(vfs_path, full_path)
+			window = require 'windows.def.wnd_def' .new(editor, vfs_path, full_path)
 		end
 		if window then 
 			api.windows[vfs_path] = window

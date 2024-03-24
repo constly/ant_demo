@@ -40,7 +40,7 @@ local function create()
 	local colorOK<const> = {0, 0.9, 0, 1}
 
 	---@param msg string 
-	---@param type ly.game_editor.msg_hints.type 
+	---@param type ly.game_editor.msg_hints.type info|ok|warning|error
 	function api.show(msg, type)
 		---@type ly.game_editor.msg_hints.msg_data 
 		local tb = {}
@@ -71,6 +71,7 @@ local function create()
 	function api.update(deltaTime)
 		local screen_x, screen_y = imgui_utils.get_display_size()
 		local start_x = screen_x * 0.5 - 100
+		delay = 0
 		for i = #tb_msg, 1, -1 do 
 			local one = tb_msg[i]
 			one.delay = one.delay - deltaTime

@@ -8,11 +8,12 @@ local ImGui = dep.ImGui
 ---@type ly.map.chess.main
 local chess_map = import_package 'ly.map.chess'			
 
-local function new(vfs_path, full_path)
+---@param editor ly.game_editor.editor
+local function new(editor, vfs_path, full_path)
 	local api = {} 			---@class ly.game_editor.wnd_map
 	
 	---@type chess_editor
-	local editor = nil 
+	local main = nil 
 
 	local function init()
 		---@type chess_object_tpl[] 物件定义
@@ -54,8 +55,8 @@ local function new(vfs_path, full_path)
 		local params = {}
 		params.data = data
 		params.tb_objects = tb_object_def
-		if not editor then 
-			editor = chess_map.create(params);
+		if not main then 
+			main = chess_map.create(params);
 		end
 	end
 
@@ -63,17 +64,17 @@ local function new(vfs_path, full_path)
 		local size_x, size_y = ImGui.GetContentRegionAvail()
 		ImGui.PushStyleColorImVec4(ImGui.Col.ChildBg, 0.1, 0.1, 0.1, 0.8)
 		ImGui.BeginChild("##child", size_x, size_y, ImGui.ChildFlags({"Border"}), ImGui.WindowFlags {"NoScrollbar", "NoScrollWithMouse"})
-			editor.on_render(delta_time)
+			main.on_render(delta_time)
 		ImGui.EndChild()
 		ImGui.PopStyleColor()
 	end 
 
 	function api.close()
-		editor.on_destroy()
+		main.on_destroy()
 	end 
 
 	function api.save()
-		editor.on_save(function(content)
+		main.on_save(function(content)
 			local f<close> = assert(io.open(full_path, "w"))
 			f:write(content)
 		end)
@@ -81,11 +82,11 @@ local function new(vfs_path, full_path)
 
 	---@return boolean 文件是否有修改
 	function api.is_dirty()
-		return editor.is_dirty()
+		return main.is_dirty()
 	end
 
 	function api.handleKeyEvent()
-		editor.handleKeyEvent()
+		main.handleKeyEvent()
 	end
 
 	function api.reload()
