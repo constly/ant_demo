@@ -12,7 +12,8 @@ local tbParam =
 }
 local system = mgr.create_system(tbParam)
 local ImGui = dep.ImGui
-local file_path = dep.common.path_def.data_root .. "/chess/map_01.ant"
+local imgui_utils = dep.common.imgui_utils
+local file_path = dep.common.path_def.data_root .. "/chess/map_01.map"
 
 ---@type chess_editor
 local editor 
@@ -52,9 +53,15 @@ end
 
 function system.on_entry()
 	if not editor then 
+		local data
+		local f<close> = io.open(file_path, 'r')
+		if f then 
+			data = dep.datalist.parse( f:read "a" )
+		end 
+
 		---@type chess_editor_create_args
 		local params = {}
-		params.path = file_path
+		params.data = data
 		params.tb_objects = tb_object_def
 		editor = dep.chess_map.create(params);
 	end
@@ -70,10 +77,26 @@ function system.data_changed()
 		local size_x, size_y = ImGui.GetContentRegionAvail()
 		size_x = size_x - 100
 		size_y = size_y - 50
-		ImGui.SetCursorPos(100, 30)
+		ImGui.SetCursorPos(5, 30)
 		ImGui.BeginChild("##child", size_x, size_y, ImGui.ChildFlags({"Border"}), ImGui.WindowFlags {"NoScrollbar", "NoScrollWithMouse"})
 			editor.on_render(0.033)	
 		ImGui.EndChild()	
+
+		ImGui.SetCursorPos(size_x + 20, 30)
+		ImGui.BeginGroup()
+		if imgui_utils.draw_btn("Reload##btn_reload", false, {size_x = 80}) then 
+			editor.on_init()
+		end 
+		if imgui_utils.draw_btn("Save##btn_save", false, {size_x = 80}) then 
+			editor.on_save(function(content)
+				local f<close> = assert(io.open(file_path, "w"))
+    			f:write(content)
+			end)
+		end 
+		if imgui_utils.draw_btn("Clear##btn_clear", false, {size_x = 80}) then 
+			editor.on_reset()
+		end 
+		ImGui.EndGroup()
 	end 
 	ImGui.End()
 end

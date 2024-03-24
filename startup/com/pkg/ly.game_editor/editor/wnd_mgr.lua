@@ -10,8 +10,7 @@ local imgui_styles = dep.common.imgui_styles
 local lib = dep.common.lib
 
 ---@class ly.game_editor.wnd_base
----@field path string 窗口路径
----@field is_dirty boolean 是否有修改
+---@field is_dirty function 是否有修改
 ---@field update function 更新
 ---@field close function 关闭窗口，释放资源
 ---@field save function 保存数据
@@ -34,22 +33,23 @@ local function new(editor)
 	end
 
 	---@return ly.game_editor.wnd_base
-	function api.get_or_create_window(path)
-		local window = api.windows[path]
+	function api.get_or_create_window(vfs_path)
+		local window = api.windows[vfs_path]
 		if window then return window end
 
-		local ext = lib.get_file_ext(path)
+		local ext = lib.get_file_ext(vfs_path)
 		if not ext then return end 
 
+		local full_path = editor.files.vfs_path_to_full_path(vfs_path)
 		if ext == "ini" then 
-			window = require 'windows.ini.wnd_ini' .new(path)
+			window = require 'windows.ini.wnd_ini' .new(vfs_path, full_path)
 		elseif ext == "csv" then
-			window = require 'windows.csv.wnd_csv' .new(path)
+			window = require 'windows.csv.wnd_csv' .new(vfs_path, full_path)
 		elseif ext == "map" then
-			window = require 'windows.map.wnd_map' .new(path)
+			window = require 'windows.map.wnd_map' .new(vfs_path, full_path)
 		end
 		if window then 
-			api.windows[path] = window
+			api.windows[vfs_path] = window
 		end 
 		return window
 	end

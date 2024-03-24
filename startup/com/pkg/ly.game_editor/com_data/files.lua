@@ -99,6 +99,11 @@ local function new(editor)
 		if not path or path == "" then return root.tree end 
 		---@param tree ly.game_editor.tree_item
 		local function find(tree)
+			for i, file in ipairs(tree.files) do 
+				if file.r_path == path then 
+					return file
+				end
+			end
 			for i, dir in ipairs(tree.dirs) do 
 				if dir.r_path == path then 
 					return dir.tree
@@ -110,6 +115,17 @@ local function new(editor)
 			end
 		end
 		return find(root.tree)
+	end
+
+	function api.vfs_path_to_full_path(vfs_path)
+		local arr = dep.common.lib.split(vfs_path, "/")
+		local pkg = arr[1]
+		local r_path = table.concat(arr, "/", 2)
+		local root = api.resource_tree[pkg]
+		if root then 
+			local tree = api.find_tree_by_path(root, r_path)
+			return tree and tree.full_path
+		end
 	end
 
 	init()

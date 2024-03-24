@@ -27,7 +27,7 @@ local create = function(args)
 
 	function editor.on_reset()
 		local _args = dep.common.lib.copy(args)  		---@type chess_editor_create_args
-		_args.path = nil
+		_args.data = nil
 		data_hander.init(_args)
 		stack.snapshoot()
 	end
@@ -49,6 +49,10 @@ local create = function(args)
 			if ImGui.IsKeyPressed(ImGui.Key.Y, false) then stack.redo() end
 		end
 	end 
+
+	function editor.is_dirty()
+		return data_hander.isModify;
+	end
 	
 	editor.on_init()
 	return editor

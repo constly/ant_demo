@@ -234,21 +234,6 @@ local create = function(editor)
 
 	function chess.draw_right(_deltatime)
 		local size_x, size_y = ImGui.GetContentRegionAvail()
-		ImGui.SetCursorPos(3.5, 5)
-		if imgui_utils.draw_btn("Reload", false) then 
-			editor.on_init()
-		end
-		ImGui.SameLine()
-		if imgui_utils.draw_btn("Save", false) then 
-			editor.on_save(function(content)
-				local f<close> = assert(io.open(editor.args.path, "w"))
-    			f:write(content)
-			end)
-		end
-		ImGui.SameLine()
-		if imgui_utils.draw_btn("Clear", false) then 
-			editor.on_reset()
-		end
 		local top = header_y
 		size_y = size_y - top
 		ImGui.SetCursorPos(0, top)

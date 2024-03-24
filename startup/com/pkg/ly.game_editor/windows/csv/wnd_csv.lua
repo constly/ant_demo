@@ -5,13 +5,8 @@ local dep = require 'dep'
 local ed = dep.ed 
 local ImGui = dep.ImGui
 
-local function new(path)
-	local api = {} 			---@class ly.game_editor.wnd_csv
-	api.path = path			---@type string 文件路径
-	api.is_dirty = false	---@type boolean 文件是否有修改
-
-	function api.open(path)
-	end 
+local function new(vfs_path, full_path)
+	local api = {} 				---@class ly.game_editor.wnd_csv
 	
 	function api.update(deltatime)
 		ImGui.Text("csv 绘制")
@@ -22,6 +17,11 @@ local function new(path)
 
 	function api.save()
 	end 
+
+	---@return boolean 文件是否有修改
+	function api.is_dirty()
+		return false
+	end
 
 	return api 
 end

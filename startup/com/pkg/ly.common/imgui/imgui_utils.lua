@@ -1,6 +1,7 @@
 local dep = require 'dep' ---@type ly.common.dep
 local ImGui = dep.ImGui
 local style = require 'imgui.imgui_styles'  ---@type ly.common.imgui_styles
+local lib = require 'tools.lib'
 
 ---@class ly.common.imgui_utils
 local api = {}
@@ -61,6 +62,31 @@ function api.draw_color_btn(label, bg_color, txt_clor, tbParams)
 	if ImGui.ButtonEx(label, tbParams.size_x, tbParams.size_y) then ok = true end
 	ImGui.PopStyleColorEx(4)
 	return ok
+end
+
+function api.SetDragDropPayload(type, content)
+	local str = string.format("%s##%s", type, content)
+	ImGui.SetDragDropPayload(type, str);
+end
+
+function api.AcceptDragDropPayload(type)
+	local str = ImGui.AcceptDragDropPayload(type)
+	if str then
+		local arr = lib.split(str, "##")
+		if arr[1] == type then 
+			return arr[2]
+		end
+	end
+end
+
+function api.GetDragDropPayload(type)
+	local str = ImGui.GetDragDropPayload(type)
+	if str then
+		local arr = lib.split(str, "##")
+		if arr[1] == type then 
+			return arr[2]
+		end
+	end
 end
 
 return api;

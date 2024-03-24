@@ -84,6 +84,6 @@ local chess_object_tpl = {}
 
 --- 棋盘编辑器创建参数
 ---@class chess_editor_create_args
----@field path string
+---@field data string 内容
 ---@field tb_objects chess_object_tpl[]
 local chess_editor_create_args = {}

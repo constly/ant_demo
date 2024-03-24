@@ -20,14 +20,7 @@ local create = function()
 
 	---@param args chess_editor_create_args
 	function handler.init(args)
-		local data = {} ---@type chess_map_tpl
-		if args.path then 
-			local f<close> = io.open(args.path, 'r')
-    		if f then 
-        		local content = f:read "a"
-				data = dep.datalist.parse(content)
-    		end 
-		end
+		local data = dep.common.lib.copy(args.data) or {} ---@type chess_map_tpl
 		handler.data = data
 		handler.max_object_size_x = 1
 		handler.max_object_size_y = 1

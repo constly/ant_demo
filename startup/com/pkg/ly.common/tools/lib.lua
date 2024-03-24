@@ -145,6 +145,8 @@ function lib.dump(obj)
 end
 
 function lib.copy(tb)
+	if not tb then return end 
+	
 	local ret = {};
 	if type(tb) ~= "table" then
 		return tb;

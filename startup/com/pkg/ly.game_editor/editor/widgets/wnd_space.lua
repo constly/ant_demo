@@ -109,19 +109,22 @@ local function new(editor)
 			if body_y > 3 then
 				ImGui.SetCursorPos(0, line_y)
 				ImGui.BeginChild("viewport_content_" .. view.id, view.size_x, body_y, ImGui.ChildFlags({"Border"}))
-					local start_x, start_y = ImGui.GetWindowPos()
-					editor.wnd_mgr.render(deltatime, view)
-					
-					local payload = ImGui.GetDragDropPayload("DragViewTab")
-					if payload then 
-						local x, y = ImGui.GetMousePos()
-						local rate_x = (x - start_x) / view.size_x
-						local rate_y = (y - start_y) / view.size_y
-						if rate_x >= 0 and rate_y >= 0 and rate_x <= 1 and rate_y <= 1 then 
-							api.draw_dropview_hint(view, payload, rate_x, rate_y, start_x, start_y)
-						end
-					end
+				editor.wnd_mgr.render(deltatime, view)
 				ImGui.EndChild()
+
+				local payload = imgui_utils.GetDragDropPayload("DragViewTab")
+				if payload then 
+					ImGui.SetCursorPos(0, line_y)
+					ImGui.BeginChild("viewport_content_drop_" .. view.id, view.size_x, body_y, ImGui.ChildFlags({}))
+					local start_x, start_y = ImGui.GetWindowPos()
+					local x, y = ImGui.GetMousePos()
+					local rate_x = (x - start_x) / view.size_x
+					local rate_y = (y - start_y) / view.size_y
+					if rate_x >= 0 and rate_y >= 0 and rate_x <= 1 and rate_y <= 1 then 
+						api.draw_dropview_hint(view, payload, rate_x, rate_y, start_x, start_y)
+					end
+					ImGui.EndChild()
+				end
 			end
 		ImGui.EndChild()
 		-- 判断鼠标当前点击在哪个viewport上
@@ -134,7 +137,7 @@ local function new(editor)
 	---@param view ly.game_editor.viewport  窗口
 	function api.draw_tabs(view, line_y)
 		do 
-			local payload = ImGui.GetDragDropPayload("DragViewTab")
+			local payload = imgui_utils.GetDragDropPayload("DragViewTab")
 			local arr = lib.split(payload, ";")
 			local fromViewId = tonumber(arr[1])
 			if fromViewId and fromViewId ~= view.id then
@@ -142,7 +145,7 @@ local function new(editor)
 				ImGui.SetNextItemAllowOverlap();
 				ImGui.InvisibleButton("##btn_drop_to_tab_" .. view.id, view.size_x - 5, line_y - 5) 
 				if ImGui.BeginDragDropTarget() then 
-					local payload = ImGui.AcceptDragDropPayload("DragViewTab")
+					local payload = imgui_utils.AcceptDragDropPayload("DragViewTab")
 					if payload then
 						local arr = lib.split(payload, ";")
 						local fromViewId = tonumber(arr[1])
@@ -163,7 +166,12 @@ local function new(editor)
 		local cur = view.tabs.get_active_path()
 		local is_current_view = view == space.get_active_viewport()
 		for i, v in ipairs(view.tabs.list) do 
-			local label = string.format("%s##btn_view_%d_%s", v.name, view.id, v.name)
+			local wnd = editor.wnd_mgr.find_window(v.path)
+			local name = v.name
+			if wnd and wnd.is_dirty() then 
+				name = "*" .. name
+			end
+			local label = string.format("%s##btn_view_%d_%s", name, view.id, v.name)
 			local style
 			if is_current_view then 
 				style = cur == v.path and imgui_styles.btn_yellow or imgui_styles.btn_normal
@@ -175,6 +183,11 @@ local function new(editor)
 			end
 			if ImGui.BeginPopupContextItem() then 
 				view.tabs.set_active_path(v.path)
+				if ImGui.MenuItem("保 存") then 
+					if wnd then 
+						wnd.save()
+					end
+				end
 				if ImGui.MenuItem("克 隆") then 
 					space.clone_tab(view, v.path)
 				end
@@ -189,13 +202,13 @@ local function new(editor)
 
 			if ImGui.BeginDragDropSource() then 
 				view.tabs.set_active_path(v.path)
-				ImGui.SetDragDropPayload("DragViewTab", string.format("%d;%s;%d", view.id, v.path, i));
+				imgui_utils.SetDragDropPayload("DragViewTab", string.format("%d;%s;%d", view.id, v.path, i));
 				ImGui.Text("正在拖动 " .. v.name);
 				ImGui.EndDragDropSource();
 			end
 
-			if ImGui.GetDragDropPayload("DragViewTab") and ImGui.BeginDragDropTarget() then 
-				local payload = ImGui.AcceptDragDropPayload("DragViewTab")
+			if imgui_utils.GetDragDropPayload("DragViewTab") and ImGui.BeginDragDropTarget() then 
+				local payload = imgui_utils.AcceptDragDropPayload("DragViewTab")
             	if payload then
 					local arr = lib.split(payload, ";")
 					local fromViewId = tonumber(arr[1])
@@ -278,7 +291,7 @@ local function new(editor)
 		ImGui.SetCursorScreenPos(start_x, start_y)
 		imgui_utils.draw_style_btn("##btn_dropview_hint", imgui_styles.btn_drop_hint, {size_x = size_x, size_y = size_y})
 		if ImGui.BeginDragDropTarget() then 
-			local payload = ImGui.AcceptDragDropPayload("DragViewTab")
+			local payload = imgui_utils.AcceptDragDropPayload("DragViewTab")
 			if payload then
 				local arr = lib.split(payload, ";")
 				local fromViewId = tonumber(arr[1])
