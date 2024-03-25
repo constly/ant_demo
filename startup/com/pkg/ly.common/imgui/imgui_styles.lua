@@ -6,10 +6,14 @@ local api = {}
 local styles = {}
 api.btn_blue = 1
 api.btn_normal = 2
-api.btn_transparency_center = 3
-api.btn_transparency_center_selected = 4
-api.btn_transparency_left = 5
-api.btn_yellow = 6
+api.btn_normal_item = 3
+api.btn_yellow = 4
+
+
+api.btn_transparency_center = 10
+api.btn_transparency_center_selected = 11
+api.btn_transparency_left = 12
+
 
 api.btn_drop_hint = 50
 
@@ -48,6 +52,13 @@ local init = function()
 		draw_btn(0.3, 0.3, 0.25, 1)
 	end, function()
 		ImGui.PopStyleColorEx(3)
+	end)
+
+	register(api.btn_normal_item, function()
+		draw_btn(0.2, 0.2, 0.15, 1)
+		ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.8, 0.8, 0.8, 1)
+	end, function()
+		ImGui.PopStyleColorEx(4)
 	end)
 
 	register(api.btn_transparency_center, function()

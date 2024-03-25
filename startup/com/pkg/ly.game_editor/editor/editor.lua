@@ -8,6 +8,7 @@ local function create(tbParams)
 	---@class ly.game_editor.editor
 	local api = {}
 	api.tbParams = tbParams
+	api.data_center = (require 'windows.data_center').new(api)  	
 	api.dialogue_input = (require 'com_ui.dialogue_input').create()  	
 	api.dialogue_msgbox = (require 'com_ui.dialogue_msgbox').create()
 	api.msg_hints = (require 'com_ui.msg_hints').create()

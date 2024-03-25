@@ -37,6 +37,7 @@ local function new_data_handler()
 
 	---@return ly.game_editor.ini.item
 	function api.get_item(region, key)
+		if not region or not key then return end
 		local region = api.get_region(region) or {}
 		for i, v in ipairs(region.items) do 
 			if v.key == key then 
@@ -82,6 +83,7 @@ local function new_data_handler()
 		return data
 	end
 
+	---@return ly.game_editor.ini.item
 	function api.clone_item(region_name, key)
 		local region = api.get_region(region_name)
 		if not region then return end 
@@ -104,11 +106,13 @@ local function new_data_handler()
 		end
 	end
 
+	---@return ly.game_editor.ini.region
 	function api.clone_region(region_name, index)
 		local region = api.get_region(region_name)
 		local new = dep.common.lib.copy(region)
 		new.name = api.gen_next_region_name(region_name)
 		table.insert(api.data, index, new);
+		return new
 	end
 
 	function api.delte_item(region_name, key)
@@ -155,6 +159,36 @@ local function new_data_handler()
 		return default_key
 	end
 
+	function api.set_selected(region_name, key)
+		local old_region, old_key = api.get_selected()
+		if old_region == region_name and old_key == key then 
+			return
+		end
+		local cache = api.data.cache or {}
+		api.data.cache = cache
+		cache.selected = {region = region_name, key = key}
+		return true
+	end
+
+	function api.get_selected()
+		local cache = api.data.cache
+		if cache and cache.selected then 
+			return cache.selected.region, cache.selected.key
+		end
+	end
+
+	---@return ly.game_editor.ini.region
+	function api.get_selected_region()
+		local region_name = api.get_selected()
+		return region_name and api.get_region(region_name)
+	end
+
+	---@return ly.game_editor.ini.item
+	function api.get_selected_item()
+		local region_name, key = api.get_selected()
+		return api.get_item(region_name, key)
+	end
+
 	return api
 end
 
@@ -174,12 +208,17 @@ local function create(editor)
 		ImGui.PushIDInt(index)
 		ImGui.SetCursorPosX(math.max(10, (content_x - len_x) * 0.5))
 		ImGui.BeginGroup()
-		if imgui_utils.draw_style_btn(region.name, imgui_styles.btn_normal, {size_x = len_x}) then 
-
+		local selected_region, selected_key = data_hander.get_selected()
+		local style = (selected_region == region.name and not selected_key) and imgui_styles.btn_blue or imgui_styles.btn_normal_item
+		if imgui_utils.draw_style_btn(region.name, style, {size_x = len_x}) then 
+			if data_hander.set_selected(region.name) then stack.snapshoot(false) end
 		end
 		if ImGui.BeginPopupContextItem() then
+			if data_hander.set_selected(region.name) then stack.snapshoot(false) end
 			if ImGui.MenuItem("新建 Item") then 
-				if data_hander.add_item(region.name, data_hander.gen_next_item_name(region.name, "new item")) then 
+				local key = data_hander.gen_next_item_name(region.name, "new item")
+				if data_hander.add_item(region.name, key) then 
+					data_hander.set_selected(region.name, key)
 					stack.snapshoot(true)
 				end
 			end
@@ -189,7 +228,9 @@ local function create(editor)
 				end
 			end
 			if ImGui.MenuItem("克 隆 ") then 
-				if data_hander.clone_region(region.name, index + 1) then 
+				local new = data_hander.clone_region(region.name, index + 1)
+				if new then 
+					data_hander.set_selected(new.name)
 					stack.snapshoot(true)
 				end
 			end
@@ -197,24 +238,29 @@ local function create(editor)
 		end
 
 		for i, item in ipairs(region.items) do 
-			local style<close> = imgui_styles.use(imgui_styles.btn_normal)
+			local style_name = (selected_region == region.name and selected_key == item.key) and imgui_styles.btn_blue or imgui_styles.btn_normal_item
+			local style<close> = imgui_styles.use(style_name)
 			local label = string.format("##btn_item_%d", i)
 			if ImGui.ButtonEx(label, len_x) then 
-				
+				if data_hander.set_selected(region.name, item.key) then stack.snapshoot(false) end 
 			end
 			if ImGui.BeginPopupContextItem() then 
+				if data_hander.set_selected(region.name, item.key) then stack.snapshoot(false) end 
 				if ImGui.MenuItem(" 删 除 ") then
 					data_hander.delte_item(region.name, item.key)
 					stack.snapshoot(true)
 				end
 				if ImGui.MenuItem(" 克 隆 ") then
-					if data_hander.clone_item(region.name, item.key) then 
+					local new = data_hander.clone_item(region.name, item.key)
+					if new then 
+						data_hander.set_selected(region.name, new.key)
 						stack.snapshoot(true)
 					end
 				end
 				if ImGui.MenuItem(" 插 入 ") then 
 					local key = data_hander.gen_next_item_name(region.name, "new item")
 					if key and data_hander.add_item(region.name, key, i) then 
+						data_hander.set_selected(region.name, key)
 						stack.snapshoot(true)
 					end
 				end
@@ -241,6 +287,7 @@ local function create(editor)
 				local region_name = data_hander.gen_next_region_name("new region")
 				if data_hander.add_region(region_name) then
 					data_hander.add_item(region_name, "new item")
+					data_hander.set_selected(region_name)
 					stack.snapshoot(true)
 				else 
 					editor.msg_hints.show(region_name .. " 已经存在", "error")
@@ -251,7 +298,16 @@ local function create(editor)
 	end
 	
 	local function draw_detail()
-		
+		local region = data_hander.get_selected_region()
+		local item = data_hander.get_selected_item()
+		if item then 
+			ImGui.Text(string.format("item: %s - %s ", region.name, item.name))
+			return
+		end 
+
+		if region then 
+			ImGui.Text("region: " .. region.name)
+		end
 	end
 
 	function api.set_data(data)
