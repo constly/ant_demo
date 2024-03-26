@@ -1,3 +1,7 @@
+--------------------------------------------------------
+-- ini 窗口渲染
+--------------------------------------------------------
+
 local dep = require 'dep'
 local imgui_utils = dep.common.imgui_utils
 local imgui_styles = dep.common.imgui_styles
@@ -159,8 +163,8 @@ local function new(editor, data_hander, stack)
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		local item = data_hander.get_selected_item()
 		ImGui.SetCursorPos(5, 5)
-		local header_len = 60
-		local content_len = 120
+		local header_len = 100
+		local content_len = 170
 		ImGui.BeginGroup()
 		if item then 
 			local draw_data = {value = item.key, header = "名 字", header_len = header_len, content_len = content_len}
@@ -214,10 +218,10 @@ local function new(editor, data_hander, stack)
 
 	function api.update(delta_time)
 		local size_x, size_y = ImGui.GetContentRegionAvail()
-		local detail_x = 200
+		local detail_x = 300
 		if size_x <= 20 then return end 
 
-		content_x = size_x - 200;
+		content_x = size_x - detail_x;
 		if content_x <= 50 then content_x = size_x end
 		ImGui.BeginChild("content", content_x, size_y, ImGui.ChildFlags({"Border"}))
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)

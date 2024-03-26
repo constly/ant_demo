@@ -1,4 +1,6 @@
-
+--------------------------------------------------------
+-- def 窗口渲染
+--------------------------------------------------------
 
 ---@param editor ly.game_editor.editor
 ---@param data_hander ly.game_editor.def.handler
