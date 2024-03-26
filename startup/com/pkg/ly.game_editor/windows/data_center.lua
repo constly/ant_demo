@@ -49,7 +49,7 @@ local function new(editor)
 	function api.show_inspector(type, draw_data)
 		local tb_data = api.get_type(type)
 		if not tb_data then 
-			return ImGui.Text("InValid Type: " .. type)
+			return ImGui.Text("unknown type: " .. type)
 		end 
 		local type_data = tb_data
 		if tb_data.inspector then 
@@ -65,46 +65,81 @@ local function new(editor)
 				return tb_data.inspector(type_data, draw_data)
 			end
 		end
-		return ImGui.Text("can not find base type inspector callback: " .. type)
+		return ImGui.Text("unknown type: " .. type)
 	end 
 
 	local function init()
+		-- data_type
+		api.reg_type("data_type", nil, {name = "数据类型", hint = nil, range = {min = nil, max = nil}})
+		api.reg_type_inspector("data_type", function(type_data, draw_data)
+			ImGui.Text(draw_data.header)
+			ImGui.SameLineEx(draw_data.header_len)
+
+			input_content:Assgin(tostring(draw_data.value))
+			ImGui.SetNextItemWidth(draw_data.content_len)
+			local label = string.format("##detail_%s_%d", draw_data.header, draw_data.id or 0)
+			if ImGui.BeginCombo(label, draw_data.value) then
+				for i, name in ipairs(tb_type_list) do
+					if ImGui.Selectable(name, name == draw_data.value) then
+						if draw_data.value ~= name then 
+							draw_data.new_value = name
+						end
+					end
+					if ImGui.IsItemHovered() and ImGui.BeginTooltip() then
+						local type = api.get_type(name)
+						if type and type.data then
+							ImGui.Text(type.data.name or name)
+						end
+						ImGui.EndTooltip()
+					end
+				end
+				ImGui.EndCombo()
+			end
+			return draw_data.new_value ~= nil
+		end)
+
 		-- int
 		api.reg_type("int", nil, {name = "整数", hint = nil, range = {min = nil, max = nil}})
 		api.reg_type_inspector("int", function(type_data, draw_data)
-			ImGui.DrawText(draw_data.header)
-			ImGui.SameLine()
+			ImGui.Text(draw_data.header)
+			ImGui.SameLineEx(draw_data.header_len)
 
 			input_content:Assgin(tostring(draw_data.value))
-			if ImGui.InputText(draw_data.label, input_content) then 
+			ImGui.SetNextItemWidth(draw_data.content_len)
+			local label = string.format("##detail_%s_%d", draw_data.header, draw_data.id or 0)
+			if ImGui.InputText(label, input_content) then 
 				draw_data.new_value = math.floor(tonumber(tostring(input_content)))
-				return true
+				return draw_data.new_value ~= draw_data.value
 			end
 		end)
 
 		-- number
 		api.reg_type("number", nil, {name = "整数和小数", hint = nil, range = {min = nil, max = nil}})
 		api.reg_type_inspector("number", function(type_data, draw_data)
-			ImGui.DrawText(draw_data.header)
-			ImGui.SameLine()
+			ImGui.Text(draw_data.header)
+			ImGui.SameLineEx(draw_data.header_len)
 
 			input_content:Assgin(tostring(draw_data.value))
-			if ImGui.InputText(draw_data.label, input_content) then 
+			ImGui.SetNextItemWidth(draw_data.content_len)
+			local label = string.format("##detail_%s_%d", draw_data.header, draw_data.id or 0)
+			if ImGui.InputText(label, input_content) then 
 				draw_data.new_value = tonumber(tostring(input_content))
-				return true
+				return draw_data.new_value ~= draw_data.value
 			end
 		end)
 
 		-- string
 		api.reg_type("string", nil, {name = "字符串", hint = nil})
 		api.reg_type_inspector("string", function(type_data, draw_data)
-			ImGui.DrawText(draw_data.header)
-			ImGui.SameLine()
+			ImGui.Text(draw_data.header)
+			ImGui.SameLineEx(draw_data.header_len)
 
 			input_content:Assgin(tostring(draw_data.value))
-			if ImGui.InputText(draw_data.label, input_content) then 
+			ImGui.SetNextItemWidth(draw_data.content_len)
+			local label = string.format("##detail_%s_%d", draw_data.header, draw_data.id or 0)
+			if ImGui.InputText(label, input_content) then 
 				draw_data.new_value = tostring(input_content)
-				return true
+				return draw_data.new_value ~= draw_data.value
 			end
 		end)
 

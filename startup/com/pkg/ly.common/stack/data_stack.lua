@@ -26,6 +26,7 @@ local create = function()
 	local data_hander
 	local index = 0
 	local stack = {}
+	local ref_save  -- 最近一次存档数据引用
 
 	function data_stack.set_data_handler(handler)
 		data_hander = handler
@@ -82,13 +83,21 @@ local create = function()
 		if data_hander.data.cache.__dirty then 
 			return true 
 		end
-		for i = 1,  index do 
+		for i = index, 1, -1 do 
 			local data = stack[i]
+			if data and ref_save == data then 
+				return false
+			end
 			if data and data.cache.__dirty then 
 				return true 
 			end
 		end
 		return false;
+	end
+
+	-- 当存档时
+	function data_stack.on_save()
+		ref_save = stack[index]
 	end
 
 	return data_stack

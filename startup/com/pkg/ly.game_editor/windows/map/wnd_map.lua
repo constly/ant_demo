@@ -62,11 +62,9 @@ local function new(editor, vfs_path, full_path)
 
 	function api.update(delta_time)
 		local size_x, size_y = ImGui.GetContentRegionAvail()
-		ImGui.PushStyleColorImVec4(ImGui.Col.ChildBg, 0.1, 0.1, 0.1, 0.8)
 		ImGui.BeginChild("##child", size_x, size_y, ImGui.ChildFlags({"Border"}), ImGui.WindowFlags {"NoScrollbar", "NoScrollWithMouse"})
 			main.on_render(delta_time)
 		ImGui.EndChild()
-		ImGui.PopStyleColor()
 	end 
 
 	function api.close()

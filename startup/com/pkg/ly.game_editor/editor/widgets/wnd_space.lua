@@ -108,9 +108,11 @@ local function new(editor)
 			local body_y = view.size_y - line_y
 			if body_y > 3 then
 				ImGui.SetCursorPos(0, line_y)
+				ImGui.PushStyleColorImVec4(ImGui.Col.ChildBg, 0.1, 0.1, 0.1, 0.8)
 				ImGui.BeginChild("viewport_content_" .. view.id, view.size_x, body_y, ImGui.ChildFlags({"Border"}))
 				editor.wnd_mgr.render(deltatime, view, space.get_active_viewport() == view)
 				ImGui.EndChild()
+				ImGui.PopStyleColor()
 
 				local payload = imgui_utils.GetDragDropPayload("DragViewTab")
 				if payload then 
@@ -193,14 +195,14 @@ local function new(editor)
 					view.tabs.close_others(v)
 				end
 				ImGui.Separator()
-				if ImGui.MenuItem("克 隆") then 
-					space.clone_tab(view, v.path)
-				end
 				if ImGui.MenuItem("选 中") then 
 					editor.wnd_files.browse(v.path)
 				end
 				if ImGui.MenuItem("重新加载") then 
 					if wnd then wnd.reload() end
+				end
+				if ImGui.MenuItem("克隆到对面标签") then 
+					space.clone_tab(view, v.path)
 				end
 				if ImGui.MenuItem("在文件浏览器中显示") then 
 					editor.wnd_files.select_in_folder(v.path)
