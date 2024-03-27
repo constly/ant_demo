@@ -29,12 +29,15 @@ local function new(editor, vfs_path, full_path)
 		if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
 			if ImGui.IsKeyPressed(ImGui.Key.Z, false) then stack.undo() end
 			if ImGui.IsKeyPressed(ImGui.Key.Y, false) then stack.redo() end
-			if ImGui.IsKeyPressed(ImGui.Key.S, false) then api.save() end
+			if ImGui.IsKeyPressed(ImGui.Key.S, false) then 
+				api.save() 
+				editor.msg_hints.show("保存成功", "ok")
+			end
 		end
 	end
 
 	function api.reload()
-		renderer.set_data(uitls.load_file(full_path))
+		renderer.set_data(uitls.load_datalist(full_path))
 	end
 
 	function api.close()

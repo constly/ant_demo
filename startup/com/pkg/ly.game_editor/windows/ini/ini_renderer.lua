@@ -155,7 +155,7 @@ local function new(editor, data_hander, stack)
         end
 	end
 	
-	local function draw_detail()
+	local function draw_detail(detail_x)
 		local region = data_hander.get_selected_region()
 		if not region then return end 
 
@@ -163,8 +163,8 @@ local function new(editor, data_hander, stack)
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		local item = data_hander.get_selected_item()
 		ImGui.SetCursorPos(5, 5)
-		local header_len = 100
-		local content_len = 170
+		local header_len = math.min(100, detail_x * 0.4)
+		local content_len = detail_x - header_len - 20
 		ImGui.BeginGroup()
 		if item then 
 			local draw_data = {value = item.key, header = "名 字", header_len = header_len, content_len = content_len}
@@ -218,11 +218,11 @@ local function new(editor, data_hander, stack)
 
 	function api.update(delta_time)
 		local size_x, size_y = ImGui.GetContentRegionAvail()
-		local detail_x = 300
+		local detail_x = math.min(300, size_x * 0.35)
 		if size_x <= 20 then return end 
 
 		content_x = size_x - detail_x;
-		if content_x <= 50 then content_x = size_x end
+		if content_x <= 70 then content_x = size_x end
 		ImGui.BeginChild("content", content_x, size_y, ImGui.ChildFlags({"Border"}))
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		ImGui.Dummy(10, 10)
@@ -236,7 +236,7 @@ local function new(editor, data_hander, stack)
 		if content_x + detail_x == size_x then 
 			ImGui.SetCursorPos(content_x, 0)
 			ImGui.BeginChild("detail", detail_x, size_y, ImGui.ChildFlags({"Border"}))
-			draw_detail()
+			draw_detail(detail_x)
 			ImGui.EndChild()
 		end
 	end

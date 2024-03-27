@@ -24,6 +24,31 @@ function lib.trim(s, chars)
     return s:gsub("^["..chars.."]*(.-)["..chars.."]*$", "%1")
 end
 
+--- 将小数格式化为字符串，去除多余的0
+---@param f number 小数指
+---@param precision number 保留小数点后几位
+function lib.float_format(f, precision)
+	if not f or not precision or precision <= 0 then return end 
+
+	local p = 1
+	while precision > 0 do
+		p = p * 10
+		precision = precision - 1 
+	end
+	local n = math.floor(f * p + 0.5)
+	n = tostring(n / p)
+	for i = #n, 1, -1 do 
+		local c = string.sub(n, i, i)
+		if c == '.' then 
+			return string.sub(n, 1, i - 1)
+		end
+		if c ~= '0' then 
+			return string.sub(n, 1, i)
+		end
+	end
+	return 0
+end
+
 function lib.map_key_to_array(list)
 	local array = {}
 	for key, _ in pairs(list) do 

@@ -76,8 +76,8 @@ local function create_tab(content)
 	end
 
 	function api.close_others(tab)
-		for i, v in ipairs(api.list) do 
-			if v ~= tab then 
+		for i = #api.list, 1, -1 do 
+			if api.list[i] ~= tab then 
 				table.remove(api.list, i)
 			end
 		end

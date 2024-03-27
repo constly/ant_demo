@@ -526,6 +526,41 @@ static int dlEndColumns(lua_State* L) {
 	return 0;
 }
 
+static int dlGetTableColumnWidth(lua_State* L) {
+	int column_n = (int)luaL_checkinteger(L, 1);
+	ImGuiContext* g = ImGui::GetCurrentContext();
+	if (!g) return 0;
+	ImGuiTable* table = g->CurrentTable;
+	if (!table) return 0;
+    IM_ASSERT(column_n >= 0 && column_n < table->ColumnsCount);
+	ImGuiTableColumn* column_0 = &table->Columns[column_n];
+	lua_pushnumber(L, column_0->WidthRequest);
+	return 1;
+}
+
+static int dlSetTableColumnWidth(lua_State* L) {
+	int column_n = (int)luaL_checkinteger(L, 1);
+	float width = (float)luaL_checknumber(L, 2);
+	ImGui::TableSetColumnWidth(column_n, width);
+	return 0;
+}
+
+static int dlTableSetColumnWidthAutoSingle(lua_State* L) {
+	int column_n = (int)luaL_checkinteger(L, 1);
+	ImGuiContext* g = ImGui::GetCurrentContext();
+	if (g && g->CurrentTable) {
+		IM_ASSERT(column_n >= 0 && column_n < g->CurrentTable->ColumnsCount);
+		ImGui::TableSetColumnWidthAutoSingle(g->CurrentTable, column_n);
+	}
+	return 0;
+}
+
+static int dlTableSetColumnWidthAutoAll(lua_State* L) {
+	ImGuiContext* g = ImGui::GetCurrentContext();
+	if (g && g->CurrentTable) 
+		ImGui::TableSetColumnWidthAutoAll(g->CurrentTable);
+	return 0;
+}
 
 void init_draw_list(lua_State* L) {
 	luaL_Reg draw_list[] = {
@@ -553,7 +588,10 @@ void init_draw_list(lua_State* L) {
 		{ "BeginColumns", dlBeginColumns },
 		{ "SetColumnWidth", dlSetColumnWidth },
 		{ "EndColumns", dlEndColumns },
-
+		{ "GetTableColumnWidth", dlGetTableColumnWidth },
+		{ "SetTableColumnWidth", dlSetTableColumnWidth },
+		{ "TableSetColumnWidthAutoSingle", dlTableSetColumnWidthAutoSingle },
+		{ "TableSetColumnWidthAutoAll", dlTableSetColumnWidthAutoAll },
 		{ NULL, NULL },
 	};
 	luaL_newlib(L, draw_list);

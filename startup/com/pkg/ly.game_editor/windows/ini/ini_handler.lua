@@ -24,6 +24,14 @@ local function new()
 		isModify = false,
 	}
 
+	function api.to_string()
+		local cache = api.data.cache
+		api.data.cache = nil
+		local content = dep.serialize.stringify(api.data)
+		api.data.cache = cache
+		return content
+	end
+
 	function api.has_item(region, key)
 		return api.get_item(region, key) ~= nil
 	end

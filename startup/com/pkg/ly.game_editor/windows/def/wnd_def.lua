@@ -15,7 +15,7 @@ local function new(editor, vfs_path, full_path)
 	local renderer = def_renderer.new(editor, data_hander, stack)	---@type ly.game_editor.def.renderer
 
 	function api.reload()
-		renderer.set_data(uitls.load_file(full_path))
+		renderer.set_data(uitls.load_datalist(full_path))
 	end
 
 	function api.update(delta_time)
