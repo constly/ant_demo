@@ -57,7 +57,7 @@ function system.on_entry()
 
 	PC:create_instance {
         group = hitch_test_group_id,
-        prefab = "/pkg/game.res/npc/cube/cube_red.glb|mesh.prefab",
+        prefab = "/pkg/game.res/npc/cube/cube_red.glb/mesh.prefab",
         on_ready = function (p)
             local root<close> = world:entity(p.tag['*'][1], "scene:update")
             iom.set_position(root, math3d.vector(0, 2, 0))

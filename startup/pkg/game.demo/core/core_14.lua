@@ -58,7 +58,7 @@ function system.on_entry()
 		for j = 1, 3 do 
 			PC:create_instance {
 				group = g,
-				prefab = string.format("/pkg/game.res/npc/cube/cube_%s.glb|mesh.prefab", type),
+				prefab = string.format("/pkg/game.res/npc/cube/cube_%s.glb/mesh.prefab", type),
 				on_ready = function(e)
 					local entities = e.tag['*']
 					local eid = entities[1]
