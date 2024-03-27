@@ -57,7 +57,7 @@ function system.on_entry()
 	local iom = ecs.require "ant.objcontroller|obj_motion"
 	for i = 1, 3 do 
 		PC:create_instance {
-			prefab = "/pkg/game.res/npc/cube/cube_green.glb|mesh.prefab",
+			prefab = "/pkg/game.res/npc/cube/cube_green.glb/mesh.prefab",
 			on_ready = function(e)
 				local eid = e.tag['*'][1]
 				local ee<close> = world:entity(eid)
@@ -66,7 +66,7 @@ function system.on_entry()
 		}
 
 		PC:create_instance {
-			prefab = "/pkg/game.res/npc/cube/cube_green.glb|mesh.prefab",
+			prefab = "/pkg/game.res/npc/cube/cube_green.glb/mesh.prefab",
 			on_ready = function(e)
 				local eid = e.tag['*'][1]
 				local ee<close> = world:entity(eid)

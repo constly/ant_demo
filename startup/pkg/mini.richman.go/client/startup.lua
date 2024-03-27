@@ -49,7 +49,7 @@ function system.init_world()
 	local iom = ecs.require "ant.objcontroller|obj_motion"
 	for i = 1, 5 do 
 		world:create_instance {
-			prefab = "/pkg/game.res/npc/cube/cube_green.glb|mesh.prefab",
+			prefab = "/pkg/game.res/npc/cube/cube_green.glb/mesh.prefab",
 			on_ready = function(e)
 				local eid = e.tag['*'][1]
 				local ee<close> = world:entity(eid)
