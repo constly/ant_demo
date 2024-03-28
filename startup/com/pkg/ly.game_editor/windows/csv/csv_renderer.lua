@@ -110,7 +110,8 @@ local function new(editor, data_hander, stack)
 					print(1)
 				end
 				if ImGui.MenuItem("删 除") then 
-					print(1)
+					data_hander.delete_selected()
+					stack.snapshoot(true)
 				end
 				if ImGui.MenuItem("清除内容") then 
 					data_hander.clear_selected()
@@ -211,10 +212,6 @@ local function new(editor, data_hander, stack)
 			for i, name in ipairs({"key", "type", "explain"}) do 
 				ImGui.TableNextRow();
 				y = y + 1
-				if y > 1 then 
-					ImGui.TableSetColumnIndex(0);
-					ImGui.Text(string.format(" %d", y - 1))
-				end
 				for i, col in ipairs(cols) do 
 					ImGui.TableSetColumnIndex(i);
 					if y == 1 then
@@ -238,7 +235,7 @@ local function new(editor, data_hander, stack)
 				y = y + 1
 				ImGui.TableNextRow();
 				ImGui.TableSetColumnIndex(0);
-				ImGui.Text(string.format(" %d", y - 1))
+				ImGui.Text(string.format(" %d", y - 3))
 				for i, col in ipairs(cols) do 
 					ImGui.TableSetColumnIndex(i);
 					local str = v[col.key] or ""

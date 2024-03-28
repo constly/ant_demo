@@ -355,7 +355,7 @@ local function new()
 				local col = cols[x]
 				for y = minLine, maxLine do 
 					if y <= 3 then 
-
+						if y == 3 then col.explain = "" end
 					else 
 						local line = api.get_line_by_index(y - 3)
 						if line then 
@@ -378,6 +378,7 @@ local function new()
 				local col = cols[v.keyIdx]
 				if col then
 					if v.lineIdx <= 3 then 
+						if v.lineIdx == 3 then col.explain = "" end
 					else 
 						local line = api.get_line_by_index(v.lineIdx - 3)
 						if line then 
@@ -409,6 +410,103 @@ local function new()
 			end
 			return true
 		end
+	end
+
+	-- 选择内容转换为string
+	function api.selected_to_string()
+		local cache = api.get_cache()
+		local first = cache.selected[1]
+		if not first then return end 
+		
+		local cols = api.get_visbile_columns()
+		if first.shift then 
+			local second = cache.selected[2]
+			if not second then return end 
+			local minLine = math.min(first.lineIdx, second.lineIdx)
+			local maxLine = math.max(first.lineIdx, second.lineIdx)
+			local minKey = math.min(first.keyIdx, second.keyIdx)
+			local maxKey = math.min(#cols, math.max(first.keyIdx, second.keyIdx))
+			local tb_list = {}
+			for y = minLine, maxLine do 
+				local one = {}
+				for x = minKey, maxKey do 
+					local col = cols[x]
+					local str = ""
+					if y <= 3 then 
+						if y == 1 then str = col.key
+						elseif y == 2 then str = col.type
+						elseif y == 3 then str = col.explain end
+					else 
+						local line = api.get_line_by_index(y - 3)
+						if line then 
+							str = line[col.key]
+						end
+					end
+					one[#one + 1] = str
+				end
+				table.insert(tb_list, table.concat(one, "\t"))
+			end
+			return table.concat(tb_list, "\n")
+		elseif first.only_head then
+			local minKey = 999999
+			local maxKey = -1 
+			local valid = {}
+			for i, v in ipairs(cache.selected) do 
+				minKey = math.min(minKey, v.keyIdx)
+				maxKey = math.max(maxKey, v.keyIdx)
+				valid[v.keyIdx] = true
+			end
+			local tb_list = {}
+			local tb1, tb2, tb3 = {}, {}, {}
+			for i = minKey, maxKey do 
+				if valid[i] then 
+					local col = cols[i]
+					table.insert(tb1, col.key)
+					table.insert(tb2, col.type)
+					table.insert(tb3, col.explain)
+				end
+			end
+			table.insert(tb_list, table.concat(tb1, "\t"))
+			table.insert(tb_list, table.concat(tb2, "\t"))
+			table.insert(tb_list, table.concat(tb3, "\t"))
+			for _, body in ipairs(api.data.bodies) do 
+				local one = {}
+				for i = minKey, maxKey do 
+					if valid[i] then 
+						local col = cols[i]
+						local str = ""
+						if col then 
+							str = body[col.key]
+						end
+						one[#one + 1] = str
+					end
+				end
+				table.insert(tb_list, table.concat(one, "\t"))
+			end
+			return table.concat(tb_list, "\n")
+		else
+			if #cache.selected > 1 then 
+				return false, "只支持复制shift多选"
+			end
+			local col = cols[first.keyIdx]
+			if not col then return end 
+
+			if first.lineIdx <= 3 then 
+				if first.lineIdx == 1 then return col.key end 
+				if first.lineIdx == 2 then return col.type end 
+				if first.lineIdx == 3 then return col.explain end
+			else 
+				local body = api.get_line_by_index(first.lineIdx - 3)
+				if body then 
+					return body[col.key]
+				end
+			end
+		end
+	end
+
+	-- string粘贴到选择处
+	function api.string_to_selected()
+
 	end
 
 	--------------------------------------------------------
