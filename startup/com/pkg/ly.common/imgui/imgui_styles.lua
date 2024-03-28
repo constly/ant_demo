@@ -10,14 +10,16 @@ api.btn_normal_item = 3
 api.btn_yellow = 4
 
 
-api.btn_transparency_center = 10
-api.btn_transparency_center_selected = 11
-api.btn_transparency_left = 12
+api.btn_transparency_center = 100
+api.btn_transparency_center_selected = 110
+api.btn_transparency_left = 120
 
+api.btn_csv_cell_header = 201
+api.btn_csv_cell_body = 202
 
-api.btn_drop_hint = 50
+api.btn_drop_hint = 1000
 
-api.popup = 100
+api.popup = 1000
 
 
 local register = function(type, on_push, on_pop) 
@@ -93,7 +95,29 @@ local init = function()
 	end, function()
 		ImGui.PopStyleColorEx(3)
 	end)
-	
+
+	--------------------------------------------------------
+	-- csv style
+	register(api.btn_csv_cell_header, function()
+		draw_btn(0, 0, 0, 0);
+		ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0.5, 0.5)
+		ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.9, 0.9, 0.9, 1)
+	end, function()
+		ImGui.PopStyleColorEx(4)
+		ImGui.PopStyleVarEx(1)
+	end)
+
+	register(api.btn_csv_cell_body, function()
+		draw_btn(0, 0, 0, 0);
+		ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0.5, 0.5)
+		ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0, 0, 0, 1)
+	end, function()
+		ImGui.PopStyleColorEx(4)
+		ImGui.PopStyleVarEx(1)
+	end)
+
+	--------------------------------------------------------
+	--- popup
 	register(api.popup, function()
 		ImGui.PushStyleColorImVec4(ImGui.Col.ModalWindowDimBg, 0.5, 0.5, 0.5, 0.35)
 		ImGui.PushStyleColorImVec4(ImGui.Col.WindowBg, 0.15, 0.15, 0.15, 1)

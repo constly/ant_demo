@@ -18,6 +18,10 @@ local function new(editor, data_hander, stack)
 
 	local refresh_width = false
 	local table_index = 0;
+	local random_id = math.random(1 << 32)
+	local color_white = ImGui.GetColorU32ImVec4(0.95, 0.95, 0.95, 1) 
+	local color_black = ImGui.GetColorU32ImVec4(0.4, 0.4, 0.4, 1)
+	local color_select = ImGui.GetColorU32ImVec4(0, 0.6, 0, 1)
 
 	function api.set_data(data)
 		data_hander.set_data(data)
@@ -58,76 +62,196 @@ local function new(editor, data_hander, stack)
 		ImGui.EndGroup()
 	end
 
+	local function keyIdx_to_columnIdx(keyIdx)
+		local cols = data_hander.get_visbile_columns()
+		local col = cols[keyIdx]
+		if not col then return end 
+		local v, index = data_hander.get_colume(col.key)
+		return index
+	end
+
+	local function draw_cell(lineIdx, keyIdx, content, width)
+		local label = string.format("%s##btn_cell_%d_%d", content, lineIdx, keyIdx )
+		local is_selected = data_hander.is_selected(lineIdx, keyIdx)
+		local bg_color
+		local btn_style  
+		if lineIdx == 1 then 
+			bg_color =  is_selected and color_select or color_black
+			btn_style = imgui_styles.btn_csv_cell_header
+		else 
+			bg_color = is_selected and color_select or color_white
+			btn_style = is_selected and imgui_styles.btn_csv_cell_header or imgui_styles.btn_csv_cell_body 
+		end
+		ImGui.TableSetBgColor(ImGui.TableBgTarget.CellBg, bg_color)
+		local ret = imgui_utils.draw_style_btn(label, btn_style, {size_x = width}) 
+		if ret then 
+			local ok = true
+			if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
+				data_hander.add_selected(lineIdx, keyIdx)
+			elseif ImGui.IsKeyDown(ImGui.Key.LeftShift) then 
+				data_hander.add_selected_shift(lineIdx, keyIdx)
+			else
+				ok = data_hander.set_selected(lineIdx, keyIdx)
+			end
+			if ok then 
+				stack.snapshoot(false)
+			end
+		end
+		if lineIdx == 1 then 
+			if ImGui.BeginPopupContextItem() then 
+				if not is_selected then 
+					data_hander.set_selected(lineIdx, keyIdx)
+					stack.snapshoot(false)
+				end
+				if ImGui.MenuItem("复 制") then 
+					print(1)
+				end
+				if ImGui.MenuItem("粘 贴") then 
+					print(1)
+				end
+				if ImGui.MenuItem("删 除") then 
+					print(1)
+				end
+				if ImGui.MenuItem("清除内容") then 
+					data_hander.clear_selected()
+					stack.snapshoot(true)
+				end
+				local n = data_hander.get_selected_count()
+				if n <= 1 then
+					if keyIdx > 1 and ImGui.MenuItem("向前插入列") then 
+						local index = keyIdx_to_columnIdx(keyIdx)
+						local key = data_hander.gen_next_column_key("key")
+						data_hander.insert_column(key, "string", index, "注释")
+						stack.snapshoot(true)
+					end
+					if ImGui.MenuItem("向后插入列") then 
+						local index = keyIdx_to_columnIdx(keyIdx)
+						local key = data_hander.gen_next_column_key("key")
+						data_hander.insert_column(key, "string", index + 1, "注释")
+						stack.snapshoot(true)
+					end
+				end
+				ImGui.EndPopup()
+			end
+		else 
+			if ImGui.BeginPopupContextItem() then 
+				if not is_selected then 
+					data_hander.set_selected(lineIdx, keyIdx)
+					stack.snapshoot(false)
+				end
+				if ImGui.MenuItem("复 制") then 
+					print(1)
+				end
+				if ImGui.MenuItem("剪 切") then 
+					print(1)
+				end
+				if ImGui.MenuItem("粘 贴") then 
+					print(1)
+				end
+				if ImGui.MenuItem("清 除") then 
+					data_hander.clear_selected()
+					stack.snapshoot(true)
+				end
+				local n = data_hander.get_selected_count()
+				if n <= 1 then
+					if ImGui.BeginMenu("向上插入行") then 
+						if ImGui.MenuItem("插入1行") then 
+							data_hander.insert_line(lineIdx - 3, 1)
+							stack.snapshoot(true)
+						end
+						if ImGui.MenuItem("插入5行") then 
+							data_hander.insert_line(lineIdx - 3, 5)
+							stack.snapshoot(true)
+						end
+						if ImGui.MenuItem("插入10行") then 
+							data_hander.insert_line(lineIdx - 3, 10)
+							stack.snapshoot(true)
+						end
+						ImGui.EndMenu();
+					end
+					if ImGui.BeginMenu("向下插入行") then 
+						if ImGui.MenuItem("插入1行") then 
+							data_hander.insert_line(lineIdx - 2, 1)
+							stack.snapshoot(true)
+						end
+						if ImGui.MenuItem("插入5行") then 
+							data_hander.insert_line(lineIdx - 2, 5)
+							stack.snapshoot(true)
+						end
+						if ImGui.MenuItem("插入10行") then 
+							data_hander.insert_line(lineIdx - 2, 10)
+							stack.snapshoot(true)
+						end
+						ImGui.EndMenu();
+					end
+				end
+				ImGui.EndPopup()
+			end
+		end
+		return ret
+	end
+
 	local function draw_body()
 		local cols = data_hander.get_visbile_columns()
 		if #cols == 0 then return end 
-
-		local color_normal = ImGui.GetColorU32ImVec4(0.1, 0.1, 0.1, 1)
-		local color_select = ImGui.GetColorU32ImVec4(0, 0.6, 0, 1)
-		local function draw_cell(lineIdx, keyIdx, content, width, type)
-			local label = string.format("%s##btn_cell_%d_%d", content, lineIdx, keyIdx )
-			ImGui.TableSetBgColor(ImGui.TableBgTarget.CellBg, data_hander.is_selected(lineIdx, keyIdx) and color_select or color_normal)
-			local ret = imgui_utils.draw_style_btn(label, imgui_styles.btn_transparency_center, {size_x = width}) 
-			if ret then 
-				data_hander.set_selected(lineIdx, keyIdx)
-			end
-			if type == "header" then 
-				if ImGui.BeginPopupContextItem() then 
-					if ImGui.MenuItem("复 制") then 
-						print(1)
-					end
-					if ImGui.MenuItem("粘 贴") then 
-						print(1)
-					end
-					if ImGui.MenuItem("插 入") then 
-						print(1)
-					end
-					if ImGui.MenuItem("删 除") then 
-						print(1)
-					end
-					if ImGui.MenuItem("清除内容") then 
-						print(1)
-					end
-					ImGui.EndPopup()
-				end
-			end
-			return ret
-		end
-
 		if refresh_width then table_index = table_index + 1 end 
 		refresh_width = false
 
+		local label = string.format("table_%s_%s", random_id, table_index)
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.CellPadding, 0, 0)
-		ImGui.BeginTableEx("table_" .. table_index, #cols, ImGui.TableFlags {'Resizable', 'Borders', 'ScrollX', "ScrollY" })
-		ImGui.TableSetupScrollFreeze(1, 1); 
-		for i, col in ipairs(cols) do 
-			ImGui.TableSetupColumnEx(col.key,  ImGui.TableColumnFlags {'WidthFixed'}, math.max(10, col.width or 10));
-		end
-		
-		local y = 0
-		for i, name in ipairs({"key", "type", "explain"}) do 
-			ImGui.TableNextRow();
-			y = y + 1
+		ImGui.BeginTableEx(label, #cols + 2, ImGui.TableFlags {'Resizable', 'Borders', 'ScrollX', "ScrollY" })
+			ImGui.TableSetupScrollFreeze(2, 1); 
+			ImGui.TableSetupColumnEx("",  ImGui.TableColumnFlags {'WidthFixed'}, 30);
 			for i, col in ipairs(cols) do 
-				ImGui.TableSetColumnIndex(i - 1);
-				if y == 1 then
-					col.width = draw_list.GetTableColumnWidth(i - 1)
+				ImGui.TableSetupColumnEx(col.key,  ImGui.TableColumnFlags {'WidthFixed'}, math.max(10, col.width or 10));
+			end
+			ImGui.TableSetupColumnEx("",  ImGui.TableColumnFlags {'WidthFixed'}, 60);
+			
+			local y = 0
+			for i, name in ipairs({"key", "type", "explain"}) do 
+				ImGui.TableNextRow();
+				y = y + 1
+				if y > 1 then 
+					ImGui.TableSetColumnIndex(0);
+					ImGui.Text(string.format(" %d", y - 1))
 				end
-				draw_cell(y, i, col[name], col.width, "header")
+				for i, col in ipairs(cols) do 
+					ImGui.TableSetColumnIndex(i);
+					if y == 1 then
+						col.width = draw_list.GetTableColumnWidth(i)
+					end
+					draw_cell(y, i, col[name], col.width)
+				end
+				if y == 1 then 
+					ImGui.TableSetColumnIndex(#cols + 1);
+					local width = draw_list.GetTableColumnWidth(#cols + 1)
+					if imgui_utils.draw_style_btn("+ ##btn_table_add_column", imgui_styles.btn_transparency_center, {size_x = width}) then 
+						local key = data_hander.gen_next_column_key("key")
+						data_hander.insert_column(key, "string", nil, "注释")
+						stack.snapshoot(true)
+					end
+				end
 			end
-		end
-	
-		local bodies = data_hander.get_bodies()
-		for _, v in ipairs(bodies) do 
-			y = y + 1
+		
+			local bodies = data_hander.get_bodies()
+			for _, v in ipairs(bodies) do 
+				y = y + 1
+				ImGui.TableNextRow();
+				ImGui.TableSetColumnIndex(0);
+				ImGui.Text(string.format(" %d", y - 1))
+				for i, col in ipairs(cols) do 
+					ImGui.TableSetColumnIndex(i);
+					local str = v[col.key] or ""
+					draw_cell(y, i, str, col.width)
+				end
+			end
 			ImGui.TableNextRow();
-			for i, col in ipairs(cols) do 
-				ImGui.TableSetColumnIndex(i - 1);
-				local str = v[col.key] or ""
-				draw_cell(y, i, str, col.width)
+			ImGui.TableSetColumnIndex(0);
+			local width = draw_list.GetTableColumnWidth(0)
+			if imgui_utils.draw_style_btn("+ ##btn_table_add_line", imgui_styles.btn_transparency_center, {size_x = width}) then 
+				data_hander.insert_line()
+				stack.snapshoot(true)
 			end
-		end
-
 		ImGui.EndTable();
 		ImGui.PopStyleVar()
 	end
@@ -143,7 +267,6 @@ local function new(editor, data_hander, stack)
 		local header_len = math.min(100, detail_x * 0.4)
 		local content_len = detail_x - header_len - 20
 		ImGui.BeginGroup()
-
 		local lineIdx, keyIdx = data_hander.get_first_selected()
 		if lineIdx <= 3 then 
 			local col = cols[keyIdx]

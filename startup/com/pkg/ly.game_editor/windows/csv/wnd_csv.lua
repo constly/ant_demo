@@ -24,12 +24,20 @@ local function new(editor, vfs_path, full_path)
 	end
 
 	function api.handleKeyEvent()
+		if ImGui.IsPopupOpen("", ImGui.PopupFlags{'AnyPopup'}) then 
+			return 
+		end
 		if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
 			if ImGui.IsKeyPressed(ImGui.Key.Z, false) then stack.undo() end
 			if ImGui.IsKeyPressed(ImGui.Key.Y, false) then stack.redo() end
 			if ImGui.IsKeyPressed(ImGui.Key.S, false) then 
 				api.save() 
 				editor.msg_hints.show("保存成功", "ok")
+			end
+		end
+		if ImGui.IsKeyPressed(ImGui.Key.Delete, false) then 
+			if data_hander.clear_selected() then 
+				stack.snapshoot(true)
 			end
 		end
 	end

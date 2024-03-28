@@ -109,10 +109,11 @@ local function new(editor)
 			if body_y > 3 then
 				ImGui.SetCursorPos(0, line_y)
 				ImGui.PushStyleColorImVec4(ImGui.Col.ChildBg, 0.1, 0.1, 0.1, 0.8)
+				ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.9, 0.9, 0.9, 1)
 				ImGui.BeginChild("viewport_content_" .. view.id, view.size_x, body_y, ImGui.ChildFlags({"Border"}))
 				editor.wnd_mgr.render(deltatime, view, space.get_active_viewport() == view)
 				ImGui.EndChild()
-				ImGui.PopStyleColor()
+				ImGui.PopStyleColorEx(2)
 
 				local payload = imgui_utils.GetDragDropPayload("DragViewTab")
 				if payload then 

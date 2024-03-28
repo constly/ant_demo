@@ -20,6 +20,16 @@ local lib = dep.common.lib
 ---@field heads ly.game_editor.csv.head[]
 ---@field bodies ly.game_editor.csv.body[]
 
+---@class ly.game_editor.csv.data.selected 
+---@field lineIdx number 选中的行
+---@field keyIdx number 选中的列
+---@field only_head boolean 是否只选中了头部
+---@field shift boolean 是否按下了shift
+
+---@class ly.game_editor.csv.data.cache 
+---@field selected  ly.game_editor.csv.data.selected[] 
+
+
 local function new()
 	---@class ly.game_editor.csv.handler
 	---@field data ly.game_editor.csv.data
@@ -51,6 +61,9 @@ local function new()
 		end
 	end
 
+	--------------------------------------------------------
+	-- 序列化/反序列化
+	--------------------------------------------------------
 	function api.to_string()
 		local list = {}
 		local line1, line2, line3 = {}, {}, {}
@@ -114,6 +127,9 @@ local function new()
 		return {heads = heads, bodies = bodies}
 	end
 
+	--------------------------------------------------------
+	-- get / set / delete 
+	--------------------------------------------------------
 	---@return ly.game_editor.csv.head[]
 	function api.get_heads() return api.data.heads end
 
@@ -140,12 +156,11 @@ local function new()
 		return api.data.bodies[index]
 	end
 
-
 	---@return ly.game_editor.csv.head 得到列
 	function api.get_colume(key)
 		for i, v in ipairs(api.data.heads) do 
 			if v.key == key then 
-				return v
+				return v, i
 			end
 		end
 	end
@@ -159,37 +174,6 @@ local function new()
 			end
 		end
 		return tbCols
-	end
-
-	---@param pos number 插入列位置
-	function api.insert_column(key, type, pos, explain)
-		if api.has_column(key) then return end 
-		---@type ly.game_editor.csv.head
-		local head = {}
-		head.key = key
-		head.type = type
-		head.width = 80
-		head.explain = explain
-		head.visible = true 
-		if pos and pos <= #api.data.heads then
-			table.insert(api.data.heads, pos, head)
-		else 
-			table.insert(api.data.heads, head)
-		end
-		return head
-	end
-
-	---@param pos number 插入行位置
-	function api.insert_line(pos)
-		---@type ly.game_editor.csv.body
-		local line = {}
-		line.key = ""
-		if pos and pos <= #api.data.bodies then
-			table.insert(api.data.bodies, pos, line)
-		else 
-			table.insert(api.data.bodies, line)
-		end 
-		return line
 	end
 
 	--- 得到单元格内容
@@ -212,6 +196,7 @@ local function new()
 		end
 	end
 
+	---@return ly.game_editor.csv.data.cache 
 	function api.get_cache()
 		local cache = api.data.cache or {}
 		cache.selected = cache.selected or {}
@@ -219,29 +204,122 @@ local function new()
 		return cache
 	end
 
+	---@return ly.game_editor.csv.head 删除列
+	function api.delete_colume(key)
+		for i, v in ipairs(api.data.heads) do 
+			if v.key == key then 
+				return table.remove(api.data.heads, i)
+			end
+		end
+	end
+
+	--------------------------------------------------------
+	-- insert 
+	--------------------------------------------------------
+	---@param pos number 插入列位置
+	function api.insert_column(key, type, pos, explain)
+		if api.has_column(key) then return end 
+		---@type ly.game_editor.csv.head
+		local head = {}
+		head.key = key
+		head.type = type
+		head.width = 80
+		head.explain = explain
+		head.visible = true 
+		if pos and pos <= #api.data.heads then
+			table.insert(api.data.heads, pos, head)
+		else 
+			table.insert(api.data.heads, head)
+		end
+		return head
+	end
+
+	---@param pos number 插入行位置
+	function api.insert_line(pos, count)
+		count = count or 1
+		local first
+		for i = 1, count do 
+			---@type ly.game_editor.csv.body
+			local line = {}
+			line.key = ""
+			if pos and pos <= #api.data.bodies then
+				table.insert(api.data.bodies, pos, line)
+			else 
+				table.insert(api.data.bodies, line)
+			end 
+			first = first or line
+		end
+		return first
+	end
+
+	--------------------------------------------------------
+	-- 选中相关
+	--------------------------------------------------------
+	-- 更新选中状态
+	local function update_selected_status()
+		local cache = api.get_cache()
+		local first = cache.selected[1]
+		if not first then return end 
+		first.only_head = true				-- 是不是只选择了头部
+		for i, v in ipairs(cache.selected) do 
+			if v.lineIdx ~= 1 then 
+				first.only_head = false
+				break
+			end
+		end
+	end
 	function api.add_selected(lineIdx, keyIdx)
 		local cache = api.get_cache()
 		table.insert(cache.selected, {lineIdx = lineIdx, keyIdx = keyIdx})
+		cache.selected[1].shift = false
+		update_selected_status()
 	end 
 
 	function api.add_selected_shift(lineIdx, keyIdx)
 		local cache = api.get_cache()
-		table.insert(cache.selected, {lineIdx = lineIdx, keyIdx = keyIdx})
 		for i = #cache.selected, 2, -1 do 
 			table.remove(cache.selected, i)
 		end
+		table.insert(cache.selected, {lineIdx = lineIdx, keyIdx = keyIdx})
+		cache.selected[1].shift = true
+		update_selected_status()
 	end 
 
 	function api.set_selected(lineIdx, keyIdx)
 		local cache = api.get_cache()
+		local first = cache.selected[1]
+		if first and first.lineIdx == lineIdx and first.keyIdx == keyIdx and #cache.selected == 1 then 
+			return false
+		end
 		cache.selected = {{lineIdx = lineIdx, keyIdx = keyIdx}}
+		update_selected_status()
+		return true
 	end
 
 	function api.is_selected(lineIdx, keyIdx)
 		local cache = api.get_cache()
-		for i, v in ipairs(cache.selected) do 
-			if v.lineIdx == lineIdx and v.keyIdx == keyIdx then 
-				return true
+		local first = cache.selected[1]
+		if not first then return end 
+
+		if first.shift then 
+			local second = cache.selected[2]
+			if not second then return end 
+			local minLine = math.min(first.lineIdx, second.lineIdx)
+			local maxLine = math.max(first.lineIdx, second.lineIdx)
+			local minKey = math.min(first.keyIdx, second.keyIdx)
+			local maxKey = math.max(first.keyIdx, second.keyIdx)
+			return lineIdx >= minLine and lineIdx <= maxLine and keyIdx >= minKey and keyIdx <= maxKey
+		elseif first.only_head then 
+			for i, v in ipairs(cache.selected) do 
+				if v.keyIdx == keyIdx then 
+					return true
+				end
+			end
+		else
+			for i, v in ipairs(cache.selected) do 
+				if v.lineIdx == lineIdx and v.keyIdx == keyIdx then 
+					return true
+				end
 			end
 		end
 	end
@@ -257,6 +335,98 @@ local function new()
 		if one then 
 			return one.lineIdx, one.keyIdx
 		end
+	end
+
+	-- 清空选择
+	function api.clear_selected()
+		local cache = api.get_cache()
+		local first = cache.selected[1]
+		if not first then return end 
+		
+		local cols = api.get_visbile_columns()
+		if first.shift then 
+			local second = cache.selected[2]
+			if not second then return end 
+			local minLine = math.min(first.lineIdx, second.lineIdx)
+			local maxLine = math.max(first.lineIdx, second.lineIdx)
+			local minKey = math.min(first.keyIdx, second.keyIdx)
+			local maxKey = math.min(#cols, math.max(first.keyIdx, second.keyIdx))
+			for x = minKey, maxKey do 
+				local col = cols[x]
+				for y = minLine, maxLine do 
+					if y <= 3 then 
+
+					else 
+						local line = api.get_line_by_index(y - 3)
+						if line then 
+							line[col.key] = nil
+						end
+					end
+				end
+			end
+		elseif first.only_head then 
+			for i, v in ipairs(cache.selected) do 
+				local col = cols[v.keyIdx]
+				if col then 
+					for _, body in ipairs(api.data.bodies) do 
+						body[col.key] = nil
+					end
+				end
+			end
+		else 
+			for i, v in ipairs(cache.selected) do 
+				local col = cols[v.keyIdx]
+				if col then
+					if v.lineIdx <= 3 then 
+					else 
+						local line = api.get_line_by_index(v.lineIdx - 3)
+						if line then 
+							line[col.key] = nil
+						end
+					end
+				end
+			end
+		end
+		return true;
+	end
+
+	function api.delete_selected()
+		local cache = api.get_cache()
+		local first = cache.selected[1]
+		if not first then return end 
+		
+		local cols = api.get_visbile_columns()
+		if first.only_head then 
+			local keys = {}
+			for i, v in ipairs(cache.selected) do 
+				local col = cols[v.keyIdx]
+				if col then 
+					table.insert(keys, col.key)
+				end
+			end
+			for i, key in ipairs(keys) do 
+				api.delete_colume(key)
+			end
+			return true
+		end
+	end
+
+	--------------------------------------------------------
+	-- 复制/粘贴 相关
+	--------------------------------------------------------
+	function api.gen_next_column_key(name)
+		local find = {}
+		for i, v in ipairs(api.data.heads) do 
+			find[v.key] = true
+		end
+
+		for i = 1, 9999 do 
+			local name = name .. i
+			if not find[name] then 
+				return name
+			end
+		end
+		return name
 	end
 
 	return api

@@ -1,16 +1,28 @@
 ---@class ly.common.lib
 local lib = {}
 
-function lib.split(content, delim)
-	content = content or ""
-    delim = delim or '\n'
-	local ret = {}
-    local pattern = string.format("([^%s]+)", delim)
-    content:gsub(pattern, function(substring)
-        table.insert(ret, substring)
-    end)
-    return ret
+function lib.split(sData, sDelim)
+	if type(sData) ~= "string" or #sData <= 0 then
+        return {}
+    end
+    local tRet = {}
+    local sPat = "(.-)" .. sDelim
+    local nPos = 0
+    local nLen = string.len(sData)
+
+    while nPos <= nLen do
+        local nStart, nEnd, sGet = string.find(sData, sPat, nPos)
+        if not nStart then
+            table.insert(tRet, string.sub(sData, nPos))
+            break
+        else
+            table.insert(tRet, sGet)
+            nPos = nEnd + 1
+        end
+    end
+    return tRet
 end
+
 function lib.start_with(str, prefix)
     return str:sub(1, #prefix) == prefix
 end
