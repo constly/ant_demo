@@ -1,39 +1,51 @@
-local function LoadFile(path, env)
-    local fastio = require "fastio"
-    local data = fastio.readall_v(path, path)
-    local func, err = fastio.loadlua(data, path, env)
-    if not func then
-        error(err)
-    end
-    return func
-end
-
-local function LoadDbg(expr)
-    local env = setmetatable({}, {__index = _G})
-    function env.dofile(path)
-        return LoadFile(path, env)()
-    end
-    assert(load(expr, "=(expr)", "t", env))()
-end
-
-local i = 1
-while true do
-    if arg[i] == '-E' then
-    elseif arg[i] == '-e' then
+local arguments = {}
+local options = {}
+do
+    local extra <const> = {
+        ["-e"] = true,
+    }
+    local i = 1
+    while true do
+        if arg[i] == nil then
+            break
+        elseif arg[i]:sub(1, 1) == "-" then
+            if extra[arg[i]] then
+                options[arg[i]] = arg[i+1]
+                i = i + 1
+            else
+                options[arg[i]] = true
+            end
+        else
+            arguments[#arguments+1] = arg[i]
+        end
         i = i + 1
-        assert(arg[i], "'-e' needs argument")
-        LoadDbg(arg[i])
-    else
-        break
     end
-    i = i + 1
 end
 
-for j = -1, #arg do
-    arg[j - i] = arg[j]
+arg = {}
+
+if options["-s"] then
+    arg[0] = "3rd/ant/tools/fileserver/main.lua"
+elseif options["-p"] then
+    arg[0] = "3rd/ant/tools/filepack/main.lua"
+elseif options["-d"] then
+    arg[0] = "3rd/ant/tools/editor/main.lua"
+elseif arguments[1] == nil or arguments[1] == "" then
+    arg[0] = "startup/main.lua"
+else
+    arg[0] = table.remove(arguments, 1)
 end
-for j = #arg - i + 1, #arg do
-    arg[j] = nil
+
+table.move(arguments, 1, #arguments, #arg+1, arg)
+
+options["-s"] = nil
+options["-p"] = nil
+options["-d"] = nil
+for k, v in pairs(options) do
+    arg[#arg+1] = k
+    if v ~= true then
+        arg[#arg+1] = v
+    end
 end
 
 local fs = require "bee.filesystem"
@@ -42,26 +54,8 @@ local ProjectDir = fs.exe_path()
     :parent_path()
     :parent_path()
     :parent_path()
-
-local antdir = os.getenv "antdir"
-antdir = antdir and fs.path(antdir) or (ProjectDir / ".." / "ant")
-
-fs.current_path(antdir)
-if arg[0] == "-s" then
-    arg[0] = "../ant/tools/fileserver/main.lua"
-elseif arg[0] == "-p" then
-    arg[0] = "../ant/tools/filepack/main.lua"
-elseif arg[0] == "-d" then
-    arg[0] = "../ant/tools/editor/main.lua"
-elseif arg[0] == nil or arg[0] == "" then
-    arg[0] = "startup/main.lua"
-elseif arg[0]:sub(1,1) == "-" then
-	table.move(arg, 0, #arg, 1)
-	arg[0] = "startup/main.lua"
-end
+fs.current_path(ProjectDir / ".." / "ant")
+arg[0] = (ProjectDir / arg[0]):string()
 table.insert(arg, 1, tostring(ProjectDir) .. "/startup")
-
-local MainPath = fs.relative(ProjectDir / arg[0], antdir)
-arg[0] = MainPath:string()
 
 dofile "/engine/console/bootstrap.lua"

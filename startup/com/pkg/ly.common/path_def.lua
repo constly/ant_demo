@@ -26,7 +26,7 @@ function api.get_packages(project_root)
 	print("api.get_packages", project_root)
 	local fullpath      = lfs.absolute(project_root)
 	local repo = {_root = fullpath}
-	local mount = dofile "/engine/mount.lua"
+	local mount = dofile "/pkg/ant.vfs/mount.lua"
 	mount.read(repo)
     
     local packages = {}
