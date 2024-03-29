@@ -18,7 +18,7 @@ local function new(editor)
 	local view_path
 
 	local function init()
-		for i, name in ipairs({"ai", "csv", "folder", "ini", "map", "mod", "room", "def"}) do 
+		for i, name in ipairs({"ai", "csv", "folder", "ini", "map", "mod", "room", "def", "style"}) do 
 			icons[name] = dep.assetmgr.resource(string.format("/pkg/ly.game_editor/assets/icon/icon_%s.texture", name), { compile = true })
 		end
 	end

@@ -16,13 +16,14 @@ local function create(tbParams)
 	api.files = (require 'com_data.files').new(api)
 	api.portal = (require 'com_data.portal').new(api)
 	api.workspaces = (require 'com_data.workspaces').new(api)
+	api.style = (require 'editor.style').new(api)			---@type ly.game_editor.style.draw
 
 	api.wnd_files = (require 'editor.widgets.wnd_files').new(api)
 	api.wnd_space = (require 'editor.widgets.wnd_space').new(api)
 	api.wnd_log = (require 'editor.widgets.wnd_log').new(api)
 	api.wnd_portal = (require 'editor.widgets.wnd_portal').new(api)
 	api.wnd_mgr = (require 'editor.wnd_mgr').new(api)
-
+	
 	--local height_title = 30 
 	local height_bottom = 200
 	local is_buttom_collapse = false
