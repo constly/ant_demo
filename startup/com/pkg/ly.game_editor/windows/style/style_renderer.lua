@@ -17,10 +17,18 @@ local function new(editor, data_hander, stack)
 	local len_x = 350
 	local content_x
 
+	---@type ly.game_editor.style.all[] 
+	local all_styles = require 'editor.style' .get_styles()
+
 	function api.set_data()
 	end
 
 	function api.update(delta_time)
+		for i, category in ipairs(all_styles) do 
+			for j, item in ipairs(category.list) do 
+				ImGui.Text(string.format("%s - %s - %s - %s", category.name, item.name, item.type, item.desc))
+			end 
+		end 
 	end
 
 	return api
