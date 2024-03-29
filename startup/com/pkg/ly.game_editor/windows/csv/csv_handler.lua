@@ -412,6 +412,19 @@ local function new()
 		end
 	end
 
+	---@return number,number 得到选择起始点
+	function api.get_selected_start()
+		local cache = api.get_cache()
+		if #cache.selected == 0 then return end 
+
+		local minKey, minLine = 99999, 99999
+		for i, v in ipairs(cache.selected) do
+			minKey = math.min(v.keyIdx, minKey)
+			minLine = math.min(v.lineIdx, minLine) 
+		end
+		return minLine, minKey
+	end
+
 	-- 选择内容转换为string
 	function api.selected_to_string()
 		local cache = api.get_cache()
@@ -505,8 +518,49 @@ local function new()
 	end
 
 	-- string粘贴到选择处
-	function api.string_to_selected()
+	function api.string_to_selected(str)
+		local startLine, startKey = api.get_selected_start()
+		if not startLine or not startKey then return false end 
 
+		local cols = api.get_visbile_columns()
+		local function set_cell_data(x, y, data)
+			local col = cols[x]
+			if y <= 3 then 
+				if y == 1 then col.key = data
+				elseif y == 2 then col.type = data
+				elseif y == 3 then col.explain = data end 
+			else 
+				local line = api.get_line_by_index(y - 3)
+				line[col.key] = data
+			end
+		end
+
+		local lines = lib.split(str, "\n")
+		local endIdx = startLine + #lines - 1
+		while endIdx > (#api.data.bodies + 3) do
+			api.insert_line()
+		end
+
+		for i = 1, #lines do 
+			local line = lib.trim(lines[i], "\r")
+			local list = lib.split(line, "\t");
+
+			if i == 1 then 
+				local endIdx = startKey + #list - 1
+				if endIdx > #cols then
+					for idx = #cols + 1, endIdx do 
+						local key = api.gen_next_column_key("key")
+						api.insert_column(key, "string", nil, "注释")
+					end
+					cols = api.get_visbile_columns()
+				end
+			end
+
+			for x = 1, #list do
+				set_cell_data(x + startKey - 1, i + startLine - 1, list[x])
+			end
+		end
+		return true
 	end
 
 	--------------------------------------------------------

@@ -22,7 +22,9 @@ local function new(editor, data_hander, stack)
 	local color_white = ImGui.GetColorU32ImVec4(0.95, 0.95, 0.95, 1) 
 	local color_black = ImGui.GetColorU32ImVec4(0.4, 0.4, 0.4, 1)
 	local color_select = ImGui.GetColorU32ImVec4(0, 0.6, 0, 1)
-
+	local input_x, input_y
+	local input_buf = ImGui.StringBuf()
+	local line_y
 	function api.set_data(data)
 		data_hander.set_data(data)
 		stack.set_data_handler(data_hander)
@@ -49,6 +51,7 @@ local function new(editor, data_hander, stack)
 			end
 			stack.snapshoot(false)
 		end 
+		line_y = ImGui.GetCursorPosY()
 		for i, v in ipairs(heads) do 
 			checkbox_value[1] = v.visible
 			local label = string.format("%s##checkbox_%s_i", v.key, v.key, i)
@@ -82,6 +85,15 @@ local function new(editor, data_hander, stack)
 			bg_color = is_selected and color_select or color_white
 			btn_style = is_selected and imgui_styles.btn_csv_cell_header or imgui_styles.btn_csv_cell_body 
 		end
+		if keyIdx == input_x and lineIdx == input_y then 
+			ImGui.SetNextItemWidth(width)
+			if ImGui.InputText("##tabel_input_cell", input_buf, ImGui.InputTextFlags {'AutoSelectAll', "EnterReturnsTrue"}) or not is_selected then 
+				input_x, input_y = nil, nil
+				return tostring(input_buf)
+			end
+			return content
+		end
+
 		ImGui.TableSetBgColor(ImGui.TableBgTarget.CellBg, bg_color)
 		local ret = imgui_utils.draw_style_btn(label, btn_style, {size_x = width}) 
 		if ret then 
@@ -96,6 +108,11 @@ local function new(editor, data_hander, stack)
 			if ok then 
 				stack.snapshoot(false)
 			end
+		end
+		if ImGui.IsItemHovered() and ImGui.IsMouseDoubleClicked(ImGui.MouseButton.Left) then 
+			input_x = keyIdx
+			input_y = lineIdx
+			input_buf:Assgin(tostring(content or ""))
 		end
 		if lineIdx == 1 then 
 			if ImGui.BeginPopupContextItem() then 
@@ -189,7 +206,7 @@ local function new(editor, data_hander, stack)
 				ImGui.EndPopup()
 			end
 		end
-		return ret
+		return content
 	end
 
 	local function draw_body()
@@ -217,7 +234,11 @@ local function new(editor, data_hander, stack)
 					if y == 1 then
 						col.width = draw_list.GetTableColumnWidth(i)
 					end
-					draw_cell(y, i, col[name], col.width)
+					local str = draw_cell(y, i, col[name], col.width)
+					if str ~= col[name] then 
+						col[name] = str
+						stack.snapshoot(true)
+					end
 				end
 				if y == 1 then 
 					ImGui.TableSetColumnIndex(#cols + 1);
@@ -239,7 +260,11 @@ local function new(editor, data_hander, stack)
 				for i, col in ipairs(cols) do 
 					ImGui.TableSetColumnIndex(i);
 					local str = v[col.key] or ""
-					draw_cell(y, i, str, col.width)
+					local new = draw_cell(y, i, str, col.width)
+					if new ~= str then 
+						v[col.key] = new
+						stack.snapshoot(true)
+					end
 				end
 			end
 			ImGui.TableNextRow();
@@ -260,50 +285,50 @@ local function new(editor, data_hander, stack)
 
 		local data_center = editor.data_center
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
-		ImGui.SetCursorPos(5, 5)
-		local header_len = math.min(100, detail_x * 0.4)
-		local content_len = detail_x - header_len - 20
 		ImGui.BeginGroup()
+
+		local header_len = 120
+		local content_len = 200
+		local content_len2 = detail_x - 250
 		local lineIdx, keyIdx = data_hander.get_first_selected()
+		local col = cols[keyIdx]
 		if lineIdx <= 3 then 
-			local col = cols[keyIdx]
-			if col then  
-				local draw_data = {value = col.key, header = "key", active = lineIdx == 1, header_len = header_len, content_len = content_len}
+			if lineIdx == 1 then 
+				local draw_data = {value = col.key, header = "关键字", header_len = header_len, content_len = content_len}
 				if data_center.show_inspector("string", draw_data) then 
 					col.key = draw_data.new_value
 					stack.snapshoot(true)
 				end
-				draw_data = {value = col.type, header = "数据类型",  active = lineIdx == 2, header_len = header_len, content_len = content_len}
+			elseif lineIdx == 2 then 
+				local draw_data = {value = col.type, header = "数据类型", header_len = header_len, content_len = content_len}
 				if data_center.show_inspector("data_type", draw_data) then 
 					col.type = draw_data.new_value
 					stack.snapshoot(true)
 				end
-				draw_data = {value = col.explain, header = "注释",  active = lineIdx == 3, header_len = header_len, content_len = content_len}
+			elseif lineIdx == 3 then 
+				local draw_data = {value = col.explain, header = "注释说明", header_len = header_len, content_len = content_len2}
 				if data_center.show_inspector("string", draw_data) then 
 					col.explain = draw_data.new_value
 					stack.snapshoot(true)
 				end
-			end 
+			end
 		else 
 			local line = data_hander.get_line_by_index(lineIdx - 3)
-			if line then 
-				local draw_data = {header = "key", header_len = header_len, content_len = content_len}
-				for i, v in ipairs(cols) do 
-					draw_data.value = line[v.key] or ""
-					draw_data.header = v.key
-					draw_data.active = i == keyIdx
-					draw_data.header_tip = string.format("%s:%s - %s", v.key, v.type, v.explain or "")
-					if data_center.show_inspector(v.type, draw_data) then 
-						if not draw_data.new_value or draw_data.new_value == "" then 
-							line[v.key] = nil
-						else 
-							line[v.key] = draw_data.new_value
-						end
-						stack.snapshoot(true)
-					end
+			local draw_data = {header = "key", header_len = header_len}
+			draw_data.value = line[col.key] or ""
+			draw_data.header = col.key
+			draw_data.content_len = col.type == "string" and content_len2 or content_len
+			draw_data.header_tip = string.format("%s:%s - %s", col.key, col.type, col.explain or "")
+			if data_center.show_inspector(col.type, draw_data) then 
+				if not draw_data.new_value or draw_data.new_value == "" then 
+					line[col.key] = nil
+				else 
+					line[col.key] = draw_data.new_value
 				end
+				stack.snapshoot(true)
 			end
 		end
+
 		ImGui.EndGroup()
 		ImGui.PopStyleVar()
 	end
@@ -316,27 +341,18 @@ local function new(editor, data_hander, stack)
 		draw_left()
 		ImGui.PopStyleVar()
 		ImGui.EndChild()
-		
-		ImGui.SetCursorPos(left_x, 0)
+
+		ImGui.SetCursorPos(left_x, line_y)
 		local size_x = all_x - left_x
-		local detail_x = math.min(300, size_x * 0.35)
-		if size_x <= 20 then return end 
-
-		local content_x = size_x - detail_x;
-		if content_x <= 70 then content_x = size_x end
-
-		ImGui.BeginChild("content", content_x, size_y, ImGui.ChildFlags({"Border"}))
+		
+		ImGui.BeginChild("content", size_x, size_y - line_y, ImGui.ChildFlags({"Border"}))
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		draw_body()
 		ImGui.PopStyleVar()
 		ImGui.EndChild()
 
-		if content_x + detail_x == size_x then 
-			ImGui.SetCursorPos(all_x - detail_x, 0)
-			ImGui.BeginChild("detail", detail_x, size_y, ImGui.ChildFlags({"Border"}))
-			draw_detail(detail_x)
-			ImGui.EndChild()
-		end
+		ImGui.SetCursorPos(left_x + 10, 5)
+		draw_detail(size_x)
 	end
 
 	return api

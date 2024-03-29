@@ -34,7 +34,11 @@ local function new(editor, vfs_path, full_path)
 			if ImGui.IsKeyPressed(ImGui.Key.Y, false) then stack.redo() end
 			if ImGui.IsKeyPressed(ImGui.Key.C, false) then clipboard.copy() end
 			if ImGui.IsKeyPressed(ImGui.Key.X, false) then clipboard.cut() end
-			if ImGui.IsKeyPressed(ImGui.Key.V, false) then clipboard.paste() end
+			if ImGui.IsKeyPressed(ImGui.Key.V, false) then 
+				if clipboard.paste() then 
+					stack.snapshoot(true)
+				end
+			end
 
 			if ImGui.IsKeyPressed(ImGui.Key.S, false) then 
 				api.save() 

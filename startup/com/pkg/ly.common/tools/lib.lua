@@ -1,6 +1,7 @@
 ---@class ly.common.lib
 local lib = {}
 
+---@return string[]
 function lib.split(sData, sDelim)
 	if type(sData) ~= "string" or #sData <= 0 then
         return {}

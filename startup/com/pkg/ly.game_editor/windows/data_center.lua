@@ -124,7 +124,7 @@ local function new(editor)
 			input_content:Assgin(tostring(draw_data.value))
 			ImGui.SetNextItemWidth(draw_data.content_len)
 			local label = string.format("##detail_%s_%d", draw_data.header, draw_data.id or 0)
-			if ImGui.InputText(label, input_content) then 
+			if ImGui.InputText(label, input_content, ImGui.InputTextFlags {'AutoSelectAll', "EnterReturnsTrue", "CharsHexadecimal"}) then 
 				local n = tonumber(tostring(input_content))
 				draw_data.new_value = n and math.floor(n) or nil
 				return draw_data.new_value ~= draw_data.value
@@ -140,7 +140,7 @@ local function new(editor)
 			input_content:Assgin(tostring(draw_data.value))
 			ImGui.SetNextItemWidth(draw_data.content_len)
 			local label = string.format("##detail_%s_%d", draw_data.header, draw_data.id or 0)
-			if ImGui.InputText(label, input_content) then 
+			if ImGui.InputText(label, input_content, ImGui.InputTextFlags {'AutoSelectAll', "EnterReturnsTrue", "CharsDecimal"}) then 
 				draw_data.new_value = tonumber(tostring(input_content))
 				return draw_data.new_value ~= draw_data.value
 			end
@@ -155,7 +155,7 @@ local function new(editor)
 			input_content:Assgin(tostring(draw_data.value))
 			ImGui.SetNextItemWidth(draw_data.content_len)
 			local label = string.format("##detail_%s_%d", draw_data.header, draw_data.id or 0)
-			if ImGui.InputText(label, input_content) then 
+			if ImGui.InputText(label, input_content, ImGui.InputTextFlags {'AutoSelectAll', "EnterReturnsTrue"}) then 
 				draw_data.new_value = tostring(input_content)
 				return draw_data.new_value ~= draw_data.value
 			end

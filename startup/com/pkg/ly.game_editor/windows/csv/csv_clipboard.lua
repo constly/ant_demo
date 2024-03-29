@@ -16,11 +16,13 @@ local function new(editor, data_hander, stack)
 		last_cut_text = ""
 		local v1, v2 = data_hander.selected_to_string() 
 		if v1 == false then 
+			ImGui.SetClipboardText("")
 			return editor.msg_hints.show(v2, "error")
+		else 
+			v1 = v1 or ""
+			ImGui.SetClipboardText(v1 or "")
+			return true, v1
 		end
-		v1 = v1 or ""
-		ImGui.SetClipboardText(v1 or "")
-		return true, v1
 	end 
 
 	function api.cut()
