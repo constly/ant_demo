@@ -3,10 +3,7 @@
 --------------------------------------------------------
 ---@type ly.game_editor.dep
 local dep = require 'dep'
-local ed = dep.ed 
 local ImGui = dep.ImGui
-local imgui_utils = dep.common.imgui_utils
-local imgui_styles = dep.common.imgui_styles
 local lib = dep.common.lib
 
 ---@class ly.game_editor.wnd_base

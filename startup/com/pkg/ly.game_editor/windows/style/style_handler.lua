@@ -6,6 +6,7 @@ local lib = dep.common.lib
 
 ---@class ly.game_editor.style.data.style
 ---@field values map<string, table> 数据列表
+---@field desc string 描述
 
 ---@class ly.game_editor.style.data 
 ---@field name string 样式名字
@@ -32,6 +33,21 @@ local function new()
 		all_attr = _all_attr
 		if data and data.styles then 
 			api.data = data
+			for _, category in ipairs(all_styles) do 
+				for _, item in ipairs(category.list) do 
+					if not api.data.styles[item.name] then 
+						local tb_attr = all_attr[item.type]
+						if tb_attr then 
+							local tb = {}
+							for _, attr in ipairs(tb_attr) do 
+								local type, name, tip, enum, default = table.unpack(attr)
+								tb[name] = lib.copy(default)
+							end
+							api.data.styles[item.name] = {values = tb, desc = item.desc}
+						end
+					end
+				end
+			end
 		else 
 			api.reset_all_styles()
 		end
@@ -62,7 +78,7 @@ local function new()
 							local type, name, tip, enum, default = table.unpack(attr)
 							tb[name] = lib.copy(default)
 						end
-						api.data.styles[item.name].values = tb
+						api.data.styles[item.name] = {values = tb, desc = item.desc}
 					end
 					return
 				end
@@ -87,7 +103,7 @@ local function new()
 						local type, name, tip, enum, default = table.unpack(attr)
 						tb[name] = lib.copy(default)
 					end
-					data.styles[item.name] = {values = tb}
+					data.styles[item.name] = {values = tb, desc = item.desc}
 				else 
 					log.warn("类型未注册: " .. item.type)
 				end

@@ -104,6 +104,7 @@ function system.data_changed()
 				tbParams.module_name = "richmango"
 				tbParams.project_root = world.args.ecs.project_root
 				tbParams.pkgs = {"mini.richman.res"}
+				tbParams.theme_path = "mini.richman.res/themes/default.style"
 				editor = dep.game_editor.create(tbParams)
 			end
 			local x, y = ImGui.GetContentRegionAvail()

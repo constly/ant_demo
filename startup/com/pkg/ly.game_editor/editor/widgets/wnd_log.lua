@@ -3,7 +3,6 @@
 --------------------------------------------------------
 ---@type ly.game_editor.dep
 local dep = require 'dep'
-local imgui_utils = dep.common.imgui_utils
 local ImGui = dep.ImGui
 
 local function new()

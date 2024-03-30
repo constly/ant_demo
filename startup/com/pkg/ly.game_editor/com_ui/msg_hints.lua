@@ -4,9 +4,6 @@
 ---@type ly.game_editor.dep
 local dep = require 'dep'
 local common = dep.common
-local imgui_styles = common.imgui_styles
-local imgui_utils = common.imgui_utils
-local ImGui = dep.ImGui
 local ImGuiExtend = dep.ImGuiExtend
 
 ---@class ly.game_editor.msg_hints.type 
@@ -30,7 +27,8 @@ local tb_hint_type
 local tb_msg_data = {}
 
 ---@return ly.game_editor.msg_hints
-local function create()
+---@param editor ly.game_editor.editor
+local function create(editor)
 	local api = {} 			---@class ly.game_editor.msg_hints
 	local tb_msg = {}		---@type ly.game_editor.msg_hints.msg_data[]
 	local delay = 0;
@@ -69,7 +67,7 @@ local function create()
 	end
 
 	function api.update(deltaTime)
-		local screen_x, screen_y = imgui_utils.get_display_size()
+		local screen_x, screen_y = editor.style.get_display_size()
 		local start_x = screen_x * 0.5 - 100
 		delay = 0
 		for i = #tb_msg, 1, -1 do 

@@ -6,7 +6,6 @@ local dep = require 'dep'
 local ed = dep.ed 
 local ImGui = dep.ImGui
 local imgui_utils = dep.common.imgui_utils
-local imgui_styles = dep.common.imgui_styles
 local lib = dep.common.lib
 
 ---@param editor ly.game_editor.editor
@@ -175,13 +174,13 @@ local function new(editor)
 				name = "*" .. name
 			end
 			local label = string.format("%s##btn_view_%d_%s", name, view.id, v.name)
-			local style
+			local style_name
 			if is_current_view then 
-				style = cur == v.path and imgui_styles.btn_yellow or imgui_styles.btn_normal
+				style_name = cur == v.path and GStyle.tab_active or GStyle.btn_normal
 			else 
-				style = cur == v.path and imgui_styles.btn_blue or imgui_styles.btn_normal
+				style_name = cur == v.path and GStyle.btn_normal_selected or GStyle.btn_normal
 			end
-			if imgui_utils.draw_style_btn(label, style) then
+			if editor.style.draw_style_btn(label, style_name) then
 				view.tabs.set_active_path(v.path)
 			end
 			if ImGui.BeginPopupContextItem() then 
@@ -244,14 +243,14 @@ local function new(editor)
 
 		if #view.tabs.list == 0 then 
 			local label = string.format(" 移 除 ##btn_remove_view_%d", view.id)
-			if imgui_utils.draw_btn(label) then
+			if editor.style.draw_btn(label) then
 				space.remove_viewport(view.id)
 			end
 			ImGui.SameLine()
 		end
 
 		local menu = "viewport_add_tab_" .. view.id
-		if imgui_utils.draw_btn(" + ##btn_add_tab_" .. view.id) then
+		if editor.style.draw_btn(" + ##btn_add_tab_" .. view.id) then
 			ImGui.OpenPopup(menu, ImGui.PopupFlags { "None" });
 		end
 		if ImGui.BeginPopupContextItemEx(menu) then 
@@ -300,7 +299,7 @@ local function new(editor)
 		end
 
 		ImGui.SetCursorScreenPos(start_x, start_y)
-		imgui_utils.draw_style_btn("##btn_dropview_hint", imgui_styles.btn_drop_hint, {size_x = size_x, size_y = size_y})
+		editor.style.draw_style_btn("##btn_dropview_hint", GStyle.btn_drop_hint, {size_x = size_x, size_y = size_y})
 		if ImGui.BeginDragDropTarget() then 
 			local payload = imgui_utils.AcceptDragDropPayload("DragViewTab")
 			if payload then

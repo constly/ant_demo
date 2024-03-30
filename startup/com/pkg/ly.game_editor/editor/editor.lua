@@ -1,6 +1,5 @@
 ---@type ly.game_editor.dep
 local dep = require 'dep'
-local imgui_utils = dep.common.imgui_utils
 local ImGui = dep.ImGui
 
 ---@param tbParams ly.game_editor.create_params
@@ -9,9 +8,9 @@ local function create(tbParams)
 	local api = {}
 	api.tbParams = tbParams
 	api.data_center = (require 'windows.data_center').new(api)  	
-	api.dialogue_input = (require 'com_ui.dialogue_input').create()  	
-	api.dialogue_msgbox = (require 'com_ui.dialogue_msgbox').create()
-	api.msg_hints = (require 'com_ui.msg_hints').create()
+	api.dialogue_input = (require 'com_ui.dialogue_input').create(api)  	
+	api.dialogue_msgbox = (require 'com_ui.dialogue_msgbox').create(api)
+	api.msg_hints = (require 'com_ui.msg_hints').create(api)
 	api.i18n = (require 'com_data.i18n').create()
 	api.files = (require 'com_data.files').new(api)
 	api.portal = (require 'com_data.portal').new(api)
@@ -40,7 +39,7 @@ local function create(tbParams)
 		ImGui.Dummy(0, 0)
 		local cur = api.workspaces.current_space()
 		for i, space in ipairs(api.workspaces.works) do 
-			if imgui_utils.draw_btn(string.format("Space%02d", i), space == cur)	then 
+			if api.style.draw_btn(string.format("Space%02d", i), space == cur)	then 
 				api.workspaces.set_current_space(i)
 			end
 			ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
@@ -67,7 +66,7 @@ local function create(tbParams)
 		end
 		local x, y = ImGui.GetItemRectSize();
 		line_y = y + 4
-		if #api.workspaces.works < 15 and imgui_utils.draw_btn(" + ##btn_add_workspace" , false, {size_x = x})	then 
+		if #api.workspaces.works < 15 and api.style.draw_btn(" + ##btn_add_workspace" , false, {size_x = x})	then 
 			api.workspaces.add()
 		end
 		ImGui.EndGroup()
@@ -85,7 +84,7 @@ local function create(tbParams)
 	local function draw_bottom(deltatime)
 		if is_buttom_collapse then 
 			ImGui.SetCursorPos(size_x - 70, size_y - line_y + 1.5)
-			if imgui_utils.draw_btn(" ↑↑ ") then 
+			if api.style.draw_btn(" ↑↑ ") then 
 				is_buttom_collapse = false
 			end
 			return 
@@ -93,15 +92,15 @@ local function create(tbParams)
 		ImGui.SetCursorPos(0, size_y - height_bottom)
 		ImGui.BeginChild("wnd_bottom", size_x, height_bottom, ImGui.ChildFlags({"Border"}))
 			ImGui.SetCursorPos(5, 3)
-			if imgui_utils.draw_btn(" 文 件 ", show_type == 1) then 
+			if api.style.draw_btn(" 文 件 ", show_type == 1) then 
 				show_type = 1
 			end
 			ImGui.SameLine()
-			if imgui_utils.draw_btn(" 日 志 ", show_type == 2) then 
+			if api.style.draw_btn(" 日 志 ", show_type == 2) then 
 				show_type = 2
 			end
 			ImGui.SameLineEx(size_x - size_portal_x - 70)
-			if imgui_utils.draw_btn(" 查 找 ") then 
+			if api.style.draw_btn(" 查 找 ") then 
 				
 			end
 			local x, y = ImGui.GetContentRegionAvail()
@@ -113,9 +112,9 @@ local function create(tbParams)
 			ImGui.SetCursorPos(size_x - size_portal_x, 0)
 			ImGui.BeginChild("wnd_portal", size_portal_x, height_bottom, ImGui.ChildFlags({"Border"}))
 			ImGui.SetCursorPos(5, 3)
-			imgui_utils.draw_btn(" 收 藏 ", true)
+			api.style.draw_btn(" 收 藏 ", true)
 			ImGui.SetCursorPos(size_portal_x - 70, 3)
-			if imgui_utils.draw_btn(" ↓↓ ", false) then 
+			if api.style.draw_btn(" ↓↓ ", false) then 
 				is_buttom_collapse = true
 			end
 				local x, y = ImGui.GetContentRegionAvail()
@@ -149,6 +148,12 @@ local function create(tbParams)
 			viewport.tabs.open_tab(path)
 		end
 	end
+
+	---@param data string|table 主题路径或者数据
+	function api.switch_theme(data)
+		api.style.set_theme(data)
+	end
+	
 	return api
 end
 

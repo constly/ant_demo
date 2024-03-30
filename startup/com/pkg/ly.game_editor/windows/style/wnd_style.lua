@@ -16,6 +16,14 @@ local function new(editor, vfs_path, full_path)
 	local clipboard = style_clipboard.new(editor, data_hander, stack)			---@type ly.game_editor.style.clipboard
 	local renderer = style_renderer.new(editor, data_hander, stack)				---@type ly.game_editor.style.renderer
 
+	local function init()
+		stack.set_data_changed_notify(function(dirty)
+			if dirty then 
+				editor.style.set_theme(data_hander.data)
+			end
+		end)
+	end
+
 	function api.update(delta_time)
 		renderer.update(delta_time)
 	end 
@@ -57,6 +65,7 @@ local function new(editor, vfs_path, full_path)
 
 	function api.reload()
 		renderer.set_data(uitls.load_datalist(full_path))
+		stack.on_data_changed(true)
 	end
 
 	function api.close()
@@ -66,6 +75,7 @@ local function new(editor, vfs_path, full_path)
 		uitls.save_file(full_path, data_hander, stack)
 	end 
 
+	init()
 	api.reload()
 	return api 
 end

@@ -5,15 +5,26 @@ local ImGui = dep.ImGui
 -- 编辑器风格样式定义
 --------------------------------------------------------
 ---@class ly.game_editor.style 风格定义
-style = {}
-style.btn_normal = "normal"
+GStyle = {}
+GStyle.btn_normal = "gen.btn_normal"
+GStyle.btn_normal_selected = "gen.btn_normal_selected"
+GStyle.tab_active = "gen.tab_active"
 
-style.cell_body = "cell_body"
-style.cell_body_active = "cell_body_active"
-style.cell_head = "cell_head"
-style.cell_head_active = "cell_head_active"
+GStyle.cell_body = "cell_body"
+GStyle.cell_body_active = "cell_body_active"
+GStyle.cell_head = "cell_head"
+GStyle.cell_head_active = "cell_head_active"
 
+GStyle.popup = "popup"
 
+GStyle.btn_transparency_center = 100
+GStyle.btn_transparency_center_selected = 110
+GStyle.btn_transparency_left = 120
+
+GStyle.btn_csv_cell_header = 201
+GStyle.btn_csv_cell_body = 202
+
+GStyle.btn_drop_hint = 1000
 
 
 --------------------------------------------------------
@@ -53,13 +64,16 @@ local function get_styles()
 		table.insert(tb.list, {name = name, type = type, desc = desc})
 	end
 
-	reg("表 格", style.cell_body, 					types.button, 	"表格内容")
-	reg("表 格", style.cell_body_active, 			types.button, 	"表格内容激活")
-	reg("表 格", style.cell_head, 					types.button, 	"表头")
-	reg("表 格", style.cell_head_active, 			types.button, 	"表头激活")
+	reg("通 用", 	GStyle.btn_normal, 				types.button, 	"按钮普通状态")
+	reg("通 用", 	GStyle.btn_normal_selected, 	types.button, 	"按钮选中状态")
+	reg("通 用", 	GStyle.tab_active, 				types.button, 	"tab页激活状态")
 
-	reg("常 用", "test1", 			types.button, 	"测试1")
-	reg("常 用", "test2", 			types.button, 	"测试2")
+	reg("表 格", 	GStyle.cell_body, 				types.button, 	"表格内容")
+	reg("表 格", 	GStyle.cell_body_active, 		types.button, 	"表格内容激活")
+	reg("表 格", 	GStyle.cell_head, 				types.button, 	"表头")
+	reg("表 格", 	GStyle.cell_head_active, 		types.button, 	"表头激活")
+
+	
 
 	return all
 end
@@ -69,9 +83,9 @@ local function get_attrs()
 	local tb_attrs = {}
 	tb_attrs[types.button] = {
 		-- 类型	变量名	变量说明	imgui枚举	默认值
-		{"col", 		"normal", 		"正常显示状态", 	ImGui.Col.Button, 				{0.2, 0.2, 0.2, 1}},
-		{"col", 		"hovered", 		"鼠标悬停状态", 	ImGui.Col.ButtonHovered,		{0.35, 0.35, 0.3, 1}},
-		{"col", 		"active", 		"激活状态", 		ImGui.Col.ButtonActive, 		{0.3, 0.3, 0.3, 1}},
+		{"col", 		"normal", 		"正常显示", 		ImGui.Col.Button, 				{0.2, 0.2, 0.2, 1}},
+		{"col", 		"hovered", 		"鼠标悬停", 		ImGui.Col.ButtonHovered,		{0.35, 0.35, 0.3, 1}},
+		{"col", 		"active", 		"激活", 			ImGui.Col.ButtonActive, 		{0.3, 0.3, 0.3, 1}},
 		{"col", 		"text", 		"文本颜色", 		ImGui.Col.Text,					{0.8, 0.8, 0.8, 1}},
 		{"style_var", 	"text_align", 	"文本对齐", 		ImGui.StyleVar.ButtonTextAlign, {0.5, 0.5}},
 	}
@@ -82,7 +96,7 @@ local function get_attrs()
 
 	tb_attrs[types.popup]	= {
 		{"col", 		"dimbg", 		"弹框背景", 		ImGui.Col.ModalWindowDimBg,		{0.1, 0.1, 0.1, 1}},
-		{"col", 		"bg", 			"窗口背景色", 		ImGui.Col.WindowBg,				{0.5, 0.5, 0.5, 0.5}},
+		{"col", 		"bg", 			"窗口背景", 		ImGui.Col.WindowBg,				{0.5, 0.5, 0.5, 0.5}},
 	}
 
 	tb_attrs[types.cell]	= {
@@ -94,7 +108,8 @@ end
 --------------------------------------------------------
 -- 编辑器风格绘制
 --------------------------------------------------------
-local function new()
+---@param editor ly.game_editor.editor
+local function new(editor)
 	---@class ly.game_editor.style.draw  --- 使用
 	local api = {}
 	api.styles = {}
@@ -102,12 +117,13 @@ local function new()
 	local function init_callbacks(type, tb_data, tb_attrs)
 		local c_color = 0
 		local c_var = 0
+		local values = tb_data.values
 		api.styles[type] = {
 			on_push = function()
 				c_var, c_color = 0, 0
 				for k, attr in ipairs(tb_attrs) do 
 					local type, name, tip, enum, default = table.unpack(attr)
-					local value = tb_data[name]
+					local value = values[name]
 					if type == "col" then 
 						c_color = c_color + 1
 						ImGui.PushStyleColorImVec4(enum, table.unpack(value or default))
@@ -118,7 +134,7 @@ local function new()
 				end
 			end,
 
-			on_push = function()
+			on_pop = function()
 				if c_color > 0 then
 					ImGui.PopStyleColorEx(c_color)
 				end 
@@ -145,28 +161,91 @@ local function new()
 	end 
 
 	--- 设置主题
-	function api.set_theme(name)
+	---@param data string|ly.game_editor.style.data 主题路径或者数据
+	function api.set_theme(data)
+		assert(data, "请输入主题文件路径或者数据")
+		if type(data) == "string" then 
+			local real_path = editor.files.vfs_path_to_full_path(data)
+			data = require 'windows.utils' .load_datalist(real_path)
+		end
+		if type(data) ~= "table" or not data.styles then 
+			log.warn("主题文件格式异常")
+			return;
+		end
+
 		api.styles = {}
 		local attrs = get_attrs()
-		local tb_data = {}
-		for i, v in pairs(tb_data) do 
-			local tb_attrs = attrs[v.type]
-			if tb_attrs then 
-				init_callbacks(v.type, v, tb_attrs)
-			else 
-				log.warn("invalid style type: " .. (v.type or ""))
+		local all_styles = get_styles()
+		for _, category in ipairs(all_styles) do 
+			for _, item in ipairs(category.list) do 
+				local tb_attrs = attrs[item.type]
+				local style = data.styles[item.name]
+				if tb_attrs and style then 
+					init_callbacks(item.name, style, tb_attrs)
+				end
 			end
 		end
 	end
 
-	function api.draw_btn_with_style(style_name)
-
+	--- 绘制按钮
+	---@param label string 
+	---@param selected boolean 是否选中
+	---@param tbParams table 扩展参数{size_x = 100, size_y = 100}
+	function api.draw_btn(label, selected, tbParams)
+		local use<close> = api.use(selected and GStyle.btn_normal_selected or GStyle.btn_normal)
+		tbParams = tbParams or {}
+		return ImGui.ButtonEx(label, tbParams.size_x, tbParams.size_y)
 	end
 
-	function api.draw_text_with_style(style_name)
+	--- 绘制按钮
+	---@param label string 
+	---@param style_type ly.game_editor.style
+	---@param tbParams table 扩展参数{size_x = 100, size_y = 100}
+	function api.draw_style_btn(label, style_type, tbParams)
+		local use<close> = api.use(style_type)
+		tbParams = tbParams or {}
+		return ImGui.ButtonEx(label, tbParams.size_x, tbParams.size_y) 
 	end
 
-	api.set_theme()
+	--- 绘制按钮
+	---@param label string 
+	---@param bg_color number[] 背景颜色
+	---@param txt_clor number[] 背景颜色
+	---@param tbParams table 扩展参数{size_x = 100, size_y = 100}
+	function api.draw_color_btn(label, bg_color, txt_clor, tbParams)
+		local hover_color = {bg_color[1] * 1.12, bg_color[2] * 1.12, bg_color[3] * 1.12, bg_color[4] * 1.12}
+		ImGui.PushStyleColorImVec4(ImGui.Col.Button, table.unpack(bg_color))
+		ImGui.PushStyleColorImVec4(ImGui.Col.ButtonHovered, table.unpack(hover_color))
+		ImGui.PushStyleColorImVec4(ImGui.Col.ButtonActive, table.unpack(hover_color))
+		ImGui.PushStyleColorImVec4(ImGui.Col.Text, table.unpack(txt_clor))
+		local ok = false
+		tbParams = tbParams or {}
+		if ImGui.ButtonEx(label, tbParams.size_x, tbParams.size_y) then ok = true end
+		ImGui.PopStyleColorEx(4)
+		return ok
+	end
+
+	---@return number,number 得到显示窗口大小
+	function api.get_display_size()
+		local viewport = ImGui.GetMainViewport();
+		return viewport.WorkSize.x, viewport.WorkSize.y
+	end
+
+	---@return number 
+	function api.get_dpi_scale()
+		return ImGui.GetMainViewport().DpiScale
+	end
+
+	--- 中间居中绘制文本
+	function api.draw_text_center(text)
+		local size_x, _ = ImGui.GetContentRegionAvail()
+		local len = ImGui.CalcTextSize(text)
+		ImGui.Dummy((size_x - len) * 0.5 - 15, 20)
+		ImGui.SameLine()
+		ImGui.Text(text)
+	end
+		
+	api.set_theme(editor.tbParams.theme_path)
 	return api
 end
 

@@ -3,7 +3,6 @@
 --------------------------------------------------------
 local dep = require 'dep'
 local ImGui = dep.ImGui
-local imgui_utils = dep.common.imgui_utils
 local imgui_styles = dep.common.imgui_styles
 local draw_list = dep.ImGuiExtend.draw_list
 
@@ -36,7 +35,7 @@ local function new(editor, data_hander, stack)
 		ImGui.Dummy(5, 2)
 		local checkbox_value = {}
 		local heads = data_hander.get_heads()
-		if imgui_utils.draw_btn("全 选##btn_all", false, {size_x = 53}) then 
+		if editor.style.draw_btn("全 选##btn_all", false, {size_x = 53}) then 
 			for i, v in ipairs(heads) do 
 				v.visible = true
 				refresh_width = true
@@ -44,7 +43,7 @@ local function new(editor, data_hander, stack)
 			stack.snapshoot(false)
 		end 
 		ImGui.SameLine()
-		if imgui_utils.draw_btn("清 空##btn_clear", false, {size_x = 53}) then 
+		if editor.style.draw_btn("清 空##btn_clear", false, {size_x = 53}) then 
 			for i, v in ipairs(heads) do 
 				v.visible = false
 				refresh_width = true
@@ -80,10 +79,10 @@ local function new(editor, data_hander, stack)
 		local btn_style  
 		if lineIdx == 1 then 
 			bg_color =  is_selected and color_select or color_black
-			btn_style = imgui_styles.btn_csv_cell_header
+			btn_style = GStyle.btn_csv_cell_header
 		else 
 			bg_color = is_selected and color_select or color_white
-			btn_style = is_selected and imgui_styles.btn_csv_cell_header or imgui_styles.btn_csv_cell_body 
+			btn_style = is_selected and GStyle.btn_csv_cell_header or GStyle.btn_csv_cell_body 
 		end
 		if keyIdx == input_x and lineIdx == input_y then 
 			ImGui.SetNextItemWidth(width)
@@ -95,7 +94,7 @@ local function new(editor, data_hander, stack)
 		end
 
 		ImGui.TableSetBgColor(ImGui.TableBgTarget.CellBg, bg_color)
-		local ret = imgui_utils.draw_style_btn(label, btn_style, {size_x = width}) 
+		local ret = editor.style.draw_style_btn(label, btn_style, {size_x = width}) 
 		if ret then 
 			local ok = true
 			if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
@@ -243,7 +242,7 @@ local function new(editor, data_hander, stack)
 				if y == 1 then 
 					ImGui.TableSetColumnIndex(#cols + 1);
 					local width = draw_list.GetTableColumnWidth(#cols + 1)
-					if imgui_utils.draw_style_btn("+ ##btn_table_add_column", imgui_styles.btn_transparency_center, {size_x = width}) then 
+					if editor.style.draw_style_btn("+ ##btn_table_add_column", GStyle.btn_transparency_center, {size_x = width}) then 
 						local key = data_hander.gen_next_column_key("key")
 						data_hander.insert_column(key, "string", nil, "注释")
 						stack.snapshoot(true)
@@ -270,7 +269,7 @@ local function new(editor, data_hander, stack)
 			ImGui.TableNextRow();
 			ImGui.TableSetColumnIndex(0);
 			local width = draw_list.GetTableColumnWidth(0)
-			if imgui_utils.draw_style_btn("+ ##btn_table_add_line", imgui_styles.btn_transparency_center, {size_x = width}) then 
+			if editor.style.draw_style_btn("+ ##btn_table_add_line", GStyle.btn_transparency_center, {size_x = width}) then 
 				data_hander.insert_line()
 				stack.snapshoot(true)
 			end

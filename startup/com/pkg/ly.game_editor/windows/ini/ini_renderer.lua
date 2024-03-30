@@ -4,7 +4,6 @@
 
 local dep = require 'dep'
 local imgui_utils = dep.common.imgui_utils
-local imgui_styles = dep.common.imgui_styles
 local lib = dep.common.lib
 local ImGui = dep.ImGui
 
@@ -23,8 +22,8 @@ local function new(editor, data_hander, stack)
 		ImGui.SetCursorPosX(10)
 		ImGui.BeginGroup()
 		local selected_region, selected_key = data_hander.get_selected()
-		local style = (selected_region == region.name and not selected_key) and imgui_styles.btn_blue or imgui_styles.btn_normal_item
-		if imgui_utils.draw_style_btn(region.name, style, {size_x = len_x}) then 
+		local _style = (selected_region == region.name and not selected_key) and GStyle.btn_normal_selected or GStyle.btn_normal
+		if editor.style.draw_style_btn(region.name, _style, {size_x = len_x}) then 
 			if data_hander.set_selected(region.name) then stack.snapshoot(false) end
 		end
 		if ImGui.BeginPopupContextItem() then
@@ -70,8 +69,8 @@ local function new(editor, data_hander, stack)
 		end
 
 		for i, item in ipairs(region.items) do 
-			local style_name = (selected_region == region.name and selected_key == item.key) and imgui_styles.btn_blue or imgui_styles.btn_normal_item
-			local style<close> = imgui_styles.use(style_name)
+			local style_name = (selected_region == region.name and selected_key == item.key) and GStyle.btn_normal_selected or GStyle.btn_normal
+			local s<close> = editor.style.use(style_name)
 			local label = string.format("##btn_item_%d", i)
 			if ImGui.ButtonEx(label, len_x) then 
 				if data_hander.set_selected(region.name, item.key) then stack.snapshoot(false) end 

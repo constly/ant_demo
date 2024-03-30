@@ -3,13 +3,8 @@
 --------------------------------------------------------
 
 local dep = require 'dep'
-local style = require 'editor.style'
-local imgui_utils = dep.common.imgui_utils
-local imgui_styles = dep.common.imgui_styles
 local lib = dep.common.lib
 local ImGui = dep.ImGui
-local ImGuiExtend = dep.ImGuiExtend
-local draw_list = ImGuiExtend.draw_list
 
 ---@param editor ly.game_editor.editor
 ---@param data_hander ly.game_editor.style.handler
@@ -21,8 +16,8 @@ local function new(editor, data_hander, stack)
 	local content_x
 
 	---@type ly.game_editor.style.all[] 
-	local all_styles = style.get_styles()
-	local all_attr = style.get_attrs()
+	local all_styles = require 'editor.style'.get_styles()
+	local all_attr = require 'editor.style'.get_attrs()
 	local cache_name2type = {}
 
 	---@param item ly.game_editor.style.all_item 
@@ -65,9 +60,9 @@ local function new(editor, data_hander, stack)
 			ImGui.SameLineEx((len_x - len) * 0.5 - 10)
 			ImGui.Text(category.name)	
 			for j, item in ipairs(category.list) do 
-				local style = (current == item.name) and imgui_styles.btn_blue or imgui_styles.btn_normal_item
+				local _style = (current == item.name) and GStyle.btn_normal_selected or GStyle.btn_normal
 				local label = string.format("##btn_style_%d_%d", i, j)
-				if imgui_utils.draw_style_btn(label, style, {size_x = len_x}) then 
+				if editor.style.draw_style_btn(label, _style, {size_x = len_x}) then 
 					if data_hander.set_selected(item.name) then stack.snapshoot(false) end
 				end
 				if ImGui.BeginPopupContextItem() then 
@@ -78,11 +73,11 @@ local function new(editor, data_hander, stack)
 					end
 					ImGui.EndPopup()
 				end
-				ImGui.SameLineEx(20)
+				ImGui.SameLineEx(10)
 				ImGui.Text(item.desc)
-				ImGui.SameLineEx(160)
+				ImGui.SameLineEx(150)
 				ImGui.Text(":")
-				ImGui.SameLineEx(200)
+				ImGui.SameLineEx(160)
 				ImGui.Text(item.name)
 
 				draw_type_hint(item)

@@ -4,7 +4,6 @@
 ---@type ly.game_editor.dep
 local dep = require 'dep'
 local ImGui = dep.ImGui
-local imgui_utils = dep.common.imgui_utils
 local imgui_styles = dep.common.imgui_styles
 local lib = dep.common.lib
 
@@ -49,7 +48,7 @@ local function new(editor)
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
 		for i, name in ipairs(editor.tbParams.pkgs) do 
 			if not selected_pkg then set_selected_pkg(name) end
-			if imgui_utils.draw_btn(name, selected_pkg == name, {size_x = size_x - 10} ) then 
+			if editor.style.draw_btn(name, selected_pkg == name, {size_x = size_x - 10} ) then 
 				set_selected_pkg(name)
 			end
 		end
@@ -62,7 +61,7 @@ local function new(editor)
 		table.insert(arr, 1, "root")
 		for i, v in ipairs(arr) do 
 			local label = string.format("%s##btn_files_dir_%d", v, i)
-			if imgui_utils.draw_btn(label) then 
+			if editor.style.draw_btn(label) then 
 				set_view_path(table.concat(arr, "/", 2, i))
 			end
 			ImGui.SameLine()
@@ -136,7 +135,7 @@ local function new(editor)
 			do
 				ImGui.SetCursorPos(temp.x - maskSize.x * 0.5, temp.y)
 				local label = "##btn_file_node_mask_" .. index
-				local style<close> = imgui_styles.use(imgui_styles.btn_transparency_center)
+				local style<close> = editor.style.use(GStyle.btn_transparency_center)
 				if ImGui.ButtonEx(label, maskSize.x, maskSize.y) then 
 					set_selected_file(display)
 				end

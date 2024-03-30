@@ -4,7 +4,6 @@
 local dep 		= require 'dep'
 local fs 		= require "filesystem"
 local lfs       = require "bee.filesystem"
-local imgui_utils = dep.common.imgui_utils
 local lib 		= dep.common.lib
 
 ---@class ly.game_editor.package_item
@@ -118,7 +117,10 @@ local function new(editor)
 	end
 
 	function api.vfs_path_to_full_path(vfs_path)
-		local arr = dep.common.lib.split(vfs_path, "/")
+		local arr = lib.split(vfs_path, "/")
+		if arr[1] == "" then 
+			table.remove(arr, 1)
+		end
 		local pkg = arr[1]
 		local r_path = table.concat(arr, "/", 2)
 		local root = api.resource_tree[pkg]

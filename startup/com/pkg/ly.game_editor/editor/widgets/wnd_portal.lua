@@ -3,8 +3,6 @@
 --------------------------------------------------------
 ---@type ly.game_editor.dep
 local dep = require 'dep'
-local imgui_utils = dep.common.imgui_utils
-local imgui_styles = dep.common.imgui_styles
 local ImGui = dep.ImGui
 local lib = dep.common.lib
 local ImGuiExtend = dep.ImGuiExtend
@@ -23,7 +21,7 @@ local function new(editor)
 		local portal = editor.portal
 		for i, p in ipairs(portal.pages) do 
 			local label = string.format("  P%d  ##btn_page_%d", i, i)
-			if imgui_utils.draw_btn(label, portal.cur_page == i) then 
+			if editor.style.draw_btn(label, portal.cur_page == i) then 
 				portal.set_page(i)
 			end
 			ImGui.SameLine()
@@ -47,10 +45,10 @@ local function new(editor)
 			end
 			ImGui.Image(dep.textureman.texture_get(id), 23, 23)
 			ImGui.SameLineEx(45)
-			if imgui_utils.draw_style_btn(name .. "##btn_none", imgui_styles.btn_transparency_left) then 
+			if editor.style.draw_style_btn(name .. "##btn_none", GStyle.btn_transparency_left) then 
 			end
 			ImGui.SameLineEx(190)
-			if imgui_utils.draw_btn(" 打 开 ##btn_portal_open_" .. i, true) then 
+			if editor.style.draw_btn(" 打 开 ##btn_portal_open_" .. i, true) then 
 				if ext == "folder" then 
 					editor.wnd_files.browse(path)
 				else 
@@ -58,7 +56,7 @@ local function new(editor)
 				end
 			end
 			ImGui.SameLine()
-			if imgui_utils.draw_btn(" 选 中 ##btn_portal_browse_" .. i) then 
+			if editor.style.draw_btn(" 选 中 ##btn_portal_browse_" .. i) then 
 				editor.wnd_files.browse(path)
 			end
 			ImGui.EndGroup()

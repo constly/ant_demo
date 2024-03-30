@@ -26,10 +26,15 @@ local create = function()
 	local data_hander
 	local index = 0
 	local stack = {}
+	local notify
 	local ref_save  -- 最近一次存档数据引用
 
 	function data_stack.set_data_handler(handler)
 		data_hander = handler
+	end
+
+	function data_stack.set_data_changed_notify(_notify)
+		notify = _notify
 	end
 
 	function data_stack.undo()
@@ -39,6 +44,7 @@ local create = function()
 			data_hander.data = copy(stack[index])
 			data_hander.stack_version = index
 			data_hander.isModify = data_stack.get_modify()
+			data_stack.on_data_changed(data_hander.data.cache and data_hander.data.cache.__dirty)
 			print("undo", index)
 		end
 	end 
@@ -50,6 +56,7 @@ local create = function()
 			data_hander.data = copy(stack[index])
 			data_hander.stack_version = index
 			data_hander.isModify = data_stack.get_modify()
+			data_stack.on_data_changed(data_hander.data.cache and data_hander.data.cache.__dirty)
 			print("redo", index)
 		end
 	end
@@ -75,6 +82,7 @@ local create = function()
 		table.insert(stack, new_data)
 		index = #stack
 		data_hander.stack_version = index
+		data_stack.on_data_changed(dirty)
 		print("snapshoot", index)
 	end
 
@@ -98,6 +106,12 @@ local create = function()
 	-- 当存档时
 	function data_stack.on_save()
 		ref_save = stack[index]
+	end
+
+	function data_stack.on_data_changed(dirty)
+		if notify then 
+			notify(dirty)
+		end
 	end
 
 	return data_stack

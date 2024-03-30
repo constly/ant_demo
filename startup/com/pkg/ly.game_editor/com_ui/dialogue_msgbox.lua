@@ -3,9 +3,6 @@
 --------------------------------------------------------
 ---@type ly.game_editor.dep
 local dep = require 'dep'
-local common = dep.common
-local imgui_styles = common.imgui_styles
-local imgui_utils = common.imgui_utils
 local ImGui = dep.ImGui
 
 ---@class ly.game_editor.dialogue_msgbox.open_param
@@ -17,7 +14,8 @@ local open_param
 
 
 ---@return ly.game_editor.dialogue_msgbox
-local function create()
+---@param editor ly.game_editor.editor
+local function create(editor)
 	local api = {} ---@class ly.game_editor.dialogue_msgbox
 	local open_param 		---@type ly.game_editor.dialogue_msgbox.open_param
 	local isOpen = false	---@type boolean 是否打开
@@ -38,14 +36,14 @@ local function create()
 			ImGui.OpenPopup(popId)
 			needOpen = false 
 			isOpen = true
-			local screen_x, screen_y = imgui_utils.get_display_size()
+			local screen_x, screen_y = editor.style.get_display_size()
 			local size_x, size_y = 400, 220
 			ImGui.SetNextWindowSize(size_x, size_y)
 			ImGui.SetNextWindowPos((screen_x - size_x) * 0.5, (screen_y - size_y) * 0.35)
 		end
 		if not isOpen then return end 
 
-		local style<close> = imgui_styles.use(imgui_styles.popup)
+		local style<close> = editor.style.use(GStyle.popup)
 		if ImGui.BeginPopupModal(popId, true, ImGui.WindowFlags({})) then 
 			local x, y = ImGui.GetContentRegionAvail()
 			ImGui.NewLine()
@@ -59,13 +57,13 @@ local function create()
 				ImGui.SetCursorPos(0, 130)
             	ImGui.Separator();
             	ImGui.SetCursorPos(x * 0.5 - 60, 160)
-				if imgui_utils.draw_btn(" 取 消 ##btn_cancel_msg_box") then 
+				if editor.style.draw_btn(" 取 消 ##btn_cancel_msg_box") then 
 					ImGui.CloseCurrentPopup()
 					isOpen = false
 					if open_param.onCancel then open_param.onCancel() end 
 				end
 				ImGui.SameLineEx(x * 0.5 + 10)
-				if imgui_utils.draw_btn(" 确 认  ##btn_confirm_msg_box", true) then 
+				if editor.style.draw_btn(" 确 认  ##btn_confirm_msg_box", true) then 
 					ImGui.CloseCurrentPopup()
 					isOpen = false
 					if open_param.onOK then 
