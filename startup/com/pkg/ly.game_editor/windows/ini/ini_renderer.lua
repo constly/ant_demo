@@ -137,10 +137,18 @@ local function new(editor, data_hander, stack)
 	end
 
 	local function draw_menu()
-		if ImGui.IsWindowHovered() and ImGui.IsMouseReleased(ImGui.MouseButton.Right) and not ImGui.IsAnyItemHovered() then
-            ImGui.OpenPopup("my_context_menu");
+		if ImGui.IsWindowHovered() and not ImGui.IsAnyItemHovered()  then 
+			if ImGui.IsMouseReleased(ImGui.MouseButton.Right) then
+				ImGui.OpenPopup("my_context_menu");
+			elseif ImGui.IsMouseReleased(ImGui.MouseButton.Left) then 
+				if data_hander.get_selected() then 
+					data_hander.set_selected(nil)
+				end
+			end
 		end
+		
 		if ImGui.BeginPopup("my_context_menu") then
+			
             if ImGui.MenuItem("新建Region") then
 				local region_name = data_hander.gen_next_region_name("new region")
 				if data_hander.add_region(region_name) then
@@ -220,9 +228,10 @@ local function new(editor, data_hander, stack)
 		local size_x, size_y = ImGui.GetContentRegionAvail()
 		local detail_x = math.min(300, size_x * 0.35)
 		if size_x <= 20 then return end 
-
-		content_x = size_x - detail_x;
+		
+		content_x = data_hander.get_selected_region() and (size_x - detail_x) or size_x;
 		if content_x <= 70 then content_x = size_x end
+
 		ImGui.BeginChild("content", content_x, size_y, ImGui.ChildFlags({"Border"}))
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		ImGui.Dummy(10, 10)

@@ -56,7 +56,7 @@ local function new(editor, vfs_path, full_path)
 	end
 
 	function api.reload()
-		renderer.set_data(uitls.load_file(full_path))
+		renderer.set_data(uitls.load_datalist(full_path))
 	end
 
 	function api.close()

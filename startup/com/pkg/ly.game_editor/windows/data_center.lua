@@ -32,9 +32,9 @@ local function new(editor)
 	end 
 
 	--- 注册数据类型
-	function api.reg_type(tags, type, base_type, data)
+	function api.reg_type(tags, type, base_type, params)
 		local tb_data = api.get_type(type, true)
-		tb_data.data = data
+		tb_data.params = params
 		tb_data.tags = tags
 		tb_data.base_type = base_type
 	end
@@ -166,25 +166,35 @@ local function new(editor)
 		api.reg_type_inspector("vec2", function(type_data, draw_data)
 			draw_header(draw_data)
 			ImGui.SameLineEx(draw_data.header_len)
-			local str = draw_data.value or ""
-			str = str.sub(str, 2, -2)
-			local arr = lib.split(str, ",")
-			local x = tonumber(arr[1]) or 0
-			local y = tonumber(arr[2]) or 0
-			local new_x, new_y = x, y
 			ImGui.SetNextItemWidth(draw_data.content_len)
-			local drag_value = {x, y}
 			local label = string.format("##detail_%s_%d", draw_data.header, draw_data.id or 0)
-			if ImGui.DragFloat2Ex(label, drag_value, nil, nil, nil, "%.3f") then
-				new_x, new_y = drag_value[1], drag_value[2]
-			end
-			if new_x ~= x or new_y ~= y then 
-				if new_x == 0 and new_y == 0 then 
-					draw_data.new_value = ""
-				else 
-					draw_data.new_value = string.format("{%s, %s}", lib.float_format(new_x, 3), lib.float_format(new_y, 3))
+			local precision = draw_data.precision or 3
+			local format = "%." .. precision  .. "f"
+			if draw_data.is_table or type_data.params.is_table then 
+				local tb = (type(draw_data.value) == "table") and draw_data.value or {} 
+				if ImGui.DragFloat2Ex(label, tb, nil, nil, nil, format) then 
+					draw_data.new_value = {tb[1], tb[2]}
+					return true
 				end
-				return true
+			else 
+				local str = draw_data.value or ""
+				if #str >= 2 then str = str.sub(str, 2, -2) end
+				local arr = lib.split(str, ",")
+				local x = tonumber(arr[1]) or 0
+				local y = tonumber(arr[2]) or 0
+				local new_x, new_y = x, y
+				local tb = {x, y}
+				if ImGui.DragFloat2Ex(label, tb, nil, nil, nil, format) then
+					new_x, new_y = tb[1], tb[2]
+				end
+				if new_x ~= x or new_y ~= y then 
+					if new_x == 0 and new_y == 0 then 
+						draw_data.new_value = ""
+					else 
+						draw_data.new_value = string.format("{%s, %s}", lib.float_format(new_x, precision), lib.float_format(new_y, precision))
+					end
+					return true
+				end
 			end
 		end)
 
@@ -193,25 +203,68 @@ local function new(editor)
 		api.reg_type_inspector("vec2_int", function(type_data, draw_data)
 			draw_header(draw_data)
 			ImGui.SameLineEx(draw_data.header_len)
-			local str = draw_data.value or ""
-			str = str.sub(str, 2, -2)
-			local arr = lib.split(str, ",")
-			local x = math.floor(tonumber(arr[1]) or 0)
-			local y = math.floor(tonumber(arr[2]) or 0)
-			local new_x, new_y = x, y
 			ImGui.SetNextItemWidth(draw_data.content_len)
-			local drag_value = {x, y}
 			local label = string.format("##detail_%s_%d", draw_data.header, draw_data.id or 0)
-			if ImGui.DragInt2(label, drag_value) then
-				new_x, new_y = drag_value[1], drag_value[2]
-			end
-			if new_x ~= x or new_y ~= y then 
-				if new_x == 0 and new_y == 0 then 
-					draw_data.new_value = ""
-				else 
-					draw_data.new_value = string.format("{%s, %s}", new_x, new_y)
+
+			if draw_data.is_table or type_data.params.is_table then 
+				local tb = (type(draw_data.value) == "table") and draw_data.value or {} 
+				if ImGui.DragInt2(label, tb) then 
+					draw_data.new_value = {tb[1], tb[2]}
+					return true
 				end
-				return true
+			else
+				local str = draw_data.value or ""
+				str = str.sub(str, 2, -2)
+				local arr = lib.split(str, ",")
+				local x = math.floor(tonumber(arr[1]) or 0)
+				local y = math.floor(tonumber(arr[2]) or 0)
+				local new_x, new_y = x, y
+				local tb = {x, y}
+				if ImGui.DragInt2(label, tb) then
+					new_x, new_y = tb[1], tb[2]
+				end
+				if new_x ~= x or new_y ~= y then 
+					if new_x == 0 and new_y == 0 then 
+						draw_data.new_value = ""
+					else 
+						draw_data.new_value = string.format("{%s, %s}", new_x, new_y)
+					end
+					return true
+				end
+			end
+		end)
+
+		-- color
+		api.reg_type({}, "color", nil, {name = "颜色", hint = nil})
+		api.reg_type_inspector("color", function(type_data, draw_data)
+			draw_header(draw_data)
+			ImGui.SameLineEx(draw_data.header_len)
+			ImGui.SetNextItemWidth(draw_data.content_len)
+
+			local label = string.format("##detail_%s_%d", draw_data.header, draw_data.id or 0)
+			local flag = draw_data.is_float and ImGui.ColorEditFlags { "None", "Float" } or ImGui.ColorEditFlags { "None" }
+			if draw_data.is_table or type_data.params.is_table then 
+				local tb = (type(draw_data.value) == "table") and draw_data.value or {} 
+				if ImGui.ColorEdit4(label, tb, flag) then 
+					draw_data.new_value = {tb[1], tb[2], tb[3], tb[4]}
+					return true
+				end
+			else 
+				local str = draw_data.value or ""
+				str = str.sub(str, 2, -2)
+				local arr = lib.split(str, ",")
+				local x = tonumber(arr[1]) or 0
+				local y = tonumber(arr[2]) or 0
+				local z = tonumber(arr[3]) or 0
+				local w = tonumber(arr[4]) or 0
+				local tb = {x, y, z, w}
+				if ImGui.ColorEdit4(label, tb, flag) then 
+					local get = function(idx)
+						return lib.float_format(tb[idx])
+					end
+					draw_data.new_value = string.format("{%s,%s,%s,%s}", get(1), get(2), get(3), get(4))
+					return true
+				end
 			end
 		end)
 
