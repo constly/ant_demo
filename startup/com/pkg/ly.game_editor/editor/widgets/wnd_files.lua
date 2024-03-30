@@ -135,7 +135,7 @@ local function new(editor)
 			do
 				ImGui.SetCursorPos(temp.x - maskSize.x * 0.5, temp.y)
 				local label = "##btn_file_node_mask_" .. index
-				local style<close> = editor.style.use(GStyle.btn_transparency_center)
+				local style<close> = editor.style.use(GStyle.btn_transp_center)
 				if ImGui.ButtonEx(label, maskSize.x, maskSize.y) then 
 					set_selected_file(display)
 				end
@@ -150,7 +150,7 @@ local function new(editor)
 			draw_file_menu(ext, display, isDir, path, file)
 			do
 				ImGui.SetCursorPos(pos.x + 5, pos.y + 35)
-				local style<close> = imgui_styles.use(display == selected_file and imgui_styles.btn_transparency_center_selected or imgui_styles.btn_transparency_center)
+				local style<close> = editor.style.use(display == selected_file and GStyle.btn_transp_center_sel or GStyle.btn_transp_center)
 				local label = string.format("%s##btn_file_node_%s", display, index)
 				if ImGui.ButtonEx(label, btnSize.x, btnSize.y) then 
 					set_selected_file(display)

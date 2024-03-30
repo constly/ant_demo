@@ -192,7 +192,7 @@ local function new(editor)
 					view.tabs.close_tab(v)
 				end
 				if ImGui.MenuItem("关闭其他所有") then 
-					view.tabs.close_others(v)
+					view.tabs.close_other_tabs(v, editor)
 				end
 				ImGui.Separator()
 				if ImGui.MenuItem("选 中") then 

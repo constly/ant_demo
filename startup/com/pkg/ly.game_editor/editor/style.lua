@@ -6,23 +6,35 @@ local ImGui = dep.ImGui
 --------------------------------------------------------
 ---@class ly.game_editor.style 风格定义
 GStyle = {}
+
+--------------------------------------------------------
+--- 通用
+--------------------------------------------------------
 GStyle.btn_normal = "gen.btn_normal"
 GStyle.btn_normal_selected = "gen.btn_normal_selected"
 GStyle.tab_active = "gen.tab_active"
 
-GStyle.cell_body = "cell_body"
-GStyle.cell_body_active = "cell_body_active"
-GStyle.cell_head = "cell_head"
-GStyle.cell_head_active = "cell_head_active"
+--------------------------------------------------------
+--- 文件
+--------------------------------------------------------
+GStyle.btn_transp_center = "gen.btn_transp_center"
+GStyle.btn_transp_center_sel = "gen.btn_transp_center_sel"
+
+--------------------------------------------------------
+--- 表格
+--------------------------------------------------------
+GStyle.cell_header = "cell.cell_header"
+GStyle.cell_body = "cell.cell_body"
+GStyle.cell_selected = "cell.cell_selected"
+GStyle.cell_input = "cell.cell_input"
+
 
 GStyle.popup = "popup"
 
-GStyle.btn_transparency_center = 100
-GStyle.btn_transparency_center_selected = 110
-GStyle.btn_transparency_left = 120
 
-GStyle.btn_csv_cell_header = 201
-GStyle.btn_csv_cell_body = 202
+
+
+
 
 GStyle.btn_drop_hint = 1000
 
@@ -43,6 +55,7 @@ local types = {}
 types.button = "button"
 types.cell = "cell"
 types.text = "text"
+types.input = "input"
 types.popup = "popup"
 
 
@@ -68,12 +81,13 @@ local function get_styles()
 	reg("通 用", 	GStyle.btn_normal_selected, 	types.button, 	"按钮选中状态")
 	reg("通 用", 	GStyle.tab_active, 				types.button, 	"tab页激活状态")
 
-	reg("表 格", 	GStyle.cell_body, 				types.button, 	"表格内容")
-	reg("表 格", 	GStyle.cell_body_active, 		types.button, 	"表格内容激活")
-	reg("表 格", 	GStyle.cell_head, 				types.button, 	"表头")
-	reg("表 格", 	GStyle.cell_head_active, 		types.button, 	"表头激活")
-
+	reg("文件栏", 	GStyle.btn_transp_center, 		types.button, 	"透明-中心对齐")
+	reg("文件栏", 	GStyle.btn_transp_center_sel, 	types.button, 	"透明-中心选中")
 	
+	reg("表 格", 	GStyle.cell_header, 			types.cell, 	"表格头部")
+	reg("表 格", 	GStyle.cell_body, 				types.cell, 	"表格内容")
+	reg("表 格", 	GStyle.cell_selected, 			types.cell, 	"表格选中")
+	reg("表 格", 	GStyle.cell_input, 				types.input, 	"表格输入框")
 
 	return all
 end
@@ -100,6 +114,15 @@ local function get_attrs()
 	}
 
 	tb_attrs[types.cell]	= {
+		{"cell_bg", 	"bg", 			"背景颜色", 		ImGui.TableBgTarget.CellBg,		{0.9, 0.9, 0.9, 1}},
+		{"col", 		"text", 		"文本颜色", 		ImGui.Col.Text,					{0, 0, 0, 1}},
+		{"col", 		"normal", 		"正常显示", 		ImGui.Col.Button, 				{0, 0, 0, 0}, {hide = true}},
+		{"col", 		"hovered", 		"鼠标悬停", 		ImGui.Col.ButtonHovered,		{0, 0, 0, 0}, {hide = true}},
+		{"col", 		"active", 		"激活", 			ImGui.Col.ButtonActive, 		{0, 0, 0, 0}, {hide = true}},
+	}
+
+	tb_attrs[types.input]	= {
+		{"col", 		"bg", 			"文本背景", 		ImGui.Col.FrameBg,				{0.2, 0.2, 0.2, 1}},
 		{"col", 		"text", 		"文本颜色", 		ImGui.Col.Text,					{0.9, 0.9, 0.9, 1}},
 	}
 	return tb_attrs
@@ -130,6 +153,9 @@ local function new(editor)
 					elseif type == "style_var" then  
 						c_var = c_var + 1
 						ImGui.PushStyleVarImVec2(enum, table.unpack(value or default))
+					elseif type == "cell_bg" then 
+						local color = ImGui.GetColorU32ImVec4(table.unpack(value or default))
+						ImGui.TableSetBgColor(enum, color)
 					end
 				end
 			end,

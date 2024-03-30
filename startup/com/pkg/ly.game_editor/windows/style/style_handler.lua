@@ -33,21 +33,36 @@ local function new()
 		all_attr = _all_attr
 		if data and data.styles then 
 			api.data = data
+			local all_name = {}
 			for _, category in ipairs(all_styles) do 
 				for _, item in ipairs(category.list) do 
-					if not api.data.styles[item.name] then 
-						local tb_attr = all_attr[item.type]
-						if tb_attr then 
-							local tb = {}
-							for _, attr in ipairs(tb_attr) do 
-								local type, name, tip, enum, default = table.unpack(attr)
-								tb[name] = lib.copy(default)
+					local tb_attr = all_attr[item.type]
+					if tb_attr then 
+						all_name[item.name] = true
+						local v = api.data.styles[item.name] or {}
+						api.data.styles[item.name] = v
+						v.desc = item.desc
+						
+						local tb = v.values or {}
+						v.values = tb
+						for _, attr in ipairs(tb_attr) do 
+							local type, name, tip, enum, default, param = table.unpack(attr)
+							if param and param.hide then 
+								tb[name] = nil
+							else 
+								if not tb[name] then 
+									tb[name] = lib.copy(default)
+								end
 							end
-							api.data.styles[item.name] = {values = tb, desc = item.desc}
 						end
 					end
 				end
 			end
+			for key, v in pairs(api.data.styles) do 
+				if not all_name[key] then 
+					api.data.styles[key] = nil
+				end
+			end 
 		else 
 			api.reset_all_styles()
 		end

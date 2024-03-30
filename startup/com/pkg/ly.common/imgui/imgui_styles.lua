@@ -9,14 +9,6 @@ api.btn_normal = 2
 api.btn_normal_item = 3
 api.btn_yellow = 4
 
-
-api.btn_transparency_center = 100
-api.btn_transparency_center_selected = 110
-api.btn_transparency_left = 120
-
-api.btn_csv_cell_header = 201
-api.btn_csv_cell_body = 202
-
 api.btn_drop_hint = 1000
 
 api.popup = 1000
@@ -63,57 +55,10 @@ local init = function()
 		ImGui.PopStyleColorEx(4)
 	end)
 
-	register(api.btn_transparency_center, function()
-		draw_btn(0, 0, 0, 0);
-		ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0.5, 0.5)
-		ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.8, 0.8, 0.8, 1)
-	end, function()
-		ImGui.PopStyleColorEx(4)
-		ImGui.PopStyleVarEx(1)
-	end)
-
-	register(api.btn_transparency_center_selected, function()
-		draw_btn(0, 0, 0, 0);
-		ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0, 0.8, 0.8, 1)
-		ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0.5, 0.5)
-	end, function()
-		ImGui.PopStyleColorEx(4)
-		ImGui.PopStyleVarEx(1)
-	end)
-
-	register(api.btn_transparency_left, function()
-		draw_btn(0, 0, 0, 0);
-		ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
-		ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.8, 0.8, 0.8, 1)
-	end, function()
-		ImGui.PopStyleColorEx(4)
-		ImGui.PopStyleVarEx(1)
-	end)
-
 	register(api.btn_drop_hint, function()
 		draw_btn(0, 0.8, 0.8, 0.5);
 	end, function()
 		ImGui.PopStyleColorEx(3)
-	end)
-
-	--------------------------------------------------------
-	-- csv style
-	register(api.btn_csv_cell_header, function()
-		draw_btn(0, 0, 0, 0);
-		ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0.5, 0.5)
-		ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.9, 0.9, 0.9, 1)
-	end, function()
-		ImGui.PopStyleColorEx(4)
-		ImGui.PopStyleVarEx(1)
-	end)
-
-	register(api.btn_csv_cell_body, function()
-		draw_btn(0, 0, 0, 0);
-		ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0.5, 0.5)
-		ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0, 0, 0, 1)
-	end, function()
-		ImGui.PopStyleColorEx(4)
-		ImGui.PopStyleVarEx(1)
 	end)
 
 	--------------------------------------------------------

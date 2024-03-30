@@ -58,7 +58,7 @@ local function create(tbParams)
 					api.workspaces.close_self(i, space)
 				end
 				if ImGui.MenuItem("关闭其他") then 
-					api.workspaces.close_others(i, space)
+					api.workspaces.close_other_spaces(i, space)
 				end
 				ImGui.EndPopup()
 			end

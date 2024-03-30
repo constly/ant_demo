@@ -44,8 +44,8 @@ local function new(editor)
 				draw_list.AddRectFilled({min = {x, y}, max = {x + size_x - 10, y + line_y}, col = {0.25, 0.25, 0.25, 1}});                                    
 			end
 			ImGui.Image(dep.textureman.texture_get(id), 23, 23)
-			ImGui.SameLineEx(45)
-			if editor.style.draw_style_btn(name .. "##btn_none", GStyle.btn_transparency_left) then 
+			ImGui.SameLineEx(40)
+			if editor.style.draw_style_btn(name .. "##btn_none", GStyle.btn_transp_center) then 
 			end
 			ImGui.SameLineEx(190)
 			if editor.style.draw_btn(" 打 开 ##btn_portal_open_" .. i, true) then 

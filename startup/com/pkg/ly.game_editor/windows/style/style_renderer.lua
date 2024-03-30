@@ -32,28 +32,28 @@ local function new(editor, data_hander, stack)
 		local values = style.values
 		for i, attr in ipairs(tb_attrs) do 
 			local type, name, tip, enum, default = table.unpack(attr)
-			local v = values[name] or {}
-			if type == "col" then 
-				local label = string.format("##btn_style_preview_%s_%d", item.name, i)
-				ImGui.SetNextItemWidth(40)
-				if ImGui.ColorEdit4(label, v, ImGui.ColorEditFlags { "NoInputs" }) then 
-					stack.snapshoot(true)
+			local v = values[name]
+			if v then
+				if type == "col" or type == "cell_bg" then 
+					local label = string.format("##btn_style_preview_%s_%d", item.name, i)
+					ImGui.SetNextItemWidth(40)
+					if ImGui.ColorEdit4(label, v, ImGui.ColorEditFlags { "NoInputs" }) then 
+						stack.snapshoot(true)
+					end
+				elseif type == "style_var" then 
+					ImGui.Text(string.format("{%s,%s}", v[1] or 0, v[2] or 0))
+				else 
+					ImGui.Text("unknown:" .. type)
 				end
-			elseif type == "style_var" then 
-				ImGui.Text(string.format("{%s,%s}", v[1] or 0, v[2] or 0))
-			else 
-				ImGui.Text("unknown:" .. type)
+				ImGui.SameLine()
 			end
-			ImGui.SameLine()
 		end
-
 		ImGui.NewLine()
 	end
 
 	local function draw_body()
 		local current = data_hander.get_selected()
-		ImGui.SetCursorPos(10, 10)
-		ImGui.NewLine()
+		ImGui.SetCursorPos(10, 5)
 		ImGui.BeginGroup()
 		for i, category in ipairs(all_styles) do 
 			local len = ImGui.CalcTextSize(category.name)
@@ -126,23 +126,23 @@ local function new(editor, data_hander, stack)
 		local draw_data = {header_len = header_len, content_len = content_len, is_table = true, is_float = true}
 		for i, attr in ipairs(tb_attrs) do 
 			local type, name, tip, enum, default = table.unpack(attr)
-			if not values[name] then 
-				values[name] = lib.copy(default)
-			end
-			if type == "col" then 
-				draw_data.header = tip
-				draw_data.value = values[name]
-				if data_center.show_inspector("color", draw_data) then 
-					values[name] = draw_data.new_value
-					stack.snapshoot(true)
-				end
-			elseif type == "style_var" then 
-				draw_data.header = tip
-				draw_data.value = values[name]
-				draw_data.precision = 2
-				if data_center.show_inspector("vec2", draw_data) then 
-					values[name] = draw_data.new_value
-					stack.snapshoot(true)
+			local v = values[name]
+			if v then 
+				if type == "col" or type == "cell_bg" then 
+					draw_data.header = tip
+					draw_data.value = values[name]
+					if data_center.show_inspector("color", draw_data) then 
+						values[name] = draw_data.new_value
+						stack.snapshoot(true)
+					end
+				elseif type == "style_var" then 
+					draw_data.header = tip
+					draw_data.value = values[name]
+					draw_data.precision = 2
+					if data_center.show_inspector("vec2", draw_data) then 
+						values[name] = draw_data.new_value
+						stack.snapshoot(true)
+					end
 				end
 			end
 		end

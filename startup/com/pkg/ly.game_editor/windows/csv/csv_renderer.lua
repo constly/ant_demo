@@ -18,9 +18,6 @@ local function new(editor, data_hander, stack)
 	local refresh_width = false
 	local table_index = 0;
 	local random_id = math.random(1 << 32)
-	local color_white = ImGui.GetColorU32ImVec4(0.95, 0.95, 0.95, 1) 
-	local color_black = ImGui.GetColorU32ImVec4(0.4, 0.4, 0.4, 1)
-	local color_select = ImGui.GetColorU32ImVec4(0, 0.6, 0, 1)
 	local input_x, input_y
 	local input_buf = ImGui.StringBuf()
 	local line_y
@@ -75,17 +72,15 @@ local function new(editor, data_hander, stack)
 	local function draw_cell(lineIdx, keyIdx, content, width)
 		local label = string.format("%s##btn_cell_%d_%d", content, lineIdx, keyIdx )
 		local is_selected = data_hander.is_selected(lineIdx, keyIdx)
-		local bg_color
 		local btn_style  
 		if lineIdx == 1 then 
-			bg_color =  is_selected and color_select or color_black
-			btn_style = GStyle.btn_csv_cell_header
+			btn_style = is_selected and GStyle.cell_selected or GStyle.cell_header
 		else 
-			bg_color = is_selected and color_select or color_white
-			btn_style = is_selected and GStyle.btn_csv_cell_header or GStyle.btn_csv_cell_body 
+			btn_style = is_selected and GStyle.cell_selected or GStyle.cell_body 
 		end
 		if keyIdx == input_x and lineIdx == input_y then 
 			ImGui.SetNextItemWidth(width)
+			local style<close> = editor.style.use(GStyle.cell_input)
 			if ImGui.InputText("##tabel_input_cell", input_buf, ImGui.InputTextFlags {'AutoSelectAll', "EnterReturnsTrue"}) or not is_selected then 
 				input_x, input_y = nil, nil
 				return tostring(input_buf)
@@ -93,7 +88,6 @@ local function new(editor, data_hander, stack)
 			return content
 		end
 
-		ImGui.TableSetBgColor(ImGui.TableBgTarget.CellBg, bg_color)
 		local ret = editor.style.draw_style_btn(label, btn_style, {size_x = width}) 
 		if ret then 
 			local ok = true
@@ -242,7 +236,7 @@ local function new(editor, data_hander, stack)
 				if y == 1 then 
 					ImGui.TableSetColumnIndex(#cols + 1);
 					local width = draw_list.GetTableColumnWidth(#cols + 1)
-					if editor.style.draw_style_btn("+ ##btn_table_add_column", GStyle.btn_transparency_center, {size_x = width}) then 
+					if editor.style.draw_style_btn("+##btn_table_add_column", GStyle.btn_transp_center, {size_x = width}) then 
 						local key = data_hander.gen_next_column_key("key")
 						data_hander.insert_column(key, "string", nil, "注释")
 						stack.snapshoot(true)
@@ -269,7 +263,7 @@ local function new(editor, data_hander, stack)
 			ImGui.TableNextRow();
 			ImGui.TableSetColumnIndex(0);
 			local width = draw_list.GetTableColumnWidth(0)
-			if editor.style.draw_style_btn("+ ##btn_table_add_line", GStyle.btn_transparency_center, {size_x = width}) then 
+			if editor.style.draw_style_btn("+ ##btn_table_add_line", GStyle.btn_transp_center, {size_x = width}) then 
 				data_hander.insert_line()
 				stack.snapshoot(true)
 			end

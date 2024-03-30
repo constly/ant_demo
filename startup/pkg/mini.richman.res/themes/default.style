@@ -1,36 +1,26 @@
 styles:
-  cell_body:
+  cell.cell_body:
     desc: "表格内容"
     values:
-      active: {0.3, 0.3, 0.3, 1}
-      hovered: {0.35, 0.35, 0.3, 1}
-      normal: {0.2, 0.2, 0.2, 1}
-      text: {0.8, 0.8, 0.8, 1}
+      bg: {0.9, 0.9, 0.9, 1}
+      text: {0, 0, 0, 1}
       text_align: {0.5, 0.5}
-  cell_body_active:
-    desc: "表格内容激活"
+  cell.cell_header:
+    desc: "表格头部"
     values:
-      active: {0.3, 0.3, 0.3, 1}
-      hovered: {0.35, 0.35, 0.3, 1}
-      normal: {0.2, 0.2, 0.2, 1}
-      text: {0.8, 0.8, 0.8, 1}
+      bg: {0.6061775684356689, 0.6061775684356689, 0.6061775684356689, 1}
+      text: {0, 0, 0, 1}
       text_align: {0.5, 0.5}
-  cell_head:
-    desc: "表头"
+  cell.cell_input:
+    desc: "表格输入框"
     values:
-      active: {0.3, 0.3, 0.3, 1}
-      hovered: {0.35, 0.35, 0.3, 1}
-      normal: {0.2, 0.2, 0.2, 1}
-      text: {0.8, 0.8, 0.8, 1}
-      text_align: {0.5, 0.5}
-  cell_head_active:
-    desc: "表头激活"
+      bg: {0.06067291647195816, 0.4247104525566101, 0.31929415464401245, 1}
+      text: {0.9, 0.9, 0.9, 1}
+  cell.cell_selected:
+    desc: "表格选中"
     values:
-      active: {0.3, 0.3, 0.3, 1}
-      hovered: {0.35, 0.35, 0.3, 1}
-      normal: {0.2, 0.2, 0.2, 1}
-      text: {0.8, 0.8, 0.8, 1}
-      text_align: {0.5, 0.5}
+      bg: {0.21412359178066254, 0.7837837934494019, 0.18157154321670532, 1}
+      text: {0, 0, 0, 1}
   gen.btn_normal:
     desc: "按钮普通状态"
     values:
@@ -46,6 +36,22 @@ styles:
       hovered: {0.10921124368906021, 0.4554912745952606, 0.7644787430763245, 1}
       normal: {0.13510531187057495, 0.38651859760284424, 0.6138995885848999, 1}
       text: {0.9305019378662109, 0.9197239279747009, 0.9197239279747009, 1}
+      text_align: {0.5, 0.5}
+  gen.btn_transp_center:
+    desc: "透明-中心对齐"
+    values:
+      active: {0, 0, 0, 0}
+      hovered: {0, 0, 0, 0}
+      normal: {0.03474903106689453, 0.03474903106689453, 0.03474903106689453, 0}
+      text: {0.8, 0.8, 0.8, 1}
+      text_align: {0.5, 0.5}
+  gen.btn_transp_center_sel:
+    desc: "透明-中心选中"
+    values:
+      active: {0, 0, 0, 0}
+      hovered: {0, 0, 0, 0}
+      normal: {0, 0, 0, 0}
+      text: {0, 0.8996139168739319, 0.8475127816200256, 1}
       text_align: {0.5, 0.5}
   gen.tab_active:
     desc: "tab页激活状态"

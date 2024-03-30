@@ -75,10 +75,21 @@ local function create_tab(content)
 		_tabs.active_path = api.active_path
 	end
 
-	function api.close_others(tab)
+	---@param editor ly.game_editor.editor
+	function api.close_other_tabs(tab, editor)
+		local show_hint = false
 		for i = #api.list, 1, -1 do 
-			if api.list[i] ~= tab then 
-				table.remove(api.list, i)
+			local one = api.list[i]
+			if one ~= tab then 
+				local wnd = editor.wnd_mgr.find_window(one.path)
+				if wnd and wnd.is_dirty and wnd.is_dirty() then 
+					if not show_hint then
+						show_hint = true
+						editor.msg_hints.show("请先保存文件", "warning")
+					end
+				else 
+					table.remove(api.list, i)
+				end
 			end
 		end
 		save()
@@ -415,7 +426,7 @@ local function new(editor)
 		table.remove(api.works, index)
 	end 
 
-	function api.close_others(index, space)
+	function api.close_other_spaces(index, space)
 		for i, v in ipairs(api.works) do 
 			if v == space then 
 				api.index = i
