@@ -276,6 +276,10 @@ local function new(editor, data_hander, stack)
 		if #cols == 0 then return end 
 		if data_hander.get_selected_count() ~= 1 then return end 
 
+		local lineIdx, keyIdx = data_hander.get_first_selected()
+		local col = cols[keyIdx]
+		if not col then return end 
+		
 		local data_center = editor.data_center
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		ImGui.BeginGroup()
@@ -283,8 +287,6 @@ local function new(editor, data_hander, stack)
 		local header_len = 120
 		local content_len = 200
 		local content_len2 = detail_x - 250
-		local lineIdx, keyIdx = data_hander.get_first_selected()
-		local col = cols[keyIdx]
 		if lineIdx <= 3 then 
 			if lineIdx == 1 then 
 				local draw_data = {value = col.key, header = "关键字", header_len = header_len, content_len = content_len}

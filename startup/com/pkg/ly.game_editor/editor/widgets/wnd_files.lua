@@ -6,6 +6,7 @@ local dep = require 'dep'
 local ImGui = dep.ImGui
 local imgui_styles = dep.common.imgui_styles
 local lib = dep.common.lib
+local lfs       = require "bee.filesystem"
 
 ---@param editor ly.game_editor.editor
 local function new(editor)
@@ -15,8 +16,16 @@ local function new(editor)
 	local icons = {}
 	local selected_file = ""
 	local view_path
-
+	local tb_new_file_desc = {}
 	local function init()
+		tb_new_file_desc = {
+			{"ini", 	"ini 配置文件"},
+			{"csv", 	"csv 表格文件"},
+			{"map", 	"map 地图文件"},
+			{"room", 	"room 房间文件"},
+			{"style", 	"style 编辑器样式文件"},
+			{"def", 	"def 数据定义文件"},
+		}
 		for i, name in ipairs({"ai", "csv", "folder", "ini", "map", "mod", "room", "def", "style"}) do 
 			icons[name] = dep.assetmgr.resource(string.format("/pkg/ly.game_editor/assets/icon/icon_%s.texture", name), { compile = true })
 		end
@@ -40,6 +49,17 @@ local function new(editor)
 		if value == selected_pkg then return end 
 		selected_pkg = value
 		set_view_path()
+	end
+
+	local function current_full_path()
+		local tree = editor.files.resource_tree[selected_pkg]
+		if tree then
+			local full_path = tree.full_path
+			if view_path then 
+				full_path = full_path .. "/" .. view_path
+			end
+			return full_path
+		end
 	end
 
 	local function draw_pkgs(size_x)
@@ -72,9 +92,9 @@ local function new(editor)
 		end
 	end
 
-	local function draw_file_menu(ext, display, isDir, path, file)
+	local function draw_file_menu(ext, name, display, isDir, path, file)
 		if ImGui.BeginPopupContextItem() then
-			set_selected_file(display)
+			set_selected_file(name)
 			if not isDir and ImGui.MenuItem("打 开") then
 				editor.open_tab(selected_pkg .. "/" .. path)
 			end
@@ -83,10 +103,112 @@ local function new(editor)
 			end
 			ImGui.Separator()
 			if ImGui.MenuItem("改 名") then
+				local full_path = current_full_path()
+				---@type ly.game_editor.dialogue_input.open_param
+				local param = {}
+				param.title = "文件改名"
+				param.header = "名字"
+				param.isFileName = true 
+				param.value = display
+				param.onCheck = function(name)
+					local root = editor.files.resource_tree[selected_pkg]
+					local tree = editor.files.find_tree_by_path(root, view_path)
+					if tree then 
+						if isDir then 
+							for i, v in ipairs(tree.dirs) do 
+								if v.name == name then 
+									return false, "文件已经存在"
+								end
+							end
+						else
+							local file_name = string.format("%s.%s", name, ext)
+							for i, v in ipairs(tree.files) do 
+								if v.name == file_name then 
+									return false, "文件已经存在"
+								end
+							end
+						end
+						return true
+					end
+					return false, "未知错误"
+				end
+				param.onOK = function(_name)
+					if isDir then 
+						local from = string.format("%s/%s", full_path, name)
+						local to = string.format("%s/%s", full_path, _name)
+						lfs.rename(from, to)
+					else
+						_name = _name .. "." .. ext
+						local from = string.format("%s/%s", full_path, name)
+						local to = string.format("%s/%s", full_path, _name)
+						lfs.rename(from, to)
+					end
+					editor.files.refresh_tree(selected_pkg, view_path)
+					set_selected_file(_name)
+				end
+				editor.dialogue_input.open(param)
 			end
 			if ImGui.MenuItem("删 除") then
+				---@type ly.game_editor.dialogue_msgbox.open_param
+				local open_param = {}
+				open_param.title = "删除文件"
+				open_param.msg = string.format("是否确认删除文件: %s ?\n该操作不可撤销。", name)
+				open_param.onOK = function()
+					local path = string.format("%s/%s", current_full_path(), name)
+					if isDir then
+						lfs.remove_all(path)
+					else 
+						lfs.remove(path)
+					end
+					editor.files.refresh_tree(selected_pkg, view_path)
+				end
+				editor.dialogue_msgbox.open(open_param)
 			end
 			if ImGui.MenuItem("克 隆") then
+				local full_path = current_full_path()
+				---@type ly.game_editor.dialogue_input.open_param
+				local param = {}
+				param.title = "克隆文件"
+				param.header = "名字"
+				param.isFileName = true 
+				param.value = display .. "_new"
+				param.onCheck = function(name)
+					local root = editor.files.resource_tree[selected_pkg]
+					local tree = editor.files.find_tree_by_path(root, view_path)
+					if tree then 
+						if isDir then 
+							for i, v in ipairs(tree.dirs) do 
+								if v.name == name then 
+									return false, "文件已经存在"
+								end
+							end
+						else
+							local file_name = string.format("%s.%s", name, ext)
+							for i, v in ipairs(tree.files) do 
+								if v.name == file_name then 
+									return false, "文件已经存在"
+								end
+							end
+						end
+						return true
+					end
+					return false, "未知错误"
+				end
+				param.onOK = function(_name)
+					if isDir then 
+						local from = string.format("%s/%s", full_path, name)
+						local to = string.format("%s/%s", full_path, _name)
+						lfs.copy(from, to)
+					else
+						_name = _name .. "." .. ext
+						local from = string.format("%s/%s", full_path, name)
+						local to = string.format("%s/%s", full_path, _name)
+						lfs.copy_file(from, to)
+					end
+					editor.files.refresh_tree(selected_pkg, view_path)
+					set_selected_file(_name)
+				end
+				editor.dialogue_input.open(param)
 			end
 			if ImGui.MenuItem("在文件浏览器中查看") then
 				local path = file.full_path:gsub("/","\\")
@@ -94,6 +216,92 @@ local function new(editor)
 			end
 			ImGui.EndPopup()
 		end
+	end
+
+	local function draw_content_menu()
+		if ImGui.IsWindowHovered() and not ImGui.IsAnyItemHovered()  then 
+			if ImGui.IsMouseReleased(ImGui.MouseButton.Right) then
+				ImGui.OpenPopup("my_context_menu");
+				set_selected_file()
+			elseif ImGui.IsMouseReleased(ImGui.MouseButton.Left) then 
+				set_selected_file()
+			end
+		end
+
+		if selected_pkg and ImGui.BeginPopup("my_context_menu") then
+			if ImGui.MenuItem("刷 新") then 
+				editor.files.refresh_tree(selected_pkg, view_path)
+			end
+			if ImGui.MenuItem("新建文件夹") then 
+				local full_path = current_full_path()
+				---@type ly.game_editor.dialogue_input.open_param
+				local param = {}
+				param.title = "新建文件夹"
+				param.header = "名字"
+				param.isFileName = true 
+				param.value = "name"
+				param.onCheck = function(name)
+					local root = editor.files.resource_tree[selected_pkg]
+					local tree = editor.files.find_tree_by_path(root, view_path)
+					if tree then 
+						for i, v in ipairs(tree.dirs) do 
+							if v.name == name then 
+								return false, "文件夹已经存在"
+							end
+						end
+						return true
+					end
+					return false, "未知错误"
+				end
+				param.onOK = function(name)
+					local path = string.format("%s/%s", full_path, name)
+					lfs.create_directory(path)
+					print("create dir", path)
+					editor.files.refresh_tree(selected_pkg, view_path)
+					set_selected_file(name)
+				end
+				editor.dialogue_input.open(param)
+			end
+			if ImGui.BeginMenu("新建文件") then 
+				for i, v in ipairs(tb_new_file_desc) do 
+					if ImGui.MenuItem("新建 " .. v[2]) then
+						local ext = v[1]
+						local full_path = current_full_path()
+						---@type ly.game_editor.dialogue_input.open_param
+						local param = {}
+						param.title = "新建文件"
+						param.header = "文件名"
+						param.isFileName = true 
+						param.value = "filename"
+						param.onCheck = function(name)
+							local root = editor.files.resource_tree[selected_pkg]
+							local tree = editor.files.find_tree_by_path(root, view_path)
+							if tree then 
+								for i, v in ipairs(tree.files) do 
+									if v.ext == ext and v.short_name == name then 
+										return false, "文件已经存在"
+									end
+								end
+								return true
+							end
+							return false, "未知错误"
+						end
+						param.onOK = function(name)
+							local file_name = string.format("%s.%s", name, ext)
+							local path = string.format("%s/%s", full_path, file_name)
+							local f<close> = assert(io.open(path, "w"))
+							f:write("")
+							print("create file", path)
+							editor.files.refresh_tree(selected_pkg, view_path)
+							set_selected_file(file_name)
+						end
+						editor.dialogue_input.open(param)
+					end
+				end
+				ImGui.EndMenu()
+			end 
+            ImGui.EndPopup()
+        end
 	end
 
 	function api.draw(deltatime, line_y)
@@ -137,7 +345,7 @@ local function new(editor)
 				local label = "##btn_file_node_mask_" .. index
 				local style<close> = editor.style.use(GStyle.btn_transp_center)
 				if ImGui.ButtonEx(label, maskSize.x, maskSize.y) then 
-					set_selected_file(display)
+					set_selected_file(name)
 				end
 				if ImGui.IsItemHovered() and ImGui.IsMouseDoubleClicked(ImGui.MouseButton.Left) then 
 					if isDir then 
@@ -147,13 +355,13 @@ local function new(editor)
 					end
 				end
 			end
-			draw_file_menu(ext, display, isDir, path, file)
+			draw_file_menu(ext, name, display, isDir, path, file)
 			do
 				ImGui.SetCursorPos(pos.x + 5, pos.y + 35)
-				local style<close> = editor.style.use(display == selected_file and GStyle.btn_transp_center_sel or GStyle.btn_transp_center)
+				local style<close> = editor.style.use(name == selected_file and GStyle.btn_transp_center_sel or GStyle.btn_transp_center)
 				local label = string.format("%s##btn_file_node_%s", display, index)
 				if ImGui.ButtonEx(label, btnSize.x, btnSize.y) then 
-					set_selected_file(display)
+					set_selected_file(name)
 				end
 			end
 
@@ -172,10 +380,7 @@ local function new(editor)
 		for i, v in ipairs(tree.files) do 
 			draw_file(v.ext, v.name, v.short_name, false, v.r_path, v)
 		end
-		-- for i = 1, 10 do 
-		-- 	draw_file('folder', "文件名字")
-		-- end
-		
+		draw_content_menu()
 		ImGui.PopStyleVarEx(2)
 		ImGui.EndChild()
 	end
@@ -192,7 +397,7 @@ local function new(editor)
 		local ext = lib.get_file_ext(r_path)
 		if ext then 
 			set_view_path(lib.get_file_root(r_path))
-			set_selected_file(lib.get_filename_without_ext(r_path))
+			set_selected_file(lib.get_file_name(r_path))
 		else
 			set_view_path(r_path)
 		end

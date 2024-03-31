@@ -85,7 +85,11 @@ local function new(editor)
 		for _, item in ipairs(packages) do
 			if tb_show[item.name] then
 				local vpath = fs.path("/pkg") / fs.path(item.name)
-				resource_tree[item.name] = {full_path = tostring(vpath), r_path = "", tree = construct_resource_tree(item.path, tostring(item.path) .. "/")}
+				resource_tree[item.name] = {
+					full_path = tostring(item.path), 
+					v_path = tostring(vpath),
+					r_path = "", 
+					tree = construct_resource_tree(item.path, tostring(item.path) .. "/")}
 			end
 		end
 		dep.common.lib.dump(resource_tree)
@@ -93,27 +97,41 @@ local function new(editor)
 		api.packages = packages
 	end
 
+	---@param pkg_name string 包名
+	---@param dir string 刷新目录
+	function api.refresh_tree(pkg_name, dir)
+		local root = api.resource_tree[pkg_name]
+		if not root then return end 
+		local tree, dir = api.find_tree_by_path(root, dir)
+		if tree then 
+			local new_tree = construct_resource_tree(dir.full_path, dir.full_path .. "/")
+			tree.files = new_tree.files  
+			tree.dirs = new_tree.dirs
+		end
+	end
+
 	---@return ly.game_editor.tree_item
 	function api.find_tree_by_path(root, path)
-		if not path or path == "" then return root.tree end 
+		if not path or path == "" then return root.tree, root end 
 		---@param tree ly.game_editor.tree_item
 		local function find(tree)
 			for i, file in ipairs(tree.files) do 
 				if file.r_path == path then 
-					return file
+					return file, tree
 				end
 			end
 			for i, dir in ipairs(tree.dirs) do 
 				if dir.r_path == path then 
-					return dir.tree
+					return dir.tree, dir
 				end
-				local ret = find(dir.tree)
+				local ret, dir = find(dir.tree)
 				if ret then 
-					return ret
+					return ret, dir
 				end
 			end
 		end
-		return find(root.tree)
+		local ret1, ret2 = find(root.tree)
+		return ret1, ret2
 	end
 
 	function api.vfs_path_to_full_path(vfs_path)

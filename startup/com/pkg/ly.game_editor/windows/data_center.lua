@@ -104,8 +104,8 @@ local function new(editor)
 					end
 					if ImGui.IsItemHovered() and ImGui.BeginTooltip() then
 						local type = api.get_type(name)
-						if type and type.data then
-							ImGui.Text(type.data.name or name)
+						if type and type.params then
+							ImGui.Text(type.params.name or name)
 						end
 						ImGui.EndTooltip()
 					end
@@ -268,7 +268,7 @@ local function new(editor)
 			end
 		end)
 
-		api.reg_type("test_int", "int", {name = "整数", hint = "", range = {min = 1, max = 2}})
+		api.reg_type({}, "test_int", "int", {name = "整数", hint = "", range = {min = 1, max = 2}})
 	end
 	init()
 	return api

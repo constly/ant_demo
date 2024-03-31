@@ -14,6 +14,7 @@ local ImGui = dep.ImGui
 ---@field isFileName boolean 是不是文件名（输入时只能输入特定字符）
 ---@field onCancel function 取消回调 
 ---@field onOK function 成功回调
+---@field onCheck function 输入检查回调
 local open_param
 
 ---@param editor ly.game_editor.editor
@@ -57,7 +58,8 @@ local function create(editor)
 				ImGui.SameLineEx(150)
 
 				ImGui.PushItemWidth(150)
-				if ImGui.InputText("##input_box", input_content) then 
+				local flag = open_param.isFileName and ImGui.InputTextFlags { "CharsNoBlank", "AutoSelectAll" } or ImGui.InputTextFlags { "None" }
+				if ImGui.InputText("##input_box", input_content, flag) then 
 					open_param.value = tostring(input_content) or ""
 				end
 				ImGui.PopItemWidth()
@@ -75,9 +77,28 @@ local function create(editor)
 				if editor.style.draw_btn(" 确 认  ##btn_confirm_msg_box", true) and #open_param.value > 0 then 
 					local state = true
 					local value = open_param.value
+					local msg = "输入不合法"
 					if open_param.isFileName then 
-						if string.match(value, "^[^%c%z\\/:*?\"<>|]+$") == nil then 
+						for i = 1, #value do 
+							local char = string.byte(string.sub(value, i, i))
+							local check = false
+							if (char >= string.byte("a") and char <= string.byte('z')) or 
+								(char >= string.byte('A') and char <= string.byte('Z')) or 
+								(char >= string.byte('0') and char <= string.byte('9')) or 
+								(char == string.byte('_')) then 
+								check = true
+							end
+
+							if not check then 
+								state = false
+							end
+						end 
+					end
+					if open_param.onCheck then 
+						local _ret, _msg = open_param.onCheck(value) 
+						if not _ret then 
 							state = false
+							msg = _msg
 						end
 					end
 					if state then 
@@ -86,6 +107,8 @@ local function create(editor)
 						if open_param.onOK then 
 							open_param.onOK(value, open_param)
 						end
+					else 
+						editor.msg_hints.show(msg, "error")
 					end
 				end
 			end

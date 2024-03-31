@@ -147,7 +147,6 @@ local function new(editor, data_hander, stack)
 		end
 		
 		if ImGui.BeginPopup("my_context_menu") then
-			
             if ImGui.MenuItem("新建Region") then
 				local region_name = data_hander.gen_next_region_name("new region")
 				if data_hander.add_region(region_name) then
