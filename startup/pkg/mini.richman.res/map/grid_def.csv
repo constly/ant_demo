@@ -1,0 +1,8 @@
+80;1;唯一标识	80;1;注释	80;1;格子大小	80;1;背景色	80;1;文本色
+int	string	vec2_int	color	color
+id	name	size	bg_color	txt_color
+1	地面	{1, 1}		
+2	阻挡	{1, 1}		
+3	空地			
+4				
+				

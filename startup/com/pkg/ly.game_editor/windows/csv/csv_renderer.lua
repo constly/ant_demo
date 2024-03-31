@@ -9,7 +9,8 @@ local draw_list = dep.ImGuiExtend.draw_list
 ---@param editor ly.game_editor.editor
 ---@param data_hander ly.game_editor.csv.handler
 ---@param stack common_data_stack
-local function new(editor, data_hander, stack)
+---@param clipboard ly.game_editor.csv.clipboard
+local function new(editor, data_hander, stack, clipboard)
 	---@class ly.game_editor.csv.renderer
 	local api = {}
 	api.data_hander = data_hander
@@ -81,7 +82,7 @@ local function new(editor, data_hander, stack)
 		if keyIdx == input_x and lineIdx == input_y then 
 			ImGui.SetNextItemWidth(width)
 			local style<close> = editor.style.use(GStyle.cell_input)
-			if ImGui.InputText("##tabel_input_cell", input_buf, ImGui.InputTextFlags {'AutoSelectAll', "EnterReturnsTrue"}) or not is_selected then 
+			if ImGui.InputTextEx("##tabel_input_cell", input_buf, ImGui.InputTextFlags {'AutoSelectAll', "EnterReturnsTrue"}) or not is_selected then 
 				input_x, input_y = nil, nil
 				return tostring(input_buf)
 			end
@@ -114,10 +115,12 @@ local function new(editor, data_hander, stack)
 					stack.snapshoot(false)
 				end
 				if ImGui.MenuItem("复 制") then 
-					print(1)
+					clipboard.copy()
 				end
 				if ImGui.MenuItem("粘 贴") then 
-					print(1)
+					if clipboard.paste() then 
+						stack.snapshoot(true)
+					end
 				end
 				if ImGui.MenuItem("删 除") then 
 					data_hander.delete_selected()

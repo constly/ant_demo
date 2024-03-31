@@ -14,7 +14,7 @@ local function new(editor, vfs_path, full_path)
 	local stack = dep.common.data_stack.create()								---@type common_data_stack
 	local data_hander = csv_handler.new()										---@type ly.game_editor.csv.handler
 	local clipboard = csv_clipboard.new(editor, data_hander, stack)				---@type ly.game_editor.csv.clipboard
-	local renderer = csv_renderer.new(editor, data_hander, stack)				---@type ly.game_editor.csv.renderer
+	local renderer = csv_renderer.new(editor, data_hander, stack, clipboard)	---@type ly.game_editor.csv.renderer
 
 	function api.update(delta_time)
 		renderer.update(delta_time)
