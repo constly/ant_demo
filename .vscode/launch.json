@@ -7,7 +7,7 @@
             "name": "Debug",
             "luaexe": "${workspaceFolder}/bin/msvc/debug/ant_demo.exe",
             "console": "integratedTerminal",
-            "stopOnEntry": true,
+            "stopOnEntry": false,
             "outputCapture": [],
             "program": "startup/main.lua",
             "arg": []

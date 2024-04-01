@@ -241,8 +241,9 @@ local function new(editor)
 			ImGui.SameLineEx(draw_data.header_len)
 			ImGui.SetNextItemWidth(draw_data.content_len)
 
+			local precision = draw_data.precision or 3
 			local label = string.format("##detail_%s_%d", draw_data.header, draw_data.id or 0)
-			local flag = draw_data.is_float and ImGui.ColorEditFlags { "None", "Float" } or ImGui.ColorEditFlags { "None" }
+			local flag = ImGui.ColorEditFlags { "None", "Float" } 
 			if draw_data.is_table or type_data.params.is_table then 
 				local tb = (type(draw_data.value) == "table") and draw_data.value or {} 
 				if ImGui.ColorEdit4(label, tb, flag) then 
@@ -260,7 +261,7 @@ local function new(editor)
 				local tb = {x, y, z, w}
 				if ImGui.ColorEdit4(label, tb, flag) then 
 					local get = function(idx)
-						return lib.float_format(tb[idx])
+						return lib.float_format(tb[idx], precision)
 					end
 					draw_data.new_value = string.format("{%s,%s,%s,%s}", get(1), get(2), get(3), get(4))
 					return true

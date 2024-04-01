@@ -15,6 +15,10 @@ local create = function(editor)
 	local region_draw = chess_region_draw.create(editor)
 	local input_content = ImGui.StringBuf()
 	local inspector = chess_inspector_draw.create(editor)
+	
+	---@type ly.map.chess.ui_setting
+	local ui_setting = require 'editor.ui.chess_ui_setting'.new(editor)
+
 	local dpiScale
 	local header_y
 
@@ -48,6 +52,8 @@ local create = function(editor)
 			chess.draw_right(_deltatime)
 		ImGui.EndChild()
 		ImGui.PopStyleVar()
+
+		ui_setting.update()
 	end
 
 	function chess.draw_left()
@@ -63,7 +69,7 @@ local create = function(editor)
 			ImGui.SetCursorPos(5, 5)
 			ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
 			ImGui.BeginGroup()
-			for i, def in ipairs(editor.args.tb_objects) do 
+			for i, def in ipairs(editor.tb_object_def or {}) do 
 				local label = string.format("L%d: [%d]%s(%d*%d)##btn_obj_def_%d", def.nLayer or 1, def.id, def.name, def.size.x, def.size.y, def.id)
 				if imgui_utils.draw_btn(label, data.cur_object_id == def.id, {size_x = len}) then 
 					if data.cur_object_id ~= def.id then 
@@ -132,7 +138,9 @@ local create = function(editor)
 	function chess.draw_middle(_deltatime)
 		local size_x, size_y = ImGui.GetContentRegionAvail()
 		ImGui.SetCursorPos(3, 4)
-		imgui_utils.draw_btn("设置", false)
+		if imgui_utils.draw_btn("设置", false) then 
+			ui_setting.open()
+		end
 		ImGui.SameLine()
 		imgui_utils.draw_btn("配置", false)
 

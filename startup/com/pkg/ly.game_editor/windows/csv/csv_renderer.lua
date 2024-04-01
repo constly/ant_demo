@@ -3,6 +3,7 @@
 --------------------------------------------------------
 local dep = require 'dep'
 local ImGui = dep.ImGui
+local lib = dep.common.lib
 local imgui_styles = dep.common.imgui_styles
 local draw_list = dep.ImGuiExtend.draw_list
 
@@ -16,6 +17,7 @@ local function new(editor, data_hander, stack, clipboard)
 	api.data_hander = data_hander
 	api.stack = stack
 
+	local color_edit_flag = ImGui.ColorEditFlags { "Float", "NoInputs" } 
 	local refresh_width = false
 	local table_index = 0;
 	local random_id = math.random(1 << 32)
@@ -69,9 +71,10 @@ local function new(editor, data_hander, stack, clipboard)
 		local v, index = data_hander.get_colume(col.key)
 		return index
 	end
-
-	local function draw_cell(lineIdx, keyIdx, content, width)
-		local label = string.format("%s##btn_cell_%d_%d", content, lineIdx, keyIdx )
+	
+	---@param col ly.game_editor.csv.head
+	local function draw_cell(lineIdx, keyIdx, content, col)
+		local width = col.width
 		local is_selected = data_hander.is_selected(lineIdx, keyIdx)
 		local btn_style  
 		if lineIdx == 1 then 
@@ -79,17 +82,31 @@ local function new(editor, data_hander, stack, clipboard)
 		else 
 			btn_style = is_selected and GStyle.cell_selected or GStyle.cell_body 
 		end
-		if keyIdx == input_x and lineIdx == input_y then 
-			ImGui.SetNextItemWidth(width)
-			local style<close> = editor.style.use(GStyle.cell_input)
-			if ImGui.InputTextEx("##tabel_input_cell", input_buf, ImGui.InputTextFlags {'AutoSelectAll', "EnterReturnsTrue"}) or not is_selected then 
-				input_x, input_y = nil, nil
-				return tostring(input_buf)
+		local ret 
+		if col.type == "color" and lineIdx >= 4 then 
+			local label = string.format("##btn_cell_%d_%d", lineIdx, keyIdx )
+			local tb = lib.string_to_color_array(content)
+			ImGui.SetNextItemWidth(width * 0.5)
+			if ImGui.ColorEdit4(label, tb, color_edit_flag) then 
+				local get = function(idx) return lib.float_format(tb[idx], 3) end
+				content = string.format("{%s,%s,%s,%s}", get(1), get(2), get(3), get(4))
 			end
-			return content
+			ImGui.SameLine()
+			label = string.format("##btn_cell_%d_%d_h", lineIdx, keyIdx )
+			ret = editor.style.draw_style_btn(label, btn_style, {size_x = width * 0.5}) 
+		else
+			if keyIdx == input_x and lineIdx == input_y then 
+				ImGui.SetNextItemWidth(width)
+				local style<close> = editor.style.use(GStyle.cell_input)
+				if ImGui.InputTextEx("##tabel_input_cell", input_buf, ImGui.InputTextFlags {'AutoSelectAll', "EnterReturnsTrue"}) or not is_selected then 
+					input_x, input_y = nil, nil
+					return tostring(input_buf)
+				end
+				return content
+			end
+			local label = string.format("%s##btn_cell_%d_%d", content, lineIdx, keyIdx )
+			ret = editor.style.draw_style_btn(label, btn_style, {size_x = width}) 
 		end
-
-		local ret = editor.style.draw_style_btn(label, btn_style, {size_x = width}) 
 		if ret then 
 			local ok = true
 			if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
@@ -230,7 +247,7 @@ local function new(editor, data_hander, stack, clipboard)
 					if y == 1 then
 						col.width = draw_list.GetTableColumnWidth(i)
 					end
-					local str = draw_cell(y, i, col[name], col.width)
+					local str = draw_cell(y, i, col[name], col)
 					if str ~= col[name] then 
 						col[name] = str
 						stack.snapshoot(true)
@@ -256,7 +273,7 @@ local function new(editor, data_hander, stack, clipboard)
 				for i, col in ipairs(cols) do 
 					ImGui.TableSetColumnIndex(i);
 					local str = v[col.key] or ""
-					local new = draw_cell(y, i, str, col.width)
+					local new = draw_cell(y, i, str, col)
 					if new ~= str then 
 						v[col.key] = new
 						stack.snapshoot(true)

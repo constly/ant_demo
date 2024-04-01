@@ -41,7 +41,7 @@ end
 ---@param f number 小数指
 ---@param precision number 保留小数点后几位
 function lib.float_format(f, precision)
-	if not f or not precision or precision <= 0 then return end 
+	if not f or not precision or precision <= 0 then return f end 
 
 	local p = 1
 	while precision > 0 do
@@ -197,6 +197,37 @@ function lib.copy(tb)
 		end
 	end
 	return ret;
+end
+
+---运行代码. string to value
+---@param s string Lua代码
+---@return any 代码的返回
+function lib.eval(s)
+    return assert(load("return " .. (s or "")))()
+end
+
+function lib.string_to_vec2(str)
+	local tb = lib.eval(str)
+	if not tb then return {x = 0, y = 0} end 
+	return {x = tb[1] or 0, y = tb[2] or 0}
+end
+
+function lib.string_to_color_array(str)
+	str = str or ""
+	str = #str >= 2 and str.sub(str, 2, -2) or str
+	local arr = lib.split(str, ",")
+	local x = tonumber(arr[1]) or 1
+	local y = tonumber(arr[2]) or 1
+	local z = tonumber(arr[3]) or 1
+	local w = tonumber(arr[4]) or 1
+	return {x, y, z, w}
+end
+
+function lib.color_array_to_string(array, precision)
+	local get = function(idx)
+		return lib.float_format(array[idx] or 1, precision)
+	end
+	return string.format("{%s,%s,%s,%s}", get(1), get(2), get(3), get(4))
 end
 
 return lib

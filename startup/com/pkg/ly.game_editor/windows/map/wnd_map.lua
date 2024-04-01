@@ -4,6 +4,7 @@
 local dep = require 'dep'
 local ed = dep.ed 
 local ImGui = dep.ImGui
+local file = dep.common.file
 
 ---@type ly.map.chess.main
 local chess_map = import_package 'ly.map.chess'			
@@ -16,6 +17,7 @@ local function new(editor, vfs_path, full_path)
 	local main = nil 
 
 	local function init()
+		--local csv = file.load_csv("")
 		---@type chess_object_tpl[] 物件定义
 		local tb_object_def = 
 		{
@@ -54,7 +56,6 @@ local function new(editor, vfs_path, full_path)
 		---@type chess_editor_create_args
 		local params = {}
 		params.data = data
-		params.tb_objects = tb_object_def
 		if not main then 
 			main = chess_map.create(params);
 		end
@@ -85,6 +86,9 @@ local function new(editor, vfs_path, full_path)
 
 	function api.handleKeyEvent()
 		main.handleKeyEvent()
+		if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
+			if ImGui.IsKeyPressed(ImGui.Key.S, false) then api.save() end
+		end
 	end
 
 	function api.reload()

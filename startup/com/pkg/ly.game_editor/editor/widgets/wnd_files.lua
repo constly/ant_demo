@@ -287,6 +287,11 @@ local function new(editor)
 			if ImGui.MenuItem("克 隆") then
 				action_clone_file(ext, name, display, isDir)
 			end
+			if ImGui.MenuItem("复制文件路径") then
+				local path = view_path and string.format("/pkg/%s/%s/%s", selected_pkg, view_path, name) 
+					or string.format("/pkg/%s/%s", selected_pkg, name)
+				ImGui.SetClipboardText(path)
+			end
 			if ImGui.MenuItem("在文件浏览器中查看") then
 				local path = file.full_path:gsub("/","\\")
 				os.execute("c:\\windows\\explorer.exe /select,".. path)

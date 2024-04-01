@@ -123,7 +123,7 @@ local function new(editor, data_hander, stack)
 
 		local values = style.values
 		local tb_attrs = all_attr[style_type]
-		local draw_data = {header_len = header_len, content_len = content_len, is_table = true, is_float = true}
+		local draw_data = {header_len = header_len, content_len = content_len, is_table = true}
 		for i, attr in ipairs(tb_attrs) do 
 			local type, name, tip, enum, default = table.unpack(attr)
 			local v = values[name]

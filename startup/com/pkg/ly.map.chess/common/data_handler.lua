@@ -18,28 +18,34 @@ local create = function()
 
 	local DATA_VERSION = 1
 
-	---@param args chess_editor_create_args
-	function handler.init(args)
-		local data = dep.common.lib.copy(args.data) or {} ---@type chess_map_tpl
+	---@param _data chess_map_tpl
+	function handler.init(_data)
+		local data = dep.common.lib.copy(_data) or {} ---@type chess_map_tpl
 		handler.data = data
-		handler.max_object_size_x = 1
-		handler.max_object_size_y = 1
-		handler.tb_cache_object_def = {}
-		for _, v in ipairs(args.tb_objects) do 
-			handler.tb_cache_object_def[v.id] = v
-			handler.max_object_size_x = math.max(handler.max_object_size_x, v.size.x)
-			handler.max_object_size_y = math.max(handler.max_object_size_y, v.size.y)
-		end
-
 		if not data.regions then 
 			data.next_id = 0;
 			data.regions = {}
 			data.regions[1] = handler.create_region()
 			data.show_ground = true
 			data.region_index = 1
+			data.path_def = ""
 		end
 		data.version = DATA_VERSION
 		data.cache = {selects = {}, invisibles = {}}
+	end
+
+	function handler.refresh_path_def(tb_objects)
+		handler.max_object_size_x = 1
+		handler.max_object_size_y = 1
+		handler.tb_cache_object_def = {}
+		for _, v in ipairs(tb_objects or {}) do 
+			handler.tb_cache_object_def[v.id] = v
+			if v.size then
+				handler.max_object_size_x = math.max(handler.max_object_size_x, v.size.x or 1)
+				handler.max_object_size_y = math.max(handler.max_object_size_y, v.size.y or 1)
+			end
+		end
+
 	end
 
 	function handler.next_id()
@@ -172,6 +178,11 @@ local create = function()
 	---@return chess_object_tpl 模板对象
 	function handler.get_object_tpl(tplId)
 		return handler.tb_cache_object_def[tplId]
+	end
+
+	-- 是否配置有数据定义文件
+	function handler.has_path_def()
+		return handler.data.path_def and handler.data.path_def ~= ""
 	end
 
 	-------------------------------------------------------------------
