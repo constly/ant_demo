@@ -50,7 +50,7 @@ local function new(editor)
 		
 		if ext == "ini" then 
 			window = require 'windows.ini.wnd_ini' .new(editor, vfs_path, full_path)
-		elseif ext == "csv" then
+		elseif ext == "csv" or ext == "txt" then
 			window = require 'windows.csv.wnd_csv' .new(editor, vfs_path, full_path)
 		elseif ext == "map" then
 			window = require 'windows.map.wnd_map' .new(editor, vfs_path, full_path)

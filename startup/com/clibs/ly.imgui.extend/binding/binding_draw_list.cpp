@@ -419,7 +419,7 @@ dlAddEllipse(lua_State* L) {
 		rot = (float)read_field_float(L, "rot", rot, 1);
 		num_segments = read_field_int(L, "segments", num_segments, 1);
 		thickness = (float)read_field_float(L, "thickness", thickness, 1);
-		draw_list->AddEllipse(center, radius_x, radius_y, ImGui::ColorConvertFloat4ToU32(col), rot, num_segments, thickness);
+		draw_list->AddEllipse(center, ImVec2(radius_x, radius_y), ImGui::ColorConvertFloat4ToU32(col), rot, num_segments, thickness);
 	}
 	return 0;
 }
@@ -440,7 +440,7 @@ dlAddEllipseFilled(lua_State* L) {
 		col = read_field_vec4(L, "col", col, 1);
 		rot = (float)read_field_float(L, "rot", rot, 1);
 		num_segments = read_field_int(L, "segments", num_segments, 1);
-		draw_list->AddEllipseFilled(center, radius_x, radius_y, ImGui::ColorConvertFloat4ToU32(col), rot, num_segments);
+		draw_list->AddEllipseFilled(center, ImVec2(radius_x, radius_y), ImGui::ColorConvertFloat4ToU32(col), rot, num_segments);
 	}
 	return 0;
 }

@@ -9,8 +9,6 @@ api.btn_normal = 2
 api.btn_normal_item = 3
 api.btn_yellow = 4
 
-api.btn_drop_hint = 1000
-
 api.popup = 1000
 
 
@@ -53,12 +51,6 @@ local init = function()
 		ImGui.PushStyleColorImVec4(ImGui.Col.Text, 0.8, 0.8, 0.8, 1)
 	end, function()
 		ImGui.PopStyleColorEx(4)
-	end)
-
-	register(api.btn_drop_hint, function()
-		draw_btn(0, 0.8, 0.8, 0.5);
-	end, function()
-		ImGui.PopStyleColorEx(3)
 	end)
 
 	--------------------------------------------------------

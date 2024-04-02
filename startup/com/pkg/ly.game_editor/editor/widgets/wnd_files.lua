@@ -21,13 +21,13 @@ local function new(editor)
 	local function init()
 		tb_new_file_desc = {
 			{"ini", 	"ini 配置文件"},
-			{"csv", 	"csv 表格文件"},
+			{"txt", 	"txt 表格文件"},
 			{"map", 	"map 地图文件"},
 			{"room", 	"room 房间文件"},
 			{"style", 	"style 编辑器样式文件"},
 			{"def", 	"def 数据定义文件"},
 		}
-		for i, name in ipairs({"ai", "csv", "folder", "ini", "map", "mod", "room", "def", "style"}) do 
+		for i, name in ipairs({"ai", "txt", "csv", "folder", "ini", "map", "mod", "room", "def", "style"}) do 
 			icons[name] = dep.assetmgr.resource(string.format("/pkg/ly.game_editor/assets/icon/icon_%s.texture", name), { compile = true })
 		end
 	end

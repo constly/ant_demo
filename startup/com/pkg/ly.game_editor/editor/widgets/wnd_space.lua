@@ -310,7 +310,7 @@ local function new(editor)
 		end
 
 		ImGui.SetCursorScreenPos(start_x, start_y)
-		editor.style.draw_style_btn("##btn_dropview_hint", GStyle.btn_drop_hint, {size_x = size_x, size_y = size_y})
+		ImGui.ButtonEx("##btn_dropview_hint", size_x, size_y)
 		if ImGui.BeginDragDropTarget() then 
 			local payload = imgui_utils.AcceptDragDropPayload("DragViewTab")
 			if payload then
