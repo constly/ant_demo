@@ -14,6 +14,7 @@ local create = function(args)
 	editor.stack = stack
 	editor.args = args
 	editor.tb_object_def = args.tb_objects				---@type chess_object_tpl[]
+	editor.is_window_active = true
 		
 	local draw = _chess_draw.create(editor)				---@type chess_editor_draw
 
@@ -32,6 +33,7 @@ local create = function(args)
 		local _args = dep.common.lib.copy(args)  		---@type chess_editor_create_args
 		_args.data = nil
 		data_hander.init(_args)
+		editor.refresh_object_def()
 		stack.snapshoot()
 	end
 
@@ -44,8 +46,11 @@ local create = function(args)
 		write_callback(content)
 	end
 
-	function editor.on_render(deltatime)
-		draw.on_render(deltatime)
+	---@param is_active boolean 窗口是否激活
+	---@param delta_time number 更新间隔，秒
+	function editor.on_render(is_active, delta_time)
+		editor.is_window_active = is_active
+		draw.on_render(delta_time)
 	end 
 
 	function editor.handleKeyEvent()

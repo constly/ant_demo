@@ -24,29 +24,29 @@ local function new(editor, vfs_path, full_path)
 		end)
 	end
 
-	function api.update(delta_time)
+	function api.update(is_active, delta_time)
 		renderer.update(delta_time)
+
+		if is_active then 
+			if ImGui.IsPopupOpen("", ImGui.PopupFlags{'AnyPopup'}) then 
+				return 
+			end
+			if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
+				if ImGui.IsKeyPressed(ImGui.Key.Z, false) then stack.undo() end
+				if ImGui.IsKeyPressed(ImGui.Key.Y, false) then stack.redo() end
+				if ImGui.IsKeyPressed(ImGui.Key.C, false) then clipboard.copy() end
+				if ImGui.IsKeyPressed(ImGui.Key.X, false) then clipboard.cut() end
+				if ImGui.IsKeyPressed(ImGui.Key.S, false) then 
+					api.save() 
+					editor.msg_hints.show("保存成功", "ok")
+				end
+			end
+		end
 	end 
 
 	---@return boolean 文件是否有修改
 	function api.is_dirty()
 		return data_hander.isModify
-	end
-
-	function api.handleKeyEvent()
-		if ImGui.IsPopupOpen("", ImGui.PopupFlags{'AnyPopup'}) then 
-			return 
-		end
-		if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
-			if ImGui.IsKeyPressed(ImGui.Key.Z, false) then stack.undo() end
-			if ImGui.IsKeyPressed(ImGui.Key.Y, false) then stack.redo() end
-			if ImGui.IsKeyPressed(ImGui.Key.C, false) then clipboard.copy() end
-			if ImGui.IsKeyPressed(ImGui.Key.X, false) then clipboard.cut() end
-			if ImGui.IsKeyPressed(ImGui.Key.S, false) then 
-				api.save() 
-				editor.msg_hints.show("保存成功", "ok")
-			end
-		end
 	end
 
 	function api.reload()

@@ -12,7 +12,8 @@ local lib = dep.common.lib
 ---@field close function 关闭窗口，释放资源
 ---@field save function 保存数据
 ---@field reload function 重新加载文件
----@field handleKeyEvent function 处理键盘事件
+---@field onAnyFileSaveComplete function 通知文件保存完成(任意)
+---@field has_preview_mode function 是否有预览模式
 local tb_wnd_base = {}
 
 ---@param editor ly.game_editor.editor
@@ -25,27 +26,26 @@ local function new(editor)
 	---@param is_active boolean 窗口是否激活
 	function api.render(delta_time, view, is_active)
 		local path = view.tabs.get_active_path()
-		if not view.tabs.has_tab(path) then return end
+		local tab = view.tabs.find_by_path(path)
+		if not tab then return end
 		local window = api.get_or_create_window(path)
 		if window then 
-			window.update(delta_time);
-			if is_active then 
-				window.handleKeyEvent()
-			end
+			window.update(is_active, delta_time, tab.show_mode);
 		else 
 			ImGui.Text("功能未实现: " .. path)
 		end		
 	end
 
 	---@return ly.game_editor.wnd_base
-	function api.get_or_create_window(vfs_path)
-		local window = api.windows[vfs_path]
+	function api.get_or_create_window(path)
+		local window = api.windows[path]
 		if window then return window end
 
-		local ext = lib.get_file_ext(vfs_path)
+		local ext = lib.get_file_ext(path)
 		if not ext then return end 
 
-		local full_path = editor.files.vfs_path_to_full_path(vfs_path)
+		local vfs_path =  "/pkg/" .. path
+		local full_path = editor.files.vfs_path_to_full_path(path)
 		if not full_path then return end 
 		
 		if ext == "ini" then 
@@ -60,7 +60,7 @@ local function new(editor)
 			window = require 'windows.style.wnd_style' .new(editor, vfs_path, full_path)
 		end
 		if window then 
-			api.windows[vfs_path] = window
+			api.windows[path] = window
 		end 
 		return window
 	end
@@ -69,6 +69,18 @@ local function new(editor)
 	function api.find_window(path)
 		return api.windows[path]
 	end 
+
+	--- 当文件保存完成时
+	---@param wnd ly.game_editor.wnd_base 窗口对象
+	---@param vfs_path string vfs路径
+	---@param full_path string 本地磁盘路径
+	function api.when_file_save_complete(wnd, vfs_path, full_path)
+		for i, v in pairs(api.windows) do 
+			if v ~= wnd and v.onAnyFileSaveComplete then 
+				v.onAnyFileSaveComplete(vfs_path, full_path)
+			end
+		end
+	end
 
 	return api
 end

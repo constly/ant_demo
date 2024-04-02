@@ -18,8 +18,15 @@ local function new(editor, vfs_path, full_path)
 		renderer.set_data(uitls.load_datalist(full_path))
 	end
 
-	function api.update(delta_time)
+	function api.update(is_active, delta_time)
 		renderer.update(delta_time)
+		if is_active then 
+			if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
+				if ImGui.IsKeyPressed(ImGui.Key.Z, false) then stack.undo() end
+				if ImGui.IsKeyPressed(ImGui.Key.Y, false) then stack.redo() end
+				if ImGui.IsKeyPressed(ImGui.Key.S, false) then api.save() end
+			end
+		end
 	end 
 
 	function api.close()
@@ -28,19 +35,12 @@ local function new(editor, vfs_path, full_path)
 
 	function api.save()
 		uitls.save_file(full_path, data_hander, stack)
+		editor.wnd_mgr.when_file_save_complete(self, vfs_path, full_path)
 	end 
 
 	---@return boolean 文件是否有修改
 	function api.is_dirty()
 		return data_hander.isModify
-	end
-
-	function api.handleKeyEvent()
-		if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
-			if ImGui.IsKeyPressed(ImGui.Key.Z, false) then stack.undo() end
-			if ImGui.IsKeyPressed(ImGui.Key.Y, false) then stack.redo() end
-			if ImGui.IsKeyPressed(ImGui.Key.S, false) then api.save() end
-		end
 	end
 
 	api.reload()

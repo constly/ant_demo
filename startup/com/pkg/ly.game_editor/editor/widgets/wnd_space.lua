@@ -194,6 +194,17 @@ local function new(editor)
 				if ImGui.MenuItem("关闭其他所有") then 
 					view.tabs.close_other_tabs(v, editor)
 				end
+				if wnd and wnd.has_preview_mode and wnd.has_preview_mode() then 
+					if v.show_mode == 2 then 
+						if ImGui.MenuItem("切换至设计模式") then 
+							v.show_mode = 1
+						end
+					else 
+						if ImGui.MenuItem("切换至预览模式") then 
+							v.show_mode = 2
+						end
+					end
+				end
 				ImGui.Separator()
 				if ImGui.MenuItem("选 中") then 
 					editor.wnd_files.browse(v.path)

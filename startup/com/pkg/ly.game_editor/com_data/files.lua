@@ -135,6 +135,9 @@ local function new(editor)
 	end
 
 	function api.vfs_path_to_full_path(vfs_path)
+		if lib.start_with(vfs_path, "/pkg/") then 
+			vfs_path = string.gsub(vfs_path, "/pkg/", "")
+		end 
 		local arr = lib.split(vfs_path, "/")
 		if arr[1] == "" then 
 			table.remove(arr, 1)

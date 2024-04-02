@@ -12,6 +12,7 @@ local path_def = dep.common.path_def
 ---@field path string 路径
 ---@field name string 文件名
 ---@field fileType string 文件类型
+---@field show_mode number 显示模式
 local tb_tab_data 
 
 
@@ -26,13 +27,14 @@ local function create_tab(content)
 		api.dirty = true
 	end
 
-	local function add_tab(path, insert_index)
+	local function add_tab(path, insert_index, show_mode)
 		local arr = lib.split(path, "/")
 		local tb = {}
 		tb.path = path
 		tb.name = lib.get_file_name(path)
 		tb.fileType = lib.get_file_ext(path)
 		tb.root = arr[1]
+		tb.show_mode = show_mode or 1
 		if insert_index then 
 			table.insert(api.list, insert_index, tb)
 		else 
@@ -45,7 +47,8 @@ local function create_tab(content)
 		api.list = {}
 		local array = lib.split(content or "", ";")
 		for i = 2, #array  do 
-			add_tab(array[i])
+			local data = lib.split(array[i], "|")
+			add_tab(data[1], nil, tonumber(data[2]))
 		end
 		api.active_path = array[1]
 	end
@@ -53,7 +56,7 @@ local function create_tab(content)
 	function api.tostring()
 		local tb = {api.active_path}
 		for i, v in ipairs(api.list) do 
-			table.insert(tb, v.path)
+			table.insert(tb, string.format("%s|%d", v.path, v.show_mode or 1))
 		end
 		return table.concat(tb, ";")
 	end
@@ -70,7 +73,7 @@ local function create_tab(content)
 	function api.copy_to(_tabs)
 		_tabs.list = {}
 		for i, v in ipairs(api.list) do 
-			_tabs.list[i] = v
+			_tabs.list[i] = lib.copy(v)
 		end
 		_tabs.active_path = api.active_path
 	end

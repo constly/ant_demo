@@ -13,13 +13,16 @@ GStyle = {}
 GStyle.btn_normal = "gen.btn_normal"
 GStyle.btn_normal_selected = "gen.btn_normal_selected"
 GStyle.tab_active = "gen.tab_active"
+GStyle.btn_transp_center = "gen.btn_transp_center"
+
 
 --------------------------------------------------------
 --- 文件
 --------------------------------------------------------
-GStyle.btn_transp_center = "gen.btn_transp_center"
-GStyle.btn_transp_center_sel = "gen.btn_transp_center_sel"
-GStyle.btn_transp_center_active = "gen.btn_transp_center_active"
+GStyle.file_normal = "file.btn_file"
+GStyle.file_sel = "file.btn_file_sel"
+GStyle.file_active = "file.btn_file_active"
+
 
 --------------------------------------------------------
 --- 表格
@@ -81,11 +84,11 @@ local function get_styles()
 	reg("通 用", 	GStyle.btn_normal, 					types.button, 	"按钮普通状态")
 	reg("通 用", 	GStyle.btn_normal_selected, 		types.button, 	"按钮选中状态")
 	reg("通 用", 	GStyle.tab_active, 					types.button, 	"tab页激活状态")
+	reg("通 用", 	GStyle.btn_transp_center, 			types.button, 	"透明按钮")
 
-	reg("文件栏", 	GStyle.btn_transp_center, 			types.button, 	"透明-中心对齐")
-	reg("文件栏", 	GStyle.btn_transp_center_sel, 		types.button, 	"文件选中非激活")
-	reg("文件栏", 	GStyle.btn_transp_center_active, 	types.button, 	"文件选中激活")
-	
+	reg("文件栏", 	GStyle.file_normal, 				types.button, 	"文件普通状态")
+	reg("文件栏", 	GStyle.file_sel, 					types.button, 	"文件选中非激活")
+	reg("文件栏", 	GStyle.file_active, 				types.button, 	"文件选中激活")
 	
 	reg("表 格", 	GStyle.cell_header, 				types.cell, 	"表格头部")
 	reg("表 格", 	GStyle.cell_body, 					types.cell, 	"表格内容")

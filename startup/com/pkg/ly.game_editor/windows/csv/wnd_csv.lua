@@ -16,16 +16,7 @@ local function new(editor, vfs_path, full_path)
 	local clipboard = csv_clipboard.new(editor, data_hander, stack)				---@type ly.game_editor.csv.clipboard
 	local renderer = csv_renderer.new(editor, data_hander, stack, clipboard)	---@type ly.game_editor.csv.renderer
 
-	function api.update(delta_time)
-		renderer.update(delta_time)
-	end 
-
-	---@return boolean 文件是否有修改
-	function api.is_dirty()
-		return data_hander.isModify
-	end
-
-	function api.handleKeyEvent()
+	local function handleKeyEvent()
 		if ImGui.IsPopupOpen("", ImGui.PopupFlags{'AnyPopup'}) then 
 			return 
 		end
@@ -55,6 +46,18 @@ local function new(editor, vfs_path, full_path)
 		end
 	end
 
+	function api.update(is_active, delta_time)
+		renderer.update(delta_time)
+		if is_active then 
+			handleKeyEvent()
+		end 
+	end 
+
+	---@return boolean 文件是否有修改
+	function api.is_dirty()
+		return data_hander.isModify
+	end
+
 	function api.reload()
 		renderer.set_data(uitls.load_file(full_path))
 	end
@@ -64,6 +67,7 @@ local function new(editor, vfs_path, full_path)
 
 	function api.save()
 		uitls.save_file(full_path, data_hander, stack)
+		editor.wnd_mgr.when_file_save_complete(self, vfs_path, full_path)
 	end 
 
 	api.reload()

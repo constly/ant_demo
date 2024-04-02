@@ -372,7 +372,7 @@ local function new(editor)
 			do
 				ImGui.SetCursorPos(temp.x - maskSize.x * 0.5, temp.y)
 				local label = "##btn_file_node_mask_" .. index
-				local style<close> = editor.style.use(GStyle.btn_transp_center)
+				local style<close> = editor.style.use(GStyle.file_normal)
 				if ImGui.ButtonEx(label, maskSize.x, maskSize.y) then 
 					set_selected_file(name)
 				end
@@ -390,9 +390,9 @@ local function new(editor)
 				local is_selected = name == selected_file
 				local type
 				if is_window_active and is_selected then 
-					type = GStyle.btn_transp_center_active
+					type = GStyle.file_active
 				else 
-					type = is_selected and GStyle.btn_transp_center_sel or GStyle.btn_transp_center
+					type = is_selected and GStyle.file_sel or GStyle.file_normal
 				end
 				local style<close> = editor.style.use(type)
 				local label = string.format("%s##btn_file_node_%s", display, index)

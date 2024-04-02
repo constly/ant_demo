@@ -175,7 +175,8 @@ local create = function(editor)
 		draw_btns({x = (start_x + end_x) * 0.5 * 100 + 25, y = (end_y + 1) * 100 + 25}, "down")
 	end
 
-	function api.draw_layers( )
+	function api.draw_layers()
+		local isDraging = ImGui.IsMouseDragging(0) and editor.is_window_active
 		local draw_object = function(layerId, gridId, text, bg_color, txt_color, size, uid)
 			local label = string.format("%s##btn_grid_%d_%s", text, layerId, gridId)
 			local size_x = size.x * 100
@@ -183,7 +184,6 @@ local create = function(editor)
 			local pos_x, pos_y = data_hander.grid_id_to_grid_pos(gridId)
 			ImGui.SetNextItemAllowOverlap();
 			ImGui.SetCursorPos(pos_x * 100 + 2.5, pos_y * 100 + 2.5);
-			local isDraging = ImGui.IsMouseDragging(0)
 			if isDraging then 
 				bg_color = {table.unpack(bg_color)}; bg_color[4] = bg_color[4] * 0.5
 				txt_color = {table.unpack(txt_color)}; txt_color[4] = txt_color[4] * 0.1
