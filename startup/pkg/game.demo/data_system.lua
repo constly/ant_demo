@@ -153,3 +153,14 @@ function system.set_current_item(_category, _item_id)
 	data_mgr.set_current_item(_category, _item_id)
 	sound.play_sound("/pkg/game.res/sound/click.wav")
 end
+
+function system.init()
+	local fonts = {}
+	fonts[#fonts+1] = {
+		FontPath = "/pkg/ant.resources.binary/font/Alibaba-PuHuiTi-Regular.ttf",
+		SizePixels = 18,
+		GlyphRanges = { 0x0020, 0xFFFF }
+	}
+	local ImGuiAnt      = import_package "ant.imgui"
+	ImGuiAnt.FontAtlasBuild(fonts)
+end

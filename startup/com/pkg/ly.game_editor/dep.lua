@@ -9,7 +9,7 @@ dep.bfs 			= require "bee.filesystem"
 dep.datalist		= require 'datalist'
 dep.assetmgr  		= import_package "ant.asset"
 dep.textureman 		= require "textureman.client"
-
+dep.fastio 			= require "fastio"
 --- 项目依赖
 dep.ImGuiExtend 	= require "ly.imgui.extend"
 

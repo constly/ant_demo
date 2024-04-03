@@ -1,8 +1,8 @@
 --------------------------------------------------------
 -- 文件相关
 --------------------------------------------------------
+---@type ly.game_editor.dep
 local dep 		= require 'dep'
-local fs 		= require "filesystem"
 local lfs       = require "bee.filesystem"
 local lib 		= dep.common.lib
 
@@ -74,17 +74,69 @@ local function new(editor)
 		return tree
 	end
 
+	local function get_package(entry_path)
+		local function loadmount(rootpath)
+			local path = rootpath .. "/.mount"
+			return dep.datalist.parse(dep.fastio.readall_f(path))
+		end
+		local _mountlpath = {}
+		local function addmount(vpath, lpath)
+			if not lfs.exists(lpath) then
+				return
+			end
+			assert(vpath:sub(1,1) == "/")
+			for _, value in ipairs(_mountlpath) do
+				if value:string() == lpath then
+					return
+				end
+			end
+			_mountlpath[#_mountlpath+1] = lfs.absolute(lpath):lexically_normal()
+		end
+
+		local cfg = loadmount(entry_path)
+		for i = 1, #cfg.mount, 2 do
+			local vpath, lpath = cfg.mount[i], cfg.mount[i+1]
+			addmount(vpath, lpath:gsub("%%([^%%]*)%%", {
+				engine = lfs.current_path():string(),
+				project = entry_path:gsub("(.-)[/\\]?$", "%1"),
+			}))
+		end
+		local packages = {}
+		for _, value in ipairs(_mountlpath) do
+			local strvalue = value:string()
+			if strvalue:sub(-7) == '/engine' then
+				goto continue
+			end
+			if strvalue:sub(-4) ~= '/pkg' then
+				value = value / 'pkg'
+			end
+			for item in lfs.pairs(value) do
+				local _, pkgname = item:string():match'(.*/)(.*)'
+				local skip = false
+				if pkgname:sub(1, 4) == "ant." then
+					skip = true
+				end
+				if not skip then
+					packages[#packages + 1] = {name = pkgname, path = item}
+				end
+			end
+			::continue::
+		end
+		return packages
+	end
+
 	local function init()
 		local tb_show = {}
 		for i, pkg in ipairs(editor.tbParams.pkgs) do 
 			tb_show[pkg] = true
 		end
-
-		local packages = dep.common.path_def.get_packages(editor.tbParams.project_root)
+		local packages = get_package(editor.tbParams.project_root)
+		dep.common.lib.dump(packages)
+		
 		local resource_tree = {}
 		for _, item in ipairs(packages) do
 			if tb_show[item.name] then
-				local vpath = fs.path("/pkg") / fs.path(item.name)
+				local vpath = lfs.path("/pkg") / lfs.path(item.name)
 				resource_tree[item.name] = {
 					full_path = tostring(item.path), 
 					v_path = tostring(vpath),

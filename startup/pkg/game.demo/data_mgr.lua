@@ -16,6 +16,7 @@ function api.create_system(tbParam)
     end
     if not tbParam.name then return end
 
+	local root = tbParam.ecs and tbParam.ecs.world.args.ecs.project_root or nil
     local system = tbParam.ecs and tbParam.ecs.system(tbParam.system_name)
     local data = {}
     data.name = tbParam.name
@@ -25,8 +26,8 @@ function api.create_system(tbParam)
     data.system = system
     data.system_name = system and ("game.demo|" .. tbParam.system_name)
     data.id = tb.min_id + #tb.items + 1
-	if dep.vfs.repopath then 
-    	data.file = dep.vfs.repopath() .. 'pkg/game.demo/' .. tbParam.file;
+	if root then 
+    	data.file = root .. '/pkg/game.demo/' .. tbParam.file;
 		data.file = data.file:gsub("/","\\")
 	end
     table.insert(tb.items, data)

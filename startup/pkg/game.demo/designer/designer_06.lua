@@ -13,7 +13,7 @@ local tbParam =
 local system = mgr.create_system(tbParam)
 local ImGui = dep.ImGui
 local imgui_utils = dep.common.imgui_utils
-local file_path = dep.common.path_def.data_root .. "/chess/map_01.map"
+local file_path
 
 ---@type chess_editor
 local editor 
@@ -52,6 +52,9 @@ end
 
 
 function system.on_entry()
+	local root = ecs.world.args.ecs.project_root or ""
+	file_path = root .. "/pkg/game.res/editor/chess/map_01.map"
+	print("file path is", file_path)
 	if not editor then 
 		local f<close> = io.open(file_path, 'r')
 		local data = f and dep.datalist.parse( f:read "a" )

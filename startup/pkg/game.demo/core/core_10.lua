@@ -48,8 +48,8 @@ function system.on_entry()
 
 	-- 遍历得到目录下所有glb文件
 	glbs = {}
-	if vfs.repopath then
-		local repo = vfs.repopath()
+	local repo = world.args.ecs.project_root
+	if repo then
 		local pkg_name = "/pkg/game.res"
 		local root = repo .. pkg_name 
 		local files = {}

@@ -15,6 +15,14 @@ local editor  ---@type ly.game_editor.editor
 
 function system.init()
 	print("system.init")
+	local fonts = {}
+	fonts[#fonts+1] = {
+		FontPath = "/pkg/ant.resources.binary/font/Alibaba-PuHuiTi-Regular.ttf",
+		SizePixels = 18,
+		GlyphRanges = { 0x0020, 0xFFFF }
+	}
+	local ImGuiAnt  = import_package "ant.imgui"
+	ImGuiAnt.FontAtlasBuild(fonts)
 end 
 
 function system.post_init()
