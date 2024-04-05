@@ -17,6 +17,13 @@ GStyle.btn_transp_center = "gen.btn_transp_center"
 
 
 --------------------------------------------------------
+--- tag
+--------------------------------------------------------
+GStyle.tag_normal = "tag.normal"
+GStyle.tag_active = "tag.active"
+
+
+--------------------------------------------------------
 --- 文件
 --------------------------------------------------------
 GStyle.file_normal = "file.btn_file"
@@ -78,6 +85,9 @@ local function get_styles()
 	reg("通 用", 	GStyle.btn_normal_selected, 		types.button, 	"按钮选中状态")
 	reg("通 用", 	GStyle.tab_active, 					types.button, 	"tab页激活状态")
 	reg("通 用", 	GStyle.btn_transp_center, 			types.button, 	"透明按钮")
+
+	reg("标 签", 	GStyle.tag_normal, 					types.button, 	"标签普通状态")
+	reg("标 签", 	GStyle.tag_active, 					types.button, 	"标签激活状态")
 
 	reg("文件栏", 	GStyle.file_normal, 				types.button, 	"文件普通状态")
 	reg("文件栏", 	GStyle.file_sel, 					types.button, 	"文件选中非激活")

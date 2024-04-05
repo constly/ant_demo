@@ -34,7 +34,7 @@ local function new(editor)
 		local list = portal.pages[portal.cur_page] or {}
 		local wnd_files = editor.wnd_files
 		local txt_size = ImGui.CalcTextSize(" 打 开 ")
-		local btn_size = txt_size + 20
+		local btn_size = txt_size + 18
 		ImGui.BeginGroup()
 		for i, path in ipairs(list) do 
 			local name = lib.get_file_name(path)
