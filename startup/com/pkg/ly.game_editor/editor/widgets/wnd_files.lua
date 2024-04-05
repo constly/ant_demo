@@ -338,7 +338,8 @@ local function new(editor)
 
 	function api.draw(deltatime, line_y)
 		local size_x, size_y = ImGui.GetContentRegionAvail()
-		local left_x = 150
+		local dpi = dep.common.imgui_utils.get_dpi_scale()
+		local left_x = 150 * dpi
 		ImGui.SetCursorPos(0, 0)
 		ImGui.BeginChild("wnd_files_pkgs", left_x, size_y, ImGui.ChildFlags({"Border"}))
 		draw_pkgs(left_x)
@@ -361,10 +362,10 @@ local function new(editor)
 		local size_x, size_y = ImGui.GetContentRegionAvail()
 		local start_x = 5
 		local pos = {x = start_x, y = 8}
-		local cell<const> = {x = 80, y = 67}
-		local texSize = {x = 35, y = 35}
-		local maskSize = {x = 65, y = 40}
-		local btnSize = {x = 70, y = 22}
+		local texSize = {x = 35 * dpi, y = 35 * dpi}
+		local btnSize = {x = 70 * dpi, y = line_y}
+		local maskSize = {x = btnSize.x - 5, y = texSize.y + 5}
+		local cell<const> = {x = btnSize.x + 10, y = maskSize.y + btnSize.y + 5}
 		local index = 0
 		local function draw_file(ext, name, display, isDir, path, file)
 			index = index + 1
@@ -389,7 +390,7 @@ local function new(editor)
 			end
 			draw_file_menu(ext, name, display, isDir, path, file)
 			do
-				ImGui.SetCursorPos(pos.x + 5, pos.y + 35)
+				ImGui.SetCursorPos(pos.x + 5, pos.y + texSize.y )
 				local is_selected = name == selected_file
 				local type
 				if is_window_active and is_selected then 

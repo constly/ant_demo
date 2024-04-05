@@ -81,7 +81,7 @@ local function create(tbParams)
 		ImGui.EndChild()
 	end
 
-	local function draw_bottom(deltatime)
+	local function draw_bottom(dpi, deltatime)
 		if is_buttom_collapse then 
 			ImGui.SetCursorPos(size_x - 70, size_y - line_y + 1.5)
 			if api.style.draw_btn(" ↑↑ ") then 
@@ -119,7 +119,7 @@ local function create(tbParams)
 			end
 				local x, y = ImGui.GetContentRegionAvail()
 				ImGui.BeginChild("wnd_portal_1", size_portal_x, y, ImGui.ChildFlags({"Border"}))
-				api.wnd_portal.draw(deltatime, line_y)
+				api.wnd_portal.draw(dpi, deltatime, line_y)
 				ImGui.EndChild()
 			ImGui.EndChild()
 		ImGui.EndChild()
@@ -130,11 +130,12 @@ local function create(tbParams)
 	end
 
 	function api.draw()
+		local dpi = dep.common.imgui_utils.get_dpi_scale()
+		height_bottom = 50 + 150 * dpi
+		size_portal_x = 100 + 200 * dpi
 		size_x, size_y = ImGui.GetContentRegionAvail()
-		-- draw_title()
-		-- draw_middle()
 		draw_viewports()
-		draw_bottom()
+		draw_bottom(dpi)
 
 		api.dialogue_input.update()
 		api.dialogue_msgbox.update()

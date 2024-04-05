@@ -58,6 +58,8 @@ local function new(editor)
 			window = require 'windows.def.wnd_def' .new(editor, vfs_path, full_path)
 		elseif ext == "style" then
 			window = require 'windows.style.wnd_style' .new(editor, vfs_path, full_path)
+		elseif ext == "tag" then
+			window = require 'windows.tag.wnd_tag' .new(editor, vfs_path, full_path)
 		end
 		if window then 
 			api.windows[path] = window

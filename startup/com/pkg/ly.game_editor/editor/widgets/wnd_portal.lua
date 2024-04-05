@@ -14,7 +14,7 @@ local function new(editor)
 	local api = {}
 	local hover_idx = 0;
 
-	function api.draw(deltatime, line_y)
+	function api.draw(dpi, deltatime, line_y)
 		local size_x, size_y = ImGui.GetContentRegionAvail()
 		ImGui.SetCursorPos(5, 3)
 		ImGui.BeginGroup()
@@ -33,6 +33,8 @@ local function new(editor)
 		ImGui.SetCursorPos(8, 5)
 		local list = portal.pages[portal.cur_page] or {}
 		local wnd_files = editor.wnd_files
+		local txt_size = ImGui.CalcTextSize(" 打 开 ")
+		local btn_size = txt_size + 20
 		ImGui.BeginGroup()
 		for i, path in ipairs(list) do 
 			local name = lib.get_file_name(path)
@@ -43,11 +45,12 @@ local function new(editor)
 			if i == hover_idx then 
 				draw_list.AddRectFilled({min = {x, y}, max = {x + size_x - 10, y + line_y}, col = {0.25, 0.25, 0.25, 1}});                                    
 			end
-			ImGui.Image(dep.textureman.texture_get(id), 23, 23)
+			local img_size = 23 * dpi
+			ImGui.Image(dep.textureman.texture_get(id), img_size, img_size)
 			ImGui.SameLineEx(40)
 			if editor.style.draw_style_btn(name .. "##btn_none", GStyle.btn_transp_center) then 
 			end
-			ImGui.SameLineEx(190)
+			ImGui.SameLineEx(size_x - btn_size * 2)
 			if editor.style.draw_btn(" 打 开 ##btn_portal_open_" .. i, true) then 
 				if ext == "folder" then 
 					editor.wnd_files.browse(path)
