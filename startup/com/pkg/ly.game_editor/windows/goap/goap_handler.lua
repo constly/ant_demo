@@ -64,6 +64,9 @@ local function new()
 		end 
 		api.data = data
 		api.cache = api.cache or {}
+		if #data.nodes > 0 then 
+			api.set_selected(data.nodes[1].name)
+		end 
 	end
 
 	function api.to_string()
@@ -84,7 +87,6 @@ local function new()
 		node.body = {}
 		node.name = name
 		node.desc = ""
-		node.disable = false
 		table.insert(api.data.nodes, node)
 		return node
 	end
@@ -140,6 +142,12 @@ local function new()
 	function api.get_selected()
 		local cache = api.data.cache 
 		return cache and cache.selected
+	end
+
+	---@return ly.game_editor.goap.node
+	function api.get_selected_node()
+		local name = api.get_selected()
+		return name and api.find_node(name)
 	end
 
 

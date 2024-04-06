@@ -16,6 +16,8 @@ local function new(editor, data_hander, stack)
 	local menu_name = "goap_drop_menu"
 	local drop_from 
 	local drop_to
+	local cur_editor
+	local input_buf = ImGui.StringBuf()
 
 	function api.set_data(data)
 		stack.set_data_handler(data_hander)
@@ -29,43 +31,66 @@ local function new(editor, data_hander, stack)
 
 		for i, v in ipairs(data_hander.data.nodes) do 
 			local label = string.format("%02d. %s##btn_goap_%d", i, v.name, i)
-			local style = (data_hander.get_selected() == v.name) and GStyle.btn_left_selected or GStyle.btn_left
-			if editor.style.draw_style_btn(label, style, {size_x = size_x - 10}) then 
-				if data_hander.set_selected(v.name) then 
-					stack.snapshoot(false)
+			local is_selected = data_hander.get_selected() == v.name
+			local style = is_selected and GStyle.btn_left_selected or GStyle.btn_left
+
+			if v == cur_editor then 
+				ImGui.SetNextItemWidth(size_x - 10)
+				if ImGui.InputTextEx("##input_name", input_buf, ImGui.InputTextFlags {'AutoSelectAll', "EnterReturnsTrue"}) or not is_selected then 
+					local new_name = tostring(input_buf)
+					if #new_name > 0 and new_name ~= v.name then
+						if not data_hander.find_node(new_name) then 
+							v.name = new_name
+							stack.snapshoot(true)
+						else 
+							editor.msg_hints.show(string.format("%s 节点名字已经存在", new_name), "error")
+						end
+					end
+					cur_editor = nil
 				end
-			end
+			else
+				if editor.style.draw_style_btn(label, style, {size_x = size_x - 10}) then 
+					if data_hander.set_selected(v.name) then 
+						stack.snapshoot(false)
+					end
+				end
 
-			if ImGui.BeginDragDropSource() then 
-				data_hander.set_selected(v.name)
-				dep.common.imgui_utils.SetDragDropPayload("DragGoap", v.name);
-				ImGui.Text("正在拖动 " .. v.name);
-				ImGui.EndDragDropSource();
-			end
+				if ImGui.IsItemHovered() and ImGui.IsMouseDoubleClicked(ImGui.MouseButton.Left) then 
+					cur_editor = v
+					input_buf:Assgin(v.name)
+				end
 
-			if imgui_utils.GetDragDropPayload("DragGoap") and ImGui.BeginDragDropTarget() then 
-				local payload = imgui_utils.AcceptDragDropPayload("DragGoap")
-				if payload then
-					ImGui.OpenPopup(menu_name, ImGui.PopupFlags { "None" });
-					drop_from = payload
-					drop_to = v.name
+				if ImGui.BeginDragDropSource() then 
 					data_hander.set_selected(v.name)
+					dep.common.imgui_utils.SetDragDropPayload("DragGoap", v.name);
+					ImGui.Text("正在拖动 " .. v.name);
+					ImGui.EndDragDropSource();
 				end
-				ImGui.EndDragDropTarget()
-			end
 
-			if ImGui.BeginPopupContextItem() then 
-				if data_hander.set_selected(v.name) then stack.snapshoot(false) end 
-				if ImGui.MenuItem("克 隆") then
-					local node = data_hander.clone_node(v.name)
-					data_hander.set_selected(node.name)
-					stack.snapshoot(true)
+				if imgui_utils.GetDragDropPayload("DragGoap") and ImGui.BeginDragDropTarget() then 
+					local payload = imgui_utils.AcceptDragDropPayload("DragGoap")
+					if payload then
+						ImGui.OpenPopup(menu_name, ImGui.PopupFlags { "None" });
+						drop_from = payload
+						drop_to = v.name
+						data_hander.set_selected(v.name)
+					end
+					ImGui.EndDragDropTarget()
 				end
-				if ImGui.MenuItem("删 除") then 
-					data_hander.remove_node(v.name)
-					stack.snapshoot(true)
+
+				if ImGui.BeginPopupContextItem() then 
+					if data_hander.set_selected(v.name) then stack.snapshoot(false) end 
+					if ImGui.MenuItem("克 隆") then
+						local node = data_hander.clone_node(v.name)
+						data_hander.set_selected(node.name)
+						stack.snapshoot(true)
+					end
+					if ImGui.MenuItem("删 除") then 
+						data_hander.remove_node(v.name)
+						stack.snapshoot(true)
+					end
+					ImGui.EndPopup()
 				end
-				ImGui.EndPopup()
 			end
 		end
 
@@ -105,8 +130,51 @@ local function new(editor, data_hander, stack)
 		end
 	end
 
-	local function draw_center(size_x)
+	local head_len = 50
+	---@param node ly.game_editor.goap.node
+	local function draw_tag(node)
+
+		ImGui.Text("激活:")
+		ImGui.SameLineEx(head_len)
+		local checkbox_value = {(not node.disable) and true or false}
+		local change, v = ImGui.Checkbox("##btn_check_disable", checkbox_value)
+		if change then 
+			node.disable = not node.disable
+			stack.snapshoot(true)
+		end
+
+		ImGui.Text("Tag:")
+		ImGui.SameLineEx(head_len)
+		ImGui.Text("Npc Skill Room")
+		ImGui.SameLine()
+		if editor.style.draw_style_btn("编 辑##btn_tag_editor", GStyle.btn_normal) then 
+			
+		end
+	end
+
+	---@param node ly.game_editor.goap.node
+	local function draw_enable(node)
 		
+
+		ImGui.Text("描述:")
+		ImGui.SameLineEx(head_len)
+		ImGui.Text("描述内容")
+	end
+
+	local function draw_center(size_x)
+		local node = data_hander.get_selected_node()
+		if not node then return end 
+
+		ImGui.SetCursorPos(10, 10)
+		ImGui.BeginGroup()
+		draw_tag(node)
+		draw_enable(node)
+
+		
+		ImGui.Text("条件:")
+		ImGui.Text("效果:")
+		ImGui.Text("节点:")
+		ImGui.EndGroup()
 	end
 
 	local function draw_detail(size_x)
