@@ -32,7 +32,8 @@ local function new(editor)
 		if window then 
 			window.update(is_active, delta_time, tab.show_mode);
 		else 
-			ImGui.Text("功能未实现: " .. path)
+			ImGui.SetCursorPos(5, 5)
+			ImGui.TextColored(0.8, 0, 0, 1, "文件不存在: " .. path)
 		end		
 	end
 
@@ -60,6 +61,8 @@ local function new(editor)
 			window = require 'windows.style.wnd_style' .new(editor, vfs_path, full_path)
 		elseif ext == "tag" then
 			window = require 'windows.tag.wnd_tag' .new(editor, vfs_path, full_path)
+		elseif ext == "goap" then
+			window = require 'windows.goap.wnd_goap' .new(editor, vfs_path, full_path)
 		end
 		if window then 
 			api.windows[path] = window
