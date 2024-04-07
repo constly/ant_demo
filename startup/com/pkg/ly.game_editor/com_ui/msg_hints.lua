@@ -48,9 +48,9 @@ local function create(editor)
 		tb.offset = 200
 		tb.delay = delay
 		tb.posY = 80
-		tb.wait = 1
+		tb.wait = 1.35
 		tb.alphaWait = 1
-		delay = delay + 1
+		delay = delay + 1.1
 
 		local color = colorInfo
 		if type == "info" 	then color = colorInfo
