@@ -1,0 +1,33 @@
+nodes:
+  ---
+  body: {}
+  conditions: {}
+  desc: ""
+  disable: false
+  effects: {}
+  name: node
+  tags: {}
+  ---
+  body: {}
+  conditions: {}
+  desc: ""
+  disable: false
+  effects: {}
+  name: node1
+  tags: {}
+  ---
+  body: {}
+  conditions: {}
+  desc: ""
+  disable: false
+  effects: {}
+  name: node2
+  tags: {}
+  ---
+  body: {}
+  conditions: {}
+  desc: ""
+  disable: false
+  effects: {}
+  name: node3
+  tags: {}

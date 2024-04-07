@@ -63,6 +63,8 @@ local function new(editor)
 			window = require 'windows.tag.wnd_tag' .new(editor, vfs_path, full_path)
 		elseif ext == "goap" then
 			window = require 'windows.goap.wnd_goap' .new(editor, vfs_path, full_path)
+		elseif ext == "attr" then
+			window = require 'windows.attr.wnd_attr' .new(editor, vfs_path, full_path)
 		end
 		if window then 
 			api.windows[path] = window
