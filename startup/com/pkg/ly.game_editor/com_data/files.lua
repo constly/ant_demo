@@ -156,7 +156,7 @@ local function new(editor)
 		if not root then return end 
 		local tree, dir = api.find_tree_by_path(root, dir)
 		if tree then 
-			local new_tree = construct_resource_tree(dir.full_path, dir.full_path .. "/")
+			local new_tree = construct_resource_tree(dir.full_path, root.full_path .. "/")
 			tree.files = new_tree.files  
 			tree.dirs = new_tree.dirs
 		end

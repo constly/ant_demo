@@ -5,6 +5,7 @@
 local dep = require 'dep'
 local ImGui = dep.ImGui
 local imgui_styles = dep.common.imgui_styles
+local imgui_utils = dep.common.imgui_utils
 local lib = dep.common.lib
 local lfs       = require "bee.filesystem"
 
@@ -18,6 +19,10 @@ local function new(editor)
 	local view_path
 	local is_window_active
 	local tb_new_file_desc = {}
+	local drop_menu_name = "drop_menu_name"
+	local need_open_drop_menu = false
+	local drop_from, drop_to
+
 	local function init()
 		tb_new_file_desc = {
 			{"ini", 	"ini 配置文件"},
@@ -27,10 +32,11 @@ local function new(editor)
 			{"tag", 	"tag 标签定义文件"},
 			{"fsm", 	"fsm 状态机文化"},
 			{"goap", 	"goap 行为定义文件"},
+			{"attr", 	"attr 属性定义文件"},
 			{"style", 	"style 编辑器样式文件"},
 			{"def", 	"def 数据定义文件"},
 		}
-		for i, name in ipairs({"ai", "txt", "csv", "folder", "ini", "map", "mod", "room", "def", "fsm", "tag", "goap", "style"}) do 
+		for i, name in ipairs({"ai", "txt", "csv", "folder", "ini", "map", "mod", "room", "def", "fsm", "tag", "goap", "attr", "style"}) do 
 			icons[name] = dep.assetmgr.resource(string.format("/pkg/ly.game_editor/assets/icon/icon_%s.texture", name), { compile = true })
 		end
 	end
@@ -55,12 +61,13 @@ local function new(editor)
 		set_view_path()
 	end
 
-	local function current_full_path()
+	local function current_full_path(_view_path)
 		local tree = editor.files.resource_tree[selected_pkg]
 		if tree then
 			local full_path = tree.full_path
-			if view_path then 
-				full_path = full_path .. "/" .. view_path
+			local view = _view_path or view_path
+			if view then 
+				full_path = full_path .. "/" .. view
 			end
 			return full_path
 		end
@@ -88,6 +95,22 @@ local function new(editor)
 			if editor.style.draw_btn(label) then 
 				set_view_path(table.concat(arr, "/", 2, i))
 			end
+
+			if imgui_utils.GetDragDropPayload("DragWndFile") and ImGui.BeginDragDropTarget() then 
+				local payload = imgui_utils.AcceptDragDropPayload("DragWndFile")
+				if payload then
+					local full_path = current_full_path(view_path)
+					drop_from = string.format("%s/%s", full_path, payload)
+					local str = table.concat(arr, "/", 2, i)
+					local full_path = current_full_path(str)
+					drop_to = string.format("%s/%s", full_path, payload)
+					drop_to = string.gsub(drop_to, "//", "/")
+					print("drop end", drop_from, drop_to)
+					need_open_drop_menu = drop_from ~= drop_to 
+				end
+				ImGui.EndDragDropTarget()
+			end
+
 			ImGui.SameLine()
 			if i < #arr then 
 				ImGui.Text(">")
@@ -304,7 +327,7 @@ local function new(editor)
 	end
 
 	local function draw_content_menu()
-		if ImGui.IsWindowHovered() and not ImGui.IsAnyItemHovered()  then 
+		if ImGui.IsWindowHovered() and not ImGui.IsAnyItemHovered() and not imgui_utils.GetDragDropPayload("DragWndFile")  then 
 			if ImGui.IsMouseReleased(ImGui.MouseButton.Right) then
 				ImGui.OpenPopup("my_context_menu");
 				set_selected_file()
@@ -387,6 +410,24 @@ local function new(editor)
 						editor.open_tab(selected_pkg .. "/" .. path)
 					end
 				end
+				if ImGui.BeginDragDropSource() then 
+					set_selected_file(name)
+					imgui_utils.SetDragDropPayload("DragWndFile", name);
+					ImGui.Text("正在拖动 " .. name);
+					ImGui.EndDragDropSource();
+				end
+	
+				if isDir and imgui_utils.GetDragDropPayload("DragWndFile") and ImGui.BeginDragDropTarget() then 
+					local payload = imgui_utils.AcceptDragDropPayload("DragWndFile")
+					if payload then
+						need_open_drop_menu = true
+						local full_path = current_full_path()
+						drop_from = string.format("%s/%s", full_path, payload)
+						drop_to = string.format("%s/%s/%s", full_path, name, payload)
+						set_selected_file(name)
+					end
+					ImGui.EndDragDropTarget()
+				end
 			end
 			draw_file_menu(ext, name, display, isDir, path, file)
 			do
@@ -413,6 +454,7 @@ local function new(editor)
 			end
 		end
 		
+		draw_content_menu()
 		for i, v in ipairs(tree.dirs) do 
 			draw_file('folder', v.name, v.name, true, v.r_path, v)
 		end
@@ -420,7 +462,27 @@ local function new(editor)
 		for i, v in ipairs(tree.files) do 
 			draw_file(v.ext, v.name, v.short_name, false, v.r_path, v)
 		end
-		draw_content_menu()
+
+		if need_open_drop_menu then 
+			need_open_drop_menu = false
+			ImGui.OpenPopup(drop_menu_name, ImGui.PopupFlags { "None" });
+		end
+		if ImGui.BeginPopupContextItemEx(drop_menu_name) then 
+			if ImGui.MenuItem("移动到此处") then 
+				lfs.copy(drop_from, drop_to, lfs.copy_options.overwrite_existing)
+				print("move from to:", drop_from, drop_to)
+				editor.msg_hints.show("文件移动成功", "ok")
+				lfs.remove_all(drop_from)
+				editor.files.refresh_tree(selected_pkg, "")
+			end
+			if ImGui.MenuItem("克隆到此处") then 
+				lfs.copy(drop_from, drop_to, lfs.copy_options.overwrite_existing)
+				print("copy from to:", drop_from, drop_to)
+				editor.msg_hints.show("文件克隆成功", "ok")
+				editor.files.refresh_tree(selected_pkg, "")
+			end
+			ImGui.EndPopup()
+		end
 		ImGui.PopStyleVarEx(2)
 		ImGui.EndChild()
 		api.handleKeyEvent()
