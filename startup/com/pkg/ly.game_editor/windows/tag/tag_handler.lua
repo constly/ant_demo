@@ -126,12 +126,56 @@ local function new()
 	function api.set_selected(name)
 		local cache = api.data.cache or {}
 		api.data.cache = cache
-		cache.selected = name
+		if name then 
+			cache.selected = {name}
+		else 
+			cache.selected = {}
+		end
 	end
 
-	function api.get_selected()
+	function api.add_selected(name)
 		local cache = api.data.cache or {}
+		api.data.cache = cache
+		cache.selected = cache.selected or {}
+		for i, v in ipairs(cache.selected) do 
+			if v == name then 
+				return
+			end
+		end
+		table.insert(cache.selected, name)
+	end
+
+	function api.remove_selected(name)
+		local cache = api.data.cache 
+		if cache and cache.selected then 
+			for i, v in ipairs(cache.selected) do 
+				if v == name then 
+					table.remove(cache.selected, i)
+					return
+				end
+			end
+		end
+	end
+
+	function api.get_first_selected()
+		local cache = api.data.cache
+		return cache and cache.selected and cache.selected[1]
+	end
+
+	function api.get_all_selected()
+		local cache = api.data.cache
 		return cache and cache.selected
+	end
+
+	function api.is_selected(name)
+		local cache = api.data.cache
+		if cache and cache.selected then 
+			for i, v in ipairs(cache.selected) do 
+				if v == name then 
+					return true
+				end
+			end
+		end
 	end
 
 	function api.rename(oldName, newName)

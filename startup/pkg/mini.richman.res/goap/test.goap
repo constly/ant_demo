@@ -33,3 +33,4 @@ nodes:
   tags: {}
 settings:
   attr: /pkg/mini.richman.res/goap/goap.attr
+  tag: /pkg/mini.richman.res/goap/goap.tag

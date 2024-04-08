@@ -19,6 +19,9 @@ local function new(editor, data_hander, stack)
 	local cur_editor
 	local input_buf = ImGui.StringBuf()
 
+	---@type ly.game_editor.tag.selector.api
+	local tag_selector = require 'windows.tag.wnd_tag_selector'.new(editor)
+
 	local pop_setting_Id = "配置##pop_goap_setting"
 	local tb_tag_files = {}
 	local tb_attr_files = {}
@@ -153,7 +156,19 @@ local function new(editor, data_hander, stack)
 		ImGui.Text("Npc Skill Room")
 		ImGui.SameLine()
 		if editor.style.draw_style_btn("编 辑##btn_tag_editor", GStyle.btn_normal) then 
-			
+			local path = data_hander.data.settings.tag
+			if path and path ~= "" then
+				---@type ly.game_editor.tag.selector.params
+				local param = {}
+				param.path = path
+				param.is_multi = true
+				param.callback = function(list)
+					print("list is", list, #list)
+				end
+				tag_selector.open(param)
+			else 
+				editor.msg_hints.show("请先设置tag", "error")
+			end
 		end
 	end
 
@@ -224,13 +239,20 @@ local function new(editor, data_hander, stack)
 				if pre.tag ~= cache_settings.tag or pre.attr ~= cache_settings.attr then 
 					data_hander.modify_setting(cache_settings)
 					stack.snapshoot(true)
-					ImGui.CloseCurrentPopup()
 				end
+				ImGui.CloseCurrentPopup()
 			end
 			ImGui.SetCursorPos(450, 200)
 			ImGui.Dummy(10, 10)
 			ImGui.EndPopup()		
 		end
+	end
+
+	function api.open_wnd_setting()
+		ImGui.OpenPopup(pop_setting_Id)
+		tb_tag_files = editor.files.get_all_file_by_ext("tag")
+		tb_attr_files = editor.files.get_all_file_by_ext("attr")
+		cache_settings = lib.copy(data_hander.data.settings)
 	end
 
 	function api.update(delta_time)
@@ -243,10 +265,7 @@ local function new(editor, data_hander, stack)
 
 		ImGui.SetCursorPos(size_x - 100, 5)
 		if editor.style.draw_btn("配 置##btn_goap_setting", false, {size_x = 80}) then 
-			ImGui.OpenPopup(pop_setting_Id)
-			tb_tag_files = editor.files.get_all_file_by_ext("tag")
-			tb_attr_files = editor.files.get_all_file_by_ext("attr")
-			cache_settings = lib.copy(data_hander.data.settings)
+			api.open_wnd_setting()
 		end
 		local pos_y = ImGui.GetCursorPosY()
 		size_y = size_y - pos_y
@@ -279,6 +298,7 @@ local function new(editor, data_hander, stack)
 		end
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		draw_pop_setting()
+		tag_selector.update()
 		ImGui.PopStyleVar()
 	end
 

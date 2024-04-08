@@ -51,15 +51,10 @@ local function new(editor)
 		if not content or content == "" then 
 			return 0 
 		end 
+		-- 注意: 这里在统计时算上了空行
+		-- 等同于在vscode中看文件内容行数，这样更接近生活经验
 		local lines = lib.split(content, "\n")
-		local count = 0;
-		for i, line in ipairs(lines) do 
-			line = lib.trim(line)
-			if #line > 0 then 
-				count = count + 1
-			end
-		end
-		return count
+		return #lines
 	end
 
 	function api.get_pkg_lines(pkg_name, res)

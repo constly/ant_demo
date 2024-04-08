@@ -5,4 +5,7 @@ whitelist:
 	csv
 	def
 	txt
+	tag
+	attr
+	goap
 	

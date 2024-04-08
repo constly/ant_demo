@@ -41,7 +41,7 @@ local function new(editor, data_hander, stack)
 
 	---@param data ly.game_editor.tag.data
 	local function draw_item(data, depth)
-		local selected = data_hander.get_selected() == data.name
+		local selected = data_hander.get_first_selected() == data.name
 		local style = selected and GStyle.tag_active or GStyle.tag_normal
 		local desc = (data.desc and data.desc ~= "") and string.format("(%s)", data.desc) or ""
 		local str = string.format("%s%s %s##btn_tag_%s", depth_to_str(depth), data.name, desc, data.name)
@@ -61,7 +61,7 @@ local function new(editor, data_hander, stack)
 				if not data_hander.is_tag_exist(name) then 
 					data_hander.rename(data.name, name)
 					data_hander.set_selected(name)
-				else 
+				elseif name ~= data.name then 
 					editor.msg_hints.show(string.format("tag %s 已经存在", name), "error")
 				end
 				cur_editor_name = nil
