@@ -19,6 +19,11 @@ local function new(editor, data_hander, stack)
 	local cur_editor
 	local input_buf = ImGui.StringBuf()
 
+	local pop_setting_Id = "配置##pop_goap_setting"
+	local tb_tag_files = {}
+	local tb_attr_files = {}
+	local cache_settings 	---@type ly.game_editor.goap.setting
+
 	function api.set_data(data)
 		stack.set_data_handler(data_hander)
 		data_hander.set_data(data)
@@ -181,6 +186,53 @@ local function new(editor, data_hander, stack)
 
 	end
 
+	local function draw_pop_setting()
+		if ImGui.BeginPopupModal(pop_setting_Id, true, ImGui.WindowFlags({})) then 
+			local len = 400
+			ImGui.SetCursorPos(20, 40)
+			ImGui.BeginGroup()
+			ImGui.Text("Tag定义:")
+			ImGui.SameLine(100)
+			ImGui.SetNextItemWidth(len)
+			if ImGui.BeginCombo("##combo_tag", cache_settings.tag or "") then
+				for i, name in ipairs(tb_tag_files) do
+					if ImGui.Selectable(name, name == cache_settings.tag) then
+						cache_settings.tag = name
+					end
+				end
+				ImGui.EndCombo()
+			end
+
+			ImGui.Text("Attr定义:")
+			ImGui.SameLine(100)
+			ImGui.SetNextItemWidth(len)
+			if ImGui.BeginCombo("##combo_attr", cache_settings.attr or "") then
+				for i, name in ipairs(tb_attr_files) do
+					if ImGui.Selectable(name, name == cache_settings.attr) then
+						cache_settings.attr = name
+					end
+				end
+				ImGui.EndCombo()
+			end
+
+			ImGui.EndGroup()
+			ImGui.Dummy(30, 30)
+			local pos_y = ImGui.GetCursorPosY()
+			ImGui.SetCursorPos(200, pos_y)
+			if editor.style.draw_btn(" 确 认 ##btn_ok", true, {size_x = 100}) then 
+				local pre = data_hander.data.settings
+				if pre.tag ~= cache_settings.tag or pre.attr ~= cache_settings.attr then 
+					data_hander.modify_setting(cache_settings)
+					stack.snapshoot(true)
+					ImGui.CloseCurrentPopup()
+				end
+			end
+			ImGui.SetCursorPos(450, 200)
+			ImGui.Dummy(10, 10)
+			ImGui.EndPopup()		
+		end
+	end
+
 	function api.update(delta_time)
 		local size_x, size_y = ImGui.GetContentRegionAvail()
 		if size_x <= 20 then return end 
@@ -189,6 +241,17 @@ local function new(editor, data_hander, stack)
 		local detail_x = math.min(300, size_x * 0.35)
 		local center_x = size_x - left_x - detail_x
 
+		ImGui.SetCursorPos(size_x - 100, 5)
+		if editor.style.draw_btn("配 置##btn_goap_setting", false, {size_x = 80}) then 
+			ImGui.OpenPopup(pop_setting_Id)
+			tb_tag_files = editor.files.get_all_file_by_ext("tag")
+			tb_attr_files = editor.files.get_all_file_by_ext("attr")
+			cache_settings = lib.copy(data_hander.data.settings)
+		end
+		local pos_y = ImGui.GetCursorPosY()
+		size_y = size_y - pos_y
+
+		ImGui.SetCursorPos(0, pos_y)
 		ImGui.BeginChild("pnl_left", left_x, size_y, ImGui.ChildFlags({"Border"}))
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		draw_left(left_x)
@@ -201,7 +264,7 @@ local function new(editor, data_hander, stack)
 		end 
 		if center_x <= 10 then return end 
 
-		ImGui.SetCursorPos(left_x, 0)
+		ImGui.SetCursorPos(left_x, pos_y)
 		ImGui.BeginChild("pnl_center", center_x, size_y, ImGui.ChildFlags({"Border"}))
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		draw_center(center_x)
@@ -209,11 +272,14 @@ local function new(editor, data_hander, stack)
 		ImGui.EndChild()
 
 		if detail_x > 0 then 
-			ImGui.SetCursorPos(size_x - detail_x, 0)
+			ImGui.SetCursorPos(size_x - detail_x, pos_y)
 			ImGui.BeginChild("pnl_detail", detail_x, size_y, ImGui.ChildFlags({"Border"}))
 			draw_detail(detail_x)
 			ImGui.EndChild()
 		end
+		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
+		draw_pop_setting()
+		ImGui.PopStyleVar()
 	end
 
 	return api

@@ -42,29 +42,36 @@ local function new(editor)
 		local window = api.windows[path]
 		if window then return window end
 
-		local ext = lib.get_file_ext(path)
-		if not ext then return end 
+		if lib.start_with(path, editor.__inner_wnd) then 
+			local name = lib.split(path, ":")[2]
+			if name == "code_analysis" then 
+				window = require 'windows._code_analysis.wnd_code_analysis' .new(editor, path, path)
+			end
+		else
+			local ext = lib.get_file_ext(path)
+			if not ext then return end 
 
-		local vfs_path =  "/pkg/" .. path
-		local full_path = editor.files.vfs_path_to_full_path(path)
-		if not full_path then return end 
-		
-		if ext == "ini" then 
-			window = require 'windows.ini.wnd_ini' .new(editor, vfs_path, full_path)
-		elseif ext == "csv" or ext == "txt" then
-			window = require 'windows.csv.wnd_csv' .new(editor, vfs_path, full_path)
-		elseif ext == "map" then
-			window = require 'windows.map.wnd_map' .new(editor, vfs_path, full_path)
-		elseif ext == "def" then
-			window = require 'windows.def.wnd_def' .new(editor, vfs_path, full_path)
-		elseif ext == "style" then
-			window = require 'windows.style.wnd_style' .new(editor, vfs_path, full_path)
-		elseif ext == "tag" then
-			window = require 'windows.tag.wnd_tag' .new(editor, vfs_path, full_path)
-		elseif ext == "goap" then
-			window = require 'windows.goap.wnd_goap' .new(editor, vfs_path, full_path)
-		elseif ext == "attr" then
-			window = require 'windows.attr.wnd_attr' .new(editor, vfs_path, full_path)
+			local vfs_path =  "/pkg/" .. path
+			local full_path = editor.files.vfs_path_to_full_path(path)
+			if not full_path then return end 
+			
+			if ext == "ini" then 
+				window = require 'windows.ini.wnd_ini' .new(editor, vfs_path, full_path)
+			elseif ext == "csv" or ext == "txt" then
+				window = require 'windows.csv.wnd_csv' .new(editor, vfs_path, full_path)
+			elseif ext == "map" then
+				window = require 'windows.map.wnd_map' .new(editor, vfs_path, full_path)
+			elseif ext == "def" then
+				window = require 'windows.def.wnd_def' .new(editor, vfs_path, full_path)
+			elseif ext == "style" then
+				window = require 'windows.style.wnd_style' .new(editor, vfs_path, full_path)
+			elseif ext == "tag" then
+				window = require 'windows.tag.wnd_tag' .new(editor, vfs_path, full_path)
+			elseif ext == "goap" then
+				window = require 'windows.goap.wnd_goap' .new(editor, vfs_path, full_path)
+			elseif ext == "attr" then
+				window = require 'windows.attr.wnd_attr' .new(editor, vfs_path, full_path)
+			end
 		end
 		if window then 
 			api.windows[path] = window

@@ -31,3 +31,5 @@ nodes:
   effects: {}
   name: node3
   tags: {}
+settings:
+  attr: /pkg/mini.richman.res/goap/goap.attr

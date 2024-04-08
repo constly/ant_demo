@@ -42,10 +42,13 @@ local lib = dep.common.lib
 ---@field effects ly.game_editor.goap.effect[]
 ---@field body ly.game_editor.goap.node.body
 
+---@class ly.game_editor.goap.setting goap配置
+---@field tag string tag配置表
+---@field attr string attr配置表
 
 ---@class ly.game_editor.goap.data
 ---@field nodes ly.game_editor.goap.node[] 节点列表
-
+---@field settings ly.game_editor.goap.setting 配置表
 
 local function new()
 	---@class ly.game_editor.goap.handler
@@ -62,11 +65,16 @@ local function new()
 		if not data or type(data) ~= "table" or not data.nodes then 
 			data = {nodes = {}}
 		end 
+		data.settings = data.settings or {}
 		api.data = data
 		api.cache = api.cache or {}
 		if #data.nodes > 0 then 
 			api.set_selected(data.nodes[1].name)
 		end 
+	end
+
+	function api.modify_setting(settings)
+		api.data.settings = settings
 	end
 
 	function api.to_string()

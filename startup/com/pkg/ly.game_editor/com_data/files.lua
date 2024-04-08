@@ -40,7 +40,8 @@ local function new(editor)
 	api.packages = {}  			---@type ly.game_editor.package_item[]
 	api.resource_tree = {}		---@type map<string, ly.game_editor.tree>
 
-	local function construct_resource_tree(fspath, root)
+	---@return ly.game_editor.tree_item
+	function api.construct_resource_tree(fspath, root)
 		local tree = {files = {}, dirs = {}}
 		if fspath then
 			local sorted_path = {}
@@ -56,7 +57,7 @@ local function new(editor)
 						full_path = p, 
 						r_path = r_path,
 						name = lib.get_file_name(r_path),
-						tree = construct_resource_tree(item, root), 
+						tree = api.construct_resource_tree(item, root), 
 						parent = tree
 					})
 				else
@@ -74,7 +75,7 @@ local function new(editor)
 		return tree
 	end
 
-	local function get_package(entry_path)
+	function api.get_package(entry_path)
 		local function loadmount(rootpath)
 			local path = rootpath .. "/.mount"
 			return dep.datalist.parse(dep.fastio.readall_f(path))
@@ -130,7 +131,7 @@ local function new(editor)
 		for i, pkg in ipairs(editor.tbParams.pkgs) do 
 			tb_show[pkg] = true
 		end
-		local packages = get_package(editor.tbParams.project_root)
+		local packages = api.get_package(editor.tbParams.project_root)
 		dep.common.lib.dump(packages)
 		
 		local resource_tree = {}
@@ -141,7 +142,7 @@ local function new(editor)
 					full_path = tostring(item.path), 
 					v_path = tostring(vpath),
 					r_path = "", 
-					tree = construct_resource_tree(item.path, tostring(item.path) .. "/")}
+					tree = api.construct_resource_tree(item.path, tostring(item.path) .. "/")}
 			end
 		end
 		dep.common.lib.dump(resource_tree)
@@ -156,7 +157,7 @@ local function new(editor)
 		if not root then return end 
 		local tree, dir = api.find_tree_by_path(root, dir)
 		if tree then 
-			local new_tree = construct_resource_tree(dir.full_path, root.full_path .. "/")
+			local new_tree = api.construct_resource_tree(dir.full_path, root.full_path .. "/")
 			tree.files = new_tree.files  
 			tree.dirs = new_tree.dirs
 		end
@@ -201,6 +202,29 @@ local function new(editor)
 			local tree = api.find_tree_by_path(root, r_path)
 			return tree and tree.full_path
 		end
+	end
+
+	function api.get_all_file_by_ext(ext)
+		---@param tree ly.game_editor.tree_item
+		local function find(tb, tree)
+			for i, v in ipairs(tree.dirs) do 
+				find(tb, v.tree)
+			end
+			for i, v in ipairs(tree.files) do 
+				if v.ext == ext then 
+					table.insert(tb, v.r_path)
+				end
+			end
+		end
+		local rets = {}
+		for pkg, v in pairs(api.resource_tree) do 
+			local tb = {}
+			find(tb, v.tree)
+			for i, path in ipairs(tb) do 
+				table.insert(rets, string.format("/pkg/%s/%s", pkg, path))
+			end
+		end
+		return rets
 	end
 
 	init()

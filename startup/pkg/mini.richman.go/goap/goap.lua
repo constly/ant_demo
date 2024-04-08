@@ -147,6 +147,12 @@ do
 end 
 
 do
+	--[[
+	节点应该有多种类型:
+		1. 全局静态节点: 比如wait_time, print
+		2. 对象节点: 如npc对象, 队伍对象，社团对象等等
+	--]]
+
 	--------------------------------------------------------
 	-- 挖矿 
 	--------------------------------------------------------
@@ -154,6 +160,7 @@ do
 	action.def_param("int", "name", "名字", "0")
 	action.def_param("string", "desc", "描述", "")
 	action.def_param("number", "speed", "产出", "")
+	-- 是否还应该有input, output, as, 以及所属对象
 	action.reg_api(function()
 		local api = goap_mgr.new_api(action.id)
 		function api.on_begin()

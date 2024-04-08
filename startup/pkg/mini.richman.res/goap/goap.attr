@@ -1,0 +1,32 @@
+regions:
+  ---
+  attrs:
+    ---
+    id: attr
+    name: "属性名"
+    type: number
+    ---
+    desc: "说明"
+    id: hp
+    name: "血量"
+    type: string
+    ---
+    id: attr2
+    name: "属性名"
+    type: number
+    ---
+    desc: "说明"
+    id: attr1
+    name: "属性名"
+    type: number
+    ---
+    id: attr3
+    name: "属性名"
+    type: number
+  id: region
+  ---
+  attrs: {}
+  id: region1
+  ---
+  attrs: {}
+  id: region2

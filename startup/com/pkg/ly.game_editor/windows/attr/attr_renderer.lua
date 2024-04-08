@@ -5,6 +5,7 @@
 local dep = require 'dep'
 local lib = dep.common.lib
 local ImGui = dep.ImGui
+local imgui_utils = dep.common.imgui_utils
 
 ---@param editor ly.game_editor.editor
 ---@param data_hander ly.game_editor.attr.handler
@@ -12,6 +13,9 @@ local ImGui = dep.ImGui
 local function new(editor, data_hander, stack)
 	---@class ly.game_editor.attr.renderer
 	local api = {}
+
+	local menu_name = "##drop_menu_name"
+	local drop_from, drop_to
 
 	function api.set_data(data)
 		data_hander.set_data(data)
@@ -31,6 +35,38 @@ local function new(editor, data_hander, stack)
 			if editor.style.draw_style_btn(label, style, {size_x = 350}) then 
 				data_hander.set_selected_attr(region.id, v.id)
 			end
+
+			if ImGui.BeginDragDropSource() then 
+				data_hander.set_selected_attr(region.id, v.id)
+				dep.common.imgui_utils.SetDragDropPayload("DragAttr", v.id);
+				ImGui.Text("正在拖动 " .. v.id);
+				ImGui.EndDragDropSource();
+			end
+
+			if imgui_utils.GetDragDropPayload("DragAttr") and ImGui.BeginDragDropTarget() then 
+				local payload = imgui_utils.AcceptDragDropPayload("DragAttr")
+				if payload then
+					ImGui.OpenPopup(menu_name, ImGui.PopupFlags { "None" });
+					drop_from = payload
+					drop_to = v.id
+					data_hander.set_selected_attr(region.id, v.id)
+				end
+				ImGui.EndDragDropTarget()
+			end
+
+			if ImGui.BeginPopupContextItem() then 
+				data_hander.set_selected_attr(region.id, v.id)
+				if ImGui.MenuItem("克 隆") then
+					data_hander.clone_attr(region.id, v.id)
+					stack.snapshoot(true)
+				end
+				if ImGui.MenuItem("删 除") then 
+					data_hander.remove_attr(region.id, v.id)
+					stack.snapshoot(true)
+				end
+				ImGui.EndPopup()
+			end
+
 			ImGui.SameLineEx(10)
 			ImGui.Text(string.format("%s : %s", v.type, v.id))
 			ImGui.SameLineEx(200)
@@ -40,9 +76,31 @@ local function new(editor, data_hander, stack)
 		end
 		if editor.style.draw_btn(" + ##btn_add", false, {size_x = 60}) then 
 			local name = data_hander.next_attr_id(region.id, "attr")
-			data_hander.add_item(region.id, name)
+			data_hander.add_attr(region.id, name)
 			stack.snapshoot(true)
 		end
+
+		if ImGui.BeginPopupContextItemEx(menu_name) then 
+			local region = data_hander.get_selected_region()
+			local function swap(offset)
+				local attr1, idx1 = data_hander.get_attr(region.id, drop_from)
+				local attr2, idx2 = data_hander.get_attr(region.id, drop_to)
+				if attr1 and attr2 then 
+					data_hander.remove_attr(region.id, drop_from)
+					table.insert(region.attrs, idx1 < idx2 and (idx2 - 1 + offset) or (idx2 + offset), attr1)
+					data_hander.set_selected_attr(region.id, drop_from)
+					stack.snapshoot(true)
+				end
+			end
+			if region and ImGui.MenuItem("拖动到前面") then 
+				swap(0)
+			end
+			if region and ImGui.MenuItem("拖动到后面") then 
+				swap(1)
+			end
+			ImGui.EndPopup()
+		end
+
 		ImGui.EndGroup()
 	end
 

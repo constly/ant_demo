@@ -84,13 +84,38 @@ local function new()
 		if not region then return end 
 		for i, v in ipairs(region.attrs) do 
 			if v.id == attr_id then 
-				return v
+				return v, i
 			end
 		end
 	end
 
 	---@return ly.game_editor.attr.data.attr
-	function api.add_item(region_id, attr_id)
+	function api.remove_attr(region_id, attr_id)
+		local region = api.get_region(region_id)
+		if not region then return end 
+		for i, v in ipairs(region.attrs) do 
+			if v.id == attr_id then 
+				return table.remove(region.attrs, i)
+			end
+		end
+	end
+
+	---@return ly.game_editor.attr.data.attr
+	function api.clone_attr(region_id, attr_id)
+		local region = api.get_region(region_id)
+		if not region then return end 
+		for i, v in ipairs(region.attrs) do 
+			if v.id == attr_id then 
+				local data = lib.copy(v)
+				data.id = api.next_attr_id(region_id, data.id)
+				table.insert(region.attrs, i + 1, data)
+				return data
+			end
+		end
+	end
+
+	---@return ly.game_editor.attr.data.attr
+	function api.add_attr(region_id, attr_id)
 		local region = api.get_region(region_id)
 		if not region then return end 
 		---@type ly.game_editor.attr.data.attr

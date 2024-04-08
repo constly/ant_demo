@@ -6,6 +6,8 @@ local ImGui = dep.ImGui
 local function create(tbParams)
 	---@class ly.game_editor.editor
 	local api = {}
+	api.__inner_wnd = "__inner:"
+	
 	api.tbParams = tbParams
 	api.data_center = (require 'windows.data_center').new(api)  	
 	api.dialogue_input = (require 'com_ui.dialogue_input').create(api)  	

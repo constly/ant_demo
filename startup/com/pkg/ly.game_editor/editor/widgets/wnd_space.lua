@@ -13,6 +13,11 @@ local function new(editor)
 	local api = {}			---@class ly.game_editor.wnd_space
 	local space 			---@type ly.game_editor.space
 	local mouse_x, mouse_y 
+	local __inner_wnd = editor.__inner_wnd
+
+	local tb_inner = {
+		{"代码统计", "code_analysis"},
+	}
 
 	function api.draw(deltatime, line_y)
 		space = editor.workspaces.current_space()
@@ -169,9 +174,18 @@ local function new(editor)
 		local is_current_view = view == space.get_active_viewport()
 		for i, v in ipairs(view.tabs.list) do 
 			local wnd = editor.wnd_mgr.find_window(v.path)
+			local is_file = not lib.start_with(v.path, __inner_wnd)
 			local name = v.name
 			if wnd and wnd.is_dirty() then 
 				name = "*" .. name
+			end
+			if not is_file then 
+				for i, tb in ipairs(tb_inner) do 
+					if lib.end_with(v.path, tb[2]) then 
+						name = tb[1]
+						break
+					end
+				end
 			end
 			local label = string.format("%s##btn_view_%d_%s", name, view.id, v.name)
 			local style_name
@@ -185,7 +199,7 @@ local function new(editor)
 			end
 			if ImGui.BeginPopupContextItem() then 
 				view.tabs.set_active_path(v.path)
-				if ImGui.MenuItem("保 存") then 
+				if is_file and ImGui.MenuItem("保 存") then 
 					if wnd then wnd.save() end
 				end
 				if ImGui.MenuItem("关 闭") then 
@@ -206,7 +220,7 @@ local function new(editor)
 					end
 				end
 				ImGui.Separator()
-				if ImGui.MenuItem("选 中") then 
+				if is_file and ImGui.MenuItem("选 中") then 
 					editor.wnd_files.browse(v.path)
 				end
 				if ImGui.MenuItem("重新加载") then 
@@ -215,7 +229,7 @@ local function new(editor)
 				if ImGui.MenuItem("克隆到对面标签") then 
 					space.clone_tab(view, v.path)
 				end
-				if ImGui.MenuItem("在文件浏览器中显示") then 
+				if is_file and ImGui.MenuItem("在文件浏览器中显示") then 
 					editor.wnd_files.select_in_folder(v.path)
 				end
 				ImGui.EndPopup()
@@ -272,6 +286,11 @@ local function new(editor)
 			if ImGui.MenuItem("+ GM界面") then 
 			end
 			if ImGui.MenuItem("+ 自定义界面") then 
+			end
+			for i, v in ipairs(tb_inner) do 
+				if ImGui.MenuItem("+ " .. v[1]) then 
+					view.tabs.open_tab(__inner_wnd .. v[2])
+				end
 			end
 			ImGui.EndPopup();
 		end
