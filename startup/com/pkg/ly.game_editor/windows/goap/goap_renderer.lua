@@ -21,6 +21,7 @@ local function new(editor, data_hander, stack)
 
 	---@type ly.game_editor.tag.selector.api
 	local tag_selector = require 'windows.tag.wnd_tag_selector'.new(editor)
+	local item_len_x = 300
 
 	local pop_setting_Id = "配置##pop_goap_setting"
 	local tb_tag_files = {}
@@ -28,6 +29,7 @@ local function new(editor, data_hander, stack)
 	local cache_settings 	---@type ly.game_editor.goap.setting
 
 	function api.set_data(data)
+		lib.dump(data)
 		stack.set_data_handler(data_hander)
 		data_hander.set_data(data)
 		stack.snapshoot(false)
@@ -107,7 +109,6 @@ local function new(editor, data_hander, stack)
 			data_hander.set_selected(node.name)
 			stack.snapshoot(true)
 		end
-		ImGui.EndGroup()
 
 		if ImGui.BeginPopupContextItemEx(menu_name) then 
 			if ImGui.MenuItem("向前插入") then 
@@ -136,12 +137,13 @@ local function new(editor, data_hander, stack)
 			end 
 			ImGui.EndPopup()
 		end
+
+		ImGui.EndGroup()
 	end
 
 	local head_len = 50
 	---@param node ly.game_editor.goap.node
 	local function draw_tag(node)
-
 		ImGui.Text("激活:")
 		ImGui.SameLineEx(head_len)
 		local checkbox_value = {(not node.disable) and true or false}
@@ -153,7 +155,7 @@ local function new(editor, data_hander, stack)
 
 		ImGui.Text("Tag:")
 		ImGui.SameLineEx(head_len)
-		ImGui.Text("Npc Skill Room")
+		ImGui.Text(node.tags and table.concat(node.tags, "; ") or "")
 		ImGui.SameLine()
 		if editor.style.draw_style_btn("编 辑##btn_tag_editor", GStyle.btn_normal) then 
 			local path = data_hander.data.settings.tag
@@ -162,8 +164,10 @@ local function new(editor, data_hander, stack)
 				local param = {}
 				param.path = path
 				param.is_multi = true
+				param.selected = node.tags
 				param.callback = function(list)
-					print("list is", list, #list)
+					node.tags = list
+					stack.snapshoot(true)
 				end
 				tag_selector.open(param)
 			else 
@@ -173,12 +177,96 @@ local function new(editor, data_hander, stack)
 	end
 
 	---@param node ly.game_editor.goap.node
-	local function draw_enable(node)
-		
-
+	local function draw_desc(node, size_x)
 		ImGui.Text("描述:")
 		ImGui.SameLineEx(head_len)
 		ImGui.Text("描述内容")
+	end
+
+	---@param node ly.game_editor.goap.node
+	local function draw_conditions(node, size_x)
+		ImGui.Text("条件:")
+		ImGui.SameLineEx(head_len)
+		ImGui.BeginGroup()
+		--ImGui.Dummy(10, 20)
+
+		local function draw(data, depth)
+			local selected = false
+			local style = selected and GStyle.btn_left_selected or GStyle.btn_left
+			local label = string.format("test ##btn_condition_%d", 1)
+			if editor.style.draw_style_btn(label, style, {size_x = item_len_x}) then 
+			
+			end
+
+			if ImGui.BeginPopupContextItem() then 
+				if ImGui.MenuItem("and 扩展") then
+					data[1] = {"and"}
+					data[2] = {}
+					stack.snapshoot(true)
+				end
+				if ImGui.MenuItem("or 扩展") then
+					data[1] = {"or"}
+					data[2] = {}
+					stack.snapshoot(true)
+				end
+				if ImGui.MenuItem("删 除") then 
+					stack.snapshoot(true)
+				end
+				ImGui.EndPopup()
+			end
+		end 
+
+		local function traverse(list, depth)
+			local first = list[1]
+			local type = first[1] or "and"
+			ImGui.SetNextItemWidth(60)
+			if ImGui.BeginCombo("##condit_combo" .. depth, type) then
+				for i, name in ipairs({"and", "or"}) do
+					if ImGui.Selectable(name, name == type) then
+						first[1] = name
+					end
+				end
+				ImGui.EndCombo()
+			end
+			ImGui.SameLine()
+			ImGui.BeginGroup()
+			for i = 2, #list do 
+				local one = list[i]
+				if _G.type(one) == 'table' then
+					local first = one[1]
+					if first == "and" or first == "or" then 
+						traverse(one, depth + 1)
+					else
+						draw(one, depth) 
+					end
+				end
+			end 
+			ImGui.EndGroup()
+		end 
+		traverse(node.conditions, 0)
+		ImGui.EndGroup()
+	end
+
+	---@param node ly.game_editor.goap.node
+	local function draw_effect(node, size_x)
+		ImGui.Text("效果:")
+		ImGui.SameLineEx(head_len)
+		ImGui.BeginGroup()
+		ImGui.Dummy(10, 20)
+		for i, v in ipairs(node.effects) do 
+			local selected = data_hander.is_item_selected("effect", i)
+			local style = selected and GStyle.btn_left_selected or GStyle.btn_left
+			local label = string.format("tostring ##btn_effect_%d", i)
+			if editor.style.draw_style_btn(label, style, {size_x = item_len_x}) then 
+				data_hander.set_selected_item("effect", i)
+			end
+		end 
+		if editor.style.draw_style_btn("+##btn_add_effect", GStyle.btn_normal, {size_x = item_len_x}) then 
+			data_hander.add_effect(node)
+			data_hander.set_selected_item("effect", #node.effects)
+			stack.snapshoot(true)
+		end
+		ImGui.EndGroup()
 	end
 
 	local function draw_center(size_x)
@@ -188,11 +276,10 @@ local function new(editor, data_hander, stack)
 		ImGui.SetCursorPos(10, 10)
 		ImGui.BeginGroup()
 		draw_tag(node)
-		draw_enable(node)
-
+		draw_desc(node, size_x)
+		draw_conditions(node, size_x)
+		draw_effect(node, size_x)
 		
-		ImGui.Text("条件:")
-		ImGui.Text("效果:")
 		ImGui.Text("节点:")
 		ImGui.EndGroup()
 	end

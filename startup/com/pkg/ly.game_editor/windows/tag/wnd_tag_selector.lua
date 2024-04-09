@@ -39,6 +39,12 @@ local function new(editor)
 
 		stack.set_data_handler(data_hander)
 		data_hander.set_data(data)
+		data_hander.set_selected()
+		if params.selected then 
+			for i, v in ipairs(params.selected) do 
+				data_hander.add_selected(v)
+			end
+		end
 		stack.snapshoot(false)
 		need_open = true
 	end

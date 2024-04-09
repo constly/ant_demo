@@ -78,8 +78,15 @@ local function new()
 	end
 
 	function api.to_string()
+		print("test1", dep.serialize.stringify({"1", 1}))
+		--local tb = {"and", {"owner", "hp", ">=", 1}, {"owner", "hp", "<=", 100} }
+		--print("test2", dep.serialize.stringify(tb))
+		--local tb = {{"and"}, {{"or"}, {"owner", "mp", ">=", 1}, {"owner", "hp", "<=", 1}}, {"owner", "hp", "<=", 100} }
+		--print("test3", dep.serialize.stringify(tb))
+
 		local cache = api.data.cache
 		api.data.cache = nil
+		lib.dump(api.data)
 		local content = dep.serialize.stringify(api.data)
 		api.data.cache = cache
 		return content
@@ -90,7 +97,7 @@ local function new()
 		---@type ly.game_editor.goap.node
 		local node = {}
 		node.tags = {}
-		node.conditions = {}
+		node.conditions = {{"and", "or"}, {}, {"or", "and", 1}}
 		node.effects = {}
 		node.body = {}
 		node.name = name
@@ -138,9 +145,30 @@ local function new()
 		return name
 	end
 
-	function api.set_selected(name)
+	function api.add_effect(node)
+		---@type ly.game_editor.goap.effect
+		local effect = {}
+		table.insert(node.effects, effect)
+		return effect
+	end
+
+	--------------------------------------------------------
+	--- 节点选中相关
+	--------------------------------------------------------
+	local function get_cache()
 		local cache = api.data.cache or {}
 		api.data.cache = cache
+		cache.selected = cache.selected or nil
+		if not cache.selected_item then
+			cache.selected_item = {}
+			cache.selected_item.type = "none"
+			cache.selected_item.list = {}
+		end
+		return cache
+	end
+
+	function api.set_selected(name)
+		local cache = get_cache()
 		if cache.selected ~= name then 
 			cache.selected = name
 			return true
@@ -148,8 +176,8 @@ local function new()
 	end
 
 	function api.get_selected()
-		local cache = api.data.cache 
-		return cache and cache.selected
+		local cache = get_cache()
+		return cache.selected
 	end
 
 	---@return ly.game_editor.goap.node
@@ -158,6 +186,40 @@ local function new()
 		return name and api.find_node(name)
 	end
 
+	--------------------------------------------------------
+	--- 节点内部条目选中相关
+	--------------------------------------------------------
+	function api.set_selected_item(type, id)
+		local cache = get_cache()
+		cache.selected_item.type = type
+		cache.selected_item.list = id and {id} or {}
+	end
+	
+	function api.add_selected_item(type, id)
+		local cache = get_cache()
+		if cache.selected_item.type == type then 
+			for i, v in ipairs(cache.selected_item.list) do 
+				if v == id then 
+					return 
+				end
+			end
+			table.insert(cache.selected_item.list, id)
+		else 
+			api.set_selected_item(type, id)
+		end
+	end
+
+	function api.is_item_selected(type, id)
+		local cache = get_cache()
+		if cache.selected_item.type == type then 
+			for i, v in ipairs(cache.selected_item.list) do 
+				if v == id then 
+					return true 
+				end
+			end
+		end 
+		return false
+	end
 
 	return api
 end
