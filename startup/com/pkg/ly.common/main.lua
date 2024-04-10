@@ -27,6 +27,9 @@ api.path_def 		= require 'path_def'
 api.map 			= require 'map.map'					
 
 ---@type ly.common.file
-api.file 			= require 'file.file'					
+api.file 			= require 'file.file'			
+
+---@type ly.common.datalist
+api.datalist 		= require 'tools.datalist'
 
 return api

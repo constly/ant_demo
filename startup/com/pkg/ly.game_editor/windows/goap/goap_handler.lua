@@ -1,6 +1,7 @@
 --------------------------------------------------------
 -- goap 数据处理
 --------------------------------------------------------
+---@type ly.game_editor.dep
 local dep = require 'dep'
 local lib = dep.common.lib
 
@@ -34,6 +35,7 @@ local lib = dep.common.lib
 
 
 ---@class ly.game_editor.goap.node 节点
+---@field id number 节点id
 ---@field name string 节点名字
 ---@field desc string 节点描述
 ---@field disable boolean 是否禁用
@@ -49,6 +51,7 @@ local lib = dep.common.lib
 ---@class ly.game_editor.goap.data
 ---@field nodes ly.game_editor.goap.node[] 节点列表
 ---@field settings ly.game_editor.goap.setting 配置表
+---@field next_id number 下个节点id
 
 local function new()
 	---@class ly.game_editor.goap.handler
@@ -65,6 +68,7 @@ local function new()
 		if not data or type(data) ~= "table" or not data.nodes then 
 			data = {nodes = {}}
 		end 
+		data.next_id = data.next_id or 0
 		data.settings = data.settings or {}
 		api.data = data
 		api.cache = api.cache or {}
@@ -78,30 +82,25 @@ local function new()
 	end
 
 	function api.to_string()
-		print("test1", dep.serialize.stringify({"1", 1}))
-		--local tb = {"and", {"owner", "hp", ">=", 1}, {"owner", "hp", "<=", 100} }
-		--print("test2", dep.serialize.stringify(tb))
-		--local tb = {{"and"}, {{"or"}, {"owner", "mp", ">=", 1}, {"owner", "hp", "<=", 1}}, {"owner", "hp", "<=", 100} }
-		--print("test3", dep.serialize.stringify(tb))
-
 		local cache = api.data.cache
 		api.data.cache = nil
-		lib.dump(api.data)
-		local content = dep.serialize.stringify(api.data)
+		local content = dep.common.datalist.serialize(api.data)
 		api.data.cache = cache
 		return content
 	end
 
 	---@return ly.game_editor.goap.node
 	function api.add_node(name)
+		api.data.next_id = api.data.next_id + 1
 		---@type ly.game_editor.goap.node
 		local node = {}
 		node.tags = {}
-		node.conditions = {{"and", "or"}, {}, {"or", "and", 1}}
+		node.conditions = {"and", {}}
 		node.effects = {}
 		node.body = {}
 		node.name = name
 		node.desc = ""
+		node.id = api.data.next_id
 		table.insert(api.data.nodes, node)
 		return node
 	end
@@ -155,16 +154,18 @@ local function new()
 	--------------------------------------------------------
 	--- 节点选中相关
 	--------------------------------------------------------
-	local function get_cache()
+	local function get_cache(node_id)
 		local cache = api.data.cache or {}
 		api.data.cache = cache
 		cache.selected = cache.selected or nil
-		if not cache.selected_item then
-			cache.selected_item = {}
-			cache.selected_item.type = "none"
-			cache.selected_item.list = {}
+		cache.nodes = cache.nodes or {}
+		if node_id then 
+			local c = cache.nodes[node_id] or {type = "none", list = {}}
+			cache.nodes[node_id] = c
+			return c
+		else
+			return cache 
 		end
-		return cache
 	end
 
 	function api.set_selected(name)
@@ -189,30 +190,30 @@ local function new()
 	--------------------------------------------------------
 	--- 节点内部条目选中相关
 	--------------------------------------------------------
-	function api.set_selected_item(type, id)
-		local cache = get_cache()
-		cache.selected_item.type = type
-		cache.selected_item.list = id and {id} or {}
+	function api.set_selected_item(node_id, type, id)
+		local cache = get_cache(node_id)
+		cache.type = type
+		cache.list = id and {id} or {}
 	end
 	
-	function api.add_selected_item(type, id)
-		local cache = get_cache()
-		if cache.selected_item.type == type then 
-			for i, v in ipairs(cache.selected_item.list) do 
+	function api.add_selected_item(node_id, type, id)
+		local cache = get_cache(node_id)
+		if cache.type == type then 
+			for i, v in ipairs(cache.list) do 
 				if v == id then 
 					return 
 				end
 			end
-			table.insert(cache.selected_item.list, id)
+			table.insert(cache.list, id)
 		else 
 			api.set_selected_item(type, id)
 		end
 	end
 
-	function api.is_item_selected(type, id)
-		local cache = get_cache()
-		if cache.selected_item.type == type then 
-			for i, v in ipairs(cache.selected_item.list) do 
+	function api.is_item_selected(node_id, type, id)
+		local cache = get_cache(node_id)
+		if cache.type == type then 
+			for i, v in ipairs(cache.list) do 
 				if v == id then 
 					return true 
 				end

@@ -190,23 +190,33 @@ local function new(editor, data_hander, stack)
 		ImGui.BeginGroup()
 		--ImGui.Dummy(10, 20)
 
-		local function draw(data, depth)
-			local selected = false
+		local function draw(list, idx, data, depth)
+			local selected = data_hander.is_item_selected(node.id, "condition", data)
 			local style = selected and GStyle.btn_left_selected or GStyle.btn_left
-			local label = string.format("test ##btn_condition_%d", 1)
+			local label = string.format("test ##btn_condition_%d_%d", idx, depth)
 			if editor.style.draw_style_btn(label, style, {size_x = item_len_x}) then 
-			
+				data_hander.set_selected_item(node.id, "condition", data)
 			end
 
 			if ImGui.BeginPopupContextItem() then 
+				if ImGui.MenuItem("前面插入条件") then
+					table.insert(list, idx, {})
+					stack.snapshoot(true)
+				end
+				if ImGui.MenuItem("后面插入条件") then
+					table.insert(list, idx + 1, {})
+					stack.snapshoot(true)
+				end
 				if ImGui.MenuItem("and 扩展") then
-					data[1] = {"and"}
+					data[1] = "and"
 					data[2] = {}
+					data[3] = {}
 					stack.snapshoot(true)
 				end
 				if ImGui.MenuItem("or 扩展") then
-					data[1] = {"or"}
+					data[1] = "or"
 					data[2] = {}
+					data[3] = {}
 					stack.snapshoot(true)
 				end
 				if ImGui.MenuItem("删 除") then 
@@ -218,12 +228,12 @@ local function new(editor, data_hander, stack)
 
 		local function traverse(list, depth)
 			local first = list[1]
-			local type = first[1] or "and"
+			local type = first or "and"
 			ImGui.SetNextItemWidth(60)
 			if ImGui.BeginCombo("##condit_combo" .. depth, type) then
 				for i, name in ipairs({"and", "or"}) do
 					if ImGui.Selectable(name, name == type) then
-						first[1] = name
+						list[1] = name
 					end
 				end
 				ImGui.EndCombo()
@@ -237,7 +247,7 @@ local function new(editor, data_hander, stack)
 					if first == "and" or first == "or" then 
 						traverse(one, depth + 1)
 					else
-						draw(one, depth) 
+						draw(list, i, one, depth) 
 					end
 				end
 			end 
@@ -254,16 +264,16 @@ local function new(editor, data_hander, stack)
 		ImGui.BeginGroup()
 		ImGui.Dummy(10, 20)
 		for i, v in ipairs(node.effects) do 
-			local selected = data_hander.is_item_selected("effect", i)
+			local selected = data_hander.is_item_selected(node.id, "effect", i)
 			local style = selected and GStyle.btn_left_selected or GStyle.btn_left
 			local label = string.format("tostring ##btn_effect_%d", i)
 			if editor.style.draw_style_btn(label, style, {size_x = item_len_x}) then 
-				data_hander.set_selected_item("effect", i)
+				data_hander.set_selected_item(node.id, "effect", i)
 			end
 		end 
 		if editor.style.draw_style_btn("+##btn_add_effect", GStyle.btn_normal, {size_x = item_len_x}) then 
 			data_hander.add_effect(node)
-			data_hander.set_selected_item("effect", #node.effects)
+			data_hander.set_selected_item(node.id, "effect", #node.effects)
 			stack.snapshoot(true)
 		end
 		ImGui.EndGroup()
@@ -364,7 +374,7 @@ local function new(editor, data_hander, stack)
 		ImGui.PopStyleVar()
 		ImGui.EndChild()
 
-		if center_x <= 50 or not data_hander.get_selected() then 
+		if center_x <= 50 or not data_hander.get_selected_node() then 
 			center_x = center_x + detail_x
 			detail_x = 0
 		end 
