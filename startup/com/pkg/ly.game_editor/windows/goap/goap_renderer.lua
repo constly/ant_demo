@@ -264,16 +264,16 @@ local function new(editor, data_hander, stack)
 		ImGui.BeginGroup()
 		ImGui.Dummy(10, 20)
 		for i, v in ipairs(node.effects) do 
-			local selected = data_hander.is_item_selected(node.id, "effect", i)
+			local selected = data_hander.is_item_selected(node.id, "effect", v)
 			local style = selected and GStyle.btn_left_selected or GStyle.btn_left
 			local label = string.format("tostring ##btn_effect_%d", i)
 			if editor.style.draw_style_btn(label, style, {size_x = item_len_x}) then 
-				data_hander.set_selected_item(node.id, "effect", i)
+				data_hander.set_selected_item(node.id, "effect", v)
 			end
 		end 
 		if editor.style.draw_style_btn("+##btn_add_effect", GStyle.btn_normal, {size_x = item_len_x}) then 
-			data_hander.add_effect(node)
-			data_hander.set_selected_item(node.id, "effect", #node.effects)
+			local effect = data_hander.add_effect(node)
+			data_hander.set_selected_item(node.id, "effect", effect)
 			stack.snapshoot(true)
 		end
 		ImGui.EndGroup()
@@ -292,10 +292,25 @@ local function new(editor, data_hander, stack)
 		
 		ImGui.Text("节点:")
 		ImGui.EndGroup()
+
+		if ImGui.IsWindowHovered() and not ImGui.IsAnyItemHovered()  then 
+			if ImGui.IsMouseReleased(ImGui.MouseButton.Left) then 
+				data_hander.set_selected_item(node.id, nil, nil)
+			end
+		end
 	end
 
 	local function draw_detail(size_x)
+		local node = data_hander.get_selected_node()
+		if not node then return end 
+		local type, data = data_hander.get_first_item_selected(node.id)
+		if not type or not data then return end 
 
+		if type == "effect" then 
+			ImGui.Text("effect")
+		elseif type == "condition" then 
+			ImGui.Text("condition")
+		end
 	end
 
 	local function draw_pop_setting()
@@ -374,7 +389,8 @@ local function new(editor, data_hander, stack)
 		ImGui.PopStyleVar()
 		ImGui.EndChild()
 
-		if center_x <= 50 or not data_hander.get_selected_node() then 
+		local node = data_hander.get_selected_node()
+		if center_x <= 50 or not node or not data_hander.has_item_selected(node.id)  then 
 			center_x = center_x + detail_x
 			detail_x = 0
 		end 

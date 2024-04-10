@@ -13,6 +13,7 @@ local lib = dep.common.lib
 
 ---@class ly.game_editor.attr.data.region
 ---@field id string 作用域id
+---@field desc string 描述
 ---@field attrs ly.game_editor.attr.data.attr[] 属性列表 
 
 ---@class ly.game_editor.attr.data 
@@ -56,6 +57,14 @@ local function new()
 		table.insert(api.data.regions, region)
 		return region
 	end 
+
+	function api.remove_region(id)
+		for i, v in ipairs(api.data.regions) do 
+			if v.id == id then 
+				return table.remove(api.data.regions, i)
+			end 
+		end 
+	end
 
 	---@return ly.game_editor.attr.data.region
 	function api.get_region(id)
@@ -141,9 +150,13 @@ local function new()
 	end
 
 	function api.set_selected_region(region_id)
-		local cache = api.data.cache or {select_attr = {}}
+		local cache = api.data.cache or {}
 		api.data.cache = cache
-		cache.select_region = region_id
+		cache.select_attr = cache.select_attr or {}
+		if cache.select_region ~= region_id then
+			cache.select_region = region_id
+			return true
+		end
 	end
 
 	function api.set_selected_attr(region_id, attr_id)
@@ -177,8 +190,6 @@ local function new()
 		local id = api.get_selected_region_id()
 		return id and api.get_region(id)
 	end
-
-	
 
 	return api
 end 

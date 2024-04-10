@@ -56,12 +56,15 @@ local lib = dep.common.lib
 local function new()
 	---@class ly.game_editor.goap.handler
 	---@field data ly.game_editor.goap.data
+	---@field attr_handler ly.game_editor.attr.handler
 	local api = {
 		data = {},
 		stack_version = 0,
 		isModify = false,
 		cache = {},			-- 缓存数据，存档时忽略
 	}
+
+	api.attr_handler = require 'windows.attr.attr_handler'.new()
 
 	---@param data ly.game_editor.tag.data
 	function api.set_data(data)
@@ -79,6 +82,13 @@ local function new()
 
 	function api.modify_setting(settings)
 		api.data.settings = settings
+
+		if settings.attr then 
+			local data = dep.common.file.load_datalist(settings.attr)
+			api.attr_handler.set_data(data)
+		else 
+			api.attr_handler.set_data(nil)
+		end
 	end
 
 	function api.to_string()
@@ -220,6 +230,16 @@ local function new()
 			end
 		end 
 		return false
+	end
+
+	function api.get_first_item_selected(node_id)
+		local cache = get_cache(node_id)
+		return cache.type, cache.list[1]
+	end
+
+	function api.has_item_selected(node_id)
+		local cache = get_cache(node_id)
+		return cache.type and #cache.list > 0
 	end
 
 	return api

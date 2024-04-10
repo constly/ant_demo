@@ -16,6 +16,9 @@ local function new(editor, data_hander, stack)
 
 	local menu_name = "##drop_menu_name"
 	local drop_from, drop_to
+	local pop_region_editor = "对象编辑##pop_region_editor"
+	local cur_editor_region 	---@type ly.game_editor.attr.data.region
+	local input_content = ImGui.StringBuf()
 
 	function api.set_data(data)
 		data_hander.set_data(data)
@@ -157,23 +160,98 @@ local function new(editor, data_hander, stack)
 		ImGui.PopStyleVar()
 	end
 
+	local function draw_pop_region_editor(need_open)
+		if need_open then 
+			ImGui.OpenPopup(pop_region_editor)
+		end
+		if ImGui.BeginPopupModal(pop_region_editor, true, ImGui.WindowFlags({})) then 
+			local len = 300
+			ImGui.SetCursorPos(20, 40)
+			ImGui.BeginGroup()
+
+			ImGui.Text("对象名字:")
+			ImGui.SameLineEx()
+			
+			ImGui.PushItemWidth(len)
+			local flag = ImGui.InputTextFlags { "CharsNoBlank", "AutoSelectAll" } 
+			input_content:Assgin(cur_editor_region.id)
+			if ImGui.InputText("##input_object_name", input_content, flag) then 
+				cur_editor_region.id = tostring(input_content) or ""
+			end
+			ImGui.PopItemWidth()
+
+			ImGui.Text("对象描述:")
+			ImGui.SameLine()
+			ImGui.PushItemWidth(len)
+			input_content:Assgin(cur_editor_region.desc or "")
+			if ImGui.InputText("##input_object_desc", input_content) then 
+				cur_editor_region.desc = tostring(input_content) or ""
+			end
+			ImGui.PopItemWidth()
+
+			ImGui.EndGroup()
+			ImGui.Dummy(30, 30)
+			local pos_y = ImGui.GetCursorPosY()
+			ImGui.SetCursorPos(150, pos_y)
+			if editor.style.draw_btn(" 确 认 ##btn_ok", true, {size_x = 100}) then 
+				local region = data_hander.get_selected_region()
+				local try = data_hander.get_region(cur_editor_region.id)
+				if try and try ~= region then 
+					editor.msg_hints.show("名字已经存在", "error")
+				else 
+					if region.id ~= cur_editor_region.id or region.desc ~= cur_editor_region.desc then 
+						region.id = cur_editor_region.id
+						region.desc = cur_editor_region.desc
+						data_hander.set_selected_region(region.id)
+						stack.snapshoot(true)
+					end
+					ImGui.CloseCurrentPopup()
+				end
+			end
+			ImGui.SetCursorPos(400, 200)
+			ImGui.Dummy(10, 10)
+
+			ImGui.EndPopup()
+		end 
+	end
+
 	function api.update()
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		ImGui.SetCursorPos(6, 5)
 		ImGui.BeginGroup()
+		local open_editor
 		for i, v in ipairs(data_hander.data.regions) do 
 			local label = string.format("%s##btn_region_%d", v.id, i)
 			local is_selected = data_hander.get_selected_region_id() == v.id
 			if editor.style.draw_btn(label, is_selected) then 
-				data_hander.set_selected_region(v.id)
+				if data_hander.set_selected_region(v.id) then 
+					stack.snapshoot(false)
+				end
 			end 
+			if v.desc and v.desc ~= "" and ImGui.BeginItemTooltip() then 
+				ImGui.Text(v.desc)
+				ImGui.EndTooltip()
+			end
+			if ImGui.BeginPopupContextItem() then 
+				data_hander.set_selected_region(v.id)
+				if ImGui.MenuItem("编 辑") then
+					open_editor = true
+					cur_editor_region = lib.copy(v)
+				end
+				if ImGui.MenuItem("删 除") then 
+					data_hander.remove_region(v.id)
+					stack.snapshoot(true)
+				end
+				ImGui.EndPopup()
+			end
 			ImGui.SameLine()
 		end 
 		if editor.style.draw_btn("  +  ##btn_region_add") then 
-			local region = data_hander.add_region(data_hander.next_region_id("region"))
+			local region = data_hander.add_region(data_hander.next_region_id("object"))
 			data_hander.set_selected_region(region.id)
 			stack.snapshoot(true)
 		end
+		draw_pop_region_editor(open_editor)
 		ImGui.EndGroup()
 		local pos_x, pos_y = ImGui.GetCursorPos()
 		local size_x, size_y = ImGui.GetContentRegionAvail();
@@ -190,7 +268,6 @@ local function new(editor, data_hander, stack)
 			draw_detail(detal_x)
 			ImGui.EndChild()
 		end
-
 		ImGui.PopStyleVar()
 	end
 
