@@ -190,21 +190,38 @@ local function new(editor, data_hander, stack)
 		ImGui.BeginGroup()
 		--ImGui.Dummy(10, 20)
 
+		local draw_index = 0
+		local max_depth = lib.get_table_depth(node.conditions)
 		local function draw(list, idx, data, depth)
+			draw_index = draw_index + 1
 			local selected = data_hander.is_item_selected(node.id, "condition", data)
 			local style = selected and GStyle.btn_left_selected or GStyle.btn_left
-			local label = string.format("test ##btn_condition_%d_%d", idx, depth)
-			if editor.style.draw_style_btn(label, style, {size_x = item_len_x}) then 
-				data_hander.set_selected_item(node.id, "condition", data)
+			local label = string.format("%s.%s  %s  %s ##btn_condition_%d", data[1] or "", data[2] or "", data[3] or "", data[4] or "", draw_index)
+			local len = item_len_x + (max_depth - depth) * 38
+			if editor.style.draw_style_btn(label, style, {size_x = len}) then 
+				if data_hander.set_selected_item(node.id, "condition", data) then 
+					stack.snapshoot(false)
+				end 
 			end
 
 			if ImGui.BeginPopupContextItem() then 
+				if data_hander.set_selected_item(node.id, "condition", data) then 
+					stack.snapshoot(false)
+				end 
 				if ImGui.MenuItem("前面插入条件") then
 					table.insert(list, idx, {})
 					stack.snapshoot(true)
 				end
 				if ImGui.MenuItem("后面插入条件") then
 					table.insert(list, idx + 1, {})
+					stack.snapshoot(true)
+				end
+				if idx > 2 and ImGui.MenuItem("上 移") then 
+					data_hander.move_condition(node, data, -1)
+					stack.snapshoot(true)
+				end
+				if idx < #list and ImGui.MenuItem("下 移") then 
+					data_hander.move_condition(node, data, 1)
 					stack.snapshoot(true)
 				end
 				if ImGui.MenuItem("and 扩展") then
@@ -219,18 +236,22 @@ local function new(editor, data_hander, stack)
 					data[3] = {}
 					stack.snapshoot(true)
 				end
-				if ImGui.MenuItem("删 除") then 
+				if (depth > 0 or #list > 2) and ImGui.MenuItem("删 除") then 
+					data_hander.delete_condition(node, data)
 					stack.snapshoot(true)
 				end
 				ImGui.EndPopup()
 			end
 		end 
 
+		local flag = ImGui.ComboFlags { "NoArrowButton" }
+		local combo_index = 0;
 		local function traverse(list, depth)
 			local first = list[1]
 			local type = first or "and"
-			ImGui.SetNextItemWidth(60)
-			if ImGui.BeginCombo("##condit_combo" .. depth, type) then
+			ImGui.SetNextItemWidth(30)
+			combo_index = combo_index + 1
+			if ImGui.BeginCombo("##condit_combo" .. combo_index, type, flag) then
 				for i, name in ipairs({"and", "or"}) do
 					if ImGui.Selectable(name, name == type) then
 						list[1] = name
@@ -266,7 +287,7 @@ local function new(editor, data_hander, stack)
 		for i, v in ipairs(node.effects) do 
 			local selected = data_hander.is_item_selected(node.id, "effect", v)
 			local style = selected and GStyle.btn_left_selected or GStyle.btn_left
-			local label = string.format("tostring ##btn_effect_%d", i)
+			local label = string.format("%s.%s  %s  %s ##btn_effect_%d", v[1] or "", v[2] or "", v[3] or "", v[4] or "", i)
 			if editor.style.draw_style_btn(label, style, {size_x = item_len_x}) then 
 				data_hander.set_selected_item(node.id, "effect", v)
 			end
@@ -300,17 +321,59 @@ local function new(editor, data_hander, stack)
 		end
 	end
 
-	local function draw_detail(size_x)
+	local function draw_detail(detail_x)
 		local node = data_hander.get_selected_node()
 		if not node then return end 
 		local type, data = data_hander.get_first_item_selected(node.id)
 		if not type or not data then return end 
 
-		if type == "effect" then 
-			ImGui.Text("effect")
-		elseif type == "condition" then 
-			ImGui.Text("condition")
+		local data_def = editor.data_def
+		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
+		ImGui.SetCursorPos(5, 5)
+		ImGui.BeginGroup()
+
+		local header_len = math.min(100, detail_x * 0.4)
+		local content_len = detail_x - header_len - 20
+
+		local draw_data = {value = data[1], header = "对象类型", header_len = header_len, content_len = content_len}
+		draw_data.attr_handler = data_hander.attr_handler
+		if data_def.show_inspector("attr_type", draw_data) then 
+			data[1] = draw_data.new_value
+			stack.snapshoot(true)
 		end
+
+		draw_data.new_value = nil
+		draw_data.attr_type = data[1]
+		draw_data.value = data[2]
+		draw_data.header = "属性名字"
+		if data_def.show_inspector("attr_key", draw_data) then 
+			data[2] = draw_data.new_value
+			stack.snapshoot(true)
+		end
+
+		if type == "effect" then 
+			draw_data = {value = data[3], header = "数据操作", header_len = header_len, content_len = content_len}
+			if data_def.show_inspector("data_opt", draw_data) then 
+				data[3] = draw_data.new_value
+				stack.snapshoot(true)
+			end
+
+		elseif type == "condition" then 
+			draw_data = {value = data[3], header = "数据操作", header_len = header_len, content_len = content_len}
+			if data_def.show_inspector("data_compare", draw_data) then 
+				data[3] = draw_data.new_value
+				stack.snapshoot(true)
+			end
+		end
+
+		draw_data = {value = data[4], header = "操作值", header_len = header_len, content_len = content_len}
+			if data_def.show_inspector("number", draw_data) then 
+				data[4] = draw_data.new_value
+				stack.snapshoot(true)
+			end
+
+		ImGui.EndGroup()
+		ImGui.PopStyleVar()
 	end
 
 	local function draw_pop_setting()

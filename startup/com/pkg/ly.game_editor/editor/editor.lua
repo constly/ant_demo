@@ -9,7 +9,7 @@ local function create(tbParams)
 	api.__inner_wnd = "__inner:"
 	
 	api.tbParams = tbParams
-	api.data_center = (require 'windows.data_center').new(api)  	
+	api.data_def = (require 'editor.data_def.data_def').new(api)  	
 	api.dialogue_input = (require 'com_ui.dialogue_input').create(api)  	
 	api.dialogue_msgbox = (require 'com_ui.dialogue_msgbox').create(api)
 	api.msg_hints = (require 'com_ui.msg_hints').create(api)

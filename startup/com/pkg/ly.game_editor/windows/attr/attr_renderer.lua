@@ -113,7 +113,7 @@ local function new(editor, data_hander, stack)
 		local attr = data_hander.get_attr(region.id, data_hander.get_selected_attr_id(region.id))
 		if not attr then return end 
 
-		local data_center = editor.data_center
+		local data_def = editor.data_def
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		ImGui.SetCursorPos(5, 5)
 		ImGui.BeginGroup()
@@ -122,7 +122,7 @@ local function new(editor, data_hander, stack)
 		local content_len = detail_x - header_len - 20
 
 		local draw_data = {value = attr.id, header = "变量名(ID)", header_len = header_len, content_len = content_len}
-		if data_center.show_inspector("string", draw_data) then 
+		if data_def.show_inspector("string", draw_data) then 
 			if not data_hander.get_attr(region.id, draw_data.new_value) then 
 				attr.id = draw_data.new_value
 				data_hander.set_selected_attr(region.id, attr.id)
@@ -133,25 +133,25 @@ local function new(editor, data_hander, stack)
 		end
 
 		draw_data = {value = attr.type, header = "变量类型", header_len = header_len, content_len = content_len}
-		if data_center.show_inspector("data_type", draw_data) then 
+		if data_def.show_inspector("data_type", draw_data) then 
 			attr.type = draw_data.new_value
 			stack.snapshoot(true)
 		end
 
 		draw_data = {value = attr.name, header = "中文名字", header_len = header_len, content_len = content_len}
-		if data_center.show_inspector("string", draw_data) then 
+		if data_def.show_inspector("string", draw_data) then 
 			attr.name = draw_data.new_value
 			stack.snapshoot(true)
 		end
 
 		draw_data = {value = attr.desc, header = "变量说明", header_len = header_len, content_len = content_len}
-		if data_center.show_inspector("string", draw_data) then 
+		if data_def.show_inspector("string", draw_data) then 
 			attr.desc = draw_data.new_value
 			stack.snapshoot(true)
 		end
 
 		-- draw_data = {value = attr.category, header = "变量分类", header_len = header_len, content_len = content_len}
-		-- if data_center.show_inspector("string", draw_data) then 
+		-- if data_def.show_inspector("string", draw_data) then 
 		-- 	attr.category = draw_data.new_value
 		-- 	stack.snapshoot(true)
 		-- end

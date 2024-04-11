@@ -300,7 +300,7 @@ local function new(editor, data_hander, stack, clipboard)
 		local col = cols[keyIdx]
 		if not col then return end 
 		
-		local data_center = editor.data_center
+		local data_def = editor.data_def
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		ImGui.BeginGroup()
 
@@ -310,19 +310,19 @@ local function new(editor, data_hander, stack, clipboard)
 		if lineIdx <= 3 then 
 			if lineIdx == 1 then 
 				local draw_data = {value = col.key, header = "关键字", header_len = header_len, content_len = content_len}
-				if data_center.show_inspector("string", draw_data) then 
+				if data_def.show_inspector("string", draw_data) then 
 					col.key = draw_data.new_value
 					stack.snapshoot(true)
 				end
 			elseif lineIdx == 2 then 
 				local draw_data = {value = col.type, header = "数据类型", header_len = header_len, content_len = content_len}
-				if data_center.show_inspector("data_type", draw_data) then 
+				if data_def.show_inspector("data_type", draw_data) then 
 					col.type = draw_data.new_value
 					stack.snapshoot(true)
 				end
 			elseif lineIdx == 3 then 
 				local draw_data = {value = col.explain, header = "注释说明", header_len = header_len, content_len = content_len2}
-				if data_center.show_inspector("string", draw_data) then 
+				if data_def.show_inspector("string", draw_data) then 
 					col.explain = draw_data.new_value
 					stack.snapshoot(true)
 				end
@@ -334,7 +334,7 @@ local function new(editor, data_hander, stack, clipboard)
 			draw_data.header = col.key
 			draw_data.content_len = col.type == "string" and content_len2 or content_len
 			draw_data.header_tip = string.format("%s:%s - %s", col.key, col.type, col.explain or "")
-			if data_center.show_inspector(col.type, draw_data) then 
+			if data_def.show_inspector(col.type, draw_data) then 
 				if not draw_data.new_value or draw_data.new_value == "" then 
 					line[col.key] = nil
 				else 

@@ -230,4 +230,20 @@ function lib.color_array_to_string(array, precision)
 	return string.format("{%s,%s,%s,%s}", get(1), get(2), get(3), get(4))
 end
 
+---@return number 得到table的深度
+function lib.get_table_depth(data)
+	local function get_depth(tb, depth)
+		if type(tb) == "table" then 
+			local max = 1
+			for i, v in pairs(tb) do 
+				max = math.max(max, get_depth(v, depth + 1))
+			end 
+			return max
+		else 
+			return depth
+		end
+	end 
+	return get_depth(data, 0)
+end
+
 return lib

@@ -114,7 +114,7 @@ local function new(editor, data_hander, stack)
 		local style_type = cache_name2type[style_name]
 		if not style_type then return end 
 
-		local data_center = editor.data_center
+		local data_def = editor.data_def
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		ImGui.SetCursorPos(5, 5)
 		local header_len = math.min(100, detail_x * 0.4)
@@ -131,7 +131,7 @@ local function new(editor, data_hander, stack)
 				if type == "col" or type == "cell_bg" then 
 					draw_data.header = tip
 					draw_data.value = values[name]
-					if data_center.show_inspector("color", draw_data) then 
+					if data_def.show_inspector("color", draw_data) then 
 						values[name] = draw_data.new_value
 						stack.snapshoot(true)
 					end
@@ -139,7 +139,7 @@ local function new(editor, data_hander, stack)
 					draw_data.header = tip
 					draw_data.value = values[name]
 					draw_data.precision = 2
-					if data_center.show_inspector("vec2", draw_data) then 
+					if data_def.show_inspector("vec2", draw_data) then 
 						values[name] = draw_data.new_value
 						stack.snapshoot(true)
 					end

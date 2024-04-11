@@ -165,7 +165,7 @@ local function new(editor, data_hander, stack)
 		local region = data_hander.get_selected_region()
 		if not region then return end 
 
-		local data_center = editor.data_center
+		local data_def = editor.data_def
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		local item = data_hander.get_selected_item()
 		ImGui.SetCursorPos(5, 5)
@@ -174,7 +174,7 @@ local function new(editor, data_hander, stack)
 		ImGui.BeginGroup()
 		if item then 
 			local draw_data = {value = item.key, header = "名 字", header_len = header_len, content_len = content_len}
-			if data_center.show_inspector("string", draw_data) then 
+			if data_def.show_inspector("string", draw_data) then 
 				if not data_hander.get_item(region.name, draw_data.new_value) then 
 					item.key = draw_data.new_value
 					data_hander.set_selected(region.name, item.key)
@@ -182,24 +182,24 @@ local function new(editor, data_hander, stack)
 				stack.snapshoot(true)
 			end
 			draw_data = {value = item.type, header = "类 型", header_len = header_len, content_len = content_len}
-			if data_center.show_inspector("data_type", draw_data) then 
+			if data_def.show_inspector("data_type", draw_data) then 
 				item.type = draw_data.new_value
 				stack.snapshoot(true)
 			end
 			draw_data = {value = item.value, header = "值", header_len = header_len, content_len = content_len}
-			if data_center.show_inspector(item.type, draw_data) then 
+			if data_def.show_inspector(item.type, draw_data) then 
 				item.value = draw_data.new_value
 				stack.snapshoot(true)
 			end
 			draw_data = {value = item.desc, header = "注 释", header_len = header_len, content_len = content_len}
-			if data_center.show_inspector("string", draw_data) then 
+			if data_def.show_inspector("string", draw_data) then 
 				item.desc = draw_data.new_value
 				stack.snapshoot(true)
 			end
 			
 		elseif region then
 			local draw_data = {value = region.name, header = "名 字", header_len = header_len, content_len = content_len}
-			if data_center.show_inspector("string", draw_data) then 
+			if data_def.show_inspector("string", draw_data) then 
 				if not data_hander.get_region(draw_data.new_value) then
 					region.name = draw_data.new_value
 					data_hander.set_selected(region.name)
@@ -207,7 +207,7 @@ local function new(editor, data_hander, stack)
 				end
 			end
 			draw_data = {value = region.desc, header = "注 释", header_len = header_len, content_len = content_len}
-			if data_center.show_inspector("string", draw_data) then 
+			if data_def.show_inspector("string", draw_data) then 
 				region.desc = draw_data.new_value
 				stack.snapshoot(true)
 			end

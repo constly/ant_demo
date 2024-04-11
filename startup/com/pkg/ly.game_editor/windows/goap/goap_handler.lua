@@ -78,6 +78,7 @@ local function new()
 		if #data.nodes > 0 then 
 			api.set_selected(data.nodes[1].name)
 		end 
+		api.modify_setting(data.settings)
 	end
 
 	function api.modify_setting(settings)
@@ -162,6 +163,72 @@ local function new()
 	end
 
 	--------------------------------------------------------
+	--- 节点条件相关
+	--------------------------------------------------------
+	function api.delete_condition(node, data)
+		local parent = api.get_condition_parent(node, data)
+		if parent then 
+			if parent == node.conditions and #parent <= 2 then 
+				return
+			end 
+			for i, v in ipairs(parent) do 
+				if v == data then 
+					table.remove(parent, i)
+				end
+			end
+			if #parent <= 1 then 
+				api.delete_condition(node, parent)
+			elseif #parent == 2 then
+				local p1 = api.get_condition_parent(node, parent)
+				if p1 then 
+					for i, v in ipairs(p1) do 
+						if v == parent then 
+							p1[i] = parent[2]
+						end
+					end 
+				end
+			end 
+		end
+	end 
+
+	function api.move_condition(node, data, delta)
+		local parent = api.get_condition_parent(node, data)
+		if parent and #parent > 2 then 
+			for i, v in ipairs(parent) do 
+				if v == data then 
+					table.remove(parent, i)
+					local idx = i + delta
+					if idx >= 0 and idx <= #parent then
+						table.insert(parent, idx, data)
+					else 
+						table.insert(parent, data)
+					end
+					return
+				end 
+			end 
+		end
+	end
+
+	---@param node ly.game_editor.goap.node
+	function api.get_condition_parent(node, data)
+		local function find(arr)
+			if type(arr) == "table" then
+				for i, v in ipairs(arr) do 
+					if v == data then 
+						return arr
+					else
+						local f = find(v)
+						if f then 
+							return f
+						end 
+					end
+				end 
+			end
+		end 
+		return find(node.conditions) 
+	end 
+
+	--------------------------------------------------------
 	--- 节点选中相关
 	--------------------------------------------------------
 	local function get_cache(node_id)
@@ -202,8 +269,11 @@ local function new()
 	--------------------------------------------------------
 	function api.set_selected_item(node_id, type, id)
 		local cache = get_cache(node_id)
-		cache.type = type
-		cache.list = id and {id} or {}
+		if cache.type ~= type or cache.list[1] ~= id then
+			cache.type = type
+			cache.list = id and {id} or {}
+			return true
+		end 
 	end
 	
 	function api.add_selected_item(node_id, type, id)
