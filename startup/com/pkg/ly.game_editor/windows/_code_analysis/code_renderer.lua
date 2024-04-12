@@ -20,19 +20,20 @@ local function new(editor, data_hander, stack)
 
 	local function draw_body()
 		local n = 2
-		ImGui.BeginTable("table1", n, ImGui.TableFlags {'BordersInnerH', 'Borders', })
-		ImGui.TableSetupColumnEx("pkg", ImGui.TableColumnFlags {'WidthStretch'}, 220);
-		ImGui.TableSetupColumnEx("lua", ImGui.TableColumnFlags {'WidthStretch'}, 80);
-        ImGui.TableHeadersRow();
+		if ImGui.BeginTable("table1", n, ImGui.TableFlags {'BordersInnerH', 'Borders', }) then
+			ImGui.TableSetupColumnEx("pkg", ImGui.TableColumnFlags {'WidthStretch'}, 220);
+			ImGui.TableSetupColumnEx("lua", ImGui.TableColumnFlags {'WidthStretch'}, 80);
+			ImGui.TableHeadersRow();
 
-		for i, v in ipairs(data_hander.data) do 
-			ImGui.TableNextRow();
-			ImGui.TableNextColumn()
-			ImGui.Text(v.name)
-			ImGui.TableNextColumn()
-			ImGui.Text(v.lua)
+			for i, v in ipairs(data_hander.data) do 
+				ImGui.TableNextRow();
+				ImGui.TableNextColumn()
+				ImGui.Text(v.name)
+				ImGui.TableNextColumn()
+				ImGui.Text(v.lua)
+			end
+			ImGui.EndTable()
 		end
-		ImGui.EndTable()
 	end
 
 	function api.update(delta_time)

@@ -11,7 +11,7 @@ local ImGui = dep.ImGui
 local function new(editor, vfs_path, full_path)
 	local api = {} 																---@class ly.game_editor.wnd_goap
 	local stack = dep.common.data_stack.create()								---@type common_data_stack
-	local data_hander = goap_handler.new()										---@type ly.game_editor.goap.handler
+	local data_hander = goap_handler.new(editor, stack)							---@type ly.game_editor.goap.handler
 	local renderer = goap_renderer.new(editor, data_hander, stack)				---@type ly.game_editor.goap.renderer
 
 	local function init()

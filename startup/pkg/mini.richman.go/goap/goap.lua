@@ -18,14 +18,22 @@ function goap_mgr.new_action(id, name, desc)
 		param.desc = desc 
 		param.default = default
 		table.insert(action.params, param)
+		return action
 	end
 
 	function action.set_preview(str)
 		action.preview = str
+		return action
 	end
+
+	function action.set_owner_region(name)
+		action.owner_region = name
+		return action
+	end 
 
 	function action.reg_api(callback)
 		action.get_api = callback
+		return action
 	end
 
 	table.insert(goap_mgr.actoins, action)
@@ -69,11 +77,13 @@ do
 	--------------------------------------------------------
 	-- 等待一段时间 
 	--------------------------------------------------------
-	local action = goap_mgr.new_action("action_wait_time", "等待一段时间")
-	action.def_param("number", "time", "时间(秒)", "0")
-	action.set_preview("等待{{time}}秒")
-	action.reg_api(function()
-		local api = goap_mgr.new_api(action.id)
+	local action_id = "action_wait_time"
+	goap_mgr.new_action(action_id, "等待一段时间")
+	.def_param("number", "time", "时间(秒)", "0")
+	.set_preview("等待{{time}}秒")
+	.set_owner_region({"global"})
+	.reg_api(function()
+		local api = goap_mgr.new_api(action_id)
 		local time = 0;
 		local max_time = 0;
 		function api.on_init(data)
@@ -106,10 +116,12 @@ do
 	--------------------------------------------------------
 	-- 等待点击屏幕 
 	--------------------------------------------------------
-	local action = goap_mgr.new_action("action_wait_input", "等待输入")
-	action.set_preview("等待输入")
-	action.reg_api(function()
-		local api = goap_mgr.new_api(action.id)
+	local action_id = "action_wait_input"
+	goap_mgr.new_action(action_id, "等待输入")
+	.set_preview("等待输入")
+	.set_owner_region({"global"})
+	.reg_api(function()
+		local api = goap_mgr.new_api(action_id)
 		local complete = false
 		function api.on_update()
 			if false then 
@@ -127,11 +139,13 @@ do
 	--------------------------------------------------------
 	-- 输出 
 	--------------------------------------------------------
-	local action = goap_mgr.new_action("action_print", "打印消息")
-	action.def_param("string", "msg", "内容", "")
-	action.set_preview("输出:{{msg}}")
-	action.reg_api(function()
-		local api = goap_mgr.new_api(action.id)
+	local action_id = "action_print"
+	goap_mgr.new_action(action_id, "打印消息")
+	.def_param("string", "msg", "内容", "")
+	.set_preview("输出:{{msg}}")
+	.set_owner_region({"global"})
+	.reg_api(function()
+		local api = goap_mgr.new_api(action_id)
 		local msg 
 		function api.on_init(data)
 			msg = data.msg
@@ -156,13 +170,15 @@ do
 	--------------------------------------------------------
 	-- 挖矿 
 	--------------------------------------------------------
-	local action = goap_mgr.new_action("action_mining", "挖矿")
-	action.def_param("int", "name", "名字", "0")
-	action.def_param("string", "desc", "描述", "")
-	action.def_param("number", "speed", "产出", "")
+	local action_id = "action_mining"
+	goap_mgr.new_action(action_id, "挖矿")
+	.def_param("int", "name", "名字", "0")
+	.def_param("string", "desc", "描述", "")
+	.def_param("number", "speed", "产出", "")
+	.set_owner_region({"npc"})
 	-- 是否还应该有input, output, as, 以及所属对象
-	action.reg_api(function()
-		local api = goap_mgr.new_api(action.id)
+	.reg_api(function()
+		local api = goap_mgr.new_api(action_id)
 		function api.on_begin()
 		end 
 
@@ -179,3 +195,5 @@ do
 		return api
 	end)
 end 
+
+return goap_mgr

@@ -30,7 +30,7 @@ local lib = dep.common.lib
 
 
 ---@class ly.game_editor.goap.node.body 身体
----@field sections ly.game_editor.goap.node.body.section[] 段落列表
+---@field data ly.game_editor.goap.node.body.section 身体数据
 ---@field type string 数据类型
 
 
@@ -53,7 +53,9 @@ local lib = dep.common.lib
 ---@field settings ly.game_editor.goap.setting 配置表
 ---@field next_id number 下个节点id
 
-local function new()
+---@param editor ly.game_editor.editor
+---@param stack common_data_stack
+local function new(editor, stack)
 	---@class ly.game_editor.goap.handler
 	---@field data ly.game_editor.goap.data
 	---@field attr_handler ly.game_editor.attr.handler
@@ -63,6 +65,13 @@ local function new()
 		isModify = false,
 		cache = {},			-- 缓存数据，存档时忽略
 	}
+
+	---@type ly.game_editor.goap.body.fsm
+	api.body_fsm = require 'windows.goap.body_type_fsm'.new(editor, stack, api)
+	---@type ly.game_editor.goap.body.lines
+	api.body_lines = require 'windows.goap.body_type_lines'.new(editor, stack, api)
+	---@type ly.game_editor.goap.body.sections
+	api.body_sections = require 'windows.goap.body_type_sections'.new(editor, stack, api)
 
 	api.attr_handler = require 'windows.attr.attr_handler'.new()
 
@@ -107,11 +116,12 @@ local function new()
 		local node = {}
 		node.tags = {}
 		node.conditions = {"and", {}}
-		node.effects = {}
-		node.body = {}
+		node.effects = {{}}
+		node.body = {type = "lines"}
 		node.name = name
 		node.desc = ""
 		node.id = api.data.next_id
+		api.body_lines.init(node)
 		table.insert(api.data.nodes, node)
 		return node
 	end
@@ -155,10 +165,14 @@ local function new()
 		return name
 	end
 
-	function api.add_effect(node)
+	function api.add_effect(node, idx)
 		---@type ly.game_editor.goap.effect
 		local effect = {}
-		table.insert(node.effects, effect)
+		if idx then 
+			table.insert(node.effects, idx, effect)
+		else 
+			table.insert(node.effects, effect)
+		end
 		return effect
 	end
 
@@ -237,12 +251,18 @@ local function new()
 		cache.selected = cache.selected or nil
 		cache.nodes = cache.nodes or {}
 		if node_id then 
-			local c = cache.nodes[node_id] or {type = "none", list = {}}
+			local c = cache.nodes[node_id] or {type = "none", list = {}, body = {}}
 			cache.nodes[node_id] = c
 			return c
 		else
 			return cache 
 		end
+	end
+
+	--- 得到身体的缓存
+	function api.get_body_cache(node_id)
+		local cache = get_cache(node_id)
+		return cache.body
 	end
 
 	function api.set_selected(name)
@@ -311,6 +331,26 @@ local function new()
 		local cache = get_cache(node_id)
 		return cache.type and #cache.list > 0
 	end
+
+	--------------------------------------------------------
+	--- body相关
+	--------------------------------------------------------
+	---@param node ly.game_editor.goap.node
+	function api.set_body_type(node, type)
+		if node.body.type == type then 
+			return 
+		end 
+		node.body.type = type
+		if type == "lines" then 
+			api.body_lines.init(node)
+		elseif type == "sections" then 
+			api.body_sections.init(node)
+		elseif type == "fsm" then 
+			api.body_fsm.init(node)
+		else 
+			error("invalid type " .. type)
+		end 
+	end 
 
 	return api
 end

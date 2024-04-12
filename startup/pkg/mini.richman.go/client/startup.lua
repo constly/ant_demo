@@ -113,6 +113,8 @@ function system.data_changed()
 				tbParams.project_root = world.args.ecs.project_root
 				tbParams.pkgs = {"mini.richman.res"}
 				tbParams.theme_path = "mini.richman.res/themes/default.style"
+				local goap_mgr = require 'goap.goap'
+				print("goap_mgr", goap_mgr)
 				editor = dep.game_editor.create(tbParams)
 			end
 			local x, y = ImGui.GetContentRegionAvail()

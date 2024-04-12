@@ -197,7 +197,7 @@ local function new(editor, data_hander, stack)
 			local selected = data_hander.is_item_selected(node.id, "condition", data)
 			local style = selected and GStyle.btn_left_selected or GStyle.btn_left
 			local label = string.format("%s.%s  %s  %s ##btn_condition_%d", data[1] or "", data[2] or "", data[3] or "", data[4] or "", draw_index)
-			local len = item_len_x + (max_depth - depth) * 38
+			local len = item_len_x + (max_depth - depth - 1) * 38 - 38
 			if editor.style.draw_style_btn(label, style, {size_x = len}) then 
 				if data_hander.set_selected_item(node.id, "condition", data) then 
 					stack.snapshoot(false)
@@ -280,23 +280,73 @@ local function new(editor, data_hander, stack)
 
 	---@param node ly.game_editor.goap.node
 	local function draw_effect(node, size_x)
+		ImGui.Dummy(5, 5)
 		ImGui.Text("效果:")
 		ImGui.SameLineEx(head_len)
 		ImGui.BeginGroup()
-		ImGui.Dummy(10, 20)
 		for i, v in ipairs(node.effects) do 
 			local selected = data_hander.is_item_selected(node.id, "effect", v)
 			local style = selected and GStyle.btn_left_selected or GStyle.btn_left
 			local label = string.format("%s.%s  %s  %s ##btn_effect_%d", v[1] or "", v[2] or "", v[3] or "", v[4] or "", i)
 			if editor.style.draw_style_btn(label, style, {size_x = item_len_x}) then 
-				data_hander.set_selected_item(node.id, "effect", v)
+				if data_hander.set_selected_item(node.id, "effect", v) then 
+					stack.snapshoot(false)
+				end 
+			end
+			if ImGui.BeginPopupContextItem() then 
+				if data_hander.set_selected_item(node.id, "effect", v) then 
+					stack.snapshoot(false)
+				end 
+				if i > 1 and ImGui.MenuItem("上 移") then
+					table.insert(node.effects, i - 1, table.remove(node.effects, i))
+					stack.snapshoot(true)
+				end
+				if i < #node.effects and ImGui.MenuItem("下 移") then
+					table.insert(node.effects, i + 1, table.remove(node.effects, i))
+					stack.snapshoot(true)
+				end
+				if ImGui.MenuItem("新 增") then
+					local effect = data_hander.add_effect(node, i)
+					data_hander.set_selected_item(node.id, "effect", effect)
+					stack.snapshoot(true)
+				end
+				if #node.effects > 1 and ImGui.MenuItem("删 除") then
+					table.remove(node.effects, i)
+					stack.snapshoot(true)
+				end
+				ImGui.EndPopup()
 			end
 		end 
-		if editor.style.draw_style_btn("+##btn_add_effect", GStyle.btn_normal, {size_x = item_len_x}) then 
-			local effect = data_hander.add_effect(node)
-			data_hander.set_selected_item(node.id, "effect", effect)
-			stack.snapshoot(true)
+		ImGui.EndGroup()
+	end
+
+	---@param node ly.game_editor.goap.node
+	local function draw_actions(node, delta_time, size_x)
+		ImGui.Dummy(5, 5)
+		ImGui.Text("行为:")
+		ImGui.SameLineEx(head_len)
+		ImGui.SetNextItemWidth(120)
+		if ImGui.BeginCombo("##body_type", node.body.type or "") then
+			for i, name in ipairs({"lines", "sections", "fsm"}) do
+				if ImGui.Selectable(name, name == node.body.type) then
+					data_hander.set_body_type(node, name)
+					stack.snapshoot(true)
+				end
+			end
+			ImGui.EndCombo()
 		end
+		ImGui.NewLine()
+		ImGui.SameLineEx(head_len)
+		ImGui.BeginGroup()
+		if node.body.type == "lines" then 
+			data_hander.body_lines.draw(node, delta_time, size_x)
+		elseif node.body.type == "sections" then 
+			data_hander.body_sections.draw(node, delta_time, size_x)
+		elseif node.body.type == "fsm" then 
+			data_hander.body_fsm.draw(node, delta_time, size_x)
+		else 
+			ImGui.Text("invalid type " .. tostring(node.body.type))
+		end 
 		ImGui.EndGroup()
 	end
 
@@ -310,8 +360,7 @@ local function new(editor, data_hander, stack)
 		draw_desc(node, size_x)
 		draw_conditions(node, size_x)
 		draw_effect(node, size_x)
-		
-		ImGui.Text("节点:")
+		draw_actions(node, 0.05, size_x)
 		ImGui.EndGroup()
 
 		if ImGui.IsWindowHovered() and not ImGui.IsAnyItemHovered()  then 
