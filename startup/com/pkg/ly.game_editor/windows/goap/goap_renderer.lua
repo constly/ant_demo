@@ -339,8 +339,8 @@ local function new(editor, data_hander, stack)
 			end
 			ImGui.EndCombo()
 		end
-		ImGui.NewLine()
-		ImGui.SameLineEx(head_len)
+		ImGui.Dummy(head_len - 8, 1)
+		ImGui.SameLine()
 		ImGui.BeginGroup()
 		local body_handler = data_hander.get_body_handler(node)
 		if body_handler then
@@ -552,7 +552,7 @@ local function new(editor, data_hander, stack)
 		if center_x <= 10 then return end 
 
 		ImGui.SetCursorPos(left_x, pos_y)
-		ImGui.BeginChild("pnl_center", center_x, size_y, ImGui.ChildFlags({"Border"}))
+		ImGui.BeginChild("pnl_center", center_x, size_y, ImGui.ChildFlags({"Border"}), ImGui.WindowFlags({"HorizontalScrollbar"}))
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		draw_center(center_x)
 		ImGui.PopStyleVar()

@@ -29,8 +29,8 @@ local function new(editor, stack, goap_handler, goap_render)
 	end
 
 	local function set_selected(node, v)
-		set_selected_inner(node, v)
 		goap_handler.clear_selected(node)
+		return set_selected_inner(node, v)
 	end
 
 	local function is_selected(node, v)
@@ -79,6 +79,7 @@ local function new(editor, stack, goap_handler, goap_render)
 				param.callback = function(id)
 					v.id = id
 					v.params = {}
+					stack.snapshoot(true)
 				end
 				goap_render.action_selector.open(param)
 			end
