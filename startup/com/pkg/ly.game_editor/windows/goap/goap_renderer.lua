@@ -19,6 +19,9 @@ local function new(editor, data_hander, stack)
 	local cur_editor
 	local input_buf = ImGui.StringBuf()
 
+	---@type ly.game_editor.action.selector.api
+	api.action_selector = require 'windows._other.wnd_action_selector'.new(editor)
+
 	---@type ly.game_editor.tag.selector.api
 	local tag_selector = require 'windows.tag.wnd_tag_selector'.new(editor)
 	local item_len_x = 300
@@ -29,9 +32,8 @@ local function new(editor, data_hander, stack)
 	local cache_settings 	---@type ly.game_editor.goap.setting
 
 	function api.set_data(data)
-		lib.dump(data)
 		stack.set_data_handler(data_hander)
-		data_hander.set_data(data)
+		data_hander.set_data(data, api)
 		stack.snapshoot(false)
 	end
 
@@ -199,13 +201,13 @@ local function new(editor, data_hander, stack)
 			local label = string.format("%s.%s  %s  %s ##btn_condition_%d", data[1] or "", data[2] or "", data[3] or "", data[4] or "", draw_index)
 			local len = item_len_x + (max_depth - depth - 1) * 38 - 38
 			if editor.style.draw_style_btn(label, style, {size_x = len}) then 
-				if data_hander.set_selected_item(node.id, "condition", data) then 
+				if data_hander.set_selected_item(node, "condition", data) then 
 					stack.snapshoot(false)
 				end 
 			end
 
 			if ImGui.BeginPopupContextItem() then 
-				if data_hander.set_selected_item(node.id, "condition", data) then 
+				if data_hander.set_selected_item(node, "condition", data) then 
 					stack.snapshoot(false)
 				end 
 				if ImGui.MenuItem("前面插入条件") then
@@ -285,29 +287,31 @@ local function new(editor, data_hander, stack)
 		ImGui.SameLineEx(head_len)
 		ImGui.BeginGroup()
 		for i, v in ipairs(node.effects) do 
-			local selected = data_hander.is_item_selected(node.id, "effect", v)
+			local selected = data_hander.is_item_selected(node.id, "effect", i)
 			local style = selected and GStyle.btn_left_selected or GStyle.btn_left
 			local label = string.format("%s.%s  %s  %s ##btn_effect_%d", v[1] or "", v[2] or "", v[3] or "", v[4] or "", i)
 			if editor.style.draw_style_btn(label, style, {size_x = item_len_x}) then 
-				if data_hander.set_selected_item(node.id, "effect", v) then 
+				if data_hander.set_selected_item(node, "effect", i) then 
 					stack.snapshoot(false)
 				end 
 			end
 			if ImGui.BeginPopupContextItem() then 
-				if data_hander.set_selected_item(node.id, "effect", v) then 
+				if data_hander.set_selected_item(node, "effect", i) then 
 					stack.snapshoot(false)
 				end 
 				if i > 1 and ImGui.MenuItem("上 移") then
 					table.insert(node.effects, i - 1, table.remove(node.effects, i))
+					data_hander.set_selected_item(node, "effect", i - 1)
 					stack.snapshoot(true)
 				end
 				if i < #node.effects and ImGui.MenuItem("下 移") then
 					table.insert(node.effects, i + 1, table.remove(node.effects, i))
+					data_hander.set_selected_item(node, "effect", i + 1)
 					stack.snapshoot(true)
 				end
 				if ImGui.MenuItem("新 增") then
-					local effect = data_hander.add_effect(node, i)
-					data_hander.set_selected_item(node.id, "effect", effect)
+					data_hander.add_effect(node, i)
+					data_hander.set_selected_item(node, "effect", i)
 					stack.snapshoot(true)
 				end
 				if #node.effects > 1 and ImGui.MenuItem("删 除") then
@@ -338,15 +342,12 @@ local function new(editor, data_hander, stack)
 		ImGui.NewLine()
 		ImGui.SameLineEx(head_len)
 		ImGui.BeginGroup()
-		if node.body.type == "lines" then 
-			data_hander.body_lines.draw(node, delta_time, size_x)
-		elseif node.body.type == "sections" then 
-			data_hander.body_sections.draw(node, delta_time, size_x)
-		elseif node.body.type == "fsm" then 
-			data_hander.body_fsm.draw(node, delta_time, size_x)
-		else 
-			ImGui.Text("invalid type " .. tostring(node.body.type))
-		end 
+		local body_handler = data_hander.get_body_handler(node)
+		if body_handler then
+			body_handler.draw(node, delta_time, size_x)
+		else
+			ImGui.Text("invalid type " .. tostring(node.body.type)) 
+		end
 		ImGui.EndGroup()
 	end
 
@@ -365,7 +366,7 @@ local function new(editor, data_hander, stack)
 
 		if ImGui.IsWindowHovered() and not ImGui.IsAnyItemHovered()  then 
 			if ImGui.IsMouseReleased(ImGui.MouseButton.Left) then 
-				data_hander.set_selected_item(node.id, nil, nil)
+				data_hander.set_selected_item(node, nil, nil)
 			end
 		end
 	end
@@ -373,7 +374,26 @@ local function new(editor, data_hander, stack)
 	local function draw_detail(detail_x)
 		local node = data_hander.get_selected_node()
 		if not node then return end 
-		local type, data = data_hander.get_first_item_selected(node.id)
+		local body_handler = data_hander.get_body_handler(node)
+		local action = body_handler and body_handler.get_selected_action(node)
+		if action then 
+
+			ImGui.Text("111")
+			return
+		end
+
+		local type, v = data_hander.get_first_item_selected(node.id)
+		local data
+		if type == "effect" then 
+			for i, _v in ipairs(node.effects) do 
+				if i == v then 
+					data = _v 
+					break;
+				end
+			end 
+		else
+			data = v
+		end 
 		if not type or not data then return end 
 
 		local data_def = editor.data_def
@@ -502,7 +522,7 @@ local function new(editor, data_hander, stack)
 		ImGui.EndChild()
 
 		local node = data_hander.get_selected_node()
-		if center_x <= 50 or not node or not data_hander.has_item_selected(node.id)  then 
+		if center_x <= 50 or not node or not data_hander.has_item_selected(node)  then 
 			center_x = center_x + detail_x
 			detail_x = 0
 		end 
@@ -524,6 +544,7 @@ local function new(editor, data_hander, stack)
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		draw_pop_setting()
 		tag_selector.update()
+		api.action_selector.update()
 		ImGui.PopStyleVar()
 	end
 

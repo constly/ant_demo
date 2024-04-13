@@ -9,6 +9,7 @@ local api = {}
 ---@field project_root string 项目根目录
 ---@field pkgs string[] 资源包
 ---@field theme_path string 主题路径
+---@field goap_mgr goap_mgr goap节点定义
 local create_params = {}
 
 --- 创建游戏编辑器

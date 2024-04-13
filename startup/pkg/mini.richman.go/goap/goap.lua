@@ -1,87 +1,21 @@
 --------------------------------------------------------
 -- goap mgr
 --------------------------------------------------------
+---@type ly.common.main
+local common = import_package 'ly.common'		
 
-local goap_mgr = {}
-goap_mgr.actoins = {}
-function goap_mgr.new_action(id, name, desc)
-	local action = {}
-	action.id = id 
-	action.name = name 
-	action.desc = desc
-	action.params = {}
-
-	function action.def_param(type, id, desc, default)
-		local param = {}
-		param.type = type
-		param.id = id 
-		param.desc = desc 
-		param.default = default
-		table.insert(action.params, param)
-		return action
-	end
-
-	function action.set_preview(str)
-		action.preview = str
-		return action
-	end
-
-	function action.set_owner_region(name)
-		action.owner_region = name
-		return action
-	end 
-
-	function action.reg_api(callback)
-		action.get_api = callback
-		return action
-	end
-
-	table.insert(goap_mgr.actoins, action)
-	return action
-end
-
----@return goap.action
-function goap_mgr.new_api(id)
-	---@class goap.action
-	local action = {}
-	action.actionId = id
-	--- 初始化时
-	function action.on_init(data)
-	end
-	--- 当action开始时
-	function action.on_begin()
-	end 
-	--- 当action结束时
-	function action.on_end()
-	end 
-	--- 每帧更新
-	function action.on_update(delta_time)
-	end
-	--- action是否已经完成
-	function action.is_complete()
-	end
-	-- 转换为字符串
-	function action.to_string()
-	end 
-	-- 序列化
-	function action.serialize()
-	end 
-	-- 反序列化
-	function action.deserialize(data)
-	end
-	return action
-end
-
+---@type goap_mgr
+local goap_mgr = common.new_goap_mgr()
 
 do 
 	--------------------------------------------------------
 	-- 等待一段时间 
 	--------------------------------------------------------
 	local action_id = "action_wait_time"
-	goap_mgr.new_action(action_id, "等待一段时间")
+	goap_mgr.new_action(action_id, "等待一段时间", "等待一段时间，单位秒")
 	.def_param("number", "time", "时间(秒)", "0")
 	.set_preview("等待{{time}}秒")
-	.set_owner_region({"global"})
+	.set_owner("global")
 	.reg_api(function()
 		local api = goap_mgr.new_api(action_id)
 		local time = 0;
@@ -119,7 +53,7 @@ do
 	local action_id = "action_wait_input"
 	goap_mgr.new_action(action_id, "等待输入")
 	.set_preview("等待输入")
-	.set_owner_region({"global"})
+	.set_owner("global")
 	.reg_api(function()
 		local api = goap_mgr.new_api(action_id)
 		local complete = false
@@ -143,7 +77,7 @@ do
 	goap_mgr.new_action(action_id, "打印消息")
 	.def_param("string", "msg", "内容", "")
 	.set_preview("输出:{{msg}}")
-	.set_owner_region({"global"})
+	.set_owner("global")
 	.reg_api(function()
 		local api = goap_mgr.new_api(action_id)
 		local msg 
@@ -175,7 +109,7 @@ do
 	.def_param("int", "name", "名字", "0")
 	.def_param("string", "desc", "描述", "")
 	.def_param("number", "speed", "产出", "")
-	.set_owner_region({"npc"})
+	.set_owner("npc")
 	-- 是否还应该有input, output, as, 以及所属对象
 	.reg_api(function()
 		local api = goap_mgr.new_api(action_id)

@@ -67,16 +67,23 @@ local function new(editor, stack)
 	}
 
 	---@type ly.game_editor.goap.body.fsm
-	api.body_fsm = require 'windows.goap.body_type_fsm'.new(editor, stack, api)
+	api.body_fsm = nil
 	---@type ly.game_editor.goap.body.lines
-	api.body_lines = require 'windows.goap.body_type_lines'.new(editor, stack, api)
+	api.body_lines = nil
 	---@type ly.game_editor.goap.body.sections
-	api.body_sections = require 'windows.goap.body_type_sections'.new(editor, stack, api)
+	api.body_sections = nil
 
 	api.attr_handler = require 'windows.attr.attr_handler'.new()
 
 	---@param data ly.game_editor.tag.data
-	function api.set_data(data)
+	---@param render ly.game_editor.goap.renderer
+	function api.set_data(data, render)
+		if not api.body_fsm then 
+			api.body_fsm = require 'windows.goap.body_type_fsm'.new(editor, stack, api, render)
+			api.body_lines = require 'windows.goap.body_type_lines'.new(editor, stack, api, render)
+			api.body_sections = require 'windows.goap.body_type_sections'.new(editor, stack, api, render)
+		end
+
 		if not data or type(data) ~= "table" or not data.nodes then 
 			data = {nodes = {}}
 		end 
@@ -287,8 +294,14 @@ local function new(editor, stack)
 	--------------------------------------------------------
 	--- 节点内部条目选中相关
 	--------------------------------------------------------
-	function api.set_selected_item(node_id, type, id)
-		local cache = get_cache(node_id)
+	---@param node ly.game_editor.goap.node
+	function api.set_selected_item(node, type, id)
+		local body_handler = api.get_body_handler(node)
+		if body_handler then 
+			body_handler.clear_selected(node, nil)
+		end
+
+		local cache = get_cache(node.id)
 		if cache.type ~= type or cache.list[1] ~= id then
 			cache.type = type
 			cache.list = id and {id} or {}
@@ -296,6 +309,13 @@ local function new(editor, stack)
 		end 
 	end
 	
+	--- 清空选择
+	function api.clear_selected(node)
+		local cache = get_cache(node.id)
+		cache.type = ""
+		cache.list = {}
+	end
+
 	function api.add_selected_item(node_id, type, id)
 		local cache = get_cache(node_id)
 		if cache.type == type then 
@@ -327,8 +347,13 @@ local function new(editor, stack)
 		return cache.type, cache.list[1]
 	end
 
-	function api.has_item_selected(node_id)
-		local cache = get_cache(node_id)
+	function api.has_item_selected(node)
+		local body_handler = api.get_body_handler(node)
+		if body_handler and body_handler.get_selected_action(node) then 
+			return true 
+		end 
+		
+		local cache = get_cache(node.id)
 		return cache.type and #cache.list > 0
 	end
 
@@ -336,20 +361,28 @@ local function new(editor, stack)
 	--- body相关
 	--------------------------------------------------------
 	---@param node ly.game_editor.goap.node
+	---@return ly.game_editor.goap.body.lines
+	function api.get_body_handler(node)
+		local type = node.body.type
+		if type == "lines" then 
+			return api.body_lines
+		elseif type == "sections" then 
+			return api.body_sections
+		elseif type == "fsm" then 
+			return api.body_fsm
+		else 
+			error("invalid type " .. type)
+		end 
+	end
+
+	---@param node ly.game_editor.goap.node
 	function api.set_body_type(node, type)
 		if node.body.type == type then 
 			return 
 		end 
 		node.body.type = type
-		if type == "lines" then 
-			api.body_lines.init(node)
-		elseif type == "sections" then 
-			api.body_sections.init(node)
-		elseif type == "fsm" then 
-			api.body_fsm.init(node)
-		else 
-			error("invalid type " .. type)
-		end 
+		local handler = api.get_body_handler(node)
+		handler.init(node)
 	end 
 
 	return api
