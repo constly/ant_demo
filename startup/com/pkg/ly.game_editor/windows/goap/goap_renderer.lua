@@ -372,13 +372,40 @@ local function new(editor, data_hander, stack)
 	end
 
 	local function draw_detail(detail_x)
+		local header_len = math.min(100, detail_x * 0.4)
+		local content_len = detail_x - header_len - 20
+		local data_def = editor.data_def
 		local node = data_hander.get_selected_node()
 		if not node then return end 
+
 		local body_handler = data_hander.get_body_handler(node)
+		---@type goap.action.data
 		local action = body_handler and body_handler.get_selected_action(node)
 		if action then 
-
-			ImGui.Text("111")
+			if not action.id then return end 
+			local def = editor.tbParams.goap_mgr.find_action_def_by_id(action.id)
+			if not def then 
+				ImGui.TextColored(0.8, 0, 0, 1, string.format("invalid: %s", action.id))
+				return
+			end
+			
+			ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
+			ImGui.SetCursorPos(5, 5)
+			ImGui.BeginGroup()
+			for i, param in ipairs(def.params) do 
+				local v = action.params[param.key]
+				if not v then 
+					v = param.default
+					action.params[param.key] = v
+				end
+				local draw_data = {value = v, header = param.desc, header_len = header_len, content_len = content_len}
+				if data_def.show_inspector(param.type, draw_data) then 
+					action.params[param.key] = draw_data.new_value
+					stack.snapshoot(true)
+				end
+			end
+			ImGui.EndGroup()
+			ImGui.PopStyleVar()
 			return
 		end
 
@@ -396,13 +423,9 @@ local function new(editor, data_hander, stack)
 		end 
 		if not type or not data then return end 
 
-		local data_def = editor.data_def
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		ImGui.SetCursorPos(5, 5)
 		ImGui.BeginGroup()
-
-		local header_len = math.min(100, detail_x * 0.4)
-		local content_len = detail_x - header_len - 20
 
 		local draw_data = {value = data[1], header = "对象类型", header_len = header_len, content_len = content_len}
 		draw_data.attr_handler = data_hander.attr_handler
@@ -436,10 +459,10 @@ local function new(editor, data_hander, stack)
 		end
 
 		draw_data = {value = data[4], header = "操作值", header_len = header_len, content_len = content_len}
-			if data_def.show_inspector("number", draw_data) then 
-				data[4] = draw_data.new_value
-				stack.snapshoot(true)
-			end
+		if data_def.show_inspector("number", draw_data) then 
+			data[4] = draw_data.new_value
+			stack.snapshoot(true)
+		end
 
 		ImGui.EndGroup()
 		ImGui.PopStyleVar()

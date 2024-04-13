@@ -6,6 +6,7 @@ local dep = require 'dep'
 local lib = dep.common.lib
 local ImGui = dep.ImGui
 
+
 ---@param editor ly.game_editor.editor
 ---@param stack common_data_stack
 ---@param goap_handler ly.game_editor.goap.handler
@@ -46,7 +47,7 @@ local function new(editor, stack, goap_handler, goap_render)
 		set_selected_inner(node, nil)
 	end
 
-	---@return ly.game_editor.goap.node 得到选中的行为
+	---@return goap.action.data 得到选中的行为
 	function api.get_selected_action(node)
 		local cache = goap_handler.get_body_cache(node.id)
 		if not cache.selected or #cache.selected ~= 1 then return end
@@ -57,11 +58,14 @@ local function new(editor, stack, goap_handler, goap_render)
 	---@param node ly.game_editor.goap.node
 	function api.draw(node, delta_time, size_x)
 		local item_len_x = 300
+		---@type goap.action.data[] 
 		local lines = node.body.data
 		for i, v in ipairs(lines) do 
 			local selected = is_selected(node, i)
-			local style = selected and GStyle.btn_left_selected or GStyle.btn_left
-			local label = string.format("##btn_line_%d", i)
+			local style = v.disable and GStyle.btn_left_disable or GStyle.btn_left
+			style = selected and GStyle.btn_left_selected or style
+			local desc = editor.tbParams.goap_mgr.get_action_desc(v)
+			local label = string.format("%s##btn_line_%d", desc, i)
 			if editor.style.draw_style_btn(label, style, {size_x = item_len_x}) then 
 				if set_selected(node, i) then 
 					stack.snapshoot(false)
@@ -72,7 +76,9 @@ local function new(editor, stack, goap_handler, goap_render)
 				---@type ly.game_editor.action.selector.params
 				local param = {}
 				param.selected = {}
-				param.callback = function()
+				param.callback = function(id)
+					v.id = id
+					v.params = {}
 				end
 				goap_render.action_selector.open(param)
 			end
@@ -83,10 +89,22 @@ local function new(editor, stack, goap_handler, goap_render)
 				end
 				if ImGui.MenuItem("新 增") then
 					local tb = {}
-					table.insert(lines, i, tb)
+					table.insert(lines, i + 1, tb)
 					set_selected(node, i)
 					stack.snapshoot(true)
 				end 
+				if ImGui.MenuItem("清 空") then
+					lines[i] = {}
+					stack.snapshoot(true)
+				end 
+				if not v.disable and ImGui.MenuItem("禁 用") then
+					v.disable = true
+					stack.snapshoot(true)
+				end
+				if v.disable and ImGui.MenuItem("激 活") then 
+					v.disable = nil
+					stack.snapshoot(true)
+				end
 				if i > 1 and ImGui.MenuItem("上 移") then
 					table.insert(lines, i - 1, table.remove(lines, i))
 					stack.snapshoot(true)

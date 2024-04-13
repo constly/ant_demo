@@ -13,6 +13,7 @@ GStyle = {}
 GStyle.btn_normal = "gen.btn_normal"
 GStyle.btn_normal_selected = "gen.btn_normal_selected"
 GStyle.btn_left = "gen.btn_left"
+GStyle.btn_left_disable = "gen.btn_left_disable"
 GStyle.btn_left_selected = "gen.btn_left_sel"
 
 GStyle.tab_active = "gen.tab_active"
@@ -90,6 +91,7 @@ local function get_styles()
 	reg("通 用", 	GStyle.btn_transp_center, 			types.button, 	"透明按钮")
 	reg("通 用", 	GStyle.btn_left, 					types.button, 	"左对齐按钮")
 	reg("通 用", 	GStyle.btn_left_selected, 			types.button, 	"左对齐按钮选中")
+	reg("通 用", 	GStyle.btn_left_disable, 			types.button, 	"左对齐按钮禁用")
 
 	reg("标 签", 	GStyle.tag_normal, 					types.button, 	"标签普通状态")
 	reg("标 签", 	GStyle.tag_active, 					types.button, 	"标签激活状态")

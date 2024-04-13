@@ -1,6 +1,8 @@
 --------------------------------------------------------
 -- goap mgr
 --------------------------------------------------------
+---@type ly.common.lib
+local lib = require 'tools.lib'
 
 ---@class goap.action.param 
 ---@field type string 数据类型
@@ -12,8 +14,14 @@
 ---@field id string 
 ---@field name string 
 ---@field desc string 
----@field owner string
+---@field owner string 所属对象
+---@field preview string 预览数据
 ---@field params goap.action.param[]
+
+---@class goap.action.data
+---@field id string action id 
+---@field disable boolean 是否禁用
+---@field params map<string, any> 参数列表
 
 local function new()
 	---@class goap_mgr
@@ -58,6 +66,15 @@ local function new()
 		return action
 	end	
 
+	---@return goap.action
+	function goap_mgr.find_action_def_by_id(id)
+		for i, v in ipairs(goap_mgr.actoins) do 
+			if v.id == id then 
+				return v
+			end
+		end
+	end
+
 	function goap_mgr.get_all_actions()
 		local all = {}
 
@@ -79,7 +96,27 @@ local function new()
 		return all;
 	end 
 
-	
+	---@param action goap.action.data
+	function goap_mgr.get_action_desc(action)
+		local def = goap_mgr.find_action_def_by_id(action.id)
+		if not def or not def.preview then 
+			return action.id
+		end
+
+		local function get_data(key, def)
+			local data = action.params[key]
+			return data or def
+		end
+
+		local ret = def.preview
+		for i, v in ipairs(def.params) do 
+			local data = get_data(v.key, v.default)
+			local str = string.format("{{%s}}", v.key)
+			ret = string.gsub(ret, str, data)
+		end
+		return ret
+	end
+
 	---@return goap.api
 	function goap_mgr.new_api(id)
 		---@type goap.api

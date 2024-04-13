@@ -41,6 +41,11 @@ local function new(editor, stack, goap_handler, goap_render)
 		end
 	end
 
+	---@return goap.action.data 得到选中的行为
+	function api.get_selected_action(node)
+		return nil
+	end
+
 	---@param node ly.game_editor.goap.node
 	function api.clear_selected(node)
 		set_selected_inner(node, nil)

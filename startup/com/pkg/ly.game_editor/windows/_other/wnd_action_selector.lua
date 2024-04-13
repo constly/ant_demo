@@ -73,6 +73,10 @@ local function new(editor)
 			if editor.style.draw_style_btn(label, style, {size_x = item_x}) then
 				selected_actions[selected_region] = v.id
 			end
+			if ImGui.IsItemHovered() and ImGui.IsMouseDoubleClicked(ImGui.MouseButton.Left) then 
+				params.callback(selected_actions[selected_region] )
+				ImGui.CloseCurrentPopup()
+			end
 			if v.desc and ImGui.BeginItemTooltip() then 
 				ImGui.Text(v.desc)
 				ImGui.EndTooltip()
@@ -96,32 +100,20 @@ local function new(editor)
 			local right_x = size_x - left_x - 25
 			local size_y = size_y - 50
 
-			ImGui.BeginChild("left", left_x, size_y)
+			ImGui.BeginChild("left", left_x, size_y, ImGui.ChildFlags({"Border"}))
 				draw_left()
 			ImGui.EndChild()
 
 			ImGui.SameLine()
-			ImGui.BeginChild("right", right_x, size_y)
+			ImGui.BeginChild("right", right_x, size_y, ImGui.ChildFlags({"Border"}))
 				draw_right()
 			ImGui.EndChild()
 
 			ImGui.SetCursorPos(size_x * 0.5 - 30, size_y + 43)
 			if editor.style.draw_btn("确 认##btn_ok", true, {size_x = 80}) then 
+				params.callback(selected_actions[selected_region] )
 				ImGui.CloseCurrentPopup()
 			end
-
-			-- ImGui.BeginChild("detail", size_x, size_y - 80, ImGui.ChildFlags({"Border"}))
-			-- 	for i, v in ipairs(data_hander.data.children) do 
-			-- 		draw_item(v, 1, size_x)
-			-- 	end
-			-- ImGui.EndChild()
-			-- ImGui.Dummy(10, 1)
-			-- ImGui.Dummy(10, 10)
-			-- ImGui.SameLineEx(size_x * 0.5 - 35)
-			-- if editor.style.draw_btn("确 认##btn_ok", true, {size_x = 80}) then 
-			-- 	params.callback(data_hander.get_all_selected() or {})
-			-- 	ImGui.CloseCurrentPopup()
-			-- end
 
 			ImGui.EndPopup()
 		end		

@@ -6,6 +6,14 @@ local dep = require 'dep'
 local lib = dep.common.lib
 local ImGui = dep.ImGui
 
+
+---@class ly.game_editor.goap.node.body.section.lines 
+---@field actions goap.action.data[] 
+
+---@class ly.game_editor.goap.node.body.section 段落
+---@field lines ly.game_editor.goap.node.body.section.lines 
+
+
 ---@param editor ly.game_editor.editor
 ---@param stack common_data_stack
 ---@param goap_handler ly.game_editor.goap.handler
@@ -39,6 +47,11 @@ local function new(editor, stack, goap_handler, goap_render)
 				return true
 			end
 		end
+	end
+
+	---@return goap.action.data 得到选中的行为
+	function api.get_selected_action(node)
+		return nil
 	end
 
 	---@param node ly.game_editor.goap.node

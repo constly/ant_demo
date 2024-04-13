@@ -11,26 +11,14 @@ local lib = dep.common.lib
 ---@field opt string 操作类型
 ---@field value any 操作值
 
-
 ---@class ly.game_editor.goap.effect 影响
 ---@field region string 作用域
 ---@field id string id 
 ---@field opt string 操作类型
 ---@field value any 操作值
 
-
----@class ly.game_editor.goap.node.body.line 
----@field actionId string 
----@field params map<string, any> 参数列表
----@field disable boolean 是否禁用
-
-
----@class ly.game_editor.goap.node.body.section 子段落
----@field lines ly.game_editor.goap.node.body.line[]
-
-
 ---@class ly.game_editor.goap.node.body 身体
----@field data ly.game_editor.goap.node.body.section 身体数据
+---@field data goap.action.data[]|ly.game_editor.goap.node.body.section[]
 ---@field type string 数据类型
 
 

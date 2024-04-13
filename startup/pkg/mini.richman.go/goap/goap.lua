@@ -13,7 +13,7 @@ do
 	--------------------------------------------------------
 	local action_id = "action_wait_time"
 	goap_mgr.new_action(action_id, "等待一段时间", "等待一段时间，单位秒")
-	.def_param("number", "time", "时间(秒)", "0")
+	.def_param("number", "time", "时间(秒)", 0)
 	.set_preview("等待{{time}}秒")
 	.set_owner("global")
 	.reg_api(function()
