@@ -10,6 +10,8 @@ dep.datalist		= require 'datalist'
 dep.assetmgr  		= import_package "ant.asset"
 dep.textureman 		= require "textureman.client"
 dep.fastio 			= require "fastio"
+dep.json 			= import_package "ant.json"
+
 --- 项目依赖
 dep.ImGuiExtend 	= require "ly.imgui.extend"
 

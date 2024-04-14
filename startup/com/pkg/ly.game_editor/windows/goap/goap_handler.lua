@@ -43,7 +43,7 @@ local lib = dep.common.lib
 
 ---@param editor ly.game_editor.editor
 ---@param stack common_data_stack
-local function new(editor, stack)
+local function new(editor, stack, vfs_path)
 	---@class ly.game_editor.goap.handler
 	---@field data ly.game_editor.goap.data
 	---@field attr_handler ly.game_editor.attr.handler
@@ -337,7 +337,7 @@ local function new(editor, stack)
 
 	function api.has_item_selected(node)
 		local body_handler = api.get_body_handler(node)
-		if body_handler and body_handler.get_selected_action(node) then 
+		if body_handler and body_handler.get_first_selected_action(node) then 
 			return true 
 		end 
 		
@@ -372,6 +372,86 @@ local function new(editor, stack)
 		local handler = api.get_body_handler(node)
 		handler.init(node)
 	end 
+
+	--------------------------------------------------------
+	--- copy/paster
+	--------------------------------------------------------
+	function api.selected_to_string()
+		local node = api.get_selected_node()
+		if not node then return end 
+
+		local body_handler = api.get_body_handler(node)
+		if body_handler and body_handler.get_selected_count(node) > 0 then 
+			local data, ids = body_handler.get_selected_actions(node)
+			local tb = {
+				type = "action",
+				vfs_path = vfs_path,
+				data = data or {},
+				ids = ids or {}
+			}
+			return dep.json.encode(tb)
+		else 
+			local type, v = api.get_first_item_selected(node.id)
+			local data
+			if type == "effect" then 
+				for i, _v in ipairs(node.effects) do 
+					if i == v then 
+						data = _v 
+						break;
+					end
+				end 
+			else
+				data = v
+			end 
+			if not type or not data then return end 
+			local tb = {
+				type = type,
+				vfs_path = vfs_path,
+				data = data,
+			}
+			return dep.json.encode(tb)
+		end
+	end
+
+	function api.string_to_selected(str)
+		local node = api.get_selected_node()
+		if not node or not str or str == "" then 
+			return 
+		end 
+
+		local tb = dep.json.decode(str)
+		if type(tb) ~= "table" then 
+			return 
+		end 
+		if tb.type == "effect" then 
+
+
+		elseif tb.type == "condition" then 
+
+
+		elseif tb.type == "action" then 
+			local body_handler = api.get_body_handler(node)
+			---@type goap.action.data
+			local action = body_handler and body_handler.get_first_selected_action(node)
+			if action then 
+				return body_handler.paster(node, tb.data)
+			end
+		end
+	end
+
+	function api.reset_all_selected()
+		local node = api.get_selected_node()
+		if not node then 
+			return 
+		end 
+
+		local body_handler = api.get_body_handler(node)
+		if body_handler and body_handler.get_selected_count(node) > 0 then 
+			return body_handler.reset_all_selected(node)
+		else 
+		
+		end
+	end
 
 	return api
 end

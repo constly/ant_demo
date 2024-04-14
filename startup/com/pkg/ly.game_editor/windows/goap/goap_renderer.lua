@@ -380,7 +380,7 @@ local function new(editor, data_hander, stack)
 
 		local body_handler = data_hander.get_body_handler(node)
 		---@type goap.action.data
-		local action = body_handler and body_handler.get_selected_action(node)
+		local action = body_handler and body_handler.get_first_selected_action(node)
 		if action then 
 			if not action.id then return end 
 			local def = editor.tbParams.goap_mgr.find_action_def_by_id(action.id)

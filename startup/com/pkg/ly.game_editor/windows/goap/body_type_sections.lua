@@ -5,14 +5,13 @@
 local dep = require 'dep'
 local lib = dep.common.lib
 local ImGui = dep.ImGui
-
+local imgui_utils = dep.common.imgui_utils
 
 ---@class ly.game_editor.goap.node.body.section.line 
 ---@field actions goap.action.data[] 
 
 ---@class ly.game_editor.goap.node.body.section 段落
 ---@field lines ly.game_editor.goap.node.body.section.line[] 
-
 
 ---@param editor ly.game_editor.editor
 ---@param stack common_data_stack
@@ -28,6 +27,8 @@ local function new(editor, stack, goap_handler, goap_render)
 		}
 		return tb
 	end
+
+	local drop_from
 
 	---@param node ly.game_editor.goap.node
 	function api.init(node)
@@ -126,8 +127,11 @@ local function new(editor, stack, goap_handler, goap_render)
 
 	---@param node ly.game_editor.goap.node
 	---@return goap.action.data 得到选中的行为
-	function api.get_selected_action(node)
+	function api.get_first_selected_action(node)
 		local cache = goap_handler.get_body_cache(node.id)
+		if not cache.selected or #cache.selected == 2 then 
+			return 
+		end 
 		for _, v in ipairs(cache.selected or {}) do 
 			local section = node.body.data[v[1]]
 			if not section then return end 
@@ -135,6 +139,174 @@ local function new(editor, stack, goap_handler, goap_render)
 			if not line then return end 
 			return line.actions[v[3]] 
 		end
+	end
+
+	function api.get_selected_count(node)
+		local cache = goap_handler.get_body_cache(node.id)
+		return cache.selected and #cache.selected
+	end
+
+	---@param node ly.game_editor.goap.node
+	---@return goap.action.data[][] 得到选中的行为
+	function api.get_selected_actions(node)
+		local cache = goap_handler.get_body_cache(node.id)
+		if not cache.selected or not cache.selected[1] then 
+			return 
+		end 
+
+		local function get_action(section_idx, line_idx, action_idx)
+			local section = node.body.data[section_idx]
+			if not section then return end
+			local line = section.lines[line_idx]
+			if not line then return end 
+			return line.actions[action_idx]
+		end
+
+		if cache.is_shift and #cache.selected == 2 then 
+			local first = cache.selected[1]
+			local second = cache.selected[2]
+			local section_idx = first[1]
+			local min_line = math.min(first[2], second[2])
+			local max_line = math.max(first[2], second[2])
+			local min_action = math.min(first[3], second[3])
+			local max_action = math.max(first[3], second[3])
+			if not min_line or not max_line or not min_action or not max_action then 
+				return 
+			end
+			local ret = {}
+			local ids = {}
+			for i = min_line, max_line do 
+				local tb = {}
+				for j = min_action, max_action do 
+					local action = get_action(section_idx, i, j)
+					if action then 
+						table.insert(tb, action)
+						table.insert(ids, {section_idx, i, j})
+					end
+				end
+				table.insert(ret, tb)
+			end
+			return ret, ids
+		else
+			local tb = {}
+			local section_idx
+			for _, _v in ipairs(cache.selected or {}) do 
+				table.insert(tb, {_v[2], _v[3]})
+				section_idx = _v[1]
+			end
+			table.sort(tb, function(a, b)
+				if a[1] == b[1] then 
+					return a[2] < b[2]
+				end
+				return a[1] < b[1]
+			end)
+			local ret = {}
+			local ids = {}
+			for i, v in ipairs(tb) do 
+				local action = get_action(section_idx, v[1], v[2])
+				if action then 
+					table.insert(ret, {action})
+					table.insert(ids, {section_idx, v[1], v[2]})
+				end
+			end
+			return ret, ids
+		end
+	end 
+
+	---@param node ly.game_editor.goap.node
+	function api.reset_all_selected(node)
+		local cache = goap_handler.get_body_cache(node.id)
+		if not cache.selected or not cache.selected[1] then 
+			return 
+		end 
+		local function reset_action(section_idx, line_idx, action_idx)
+			local section = node.body.data[section_idx]
+			if not section then return end
+			local line = section.lines[line_idx]
+			local tb = line and line.actions[action_idx]
+			if not tb then return end 
+			if tb.id then 
+				line.actions[action_idx] = {}
+				return true
+			end
+		end
+
+		if cache.is_shift and #cache.selected == 2 then 
+			local first = cache.selected[1]
+			local second = cache.selected[2]
+			local section_idx = first[1]
+			local min_line = math.min(first[2], second[2])
+			local max_line = math.max(first[2], second[2])
+			local min_action = math.min(first[3], second[3])
+			local max_action = math.max(first[3], second[3])
+			if not min_line or not max_line or not min_action or not max_action then 
+				return 
+			end
+			local ret = false
+			for i = min_line, max_line do 
+				for j = min_action, max_action do 
+					ret = reset_action(section_idx, i, j) or ret
+				end
+			end
+		else
+			local ret = false
+			for _, _v in ipairs(cache.selected or {}) do 
+				ret = reset_action(_v[1], _v[2], _v[3]) or ret
+			end
+			return ret
+		end
+	end
+
+	---@param node ly.game_editor.goap.node
+	function api.paster(node, data)
+		local cache = goap_handler.get_body_cache(node.id)
+		if not cache.selected or #cache.selected == 0 then
+			return 
+		end
+
+		local section_idx, line_idx, action_idx
+		for i, v in ipairs(cache.selected or {}) do 
+			if i == 1 then 
+				section_idx, line_idx, action_idx = v[1], v[2], v[3]
+			else 
+				line_idx = math.min(line_idx, v[2])
+				action_idx = math.min(action_idx, v[3])
+			end
+		end
+
+		local function set_action(section_idx, line_idx, action_idx, data)
+			local section = node.body.data[section_idx]
+			if not section then return end
+			for i, line in ipairs(section.lines) do 
+				for j = 1, action_idx do 
+					line.actions[j] = line.actions[j] or {}
+				end
+			end
+			local line = section.lines[line_idx]
+			if not line then 
+				line = {actions = {}}
+				for i = 1, #section.lines[1].actions do 
+					table.insert(line.actions, {})
+				end 
+				table.insert(section.lines, line)
+			end
+			for i = 1, action_idx do 
+				if not line.actions[i] then 
+					line.actions[i] = {}
+				end
+			end
+			line.actions[action_idx] = data
+		end
+		
+		for i = 1, #data do 
+			local line = data[i]
+			for j = 1, #line do 
+				local _line = line_idx + i - 1
+				local _action = action_idx + j - 1
+				set_action(section_idx, _line, _action, line[j])
+			end
+		end
+		return true
 	end
 
 	---@param node ly.game_editor.goap.node
@@ -151,8 +323,8 @@ local function new(editor, stack, goap_handler, goap_render)
 				local selected = is_selected(node, section_idx, lineIdx, i)
 				local style = action.disable and GStyle.btn_left_disable or GStyle.btn_left
 				style = selected and GStyle.btn_left_selected or style
-				local desc = editor.tbParams.goap_mgr.get_action_desc(action)
-				local label = string.format("%s##btn_line_%d_%d_%d", desc or "", section_idx, lineIdx, i)
+				local desc = editor.tbParams.goap_mgr.get_action_desc(action) or ""
+				local label = string.format("%s##btn_line_%d_%d_%d", desc, section_idx, lineIdx, i)
 				if editor.style.draw_style_btn(label, style, {size_x = item_len_x}) then
 					local ok = false 
 					if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
@@ -166,6 +338,27 @@ local function new(editor, stack, goap_handler, goap_render)
 						stack.snapshoot(false)
 					end
 				end
+				if ImGui.BeginDragDropSource() then 
+					if set_selected(node, section_idx, lineIdx, i) then 
+						stack.snapshoot(false)
+					end
+					drop_from = action
+					imgui_utils.SetDragDropPayload("DragGoapAction", "1");
+					ImGui.Text("正在拖动 " .. desc);
+					ImGui.EndDragDropSource();
+				end
+
+				if imgui_utils.GetDragDropPayload("DragGoapAction") and ImGui.BeginDragDropTarget() then 
+					local payload = imgui_utils.AcceptDragDropPayload("DragGoapAction")
+					if payload and drop_from then
+						lib.swap_table(drop_from, action)
+						set_selected(node, section_idx, lineIdx, i) 
+						stack.snapshoot(true)
+						drop_from = nil
+					end
+					ImGui.EndDragDropTarget()
+				end
+
 				if ImGui.IsItemHovered() and ImGui.IsMouseDoubleClicked(ImGui.MouseButton.Left) then 
 					---@type ly.game_editor.action.selector.params
 					local param = {}
@@ -242,7 +435,9 @@ local function new(editor, stack, goap_handler, goap_render)
 		local label = string.format(" + ##btn_add_line_%d", section_idx)
 		if editor.style.draw_color_btn(label, {0.15, 0.15, 0.15, 1}, {0.5, 0.5, 0.5, 1}) then 
 			local n = 0
-			if data.lines[1] then n = #data.lines[1].actions end
+			if data.lines[1] then 
+				n = #data.lines[1].actions 
+			end
 			n = math.max(1, n)
 			local tb = {}
 			for i = 1, n do 

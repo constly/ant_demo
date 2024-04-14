@@ -42,8 +42,28 @@ local function new(editor, stack, goap_handler, goap_render)
 	end
 
 	---@return goap.action.data 得到选中的行为
-	function api.get_selected_action(node)
+	function api.get_first_selected_action(node)
 		return nil
+	end
+
+	function api.get_selected_count(node)
+		local cache = goap_handler.get_body_cache(node.id)
+		return cache.selected and #cache.selected
+	end
+
+	---@param node ly.game_editor.goap.node
+	---@return goap.action.data[] 得到选中的行为
+	function api.get_selected_actions(node)
+		return {}
+	end 
+
+	---@param node ly.game_editor.goap.node
+	function api.reset_all_selected(node)
+	end
+
+	---@param node ly.game_editor.goap.node
+	function api.paster(node, data)
+		return false
 	end
 
 	---@param node ly.game_editor.goap.node

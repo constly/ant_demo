@@ -246,4 +246,23 @@ function lib.get_table_depth(data)
 	return get_depth(data, 0)
 end
 
+--- 交换table
+function lib.swap_table(t1, t2)
+	local key1, key2 = {}, {}
+	for k, v in pairs(t1) do 
+		key1[k] = v
+		t1[k] = nil
+	end
+	for k, v in pairs(t2) do 
+		key2[k] = v
+		t2[k] = nil
+	end
+	for k, v in pairs(key1) do 
+		t2[k] = v
+	end
+	for k, v in pairs(key2) do 
+		t1[k] = v
+	end
+end
+
 return lib
