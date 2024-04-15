@@ -28,6 +28,7 @@ local function new(editor, stack, goap_handler, goap_render)
 		return tb
 	end
 
+	local item_len_x = 250
 	local drop_from
 
 	---@param node ly.game_editor.goap.node
@@ -317,7 +318,6 @@ local function new(editor, stack, goap_handler, goap_render)
 	---@param node ly.game_editor.goap.node
 	---@param data ly.game_editor.goap.node.body.section
 	local function draw_section(node, section_idx, data)
-		local item_len_x = 250
 		for lineIdx, line in ipairs(data.lines) do 
 			for i, action in ipairs(line.actions) do 
 				local selected = is_selected(node, section_idx, lineIdx, i)
@@ -452,6 +452,18 @@ local function new(editor, stack, goap_handler, goap_render)
 	---@param node ly.game_editor.goap.node
 	function api.draw(node, delta_time, size_x)
 		for i, v in ipairs(node.body.data) do 
+			if i == 1 then 
+				local pos_y = ImGui.GetCursorPosY()
+				local line = v.lines[i] 
+				local actions = line.actions
+				ImGui.SetCursorPos(150, pos_y)
+				ImGui.TextColored(0.9, 0.9, 0, 1, "主 轴")
+
+				for j = 1, #actions - 1 do
+					ImGui.SetCursorPos(170 + j * item_len_x, pos_y) 
+					ImGui.TextColored(0.8, 0.8, 0.8, 1, "副 轴")
+				end
+			end
 			draw_section(node, i, v)
 		end
 	end
