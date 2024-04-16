@@ -28,8 +28,8 @@ local function new ()
 			data.regions[1] = handler.create_region()
 			data.show_ground = true
 			data.region_index = 1
-			data.path_def = ""
 		end
+		data.setting = data.setting or {}
 		data.version = DATA_VERSION
 		data.cache = {selects = {}, invisibles = {}}
 	end
@@ -182,7 +182,8 @@ local function new ()
 
 	-- 是否配置有数据定义文件
 	function handler.has_path_def()
-		return handler.data.path_def and handler.data.path_def ~= ""
+		local path = handler.data.setting.grid_def
+		return path and path ~= ""
 	end
 
 	-------------------------------------------------------------------

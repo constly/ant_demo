@@ -13,13 +13,12 @@ local function new(editor)
 	local needOpen = false
 	local input_content = ImGui.StringBuf()
 	local isOpen = false
-
-	local path_def
+	local grid_def
 
 	function api.open()
 		popId = "地图配置##pop_chess_setting"
 		needOpen = true
-		path_def = editor.data_hander.data.path_def or ""
+		grid_def = editor.data_hander.data.setting.grid_def or ""
 	end
 
 	function api.update()
@@ -45,10 +44,10 @@ local function new(editor)
 				ImGui.SameLineEx(120)
 
 				ImGui.PushItemWidth(300)
-				input_content:Assgin(path_def)
+				input_content:Assgin(grid_def)
 				local flag = ImGui.InputTextFlags { "CharsNoBlank", "AutoSelectAll" } 
 				if ImGui.InputText("##input_box", input_content, flag) then 
-					path_def = tostring(input_content) or ""
+					grid_def = tostring(input_content) or ""
 				end
 				ImGui.PopItemWidth()
 			end
@@ -59,8 +58,8 @@ local function new(editor)
 				if dep.common.imgui_utils.draw_btn(" 确 定 ##btn_setting_ok", true) then 
 					ImGui.CloseCurrentPopup()
 					isOpen = false
-					if path_def ~= editor.data_hander.data.path_def then 
-						editor.data_hander.data.path_def = path_def
+					if grid_def ~= editor.data_hander.data.setting.grid_def then 
+						editor.data_hander.data.setting.grid_def = grid_def
 						editor.refresh_object_def()
 						editor.stack.snapshoot(true)
 					end

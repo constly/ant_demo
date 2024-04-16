@@ -31,6 +31,7 @@ end
 ---@param file_path string 文件路径
 ---@return string 文本内容
 function api.load_file(file_path)
+	if not file_path then return "" end 
 	local is_vfs = api.is_vfs_path(file_path)
 	local content = is_vfs and api.load_file_from_vfs(file_path) or api.load_file_from_disk(file_path)
 	return content or ""

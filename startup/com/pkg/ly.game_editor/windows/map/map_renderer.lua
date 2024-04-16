@@ -1,7 +1,6 @@
-local dep = require "dep" ---@type ly.map.chess.dep
+local dep = require "dep" ---@type ly.game_editor.dep
 local ImGui = dep.ImGui
 local lib = dep.common.lib
-local _chess_draw = require 'windows.map.chess_draw'
 
 ---@type ly.game_core
 local game_core = import_package 'ly.game_core'
@@ -16,10 +15,10 @@ local function new(editor, args)
 	api.data_hander = data_hander
 	api.stack = stack
 	api.args = args
-	api.tb_object_def = args.tb_objects				---@type chess_object_tpl[]
+	api.tb_object_def = args.tb_objects					---@type chess_object_tpl[]
 	api.is_window_active = true
 		
-	local draw = _chess_draw.create(editor, api)				---@type chess_editor_draw
+	local draw = require 'windows.map.chess_draw'.create(editor, api)				---@type chess_editor_draw
 
 	function api.on_init()
 		stack.set_data_handler(data_hander)	
@@ -35,14 +34,16 @@ local function new(editor, args)
 	function api.on_reset()
 		local _args = dep.common.lib.copy(args)  		---@type chess_editor_create_args
 		_args.data = nil
+		local setting = data_hander.data.setting
 		data_hander.init(_args)
+		data_hander.data.setting = setting or {}
 		api.refresh_object_def()
 		stack.snapshoot(true)
 	end
 
 	function api.on_save(write_callback)
 		local cache = data_hander.data.cache
-		data_hander.data.cache = {}
+		data_hander.data.cache = nil
 		local content = dep.serialize.stringify(data_hander.data)
 		data_hander.data.cache = cache
 		data_hander.isModify = false
@@ -69,7 +70,7 @@ local function new(editor, args)
 
 	function api.refresh_object_def()
 		if data_hander.has_path_def() then 
-			local tbFile = dep.common.file.load_csv(data_hander.data.path_def)
+			local tbFile = dep.common.file.load_csv(data_hander.data.setting.grid_def)
 			dep.common.lib.dump(tbFile)
 			local list = {}
 			for i, v in ipairs(tbFile) do 

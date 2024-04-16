@@ -1,4 +1,4 @@
-local dep = require 'dep' ---@type ly.map.chess.dep
+local dep = require 'dep' ---@type ly.game_editor.dep
 local ImGui = dep.ImGui
 local ed = dep.ed
 local imgui_utils = dep.common.imgui_utils

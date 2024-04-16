@@ -49,6 +49,8 @@ local chess_map_region_tpl = {}
 ---@field invisibles table<number, chess_selected_grid>  	regionId -> 不可见的格子列表
 local chess_map_tpl_cache = {}
 
+---@class chess_map_setting 
+---@field grid_def string 格子定义
 
 -- 棋盘地图 模板
 ---@class chess_map_tpl 		
@@ -59,7 +61,7 @@ local chess_map_tpl_cache = {}
 ---@field cache chess_map_tpl_cache 缓存数据
 ---@field show_ground boolean 是否显示地形
 ---@field version number 数据版本号
----@field path_def string 物件配置表路径
+---@field setting chess_map_setting 物件配置
 local chess_map_tpl = {}
 
 

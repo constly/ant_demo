@@ -1,7 +1,7 @@
 ---------------------------------------------------------------------------
 -- 编辑器主框架绘制
 ---------------------------------------------------------------------------
-local dep = require 'dep' ---@type ly.map.chess.dep 
+local dep = require 'dep' ---@type ly.game_editor.dep 
 local ImGui = dep.ImGui
 local imgui_utils = dep.common.imgui_utils
 local chess_region_draw = require 'windows.map.chess_region_draw'
