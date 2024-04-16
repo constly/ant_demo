@@ -11,7 +11,7 @@ local function reg(api)
 		api.draw_header(draw_data)
 		ImGui.SameLineEx(draw_data.header_len)
 
-		---@type ly.game_editor.attr.handler
+		---@type ly.game_core.attr.handler
 		local attr_handler = draw_data.attr_handler
 		if not attr_handler then ImGui.Text("未设置attr_handler") end
 
@@ -40,7 +40,7 @@ local function reg(api)
 		api.draw_header(draw_data)
 		ImGui.SameLineEx(draw_data.header_len)
 
-		---@type ly.game_editor.attr.handler
+		---@type ly.game_core.attr.handler
 		local attr_handler = draw_data.attr_handler
 		if not attr_handler then ImGui.Text("未设置attr_handler") end
 

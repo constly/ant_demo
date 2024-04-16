@@ -1,17 +1,16 @@
 --------------------------------------------------------
 -- tag 数据处理
 --------------------------------------------------------
-local dep = require 'dep'
-local lib = dep.common.lib
+local serialize = import_package "ant.serialize"
 
----@class ly.game_editor.tag.data
+---@class ly.game_core.tag.data
 ---@field name string 
 ---@field desc string 
----@field children ly.game_editor.tag.data[]
+---@field children ly.game_core.tag.data[]
 
 local function new()
-	---@class ly.game_editor.tag.handler
-	---@field data ly.game_editor.tag.data
+	---@class ly.game_core.tag.handler
+	---@field data ly.game_core.tag.data
 	local api = {
 		data = {},
 		stack_version = 0,
@@ -19,7 +18,7 @@ local function new()
 		cache = {},			-- 缓存数据，存档时忽略
 	}
 
-	---@param data ly.game_editor.tag.data
+	---@param data ly.game_core.tag.data
 	function api.set_data(data)
 		if not data or type(data) ~= "table" or not data.children then 
 			data = {}
@@ -34,14 +33,14 @@ local function new()
 	function api.to_string()
 		local cache = api.data.cache
 		api.data.cache = nil
-		local content = dep.serialize.stringify(api.data)
+		local content = serialize.stringify(api.data)
 		api.data.cache = cache
 		return content
 	end
 
-	---@return ly.game_editor.tag.data 通过名字查找节点
+	---@return ly.game_core.tag.data 通过名字查找节点
 	function api.get_parent(name)
-		---@param node ly.game_editor.tag.data
+		---@param node ly.game_core.tag.data
 		local function find(node)
 			for i, v in ipairs(node.children) do 
 				if v.name == name then 
@@ -57,9 +56,9 @@ local function new()
 		return find(api.data)
 	end 
 
-	---@return ly.game_editor.tag.data 通过名字查找节点
+	---@return ly.game_core.tag.data 通过名字查找节点
 	function api.find_by_name(name)
-		---@param node ly.game_editor.tag.data
+		---@param node ly.game_core.tag.data
 		local function find(node)
 			if node.name == name then 
 				return node
@@ -79,8 +78,8 @@ local function new()
 		return api.find_by_name(name) ~= nil
 	end
 
-	---@return ly.game_editor.tag.data  添加tag
-	---@param parent ly.game_editor.tag.data 父节点
+	---@return ly.game_core.tag.data  添加tag
+	---@param parent ly.game_core.tag.data 父节点
 	function api.add_tag(name, parent, pos)
 		local ret = api.find_by_name(name) 
 		if ret then return ret end 
@@ -98,9 +97,9 @@ local function new()
 		return node
 	end
 
-	---@return ly.game_editor.tag.data 移除节点
+	---@return ly.game_core.tag.data 移除节点
 	function api.remove_tag(name)
-		---@param node ly.game_editor.tag.data
+		---@param node ly.game_core.tag.data
 		local function remove(node)
 			for i, v in ipairs(node.children) do 
 				if v.name == name then

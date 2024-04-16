@@ -6,8 +6,18 @@ ServiceWindow = ...
 print("ServiceWindow ", ServiceWindow)
 
 local ltask = require "ltask"
-local room = require 'service.room.server_room'  ---@type mrg.server_room
+local room = require 'service.server.room.server_room'  ---@type mrg.server_room
 local quit
+
+local serviceGoap
+local servicePathfinder
+
+local function init()
+	serviceGoap = ltask.spawn("mini.richman.go|goap/goap", ltask.self())
+	servicePathfinder = ltask.spawn("mini.richman.go|pathfinder/pathfinder", ltask.self())
+
+	ltask.send(serviceGoap, "init", {"/pkg/mini.richman.res/goap/test.goap"})
+end
 
 local function Update()
 	while not quit do 
@@ -26,6 +36,7 @@ function S.init_standalone()
 	local tb = room.players.add_member(0, 0)
 	tb.is_leader = true 
 	tb.is_local = true
+	init()
 end
 
 ---@param ip string 服务器ip 
@@ -40,6 +51,7 @@ function S.init_server(ip, port, tb_members)
 			p.code = v.code
 		end
 	end
+	init()
 end
 
 function S.dispatch_netmsg(cmd, tbParams)
@@ -48,6 +60,14 @@ function S.dispatch_netmsg(cmd, tbParams)
 end 
 
 function S.shutdown()
+	if serviceGoap then 
+		ltask.send(serviceGoap, "shutdown")
+		serviceGoap = nil
+	end 
+	if servicePathfinder then 
+		ltask.send(servicePathfinder, "shutdown")
+		servicePathfinder = nil
+	end
 	quit = {}
     ltask.wait(quit)
     ltask.quit()

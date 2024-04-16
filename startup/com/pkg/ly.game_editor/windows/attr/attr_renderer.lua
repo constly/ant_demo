@@ -8,7 +8,7 @@ local ImGui = dep.ImGui
 local imgui_utils = dep.common.imgui_utils
 
 ---@param editor ly.game_editor.editor
----@param data_hander ly.game_editor.attr.handler
+---@param data_hander ly.game_core.attr.handler
 ---@param stack common_data_stack
 local function new(editor, data_hander, stack)
 	---@class ly.game_editor.attr.renderer
@@ -17,7 +17,7 @@ local function new(editor, data_hander, stack)
 	local menu_name = "##drop_menu_name"
 	local drop_from, drop_to
 	local pop_region_editor = "对象编辑##pop_region_editor"
-	local cur_editor_region 	---@type ly.game_editor.attr.data.region
+	local cur_editor_region 	---@type ly.game_core.attr.data.region
 	local input_content = ImGui.StringBuf()
 
 	function api.set_data(data)

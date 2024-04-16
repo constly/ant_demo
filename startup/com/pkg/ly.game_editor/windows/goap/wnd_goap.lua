@@ -3,16 +3,17 @@
 --------------------------------------------------------
 local dep = require 'dep'
 local uitls = require 'windows.utils'
-local goap_handler = require 'windows.goap.goap_handler'
 local goap_renderer = require 'windows.goap.goap_renderer'
 local goap_clipboard = require 'windows.goap.goap_clipboard'
 local ImGui = dep.ImGui
+---@type ly.game_core
+local game_core = import_package 'ly.game_core'
 
 ---@param editor ly.game_editor.editor
 local function new(editor, vfs_path, full_path)
 	local api = {} 																---@class ly.game_editor.wnd_goap
 	local stack = dep.common.data_stack.create()								---@type common_data_stack
-	local data_hander = goap_handler.new(editor, stack, vfs_path)				---@type ly.game_editor.goap.handler
+	local data_hander = game_core.create_goap_handler(vfs_path)					---@type ly.game_core.goap.handler
 	local clipboard = goap_clipboard.new(editor, data_hander)					---@type ly.game_editor.goap.clipboard
 	local renderer = goap_renderer.new(editor, data_hander, stack)				---@type ly.game_editor.goap.renderer
 

@@ -15,9 +15,10 @@ local create_params = {}
 --- 创建游戏编辑器
 ---@param tbParams ly.game_editor.create_params
 ---@return ly.game_editor.editor
-function api.create(tbParams)
+function api.create_editor(tbParams)
 	local editor = require 'editor.editor'
 	return editor.create(tbParams)
 end
+
 
 return api

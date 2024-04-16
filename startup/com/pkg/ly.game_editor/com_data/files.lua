@@ -132,7 +132,7 @@ local function new(editor)
 			tb_show[pkg] = true
 		end
 		local packages = api.get_package(editor.tbParams.project_root)
-		dep.common.lib.dump(packages)
+		--dep.common.lib.dump(packages)
 		
 		local resource_tree = {}
 		for _, item in ipairs(packages) do
@@ -145,7 +145,7 @@ local function new(editor)
 					tree = api.construct_resource_tree(item.path, tostring(item.path) .. "/")}
 			end
 		end
-		dep.common.lib.dump(resource_tree)
+		--dep.common.lib.dump(resource_tree)
 		api.resource_tree = resource_tree
 		api.packages = packages
 	end

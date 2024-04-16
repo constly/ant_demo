@@ -1,27 +1,28 @@
 --------------------------------------------------------
 -- attr 数据处理
 --------------------------------------------------------
-local dep = require 'dep'
-local lib = dep.common.lib
+local serialize = import_package "ant.serialize"
+local common 	= import_package 'ly.common' 	
+local lib 		= common.lib
 
----@class ly.game_editor.attr.data.attr
+---@class ly.game_core.attr.data.attr
 ---@field id string 属性id 
 ---@field type string 属性类型(int/number/string等等)
 ---@field name string 属性名字(中文)
 ---@field desc string 描述
 ---@field category string 所属类别
 
----@class ly.game_editor.attr.data.region
+---@class ly.game_core.attr.data.region
 ---@field id string 作用域id
 ---@field desc string 描述
----@field attrs ly.game_editor.attr.data.attr[] 属性列表 
+---@field attrs ly.game_core.attr.data.attr[] 属性列表 
 
----@class ly.game_editor.attr.data 
----@field regions ly.game_editor.attr.data.region[] 作用域列表
+---@class ly.game_core.attr.data  
+---@field regions ly.game_core.attr.data.region[] 作用域列表
 
 local function new()
-	---@class ly.game_editor.attr.handler
-	---@field data ly.game_editor.attr.data
+	---@class ly.game_core.attr.handler
+	---@field data ly.game_core.attr.data 
 	local api = {
 		data = {},
 		stack_version = 0,
@@ -32,7 +33,7 @@ local function new()
 	function api.to_string()
 		local cache = api.data.cache
 		api.data.cache = nil
-		local content = dep.serialize.stringify(api.data)
+		local content = serialize.stringify(api.data)
 		api.data.cache = cache
 		return content
 	end
@@ -48,9 +49,9 @@ local function new()
 		end
 	end
 
-	---@return ly.game_editor.attr.data.region
+	---@return ly.game_core.attr.data.region
 	function api.add_region(id)
-		---@type ly.game_editor.attr.data.region
+		---@type ly.game_core.attr.data.region
 		local region = {}
 		region.id = id
 		region.attrs = {}
@@ -66,7 +67,7 @@ local function new()
 		end 
 	end
 
-	---@return ly.game_editor.attr.data.region
+	---@return ly.game_core.attr.data.region
 	function api.get_region(id)
 		for i, v in ipairs(api.data.regions) do 
 			if v.id == id then 
@@ -87,7 +88,7 @@ local function new()
 		return name
 	end
 
-	---@return ly.game_editor.attr.data.attr
+	---@return ly.game_core.attr.data.attr
 	function api.get_attr(region_id, attr_id)
 		local region = api.get_region(region_id)
 		if not region then return end 
@@ -98,7 +99,7 @@ local function new()
 		end
 	end
 
-	---@return ly.game_editor.attr.data.attr
+	---@return ly.game_core.attr.data.attr
 	function api.remove_attr(region_id, attr_id)
 		local region = api.get_region(region_id)
 		if not region then return end 
@@ -109,7 +110,7 @@ local function new()
 		end
 	end
 
-	---@return ly.game_editor.attr.data.attr
+	---@return ly.game_core.attr.data.attr
 	function api.clone_attr(region_id, attr_id)
 		local region = api.get_region(region_id)
 		if not region then return end 
@@ -123,11 +124,11 @@ local function new()
 		end
 	end
 
-	---@return ly.game_editor.attr.data.attr
+	---@return ly.game_core.attr.data.attr
 	function api.add_attr(region_id, attr_id)
 		local region = api.get_region(region_id)
 		if not region then return end 
-		---@type ly.game_editor.attr.data.attr
+		---@type ly.game_core.attr.data.attr
 		local attr = {}
 		attr.id = attr_id
 		attr.type = "number"
@@ -177,7 +178,7 @@ local function new()
 		return cache and cache.select_attr[region_id]
 	end
 
-	---@return ly.game_editor.attr.data.attr
+	---@return ly.game_core.attr.data.attr
 	function api.get_selected_attr()
 		local region = api.get_selected_region()
 		if region then 
@@ -185,7 +186,7 @@ local function new()
 		end
 	end
 
-	---@return ly.game_editor.attr.data.region
+	---@return ly.game_core.attr.data.region
 	function api.get_selected_region()
 		local id = api.get_selected_region_id()
 		return id and api.get_region(id)

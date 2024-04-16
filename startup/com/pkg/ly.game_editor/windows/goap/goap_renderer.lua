@@ -8,7 +8,7 @@ local ImGui = dep.ImGui
 local imgui_utils = dep.common.imgui_utils
 
 ---@param editor ly.game_editor.editor
----@param data_hander ly.game_editor.goap.handler
+---@param data_hander ly.game_core.goap.handler
 ---@param stack common_data_stack
 local function new(editor, data_hander, stack)
 	---@class ly.game_editor.goap.renderer
@@ -29,11 +29,17 @@ local function new(editor, data_hander, stack)
 	local pop_setting_Id = "配置##pop_goap_setting"
 	local tb_tag_files = {}
 	local tb_attr_files = {}
-	local cache_settings 	---@type ly.game_editor.goap.setting
+	local cache_settings 	---@type ly.game_core.goap.setting
 
 	function api.set_data(data)
+		if not data_hander.body_fsm then
+			data_hander.body_fsm = require 'windows.goap.body_type_fsm'.new(editor, stack, data_hander, api)
+			data_hander.body_lines = require 'windows.goap.body_type_lines'.new(editor, stack, data_hander, api)
+			data_hander.body_sections = require 'windows.goap.body_type_sections'.new(editor, stack, data_hander, api)
+		end
+
 		stack.set_data_handler(data_hander)
-		data_hander.set_data(data, api)
+		data_hander.set_data(data)
 		stack.snapshoot(false)
 	end
 
@@ -144,7 +150,7 @@ local function new(editor, data_hander, stack)
 	end
 
 	local head_len = 50
-	---@param node ly.game_editor.goap.node
+	---@param node ly.game_core.goap.node
 	local function draw_tag(node)
 		ImGui.Text("激活:")
 		ImGui.SameLineEx(head_len)
@@ -178,14 +184,14 @@ local function new(editor, data_hander, stack)
 		end
 	end
 
-	---@param node ly.game_editor.goap.node
+	---@param node ly.game_core.goap.node
 	local function draw_desc(node, size_x)
 		ImGui.Text("描述:")
 		ImGui.SameLineEx(head_len)
 		ImGui.Text("描述内容")
 	end
 
-	---@param node ly.game_editor.goap.node
+	---@param node ly.game_core.goap.node
 	local function draw_conditions(node, size_x)
 		ImGui.Text("条件:")
 		ImGui.SameLineEx(head_len)
@@ -280,7 +286,7 @@ local function new(editor, data_hander, stack)
 		ImGui.EndGroup()
 	end
 
-	---@param node ly.game_editor.goap.node
+	---@param node ly.game_core.goap.node
 	local function draw_effect(node, size_x)
 		ImGui.Dummy(5, 5)
 		ImGui.Text("效果:")
@@ -324,7 +330,7 @@ local function new(editor, data_hander, stack)
 		ImGui.EndGroup()
 	end
 
-	---@param node ly.game_editor.goap.node
+	---@param node ly.game_core.goap.node
 	local function draw_actions(node, delta_time, size_x)
 		ImGui.Dummy(5, 5)
 		ImGui.Text("行为:")

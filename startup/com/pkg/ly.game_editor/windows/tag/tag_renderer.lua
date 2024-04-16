@@ -8,7 +8,7 @@ local ImGui = dep.ImGui
 local imgui_utils = dep.common.imgui_utils
 
 ---@param editor ly.game_editor.editor
----@param data_hander ly.game_editor.tag.handler
+---@param data_hander ly.game_core.tag.handler
 ---@param stack common_data_stack
 local function new(editor, data_hander, stack)
 	---@class ly.game_editor.tag.renderer
@@ -39,7 +39,7 @@ local function new(editor, data_hander, stack)
 		input_desc_buf:Assgin(desc or "")
 	end
 
-	---@param data ly.game_editor.tag.data
+	---@param data ly.game_core.tag.data
 	local function draw_item(data, depth)
 		local selected = data_hander.get_first_selected() == data.name
 		local style = selected and GStyle.tag_active or GStyle.tag_normal

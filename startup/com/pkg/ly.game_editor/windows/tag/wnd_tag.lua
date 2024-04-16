@@ -3,15 +3,16 @@
 --------------------------------------------------------
 local dep = require 'dep'
 local uitls = require 'windows.utils'
-local tag_handler = require 'windows.tag.tag_handler'
 local tag_renderer = require 'windows.tag.tag_renderer'
 local ImGui = dep.ImGui
+---@type ly.game_core
+local game_core = import_package 'ly.game_core'
 
 ---@param editor ly.game_editor.editor
 local function new(editor, vfs_path, full_path)
 	local api = {} 																---@class ly.game_editor.wnd_tag
 	local stack = dep.common.data_stack.create()								---@type common_data_stack
-	local data_hander = tag_handler.new()										---@type ly.game_editor.tag.handler
+	local data_hander = game_core.create_tag_handler()							---@type ly.game_core.tag.handler
 	local renderer = tag_renderer.new(editor, data_hander, stack)				---@type ly.game_editor.tag.renderer
 
 	local function init()

@@ -2,20 +2,20 @@
 --- sesctions 数据管理
 --------------------------------------------------------
 
-local dep = require 'dep'
-local lib = dep.common.lib
-local ImGui = dep.ImGui
-local imgui_utils = dep.common.imgui_utils
+local common 		= import_package 'ly.common'
+local lib 			= common.lib
+local ImGui 		= require "imgui"
+local imgui_utils 	= common.imgui_utils
 
----@class ly.game_editor.goap.node.body.section.line 
+---@class ly.game_core.goap.node.body.section.line 
 ---@field actions goap.action.data[] 
 
----@class ly.game_editor.goap.node.body.section 段落
----@field lines ly.game_editor.goap.node.body.section.line[] 
+---@class ly.game_core.goap.node.body.section 段落
+---@field lines ly.game_core.goap.node.body.section.line[] 
 
 ---@param editor ly.game_editor.editor
 ---@param stack common_data_stack
----@param goap_handler ly.game_editor.goap.handler
+---@param goap_handler ly.game_core.goap.handler
 ---@param goap_render ly.game_editor.goap.renderer
 local function new(editor, stack, goap_handler, goap_render)
 	---@class ly.game_editor.goap.body.sections
@@ -31,9 +31,9 @@ local function new(editor, stack, goap_handler, goap_render)
 	local item_len_x = 250
 	local drop_from
 
-	---@param node ly.game_editor.goap.node
+	---@param node ly.game_core.goap.node
 	function api.init(node)
-		---@type ly.game_editor.goap.node.body.section
+		---@type ly.game_core.goap.node.body.section
 		local section = create_section()
 		node.body.data = {section}
 	end
@@ -126,7 +126,7 @@ local function new(editor, stack, goap_handler, goap_render)
 		end
 	end
 
-	---@param node ly.game_editor.goap.node
+	---@param node ly.game_core.goap.node
 	---@return goap.action.data 得到选中的行为
 	function api.get_first_selected_action(node)
 		local cache = goap_handler.get_body_cache(node.id)
@@ -147,7 +147,7 @@ local function new(editor, stack, goap_handler, goap_render)
 		return cache.selected and #cache.selected
 	end
 
-	---@param node ly.game_editor.goap.node
+	---@param node ly.game_core.goap.node
 	---@return goap.action.data[][] 得到选中的行为
 	function api.get_selected_actions(node)
 		local cache = goap_handler.get_body_cache(node.id)
@@ -214,7 +214,7 @@ local function new(editor, stack, goap_handler, goap_render)
 		end
 	end 
 
-	---@param node ly.game_editor.goap.node
+	---@param node ly.game_core.goap.node
 	function api.reset_all_selected(node)
 		local cache = goap_handler.get_body_cache(node.id)
 		if not cache.selected or not cache.selected[1] then 
@@ -258,7 +258,7 @@ local function new(editor, stack, goap_handler, goap_render)
 		end
 	end
 
-	---@param node ly.game_editor.goap.node
+	---@param node ly.game_core.goap.node
 	function api.paster(node, data)
 		local cache = goap_handler.get_body_cache(node.id)
 		if not cache.selected or #cache.selected == 0 then
@@ -310,13 +310,13 @@ local function new(editor, stack, goap_handler, goap_render)
 		return true
 	end
 
-	---@param node ly.game_editor.goap.node
+	---@param node ly.game_core.goap.node
 	function api.clear_selected(node)
 		set_selected_inner(node, nil)
 	end
 
-	---@param node ly.game_editor.goap.node
-	---@param data ly.game_editor.goap.node.body.section
+	---@param node ly.game_core.goap.node
+	---@param data ly.game_core.goap.node.body.section
 	local function draw_section(node, section_idx, data)
 		for lineIdx, line in ipairs(data.lines) do 
 			for i, action in ipairs(line.actions) do 
@@ -449,7 +449,7 @@ local function new(editor, stack, goap_handler, goap_render)
 		ImGui.Dummy(10, 10)
 	end
 
-	---@param node ly.game_editor.goap.node
+	---@param node ly.game_core.goap.node
 	function api.draw(node, delta_time, size_x)
 		for i, v in ipairs(node.body.data) do 
 			if i == 1 then 

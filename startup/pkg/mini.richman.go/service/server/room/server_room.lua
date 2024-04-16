@@ -9,7 +9,7 @@ local room_list = ly_room.get_room_list()
 local seri = require "bee.serialization"
 local protocol = require "protocol"
 local ltask = require "ltask"
-local players = require 'service.room.server_players'  		---@type mrg.server_players
+local players = require 'service.server.room.server_players'  		---@type mrg.server_players
 local msg = require 'core.msg' 							---@type mrg.msg
 local api = {}												---@class mrg.server_room
 local server_ip

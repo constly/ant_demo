@@ -114,7 +114,7 @@ function system.data_changed()
 				tbParams.pkgs = {"mini.richman.res"}
 				tbParams.theme_path = "mini.richman.res/themes/default.style"
 				tbParams.goap_mgr = require 'goap.goap'
-				editor = dep.game_editor.create(tbParams)
+				editor = dep.game_editor.create_editor(tbParams)
 			end
 			local x, y = ImGui.GetContentRegionAvail()
 			ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 0, 0)

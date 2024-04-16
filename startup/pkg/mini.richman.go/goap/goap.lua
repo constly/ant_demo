@@ -131,3 +131,47 @@ do
 end 
 
 return goap_mgr
+
+--[[
+
+道具列表:
+	rice 			大米
+	iron_sword 		铁剑
+	hoe 			锄头
+	spade			铁锹
+	ore				铁矿石
+
+
+人物属性:
+	金币
+	饱食度
+
+
+世界:
+	矿脉数量
+	农田数量
+
+
+农民
+	create_npc({name = "农民", items = {{"hoe", 1}}, })
+
+商人
+	create_npc({name = "商人", class_name = "shop", items = {{"rice", 10}})
+
+矿工
+	create_npc({name = "矿工", items = {{"spade", 1}})
+
+士兵
+	create_npc({name = "士兵", items = {{"iron_sword", 1}})
+
+铁匠
+	将矿石加工为锄头，铁锹，铁剑
+	create_npc({name = "铁匠", class_name = "smithy"})
+
+说明:
+	每个人每秒扣除1点饱食度
+	每个人都要生存，即 食物 > 0
+
+
+--]]
+

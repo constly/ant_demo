@@ -2,9 +2,9 @@
 -- tag选择器
 --------------------------------------------------------
 local dep = require 'dep'
-local tag_handler = require 'windows.tag.tag_handler'
+---@type ly.game_core
+local game_core = import_package 'ly.game_core'
 local ImGui = dep.ImGui
-local imgui_utils = dep.common.imgui_utils
 
 ---@class ly.game_editor.tag.selector.params
 ---@field path string 文件路径
@@ -22,11 +22,11 @@ local function new(editor)
 	---@type ly.game_editor.tag.selector.params
 	local params 
 
-	---@type ly.game_editor.tag.data
+	---@type ly.game_core.tag.data
 	local data
 
 	local stack = dep.common.data_stack.create()								---@type common_data_stack
-	local data_hander = tag_handler.new()										---@type ly.game_editor.tag.handler
+	local data_hander = game_core.create_tag_handler()							---@type ly.game_core.tag.handler
 
 	local pop_Id = "Tag选择器##pop_tag_selector"
 
@@ -58,7 +58,7 @@ local function new(editor)
 		return table.concat(tb, "        ")
 	end
 
-	---@param data ly.game_editor.tag.data
+	---@param data ly.game_core.tag.data
 	local function draw_item(data, depth, size_x)
 		local selected = data_hander.is_selected(data.name) 
 		local style = selected and GStyle.tag_active or GStyle.tag_normal

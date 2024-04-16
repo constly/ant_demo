@@ -5,7 +5,7 @@ local dep = require 'dep'
 local ImGui = dep.ImGui
 
 ---@param editor ly.game_editor.editor
----@param data_hander ly.game_editor.goap.handler
+---@param data_hander ly.game_core.goap.handler
 local function new(editor, data_hander)
 	---@class ly.game_editor.goap.clipboard
 	local api = {}
