@@ -23,10 +23,12 @@ regions:
     id: attr3
     name: "属性名"
     type: number
-  id: region
+  desc: "Npc对象"
+  id: npc
   ---
   attrs: {}
-  id: region1
+  desc: "世界对象， 全局唯一"
+  id: world
   ---
   attrs: {}
   id: region2

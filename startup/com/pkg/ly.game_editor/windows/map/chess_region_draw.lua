@@ -6,9 +6,10 @@ local ImGuiExtend = dep.ImGuiExtend
 local draw_list = ImGuiExtend.draw_list;
 local tb_drag_data = {}
 
----@param editor chess_editor
+---@param editor ly.game_editor.editor
+---@param renderer ly.map.renderer
 ---@return chess_region_draw
-local create = function(editor)
+local function new(editor, renderer)
 	---@class chess_region_draw
 	local api = {}
 	local region 	---@type chess_map_region_tpl
@@ -16,7 +17,7 @@ local create = function(editor)
 	local needNavigateTo
 	local is_dragging = false
 	local drag_start_point
-	local data_hander = editor.data_hander
+	local data_hander = renderer.data_hander
 
 	function api.on_init()
 		if not context then 
@@ -120,7 +121,7 @@ local create = function(editor)
 					local newGridId = data_hander.grid_pos_to_grid_id(x, y)
 					if gridId and layer and newGridId ~= gridId then 
 						layer.grids[gridId], layer.grids[newGridId] = layer.grids[newGridId], layer.grids[gridId]
-						editor.stack.snapshoot(true)
+						renderer.stack.snapshoot(true)
 					end
 				end
 				ImGui.EndDragDropTarget()
@@ -165,7 +166,7 @@ local create = function(editor)
 				elseif dir == "left" then region.min.x = math.min(10000, math.max(-10000, math.min(region.max.x, region.min.x - flag)))
 				elseif dir == "right" then region.max.x = math.min(10000, math.max(-10000, math.max(region.min.x, region.max.x + flag)))
 				end
-				editor.stack.snapshoot(true)
+				renderer.stack.snapshoot(true)
 			end
 		end
 		local start_x, start_y, end_x, end_y = region.min.x, region.min.y, region.max.x, region.max.y
@@ -176,7 +177,7 @@ local create = function(editor)
 	end
 
 	function api.draw_layers()
-		local isDraging = ImGui.IsMouseDragging(0) and editor.is_window_active
+		local isDraging = ImGui.IsMouseDragging(0) and renderer.is_window_active
 		local draw_object = function(layerId, gridId, text, bg_color, txt_color, size, uid)
 			local label = string.format("%s##btn_grid_%d_%s", text, layerId, gridId)
 			local size_x = size.x * 100
@@ -272,7 +273,7 @@ local create = function(editor)
 			local data = top.grids[gridId]
 			if not data or data.tpl ~= objId then 
 				top.grids[gridId] = data_hander.create_grid_tpl(objId)
-				editor.stack.snapshoot(true)
+				renderer.stack.snapshoot(true)
 			end
 		end
 	end
@@ -281,5 +282,4 @@ local create = function(editor)
 	return api
 end 
 
-
-return {create = create}
+return {new = new}

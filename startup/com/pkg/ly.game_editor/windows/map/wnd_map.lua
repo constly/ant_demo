@@ -8,7 +8,7 @@ local ImGui = dep.ImGui
 local function new(editor, vfs_path, full_path)
 	local api = {} 			---@class ly.game_editor.wnd_map
 	
-	---@type chess_editor
+	---@type ly.map.renderer
 	local main = nil 
 
 	local function init()
@@ -18,7 +18,7 @@ local function new(editor, vfs_path, full_path)
 		---@type chess_editor_create_args
 		local params = {}
 		params.data = data
-		main = require 'windows.map.map_renderer'.new(params);
+		main = require 'windows.map.map_renderer'.new(editor, params);
 	end
 
 	function api.update(is_active, delta_time, show_mode)

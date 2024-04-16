@@ -22,9 +22,9 @@ end
 
 --- 创建地图编辑器
 ---@param args chess_editor_create_args
----@return chess_editor
+---@return ly.map.renderer
 function api.create_map_editor(args)
-	return require 'windows.map.map_renderer'.new(args)
+	return require 'windows.map.map_renderer'.new(nil, args)
 end
 
 

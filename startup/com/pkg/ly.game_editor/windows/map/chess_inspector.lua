@@ -2,13 +2,14 @@ local dep = require 'dep' ---@type ly.map.chess.dep
 local ImGui = dep.ImGui
 local imgui_utils = dep.common.imgui_utils
 
----@param editor chess_editor
+---@param editor ly.game_editor.editor
+---@param renderer ly.map.renderer
 ---@return chess_region_inspector
-local create = function(editor)
+local function new(editor, renderer)
 	---@class chess_region_inspector
 	local api = {}
-	local data_hander = editor.data_hander
-	local stack = editor.stack
+	local data_hander = renderer.data_hander
+	local stack = renderer.stack
 	local region; ---@type chess_map_region_tpl
 	local header_x
 	local size_x, size_y
@@ -119,4 +120,4 @@ local create = function(editor)
 end
 
 
-return {create = create}
+return {new = new}

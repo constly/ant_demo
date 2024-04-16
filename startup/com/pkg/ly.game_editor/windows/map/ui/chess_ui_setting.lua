@@ -5,7 +5,7 @@ local imgui_styles = common.imgui_styles
 local ImGui = dep.ImGui
 
 
----@param editor chess_editor
+---@param editor ly.map.renderer
 local function new(editor)
 	---@class ly.map.chess.ui_setting
 	local api = {}

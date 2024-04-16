@@ -15,7 +15,7 @@ local ImGui = dep.ImGui
 local imgui_utils = dep.common.imgui_utils
 local file_path
 
----@type chess_editor
+---@type ly.map.renderer
 local editor 
 
 ---@type chess_object_tpl[] 物件定义

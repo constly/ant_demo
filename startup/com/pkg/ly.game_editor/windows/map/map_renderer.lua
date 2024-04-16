@@ -6,40 +6,41 @@ local _chess_draw = require 'windows.map.chess_draw'
 ---@type ly.game_core
 local game_core = import_package 'ly.game_core'
 
+---@param editor ly.game_editor.editor
 ---@param args chess_editor_create_args
-local function new(args)
-	---@class chess_editor
-	local editor = {}	
+local function new(editor, args)
+	---@class ly.map.renderer
+	local api = {}	
 	local stack = dep.common.data_stack.create()		---@type common_data_stack
 	local data_hander = game_core.create_map_handler()  ---@type chess_data_handler
-	editor.data_hander = data_hander
-	editor.stack = stack
-	editor.args = args
-	editor.tb_object_def = args.tb_objects				---@type chess_object_tpl[]
-	editor.is_window_active = true
+	api.data_hander = data_hander
+	api.stack = stack
+	api.args = args
+	api.tb_object_def = args.tb_objects				---@type chess_object_tpl[]
+	api.is_window_active = true
 		
-	local draw = _chess_draw.create(editor)				---@type chess_editor_draw
+	local draw = _chess_draw.create(editor, api)				---@type chess_editor_draw
 
-	function editor.on_init()
+	function api.on_init()
 		stack.set_data_handler(data_hander)	
 		data_hander.init(args.data)
-		editor.refresh_object_def()
+		api.refresh_object_def()
 		stack.snapshoot()
 	end
 
-	function editor.on_destroy()
+	function api.on_destroy()
 		draw.on_destroy()
 	end
 
-	function editor.on_reset()
+	function api.on_reset()
 		local _args = dep.common.lib.copy(args)  		---@type chess_editor_create_args
 		_args.data = nil
 		data_hander.init(_args)
-		editor.refresh_object_def()
-		stack.snapshoot()
+		api.refresh_object_def()
+		stack.snapshoot(true)
 	end
 
-	function editor.on_save(write_callback)
+	function api.on_save(write_callback)
 		local cache = data_hander.data.cache
 		data_hander.data.cache = {}
 		local content = dep.serialize.stringify(data_hander.data)
@@ -50,23 +51,23 @@ local function new(args)
 
 	---@param is_active boolean 窗口是否激活
 	---@param delta_time number 更新间隔，秒
-	function editor.on_render(is_active, delta_time)
-		editor.is_window_active = is_active
+	function api.on_render(is_active, delta_time)
+		api.is_window_active = is_active
 		draw.on_render(delta_time)
 	end 
 
-	function editor.handleKeyEvent()
+	function api.handleKeyEvent()
 		if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
 			if ImGui.IsKeyPressed(ImGui.Key.Z, false) then stack.undo() end
 			if ImGui.IsKeyPressed(ImGui.Key.Y, false) then stack.redo() end
 		end
 	end
 
-	function editor.is_dirty()
+	function api.is_dirty()
 		return data_hander.isModify;
 	end
 
-	function editor.refresh_object_def()
+	function api.refresh_object_def()
 		if data_hander.has_path_def() then 
 			local tbFile = dep.common.file.load_csv(data_hander.data.path_def)
 			dep.common.lib.dump(tbFile)
@@ -82,13 +83,13 @@ local function new(args)
 					table.insert(list, data)
 				end
 			end
-			editor.tb_object_def = list
+			api.tb_object_def = list
 		end
-		data_hander.refresh_path_def(editor.tb_object_def)
+		data_hander.refresh_path_def(api.tb_object_def)
 	end
 	
-	editor.on_init()
-	return editor
+	api.on_init()
+	return api
 end 
 
 return {new = new}

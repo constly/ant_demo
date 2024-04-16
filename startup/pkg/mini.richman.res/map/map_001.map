@@ -1,0 +1,31 @@
+cache: {}
+next_id: 4
+path_def: /pkg/mini.richman.res/map/grid_def.txt
+region_index: 1
+regions:
+  ---
+  id: 1
+  layers:
+    ---
+    active: true
+    grids: {}
+    height: -1
+    id: 2
+    ---
+    active: false
+    grids: {}
+    height: 0
+    id: 3
+    ---
+    active: false
+    grids: {}
+    height: 1
+    id: 4
+  max:
+    x: 2
+    y: 2
+  min:
+    x: -2
+    y: -2
+show_ground: true
+version: 1

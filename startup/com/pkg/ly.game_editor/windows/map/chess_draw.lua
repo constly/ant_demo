@@ -7,16 +7,17 @@ local imgui_utils = dep.common.imgui_utils
 local chess_region_draw = require 'windows.map.chess_region_draw'
 local chess_inspector_draw = require 'windows.map.chess_inspector'
 
----@param editor chess_editor
-local create = function(editor)
+---@param editor ly.game_editor.editor
+---@param renderer ly.map.renderer
+local function create(editor, renderer)
 	---@class chess_editor_draw
 	local chess = {}
-	local region_draw = chess_region_draw.create(editor)
+	local region_draw = chess_region_draw.new(editor, renderer)
 	local input_content = ImGui.StringBuf()
-	local inspector = chess_inspector_draw.create(editor)
+	local inspector = chess_inspector_draw.new(editor, renderer)
 	
 	---@type ly.map.chess.ui_setting
-	local ui_setting = require 'windows.map.ui.chess_ui_setting'.new(editor)
+	local ui_setting = require 'windows.map.ui.chess_ui_setting'.new(renderer)
 
 	local dpiScale
 	local header_y
@@ -32,7 +33,7 @@ local create = function(editor)
 		local fix_x, fix_y = 6, 7;
 		ImGui.SetCursorPos(start_x, 0)
 		local size_x, size_y = ImGui.GetContentRegionMax()
-		local size_left = 150 * dpiScale;
+		local size_left = 165 * dpiScale;
 		local size_right = 150 * dpiScale;
 		local offset_x = 0
 		size_y = size_y + fix_y
@@ -57,7 +58,7 @@ local create = function(editor)
 
 	function chess.draw_left()
 		local len = 135 * dpiScale;
-		local data = editor.data_hander.data
+		local data = renderer.data_hander.data
 		local size_x, size_y = ImGui.GetContentRegionAvail()
 		ImGui.Dummy(2, 3);
 		imgui_utils.draw_text_center("物件列表")
@@ -68,17 +69,20 @@ local create = function(editor)
 			ImGui.SetCursorPos(5, 5)
 			ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
 			ImGui.BeginGroup()
-			for i, def in ipairs(editor.tb_object_def or {}) do 
+			for i, def in ipairs(renderer.tb_object_def or {}) do 
 				local label = string.format("L%d: [%d]%s(%d*%d)##btn_obj_def_%d", def.nLayer or 1, def.id, def.name, def.size.x, def.size.y, def.id)
+				local r, g, b, a = def.bg_color[1], def.bg_color[2], def.bg_color[3], def.bg_color[4]
+				ImGui.ColorButtonEx("", r, g, b, a, nil, 13)
+				ImGui.SameLineEx(16)
 				if imgui_utils.draw_btn(label, data.cur_object_id == def.id, {size_x = len}) then 
 					if data.cur_object_id ~= def.id then 
 						data.cur_object_id = def.id
-						editor.stack.snapshoot(false)
+						renderer.stack.snapshoot(false)
 					end
 				end
 				ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 5, 5)
 				if ImGui.BeginDragDropSource() then 
-					editor.isPuttingObject = true
+					renderer.isPuttingObject = true
 					data.cur_object_id = def.id
 					ImGui.SetDragDropPayload("PutObject", tostring(def.id));
 					ImGui.Text("正在拖动 " .. def.name .. " 到层级1");
@@ -104,7 +108,7 @@ local create = function(editor)
 					local label = string.format("区域 %d##btn_region_idx_%d", i, i)
 					if imgui_utils.draw_btn(label, i == data.region_index, {size_x = len}) and i ~= data.region_index then 
 						data.region_index = i
-						editor.stack.snapshoot(false)
+						renderer.stack.snapshoot(false)
 					end
 					ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 5, 5)
 					if count > 2 and ImGui.BeginPopupContextItem() then 
@@ -114,7 +118,7 @@ local create = function(editor)
 							if data.region_index > #regions then
 								data.region_index = #regions
 							end
-							editor.stack.snapshoot(true)
+							renderer.stack.snapshoot(true)
 						end
 						ImGui.EndPopup()
 					end
@@ -122,10 +126,10 @@ local create = function(editor)
 				else 
 					local label = "+##btn_region_add"
 					if imgui_utils.draw_btn(label, false, {size_x = len}) then 
-						local region = editor.data_hander.create_region()
+						local region = renderer.data_hander.create_region()
 						table.insert(data.regions, region)
 						data.region_index = #data.regions
-						editor.stack.snapshoot(true)
+						renderer.stack.snapshoot(true)
 					end
 				end
 			end
@@ -137,19 +141,23 @@ local create = function(editor)
 	function chess.draw_middle(_deltatime)
 		local size_x, size_y = ImGui.GetContentRegionAvail()
 		ImGui.SetCursorPos(3, 4)
-		imgui_utils.draw_btn("清 空", false)
+		if imgui_utils.draw_btn("清 空", false) then 
+			renderer.on_reset()
+		end
 		ImGui.SameLine()
-		imgui_utils.draw_btn("重 置", false)
+		if imgui_utils.draw_btn("还 原", false) then 
+			renderer.on_init()
+		end
 		ImGui.SameLineEx(size_x - 100)
 		if imgui_utils.draw_btn("事 件", false) then 
-			
+			editor.msg_hints.show("点击事件", "warning")
 		end
 		ImGui.SameLine()
 		if imgui_utils.draw_btn("设 置", false) then 
 			ui_setting.open()
 		end
 
-		local region = editor.data_hander.cur_region()
+		local region = renderer.data_hander.cur_region()
 		local offset = #region.layers * 30
 		ImGui.SameLineEx(size_x * 0.5 - offset * 0.5)
 	
@@ -160,13 +168,13 @@ local create = function(editor)
 			local label = string.format("%s##id_btn_layer_%d", str, i)
 			if imgui_utils.draw_btn(label, v.active) then 
 				v.active = not v.active
-				editor.stack.snapshoot(false)
+				renderer.stack.snapshoot(false)
 			end
 
 			ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 5, 5)
 			local modify_h = false
 			if ImGui.BeginPopupContextItem("layer_pop") then 
-				editor.data_hander.clear_all_selected_layer(region)
+				renderer.data_hander.clear_all_selected_layer(region)
 				v.active = true;
 				ImGui.Text("层级高度: " .. v.height)
 				if ImGui.MenuItem("修改高度") then 
@@ -175,31 +183,31 @@ local create = function(editor)
 				ImGui.Separator()
 				if #region.layers > 1 and ImGui.MenuItem("删 除") then 
 					table.remove(region.layers, i)
-					editor.stack.snapshoot(true)
+					renderer.stack.snapshoot(true)
 				end
 				ImGui.Separator()
 				if i > 1 and ImGui.MenuItem("前 移") then 
 					local v = table.remove(region.layers, i)
 					table.insert(region.layers, i - 1, v)
-					editor.stack.snapshoot(true)
+					renderer.stack.snapshoot(true)
 				end
 				if i < #region.layers and ImGui.MenuItem("后 移") then 
 					local v = table.remove(region.layers, i)
 					table.insert(region.layers, i + 1, v)
-					editor.stack.snapshoot(true)
+					renderer.stack.snapshoot(true)
 				end
 				ImGui.Separator()
 				if ImGui.MenuItem("前 增") then 
-					editor.data_hander.clear_all_selected_layer(region)
-					local tb = editor.data_hander.create_region_layer(v.height - 1, true)
+					renderer.data_hander.clear_all_selected_layer(region)
+					local tb = renderer.data_hander.create_region_layer(v.height - 1, true)
 					table.insert(region.layers, i, tb)
-					editor.stack.snapshoot(true)
+					renderer.stack.snapshoot(true)
 				end
 				if ImGui.MenuItem("后 增") then 
-					editor.data_hander.clear_all_selected_layer(region)
-					local tb = editor.data_hander.create_region_layer(v.height + 1, true)
+					renderer.data_hander.clear_all_selected_layer(region)
+					local tb = renderer.data_hander.create_region_layer(v.height + 1, true)
 					table.insert(region.layers, i + 1, tb)
-					editor.stack.snapshoot(true)
+					renderer.stack.snapshoot(true)
 				end				
 				ImGui.EndPopup()
 			end
@@ -222,7 +230,7 @@ local create = function(editor)
 				ImGui.SameLineEx(50)
 				if ImGui.ButtonEx("确 认", 60) then 
 					v.height = tonumber(tostring(input_content))
-					editor.stack.snapshoot(true)
+					renderer.stack.snapshoot(true)
 					ImGui.CloseCurrentPopup()
 				end
 				ImGui.SameLine()
