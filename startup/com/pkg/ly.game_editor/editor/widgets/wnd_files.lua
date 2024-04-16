@@ -7,6 +7,7 @@ local ImGui = dep.ImGui
 local imgui_styles = dep.common.imgui_styles
 local imgui_utils = dep.common.imgui_utils
 local lib = dep.common.lib
+local user_data = dep.common.user_data
 local lfs       = require "bee.filesystem"
 
 ---@param editor ly.game_editor.editor
@@ -39,11 +40,15 @@ local function new(editor)
 		for i, name in ipairs({"ai", "txt", "csv", "folder", "ini", "map", "mod", "room", "def", "fsm", "tag", "goap", "attr", "style"}) do 
 			icons[name] = dep.assetmgr.resource(string.format("/pkg/ly.game_editor/assets/icon/icon_%s.texture", name), { compile = true })
 		end
+		selected_pkg = user_data.get("editor.selected.pkg")
+		view_path = user_data.get("editor.view.path")
+		selected_file = user_data.get("editor.selected.file")
 	end
 
 	local function set_selected_file(value)
 		if selected_file ~= value then 
 			selected_file = value
+			user_data.set("editor.selected.file", selected_file or "", true)
 		end
 	end
 
@@ -52,12 +57,14 @@ local function new(editor)
 			path = nil 
 		end
 		view_path = path
+		user_data.set("editor.view.path", view_path or "", true)
 		set_selected_file()
 	end
 
 	local function set_selected_pkg(value)
 		if value == selected_pkg then return end 
 		selected_pkg = value
+		user_data.set("editor.selected.pkg", selected_pkg or "")
 		set_view_path()
 	end
 

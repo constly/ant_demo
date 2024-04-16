@@ -1,4 +1,4 @@
----@type ly.map.chess.dep
+---@type ly.game_editor.dep
 local dep = require 'dep'
 local common = dep.common
 local imgui_styles = common.imgui_styles
