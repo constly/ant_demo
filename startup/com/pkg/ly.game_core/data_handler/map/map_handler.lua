@@ -1,7 +1,7 @@
-local dep = require("dep")
+local common = import_package 'ly.common'
 
 -- 图数据处理器
-local create = function()
+local function new ()
 	---@class chess_data_handler
 	---@field data chess_map_tpl 棋盘模板id
 	---@field stack_version number 堆栈版本号,当堆栈版本号发生变化时，需要刷新编辑器
@@ -20,7 +20,7 @@ local create = function()
 
 	---@param _data chess_map_tpl
 	function handler.init(_data)
-		local data = dep.common.lib.copy(_data) or {} ---@type chess_map_tpl
+		local data = common.lib.copy(_data) or {} ---@type chess_map_tpl
 		handler.data = data
 		if not data.regions then 
 			data.next_id = 0;
@@ -307,4 +307,4 @@ local create = function()
 	return handler
 end 
 
-return {create = create}
+return {new = new}

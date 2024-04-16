@@ -4,9 +4,8 @@
 local dep = require 'dep' ---@type ly.map.chess.dep 
 local ImGui = dep.ImGui
 local imgui_utils = dep.common.imgui_utils
-local imgui_styles = dep.common.imgui_styles
-local chess_region_draw = require 'editor.chess_region_draw'
-local chess_inspector_draw = require 'editor.chess_inspector'
+local chess_region_draw = require 'windows.map.chess_region_draw'
+local chess_inspector_draw = require 'windows.map.chess_inspector'
 
 ---@param editor chess_editor
 local create = function(editor)
@@ -17,7 +16,7 @@ local create = function(editor)
 	local inspector = chess_inspector_draw.create(editor)
 	
 	---@type ly.map.chess.ui_setting
-	local ui_setting = require 'editor.ui.chess_ui_setting'.new(editor)
+	local ui_setting = require 'windows.map.ui.chess_ui_setting'.new(editor)
 
 	local dpiScale
 	local header_y
@@ -138,11 +137,17 @@ local create = function(editor)
 	function chess.draw_middle(_deltatime)
 		local size_x, size_y = ImGui.GetContentRegionAvail()
 		ImGui.SetCursorPos(3, 4)
-		if imgui_utils.draw_btn("设置", false) then 
-			ui_setting.open()
+		imgui_utils.draw_btn("清 空", false)
+		ImGui.SameLine()
+		imgui_utils.draw_btn("重 置", false)
+		ImGui.SameLineEx(size_x - 100)
+		if imgui_utils.draw_btn("事 件", false) then 
+			
 		end
 		ImGui.SameLine()
-		imgui_utils.draw_btn("配置", false)
+		if imgui_utils.draw_btn("设 置", false) then 
+			ui_setting.open()
+		end
 
 		local region = editor.data_hander.cur_region()
 		local offset = #region.layers * 30

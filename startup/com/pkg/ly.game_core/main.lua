@@ -22,5 +22,12 @@ function api.create_attr_handler()
 	return attr_handler.new()
 end
 
+--- 创建map_handler 
+---@return chess_data_handler
+function api.create_map_handler()
+	local map_handler = require 'data_handler.map.map_handler'
+	return map_handler.new()
+end
+
 
 return api

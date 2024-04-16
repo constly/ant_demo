@@ -1,15 +1,17 @@
 local dep = require "dep" ---@type ly.map.chess.dep
 local ImGui = dep.ImGui
 local lib = dep.common.lib
-local _chess_draw = require 'editor.chess_draw'
-local _data_hander = require 'common.data_handler'
+local _chess_draw = require 'windows.map.chess_draw'
+
+---@type ly.game_core
+local game_core = import_package 'ly.game_core'
 
 ---@param args chess_editor_create_args
-local create = function(args)
+local function new(args)
 	---@class chess_editor
 	local editor = {}	
 	local stack = dep.common.data_stack.create()		---@type common_data_stack
-	local data_hander = _data_hander.create() 			---@type chess_data_handler
+	local data_hander = game_core.create_map_handler()  ---@type chess_data_handler
 	editor.data_hander = data_hander
 	editor.stack = stack
 	editor.args = args
@@ -89,4 +91,4 @@ local create = function(args)
 	return editor
 end 
 
-return {create = create}
+return {new = new}

@@ -13,9 +13,6 @@ dep.common 		= import_package 'ly.common'
 ---@type ly.sound.main
 dep.sound 		= import_package 'ly.sound'			
 
----@type ly.map.chess.main
-dep.chess_map 	= import_package 'ly.map.chess' 	
-
 ---@type ly.game_editor
 dep.game_editor = import_package 'ly.game_editor'
 

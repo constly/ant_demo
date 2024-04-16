@@ -59,11 +59,14 @@ function system.on_entry()
 		local f<close> = io.open(file_path, 'r')
 		local data = f and dep.datalist.parse( f:read "a" )
 		
+		---@type ly.game_editor
+		local game_editor = import_package 'ly.game_editor'
+
 		---@type chess_editor_create_args
 		local params = {}
 		params.data = data
 		params.tb_objects = tb_object_def
-		editor = dep.chess_map.create(params);
+		editor = game_editor.create_map_editor(params) 
 	end
 end
 
