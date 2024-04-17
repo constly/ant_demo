@@ -40,7 +40,7 @@ local chess_map_region_layer_tpl = {}
 ---@field position chess_vec3 世界坐标
 ---@field rotate number 世界旋转
 ---@field params table<string,string> 区域参数
----@field layers table<number, chess_map_region_layer_tpl> 层级列表
+---@field layers chess_map_region_layer_tpl[] 层级列表
 local chess_map_region_tpl = {}
 
 
