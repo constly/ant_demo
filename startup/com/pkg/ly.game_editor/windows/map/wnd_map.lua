@@ -56,8 +56,22 @@ local function new(editor, vfs_path, full_path)
 	end
 
 	function api.onAnyFileSaveComplete(_vfs_path, _full_path)
-		if _vfs_path == main.data_hander.data.path_def then 
-			print("onAnyFileSaveComplete", _vfs_path, _full_path)
+	end
+
+	---@return string[] 得到所有相关文件
+	function api.get_all_related_files()
+		local files = {}
+		local setting = main.data_hander.data.setting
+		if setting then 
+			if setting.grid_def then table.insert(files, setting.grid_def) end 
+		end
+		return files
+	end
+
+	---@param file string 通知相关文件发生变化,file为变化的文件
+	function api.notify_related_files_changed(file)
+		local setting = main.data_hander.data.setting
+		if setting.grid_def == file then 
 			main.refresh_object_def()
 		end
 	end

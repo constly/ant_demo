@@ -13,6 +13,8 @@ local lib = dep.common.lib
 ---@field save function 保存数据
 ---@field reload function 重新加载文件
 ---@field onAnyFileSaveComplete function 通知文件保存完成(任意)
+---@field get_all_related_files function 得到所有相关文件
+---@field notify_related_files_changed function 通知相关文件发生了变化
 ---@field has_preview_mode function 是否有预览模式
 local tb_wnd_base = {}
 
@@ -92,6 +94,15 @@ local function new(editor)
 		for i, v in pairs(api.windows) do 
 			if v ~= wnd and v.onAnyFileSaveComplete then 
 				v.onAnyFileSaveComplete(vfs_path, full_path)
+			end
+			if v.get_all_related_files then 
+				local files = v.get_all_related_files()
+				for _, file in ipairs(files) do 
+					if file == vfs_path then 
+						v.notify_related_files_changed(vfs_path)
+						break
+					end
+				end
 			end
 		end
 	end

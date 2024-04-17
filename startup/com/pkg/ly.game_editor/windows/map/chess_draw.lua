@@ -21,6 +21,7 @@ local function create(editor, renderer)
 
 	local dpiScale
 	local header_y
+	chess.region_draw = region_draw
 
 	function chess.on_destroy()
 		region_draw.on_destroy()
@@ -70,7 +71,7 @@ local function create(editor, renderer)
 			ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
 			ImGui.BeginGroup()
 			for i, def in ipairs(renderer.tb_object_def or {}) do 
-				local label = string.format("L%d: [%d]%s(%d*%d)##btn_obj_def_%d", def.nLayer or 1, def.id, def.name, def.size.x, def.size.y, def.id)
+				local label = string.format("[%d] %s(%d*%d)##btn_obj_def_%d", def.id, def.name, def.size.x, def.size.y, def.id)
 				local r, g, b, a = def.bg_color[1], def.bg_color[2], def.bg_color[3], def.bg_color[4]
 				ImGui.ColorButtonEx("", r, g, b, a, nil, 13)
 				ImGui.SameLineEx(16)

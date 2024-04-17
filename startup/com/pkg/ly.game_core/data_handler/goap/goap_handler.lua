@@ -77,7 +77,11 @@ local function new(vfs_path)
 
 	function api.modify_setting(settings)
 		api.data.settings = settings
+		api.reload_attr_handler()
+	end
 
+	function api.reload_attr_handler()
+		local settings = api.data.settings
 		if settings.attr then 
 			local data = common.file.load_datalist(settings.attr)
 			api.attr_handler.set_data(data)

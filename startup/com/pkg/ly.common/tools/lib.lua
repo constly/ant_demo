@@ -179,7 +179,7 @@ function lib.table2string(obj)
 end
 
 function lib.dump(obj)
-    print(lib.table2string(obj))
+    print(lib.table2string(obj), debug.traceback())
 end
 
 function lib.copy(tb)

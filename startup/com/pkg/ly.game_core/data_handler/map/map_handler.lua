@@ -217,9 +217,9 @@ local function new ()
 		end
 	end
 
-	-- 得到首个选中的
+	-- 得到首个选中的（不算空格子）
 	---@param region chess_map_region_tpl
-	---@return string, string, number
+	---@return string, number, number
 	function handler.get_first_selected(region)
 		local list = handler.data.cache.selects[region.id] or {}
 		for i, v in ipairs(list) do 
@@ -228,6 +228,34 @@ local function new ()
 				return v.type, v.id, v.layer
 			end
 		end
+	end
+
+	-- 得到首个选中的（算空格子）
+	function handler.get_first_selected_only(region)
+		local list = handler.data.cache.selects[region.id] or {}
+		for i, v in ipairs(list) do 
+			return v.type, v.id, v.layer
+		end
+	end
+
+	--- 删除所有选中的
+	---@param region chess_map_region_tpl
+	function handler.delete_all_selected(region)
+		local list = handler.data.cache.selects[region.id] or {}
+		local ret = false
+		for i, v in ipairs(list) do 
+			local layer = handler.get_layer_by_id(region, v.layer)
+			if layer then 
+				for key, grid in pairs(layer.grids) do 
+					if grid.id == v.id then 
+						layer.grids[key] = nil
+						ret = true
+					end
+				end
+			end
+		end
+		handler.data.cache.selects[region.id] = {}
+		return ret
 	end
 
 	-- 是不是多选

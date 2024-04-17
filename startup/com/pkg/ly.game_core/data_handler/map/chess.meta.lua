@@ -82,7 +82,6 @@ local chess_selected_grid = {}
 ---@field bg_color number[] 物件背景颜色
 ---@field txt_color number[] 文本颜色
 ---@field bLogic boolean 是不是逻辑物件
----@field nLayer number 层级（用于显示过滤）
 local chess_object_tpl = {}
 
 --- 棋盘编辑器创建参数

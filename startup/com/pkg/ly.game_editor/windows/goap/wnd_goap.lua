@@ -70,6 +70,25 @@ local function new(editor, vfs_path, full_path)
 	function api.close()
 	end 
 
+	---@return string[] 得到所有相关文件
+	function api.get_all_related_files()
+		local files = {}
+		local setting = data_hander.data.settings
+		if setting then 
+			if setting.tag then table.insert(files, setting.tag) end 
+			if setting.attr then table.insert(files, setting.attr) end 
+		end
+		return files
+	end
+
+	---@param file string 通知相关文件发生变化,file为变化的文件
+	function api.notify_related_files_changed(file)
+		local settings = data_hander.data.settings
+		if settings.attr == file then 
+			data_hander.reload_attr_handler()
+		end
+	end
+
 	function api.save()
 		uitls.save_file(full_path, data_hander, stack)
 	end 

@@ -25,7 +25,7 @@ local S = {}
 function S.init(files)
 	for i, file in ipairs(files) do 
 		local goap_handler = game_core.create_goap_handler()
-		common.lib.dump(goap_handler)
+		--common.lib.dump(goap_handler)
 	end
 end
 
