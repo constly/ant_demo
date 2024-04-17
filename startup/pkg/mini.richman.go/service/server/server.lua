@@ -1,79 +1,35 @@
-------------------------------------------------------
---- 服务器入口
-------------------------------------------------------
-ServiceWindow = ...
-
-print("ServiceWindow ", ServiceWindow)
-
 local ltask = require "ltask"
-local room = require 'service.server.room.server_room'  ---@type mrg.server_room
-local quit
 
-local serviceGoap
-local servicePathfinder
+local function new()
+	---@class server 
+	---@field serviceGoap number goap规划服务地址
+	---@field servicePathfinder number 寻路服务地址
+	---@field map_mgr map_mgr 地图管理
+	local api = {}
 
-local function init()
-	serviceGoap = ltask.spawn("mini.richman.go|goap/goap", ltask.self())
-	servicePathfinder = ltask.spawn("mini.richman.go|pathfinder/pathfinder", ltask.self())
+	function api.init()
+		api.serviceGoap = ltask.spawn("mini.richman.go|goap/entry", ltask.self())
+		api.servicePathfinder = ltask.spawn("mini.richman.go|pathfinder/entry", ltask.self())
+		ltask.send(api.serviceGoap, "init", {"/pkg/mini.richman.res/goap/test.goap"})
 
-	ltask.send(serviceGoap, "init", {"/pkg/mini.richman.res/goap/test.goap"})
-end
+		api.map_mgr = require 'service.server.map.map_mgr'.new(api)
+	end 
 
-local function Update()
-	while not quit do 
-		room.tick()
-		--room.test()
-		--print("logic update", os.clock())
-		ltask.sleep(5)
-	end
-	ltask.wakeup(quit)
-end
-
-local S = {}
-
-function S.init_standalone()
-	room.msg.init()
-	local tb = room.players.add_member(0, 0)
-	tb.is_leader = true 
-	tb.is_local = true
-	init()
-end
-
----@param ip string 服务器ip 
----@param port number 服务器端口号
----@param tb_members ly.room.member[] 房间成员列表
-function S.init_server(ip, port, tb_members)
-	room.init_server(ip, port)
-	for i, v in ipairs(tb_members) do 
-		if not v.is_leader then 
-			local p = room.players.add_member(-1, false)
-			p.is_online = false
-			p.code = v.code
+	function api.shutdown()
+		if api.serviceGoap then 
+			ltask.send(api.serviceGoap, "shutdown")
+			api.serviceGoap = nil
+		end 
+		if api.servicePathfinder then 
+			ltask.send(api.servicePathfinder, "shutdown")
+			api.servicePathfinder = nil
 		end
 	end
-	init()
-end
 
-function S.dispatch_netmsg(cmd, tbParams)
-	--print("logic dispatch_netmsg", cmd ,tbParams)
-	room.dispatch_rpc(0, cmd, tbParams)
-end 
-
-function S.shutdown()
-	if serviceGoap then 
-		ltask.send(serviceGoap, "shutdown")
-		serviceGoap = nil
-	end 
-	if servicePathfinder then 
-		ltask.send(servicePathfinder, "shutdown")
-		servicePathfinder = nil
+	function api.tick(delta_time)
 	end
-	quit = {}
-    ltask.wait(quit)
-    ltask.quit()
+
+	return api
 end
 
-
-ltask.fork(Update)
-
-return S;
+return {new = new}

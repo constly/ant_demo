@@ -20,7 +20,7 @@ local function new ()
 
 	---@param _data chess_map_tpl
 	function handler.init(_data)
-		local data = common.lib.copy(_data) or {} ---@type chess_map_tpl
+		local data = _data or {} ---@type chess_map_tpl
 		handler.data = data
 		if not data.regions then 
 			data.next_id = 0;

@@ -22,7 +22,7 @@ local function new(editor, args)
 
 	function api.on_init()
 		stack.set_data_handler(data_hander)	
-		data_hander.init(args.data)
+		data_hander.init(lib.copy(args.data))
 		api.refresh_object_def()
 		stack.snapshoot()
 	end
@@ -32,7 +32,7 @@ local function new(editor, args)
 	end
 
 	function api.on_reset()
-		local _args = dep.common.lib.copy(args)  		---@type chess_editor_create_args
+		local _args = lib.copy(args)  		---@type chess_editor_create_args
 		_args.data = nil
 		local setting = data_hander.data.setting
 		data_hander.init(_args)
