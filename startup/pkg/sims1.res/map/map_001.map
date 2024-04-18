@@ -36,6 +36,6 @@ regions:
     x: -2
     y: -2
 setting:
-  grid_def: /pkg/mini.richman.res/map/grid_def.txt
+  grid_def: /pkg/sims1.res/map/grid_def.txt
 show_ground: true
 version: 1

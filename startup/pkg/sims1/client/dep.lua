@@ -1,5 +1,5 @@
 
-local dep = {}  ---@class mini.richman.go.dep
+local dep = {}  ---@class sims1.dep
 
 --- 系统依赖
 dep.ltask 		= require "ltask"

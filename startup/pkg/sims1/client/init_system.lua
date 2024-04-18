@@ -1,19 +1,25 @@
 local ecs = ...
-local system 		= ecs.system "startup"
-local dep 			= require 'client.dep' ---@type mini.richman.go.dep
-local ImGui 		= dep.ImGui
-local statemachine 	= require 'client.state_machine'  ---@type mini.richman.go.view.state_machine
-
+local system = ecs.system "init_system"
 local world = ecs.world
 local w = world.w
+local dep 			= require 'client.dep' ---@type sims1.dep
+local ImGui 		= dep.ImGui
+local expand = true
+local editor  ---@type ly.game_editor.editor
+
 local imesh = ecs.require "ant.asset|mesh"
 local ientity = ecs.require "ant.entity|entity"
 local math3d = require "math3d"
 local icamera = ecs.require "ant.camera|camera"
-local expand = true
-local editor  ---@type ly.game_editor.editor
+
+function system.preinit()
+	---@class sims1
+	Sims1 = require 'client.sims1'.new()
+end 
 
 function system.init()
+	Sims1.start()
+
 	print("system.init")
 	local fonts = {}
 	fonts[#fonts+1] = {
@@ -22,17 +28,22 @@ function system.init()
 		GlyphRanges = { 0x0020, 0xFFFF }
 	}
 	local ImGuiAnt  = import_package "ant.imgui"
-	ImGuiAnt.FontAtlasBuild(fonts)
+	ImGuiAnt.FontAtlasBuild(fonts)	
 end 
 
-function system.post_init()
-	print("system.post_init")
+function system.exit()
+	Sims1.shutdown()
+	Sims1 = nil
+	if editor then 
+		editor.exit()
+		editor = nil
+	end
 end
+
 
 function system.init_world()
 	print("system.init_world")
-	statemachine.init(false, RichmanMgr.is_listen_player)
-
+	
 	world:create_instance { prefab = "/pkg/game.res/light_skybox.prefab" }
 	-- world:create_entity{
 	-- 	policy = { "ant.render|simplerender", },
@@ -75,15 +86,10 @@ function system.init_world()
 	icamera.focus_aabb(main_camera, aabb, dir)
 end
 
-function system.exit()
-	print("system.exit")
-	statemachine.reset()
-	if editor then 
-		editor.exit()
-	end
-end
+
 
 function system.data_changed()
+	--Sims1.call_server(msg.rpc_ping, {v = "2"})
 	ImGui.SetNextWindowPos(0, 0)
 	local dpi = ImGui.GetMainViewport().DpiScale
 	if expand then 
@@ -98,7 +104,7 @@ function system.data_changed()
 			if expand then 
 				expand = not expand
 			else 
-				RichmanMgr.exitCB()
+				Sims1.exitCB()
 			end
 		end
 		ImGui.SameLine()
@@ -111,8 +117,8 @@ function system.data_changed()
 				local tbParams = {}
 				tbParams.module_name = "richmango"
 				tbParams.project_root = world.args.ecs.project_root
-				tbParams.pkgs = {"mini.richman.res"}
-				tbParams.theme_path = "mini.richman.res/themes/default.style"
+				tbParams.pkgs = {"sims1.res"}
+				tbParams.theme_path = "sims1.res/themes/default.style"
 				tbParams.goap_mgr = require 'goap.goap'
 				editor = dep.game_editor.create_editor(tbParams)
 			end

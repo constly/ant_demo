@@ -40,5 +40,5 @@ nodes:
   name: node
   tags: {}
 settings:
-  attr: /pkg/mini.richman.res/goap/def_attr.attr
-  tag: /pkg/mini.richman.res/goap/def_tag.tag
+  attr: /pkg/sims1.res/goap/def_attr.attr
+  tag: /pkg/sims1.res/goap/def_tag.tag

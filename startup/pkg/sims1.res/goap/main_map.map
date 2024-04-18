@@ -156,6 +156,6 @@ regions:
     x: -3
     y: -3
 setting:
-  grid_def: /pkg/mini.richman.res/goap/def_grid.txt
+  grid_def: /pkg/sims1.res/goap/def_grid.txt
 show_ground: true
 version: 1

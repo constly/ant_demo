@@ -1,9 +1,9 @@
 --------------------------------------------------------------
 --- 客户端玩家
 --------------------------------------------------------------
-local api = {} 			---@class mrg.client_players
+local api = {} 			---@class sims1.client_players
 local next_id = 0;
-api.tb_members = {} 	---@type mrg.client_player[]
+api.tb_members = {} 	---@type sims1.client_player[]
 
 function api.reset()
 	next_id = 0
@@ -17,7 +17,7 @@ end
 ---@return ly.room.member 查找房间成员
 function api.add_member(fd, is_leader)
 	next_id = next_id + 1;
-	local tb = {} ---@type mrg.client_player
+	local tb = {} ---@type sims1.client_player
 	tb.id = next_id
 	tb.name = "玩家" .. next_id
 	tb.fd = fd

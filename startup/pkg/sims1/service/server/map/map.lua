@@ -16,7 +16,7 @@ local function new(map_mgr)
 
 	--- 初始化地图
 	function api.init(uid, tpl_id)
-		local path = "/pkg/mini.richman.res/goap/main_map.map"
+		local path = "/pkg/sims1.res/goap/main_map.map"
 		local datalist = common.file.load_datalist(path)
 		local map_handler = game_core.create_map_handler()
 		map_handler.init(datalist)
@@ -32,8 +32,7 @@ local function new(map_mgr)
 				end
 			end
 		end
-
-		common.lib.dump(api.regions)
+		--common.lib.dump(api.regions)
 	end
 
 	--- 加入地图

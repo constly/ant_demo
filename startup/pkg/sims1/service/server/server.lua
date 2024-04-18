@@ -1,18 +1,24 @@
 local ltask = require "ltask"
 
 local function new()
-	---@class server 
+	---@class sims1.server 
 	---@field serviceGoap number goap规划服务地址
 	---@field servicePathfinder number 寻路服务地址
 	---@field map_mgr map_mgr 地图管理
+	---@field room sims1.server_room
+	---@field msg sims1.msg
 	local api = {}
 
-	function api.init()
-		api.serviceGoap = ltask.spawn("mini.richman.go|goap/entry", ltask.self())
-		api.servicePathfinder = ltask.spawn("mini.richman.go|pathfinder/entry", ltask.self())
-		ltask.send(api.serviceGoap, "init", {"/pkg/mini.richman.res/goap/test.goap"})
+	api.msg = require 'core.msg'.new()
+	api.room = require 'service.server.room.server_room'.new(api)  
+	api.map_mgr = require 'service.server.map.map_mgr'.new(api)
 
-		api.map_mgr = require 'service.server.map.map_mgr'.new(api)
+	function api.init()
+		api.msg.server = api.room
+		api.msg.init()
+		api.serviceGoap = ltask.spawn("sims1|goap/entry", ltask.self())
+		api.servicePathfinder = ltask.spawn("sims1|pathfinder/entry", ltask.self())
+		ltask.send(api.serviceGoap, "init", {"/pkg/sims1.res/goap/test.goap"})	
 	end 
 
 	function api.shutdown()
@@ -27,6 +33,7 @@ local function new()
 	end
 
 	function api.tick(delta_time)
+		api.room.tick()
 	end
 
 	return api
