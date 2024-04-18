@@ -2,8 +2,23 @@
 --- 服务器玩家
 --------------------------------------------------------------
 
-local function new()
-	---@class sims1.server_players
+---@param server sims1.server
+local function new_player(server, id)
+	---@class sims1.server_player
+	local api = {}
+	api.id = id
+	api.name = "玩家" .. id
+	api.is_leader = false
+	api.is_online = true
+	api.npc = server.npc_mgr.create_npc()
+
+	return api
+end
+
+
+---@param server sims1.server
+local function new(server)
+	---@class sims1.server_player_mgr
 	local api = {} 		
 	local next_id = 0;
 	api.tb_members = {} ---@type sims1.server_player[]
@@ -18,16 +33,13 @@ local function new()
 	---@return sims1.server_player 添加成员
 	function api.add_member(fd, code)
 		next_id = next_id + 1;
-		local tb = {} ---@type ly.room.member
-		tb.id = next_id
-		tb.name = "玩家" .. next_id
-		tb.fd = fd
-		tb.is_leader = false
-		tb.is_online = true
-		tb.code = code
-		table.insert(api.tb_members, tb)
+		local player = new_player(server, next_id)
+		player.fd = fd
+		player.code = code
+
+		table.insert(api.tb_members, player)
 		print("add member", fd, next_id, code)
-		return tb;
+		return player;
 	end
 
 	---@return sims1.server_player 查找房间成员

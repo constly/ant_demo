@@ -36,13 +36,14 @@ local function new(map_mgr)
 	end
 
 	--- 加入地图
-	---@param npc npc 
-	function api.join(npc)
+	---@param npc sims1.server.npc 
+	function api.on_login(npc)
 		npc.map_id = api.id
 	end 
 
 	--- 离开地图
-	function api.leave(npc)
+	---@param npc sims1.server.npc
+	function api.on_logout(npc)
 		npc.map_id = 0
 	end
 

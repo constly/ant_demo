@@ -12,10 +12,10 @@ local function new()
 	api.msg = require 'core.msg'.new()
 	api.room = require 'service.server.room.server_room'.new(api)  
 	api.map_mgr = require 'service.server.map.map_mgr'.new(api)
+	api.npc_mgr = require 'service.server.npc.npc_mgr'.new(api)
 
 	function api.init()
-		api.msg.server = api.room
-		api.msg.init()
+		api.msg.init(false, api)
 		api.serviceGoap = ltask.spawn("sims1|goap/entry", ltask.self())
 		api.servicePathfinder = ltask.spawn("sims1|pathfinder/entry", ltask.self())
 		ltask.send(api.serviceGoap, "init", {"/pkg/sims1.res/goap/test.goap"})	

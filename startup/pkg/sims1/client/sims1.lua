@@ -14,8 +14,6 @@ local function new()
 
 	local S
 	local function init()
-		api.msg.client = api.room
-
 		-- 扩展服务通信接口
 		S = ltask.dispatch {}
 		function S.exec_richman_client_rpc(cmd, tbParam)  
@@ -26,12 +24,11 @@ local function new()
 			local tb = api.msg.tb_s2c[cmd]
 			if tb then tb(tbParam) end
 		end
-
+		api.msg.init(true, api)
 		local tbParam = map.tbParam or {is_standalone = true}
 		api.is_listen_player = tbParam.is_listen_player or tbParam.is_standalone
 		if api.is_listen_player then 
 			api.serviceId = ltask.spawn("sims1|server/entry", ltask.self())
-			api.msg.init(true)
 			if tbParam.is_standalone then
 				ltask.send(api.serviceId, "init_standalone")
 			else

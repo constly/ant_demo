@@ -11,7 +11,7 @@
 local function create_ready(s)
 	local api = {}
 	function api.on_entry()
-		s.client.call_rpc(s.msg.rpc_login)
+		s.sims1.call_server(s.msg.rpc_login, {code = 998})
 	end
 	return api
 end
@@ -45,6 +45,7 @@ local function new(sims1)
 
 	api.client 		= sims1.room 
 	api.msg 		= sims1.msg
+	api.sims1 		= sims1
 
 	---@type sims1.client.state_machine.state_base[]
 	api.all_states = {}

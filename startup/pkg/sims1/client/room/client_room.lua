@@ -56,13 +56,12 @@ local function new(sims1)
 		net.send(client_fd, pack)
 	end
 
-	function api.apply_login(code) api.call_rpc(msg.rpc_login, {code = code}) end
-	function api.apply_exit() api.call_rpc(msg.rpc_exit) end 
-	function api.apply_begin() api.call_rpc(msg.rpc_room_begin) end
+	function api.apply_login(code) sims1.call_server(msg.rpc_login, {code = code}) end
+	function api.apply_exit() sims1.call_server(msg.rpc_exit) end 
+	function api.apply_begin() sims1.call_server(msg.rpc_room_begin) end
 
 	--- 初始化客户端房间
 	function api.init(ip, port)
-		msg.init(true)
 		quit = false
 		api.need_exit = false
 		local ret, fd = net.connect(ip, tonumber(port))

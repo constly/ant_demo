@@ -13,7 +13,7 @@ local room_list = ly_room.get_room_list()
 ---@param server sims1.server
 local function new(server)	
 	---@class sims1.server_room
-	---@field players sims1.server_players
+	---@field player_mgr sims1.server_player_mgr
 	local api = {}												
 	local server_ip
 	local server_port
@@ -24,15 +24,15 @@ local function new(server)
 	local quit = false
 	local msg = server.msg
 
-	local players = require 'service.server.room.server_players'.new() 
-	api.players = players
+	local player_mgr = require 'service.server.room.player_mgr'.new(server) 
+	api.player_mgr = player_mgr
 
 	function api.dispatch_rpc(client_fd, cmd, tbParam)
 		local tb = msg.tb_rpc[cmd]
 		if not tb then return end
 
 		client_fd = client_fd or 0
-		local p = players.find_by_fd(client_fd)
+		local p = player_mgr.find_by_fd(client_fd)
 		if not p and cmd ~= msg.rpc_login then return end 
 
 		local ret = tb.server(p, tbParam, client_fd)
@@ -47,13 +47,13 @@ local function new(server)
 	end
 
 	function api.notify_to_all_client(cmd, tbParam)
-		for i, v in ipairs(players.tb_members) do 
+		for i, v in ipairs(player_mgr.tb_members) do 
 			api.send_to_client(v.fd, cmd, tbParam)
 		end
 	end
 
 	function api.refresh_members()
-		api.notify_to_all_client(msg.s2c_room_members, players.tb_members)
+		api.notify_to_all_client(msg.s2c_room_members, player_mgr.tb_members)
 	end
 
 	function api.test() 
@@ -92,8 +92,7 @@ local function new(server)
 
 	--- 初始化服务器
 	function api.init_server(ip, port)
-		players.reset()
-		msg.init()
+		player_mgr.reset()
 		quit = false
 		server_ip = ip
 		server_port = tonumber(port)
@@ -111,7 +110,7 @@ local function new(server)
 		local close_session = function(s, notify)
 			if s.fd then 
 				net.close(s.fd)
-				players.remove_member(s.fd)
+				player_mgr.remove_member(s.fd)
 				s.fd = nil
 				if notify then
 					api.refresh_members()
@@ -168,7 +167,7 @@ local function new(server)
 			close_all_session();
 		end)
 
-		local tb = players.add_member(0, 0)
+		local tb = player_mgr.add_member(0, 0)
 		tb.is_leader = true 
 		tb.is_local = true
 		return true;
