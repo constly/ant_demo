@@ -1,17 +1,16 @@
----@class grid
+---@class sims1.server.grid
 ---@field id number 唯一id
 ---@field pos_x number 坐标x
 ---@field pos_y number 坐标y
 ---@field tpl_id number 物件模板id
 
 
----@param map map 所属地图
+---@param map sims1.server.map 所属地图
 local function new(map)
-
-	---@class region
+	---@class sims1.server.region
 	---@field id number 唯一id
-	---@field npcs npc[] 区域中npc列表
-	---@field grids grid[] 区域中格子列表
+	---@field npcs sims1.server.npc[] 区域中npc列表
+	---@field grids sims1.server.grid[] 区域中格子列表
 	local api = {}
 	api.npcs = {}
 	api.grids = {}
@@ -22,7 +21,7 @@ local function new(map)
 
 	---@param gridTpl chess_grid_tpl
 	function api.add_grid(x, y, z, gridTpl)
-		---@type grid
+		---@type sims1.server.grid
 		local grid = {}
 		grid.id = gridTpl.id
 		grid.tpl_id = gridTpl.tpl
@@ -36,6 +35,11 @@ local function new(map)
 			grid.hidden = gridTpl.hidden
 		end
 		table.insert(api.grids, grid)
+	end
+
+	-- 得到同步数据
+	function api.get_sync_grids()
+		return api.grids
 	end
 
 	return api

@@ -4,7 +4,7 @@ local function new()
 	---@class sims1.server 
 	---@field serviceGoap number goap规划服务地址
 	---@field servicePathfinder number 寻路服务地址
-	---@field map_mgr map_mgr 地图管理
+	---@field map_mgr sims1.server.map_mgr 地图管理
 	---@field room sims1.server_room
 	---@field msg sims1.msg
 	local api = {}

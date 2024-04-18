@@ -21,7 +21,7 @@ local lib = require 'tools.lib'
 ---@class goap.action.data
 ---@field id string action id 
 ---@field disable boolean 是否禁用
----@field params map<string, any> 参数列表
+---@field params sims1.server.map<string, any> 参数列表
 
 local function new()
 	---@class goap_mgr

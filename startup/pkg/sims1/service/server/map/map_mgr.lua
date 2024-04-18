@@ -1,9 +1,9 @@
 
----@param server server
+---@param server sims1.server
 local function new(server)
-	---@class map_mgr
+	---@class sims1.server.map_mgr
 	---@field next_dynamic_map_id number 下个动态地图id
-	---@field maps map<int, map> 地图列表
+	---@field maps sims1.server.map<int, sims1.server.map> 地图列表
 	local api = {}
 	api.maps = {}
 	api.next_dynamic_map_id = 10000;

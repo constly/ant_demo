@@ -53,7 +53,18 @@ local function new(server)
 	end
 
 	function api.refresh_members()
-		api.notify_to_all_client(msg.s2c_room_members, player_mgr.tb_members)
+		local players = {}
+		for i, v in ipairs(player_mgr.tb_members) do 
+			---@type sims1.server_player
+			local p = {}
+			p.map_id = v.map_id
+			p.name = v.name
+			p.is_online = v.is_online
+			p.is_local = v.is_local
+			p.is_leader = v.is_leader
+			table.insert(players, p)
+		end
+		api.notify_to_all_client(msg.s2c_room_members, players)
 	end
 
 	function api.test() 

@@ -4,7 +4,7 @@ local world = ecs.world
 local w = world.w
 local dep 			= require 'client.dep' ---@type sims1.dep
 local ImGui 		= dep.ImGui
-local expand = true
+local expand = false
 local editor  ---@type ly.game_editor.editor
 
 local imesh = ecs.require "ant.asset|mesh"
@@ -14,7 +14,7 @@ local icamera = ecs.require "ant.camera|camera"
 
 function system.preinit()
 	---@class sims1
-	Sims1 = require 'client.sims1'.new()
+	Sims1 = require 'client.sims1'.new(ecs)
 end 
 
 function system.init()
@@ -65,17 +65,17 @@ function system.init_world()
 	-- 	}
 	-- }
 
-	local iom = ecs.require "ant.objcontroller|obj_motion"
-	for i = 1, 5 do 
-		world:create_instance {
-			prefab = "/pkg/game.res/npc/cube/cube_green.glb/mesh.prefab",
-			on_ready = function(e)
-				local eid = e.tag['*'][1]
-				local ee<close> = world:entity(eid)
-				iom.set_position(ee, math3d.vector(i * 2.5 - 10, 0, 0))
-			end
-		}
-	end
+	-- local iom = ecs.require "ant.objcontroller|obj_motion"
+	-- for i = 1, 5 do 
+	-- 	world:create_instance {
+	-- 		prefab = "/pkg/game.res/npc/cube/cube_green.glb/mesh.prefab",
+	-- 		on_ready = function(e)
+	-- 			local eid = e.tag['*'][1]
+	-- 			local ee<close> = world:entity(eid)
+	-- 			iom.set_position(ee, math3d.vector(i * 2.5 - 10, 0, 0))
+	-- 		end
+	-- 	}
+	-- end
 
 	local main_queue = w:first "main_queue camera_ref:in"
 	local main_camera <close> = world:entity(main_queue.camera_ref, "camera:in")

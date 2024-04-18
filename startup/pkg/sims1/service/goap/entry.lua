@@ -5,7 +5,7 @@ SServer = ...
 ---@type ly.game_core
 local game_core = import_package 'ly.game_core'
 
----@type ly.common.main
+---@type ly.common
 local common = import_package 'ly.common'
 
 local ltask = require "ltask"

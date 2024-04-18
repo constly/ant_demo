@@ -15,7 +15,7 @@ dep.json 			= import_package "ant.json"
 --- 项目依赖
 dep.ImGuiExtend 	= require "ly.imgui.extend"
 
----@type ly.common.main
+---@type ly.common
 dep.common 			= import_package 'ly.common' 	
 
 ---@type blueprint_ed

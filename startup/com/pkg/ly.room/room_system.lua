@@ -1,7 +1,7 @@
 local ecs = ...
 local system 	= ecs.system "room_system"
 local ImGui 	= require 'imgui'
-local common 	= import_package 'ly.common'	---@type ly.common.main
+local common 	= import_package 'ly.common'	---@type ly.common
 local show_type = 1
 local room_list = require 'room_list' 			---@type ly.room.room_list
 local mgr = require 'src.room_mgr'				---@type ly.room.room_mgr

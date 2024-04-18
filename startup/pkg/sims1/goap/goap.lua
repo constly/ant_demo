@@ -1,7 +1,7 @@
 --------------------------------------------------------
 -- goap mgr
 --------------------------------------------------------
----@type ly.common.main
+---@type ly.common
 local common = import_package 'ly.common'		
 
 ---@type goap_mgr

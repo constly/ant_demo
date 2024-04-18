@@ -13,6 +13,7 @@ local function new(server)
 		local npc = require 'service.server.npc.npc'.new(server)
 		npc.id = api.next_id
 		api.npcs[npc.id] = npc
+		return npc
 	end
 
 	--- 销毁npc

@@ -7,7 +7,7 @@ dep.window      = import_package "ant.window"
 dep.ImGui  		= require "imgui"
 
 --- 项目依赖
----@type ly.common.main
+---@type ly.common
 dep.common 		= import_package 'ly.common' 		
 
 ---@type ly.sound.main

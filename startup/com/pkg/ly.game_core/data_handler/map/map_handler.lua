@@ -162,13 +162,13 @@ local function new ()
 	end
 
 	--- 将格子id转换为格子坐标
-	---@return number, number pos_x,pos_y
+	---@return number, number pos_x,pos_z
 	function handler.grid_id_to_grid_pos(gridId)
 		local pos = string.find(gridId, "_")
 		if pos then
 			local x = string.sub(gridId, 1, pos - 1)
-			local y = string.sub(gridId, pos + 1)
-			return tonumber(x), tonumber(y)
+			local z = string.sub(gridId, pos + 1)
+			return tonumber(x), tonumber(z)
 		end
 		return 0, 0
 	end

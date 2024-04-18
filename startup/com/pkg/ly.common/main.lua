@@ -2,7 +2,7 @@
 --- 一些工具组件
 ---------------------------------------------------------------------------
 
----@class ly.common.main
+---@class ly.common
 local api = {}
 
 ---@type ly.common.lib

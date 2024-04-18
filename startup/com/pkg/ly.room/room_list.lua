@@ -2,7 +2,7 @@
 --- 局域网房间列表
 --------------------------------------------------------------
 local ly_net = require 'ly.net'
-local common = import_package 'ly.common' ---@type ly.common.main
+local common = import_package 'ly.common' ---@type ly.common
 local quit 
 local port = 17668
 local client

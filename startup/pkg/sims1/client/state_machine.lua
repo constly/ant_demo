@@ -11,7 +11,7 @@
 local function create_ready(s)
 	local api = {}
 	function api.on_entry()
-		s.sims1.call_server(s.msg.rpc_login, {code = 998})
+		s.sims1.call_server(s.msg.rpc_login, {code = 0})
 	end
 	return api
 end

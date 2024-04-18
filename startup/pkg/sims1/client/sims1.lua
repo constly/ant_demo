@@ -2,8 +2,9 @@ local dep = require 'client.dep'
 local ltask = require "ltask"
 local map = dep.common.map
 
-local function new()
+local function new(ecs)
 	---@class sims1
+	---@field ecs any
 	---@field msg sims1.msg
 	---@field is_listen_player boolean 是不是聆听玩家
 	---@field serviceId number 服务器地址，只有聆听玩家才有这个值
@@ -11,6 +12,8 @@ local function new()
 	api.msg 			= require 'core.msg'.new()  					---@type sims1.msg
 	api.room 			= require 'client.room.client_room'.new(api)
 	api.statemachine 	= require 'client.state_machine'.new(api)  		---@type sims1.client.state_machine
+	api.map  			= require 'client.map.map'.new(api)				---@type sims1.client.map
+	api.ecs 			= ecs
 
 	local S
 	local function init()

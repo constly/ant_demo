@@ -1,14 +1,15 @@
----@type ly.common.main
+---@type ly.common
 local common = import_package 'ly.common'
 ---@type ly.game_core
 local game_core = import_package 'ly.game_core'
 
----@param map_mgr map_mgr
+---@param map_mgr sims1.server.map_mgr
 local function new(map_mgr)
-	---@class map 
+	---@class sims1.server.map 
 	---@field id number 地图id
+	---@field tpl_id number 模板id
 	---@field npcs npc[] 地图上npc列表
-	---@field regions map<int, region> 区域列表
+	---@field regions sims1.server.map<int, sims1.server.region> 区域列表
 	local api = {
 		npcs = {}, 
 		regions = {},
@@ -16,6 +17,9 @@ local function new(map_mgr)
 
 	--- 初始化地图
 	function api.init(uid, tpl_id)
+		api.id = uid
+		api.tpl_id = tpl_id
+		
 		local path = "/pkg/sims1.res/goap/main_map.map"
 		local datalist = common.file.load_datalist(path)
 		local map_handler = game_core.create_map_handler()
@@ -24,8 +28,8 @@ local function new(map_mgr)
 		for _, region in ipairs(map_handler.data.regions) do 
 			for _, layer in ipairs(region.layers) do 
 				for gridId, grid in pairs(layer.grids) do 
-					local z = layer.height + (grid.height or 0)
-					local x, y = map_handler.grid_id_to_grid_pos(gridId)
+					local y = layer.height + (grid.height or 0)
+					local x, z = map_handler.grid_id_to_grid_pos(gridId)
 					local regionId = api.world_pos_to_region_id(x, y, z)
 					local region = api.get_or_create_region(regionId)
 					region.add_grid(x, y, z, grid)
@@ -39,6 +43,10 @@ local function new(map_mgr)
 	---@param npc sims1.server.npc 
 	function api.on_login(npc)
 		npc.map_id = api.id
+		npc.pos_x = 0;
+		npc.pos_y = 0;
+		npc.pos_z = 0;
+		npc.region_id = api.world_pos_to_region_id(npc.pos_x, npc.pos_y, npc.pos_z)
 	end 
 
 	--- 离开地图
@@ -53,10 +61,10 @@ local function new(map_mgr)
 		local y = math.floor(pos_y / 10) 
 		local z = math.floor(pos_z / 10) 
 		--return string.format("%s_%s_%s", x, y, z)
-		return string.format("%s_%s", x, y, z)
+		return string.format("%s_%s", x, z)
 	end
 
-	---@return region
+	---@return sims1.server.region
 	function api.get_or_create_region(regionId)
 		local region = api.regions[regionId] 
 		if not region then 
@@ -66,6 +74,11 @@ local function new(map_mgr)
 			api.regions[regionId] = region
 		end 
 		return region
+	end
+
+	---@return sims1.server.region
+	function api.get_region(regionId)
+		return api.regions[regionId]
 	end
 
 	return api

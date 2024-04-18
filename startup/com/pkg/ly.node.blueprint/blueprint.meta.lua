@@ -28,10 +28,10 @@ local blueprint_node_pin_tpl_data = {}
 
 ---@class blueprint_node_tpl_data 节点模板声明
 ---@field name string               						节点名字
----@field attrs map                							属性列表
+---@field attrs sims1.server.map                							属性列表
 ---@field pins blueprint_node_pin_tpl_data[]                pin列表
 ---@field show_type string 									节点显示类型
----@field groups map										分组信息
+---@field groups sims1.server.map										分组信息
 ---@field size_x number 									大小x - 可选
 ---@field size_y number 									大小y - 可选
 ---@field header_color number[]								节点头部颜色
