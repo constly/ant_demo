@@ -52,7 +52,7 @@ local function new(client)
 
 	--- 客户端 rpc 调用
 	function api.call_rpc(cmd, tbParam)
-		local pack = string.pack("<s2", seri.packstring(cmd, tbParam))
+		local pack = string.pack("<s2", seri.packstring(cmd, tbParam or {}))
 		net.send(client_fd, pack)
 	end
 

@@ -54,8 +54,7 @@ local chess_map_tpl_cache = {}
 
 -- 棋盘地图 模板
 ---@class chess_map_tpl 		
----@field regions chess_map_region_tpl[] 区域列表
----@field region_index number 当前选中的区域索引
+---@field region chess_map_region_tpl 区域
 ---@field next_id number 下个id
 ---@field cur_object_id number 当前选中的物件id
 ---@field cache chess_map_tpl_cache 缓存数据

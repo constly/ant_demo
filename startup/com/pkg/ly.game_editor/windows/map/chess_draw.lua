@@ -30,7 +30,7 @@ local function create(editor, renderer)
 	function chess.on_render(_deltatime)
 		dpiScale = ImGui.GetMainViewport().DpiScale
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 0, 0)
-		local start_x = 3
+		local start_x = 0
 		local fix_x, fix_y = 6, 7;
 		ImGui.SetCursorPos(start_x, 0)
 		local size_x, size_y = ImGui.GetContentRegionMax()
@@ -60,83 +60,38 @@ local function create(editor, renderer)
 	function chess.draw_left()
 		local len = 135 * dpiScale;
 		local data = renderer.data_hander.data
-		local size_x, size_y = ImGui.GetContentRegionAvail()
 		ImGui.Dummy(2, 3);
 		imgui_utils.draw_text_center("物件列表")
 		header_y = ImGui.GetCursorPosY()
 
-		local h1 = size_y * 0.7
-		ImGui.BeginChild("##chess_left_1", size_x, h1, ImGui.ChildFlags({"Border"}))
-			ImGui.SetCursorPos(5, 5)
-			ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
-			ImGui.BeginGroup()
-			for i, def in ipairs(renderer.tb_object_def or {}) do 
-				local label = string.format("[%d] %s(%d*%d)##btn_obj_def_%d", def.id, def.name, def.size.x, def.size.y, def.id)
-				local r, g, b, a = def.bg_color[1], def.bg_color[2], def.bg_color[3], def.bg_color[4]
-				ImGui.ColorButtonEx("", r, g, b, a, nil, 13)
-				ImGui.SameLineEx(16)
-				if imgui_utils.draw_btn(label, data.cur_object_id == def.id, {size_x = len}) then 
-					if data.cur_object_id ~= def.id then 
-						data.cur_object_id = def.id
-						renderer.stack.snapshoot(false)
-					end
-				end
-				ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 5, 5)
-				if ImGui.BeginDragDropSource() then 
-					renderer.isPuttingObject = true
+		local x, y = ImGui.GetCursorPos()
+		ImGui.SetCursorPos(x + 5, y)
+		ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
+		ImGui.BeginGroup()
+		for i, def in ipairs(renderer.tb_object_def or {}) do 
+			local label = string.format("[%d] %s(%d*%d)##btn_obj_def_%d", def.id, def.name, def.size.x, def.size.y, def.id)
+			local r, g, b, a = def.bg_color[1], def.bg_color[2], def.bg_color[3], def.bg_color[4]
+			ImGui.ColorButtonEx("", r, g, b, a, nil, 13)
+			ImGui.SameLineEx(16)
+			if imgui_utils.draw_btn(label, data.cur_object_id == def.id, {size_x = len}) then 
+				if data.cur_object_id ~= def.id then 
 					data.cur_object_id = def.id
-					ImGui.SetDragDropPayload("PutObject", tostring(def.id));
-					ImGui.Text("正在拖动 " .. def.name .. " 到层级1");
-					ImGui.EndDragDropSource();	
-				end
-				ImGui.PopStyleVar()
-			end	
-			ImGui.Dummy(10, 10)
-			ImGui.EndGroup()
-			ImGui.PopStyleVar()
-		ImGui.EndChild()
-
-		ImGui.Dummy(5, 3);
-		imgui_utils.draw_text_center("区域列表")
-		local size_x, size_y = ImGui.GetContentRegionAvail()
-		ImGui.BeginChild("##chess_left_2", size_x, size_y, ImGui.ChildFlags({"Border"}))
-			local regions = data.regions
-			ImGui.SetCursorPos(5, 5)
-			ImGui.BeginGroup()
-			local count = #regions + 1
-			for i = 1, count do 
-				if i < count then 
-					local label = string.format("区域 %d##btn_region_idx_%d", i, i)
-					if imgui_utils.draw_btn(label, i == data.region_index, {size_x = len}) and i ~= data.region_index then 
-						data.region_index = i
-						renderer.stack.snapshoot(false)
-					end
-					ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 5, 5)
-					if count > 2 and ImGui.BeginPopupContextItem() then 
-						data.region_index = i
-						if ImGui.MenuItem("删 除") then 
-							table.remove(regions, i)
-							if data.region_index > #regions then
-								data.region_index = #regions
-							end
-							renderer.stack.snapshoot(true)
-						end
-						ImGui.EndPopup()
-					end
-					ImGui.PopStyleVar()
-				else 
-					local label = "+##btn_region_add"
-					if imgui_utils.draw_btn(label, false, {size_x = len}) then 
-						local region = renderer.data_hander.create_region()
-						table.insert(data.regions, region)
-						data.region_index = #data.regions
-						renderer.stack.snapshoot(true)
-					end
+					renderer.stack.snapshoot(false)
 				end
 			end
-			ImGui.Dummy(10, 10)
-			ImGui.EndGroup()
-		ImGui.EndChild()
+			ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 5, 5)
+			if ImGui.BeginDragDropSource() then 
+				renderer.isPuttingObject = true
+				data.cur_object_id = def.id
+				ImGui.SetDragDropPayload("PutObject", tostring(def.id));
+				ImGui.Text("正在拖动 " .. def.name .. " 到层级1");
+				ImGui.EndDragDropSource();	
+			end
+			ImGui.PopStyleVar()
+		end	
+		ImGui.Dummy(10, 10)
+		ImGui.EndGroup()
+		ImGui.PopStyleVar()
 	end
 
 	function chess.draw_middle(_deltatime)

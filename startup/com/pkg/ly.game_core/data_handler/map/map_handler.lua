@@ -22,12 +22,10 @@ local function new ()
 	function handler.init(_data)
 		local data = _data or {} ---@type chess_map_tpl
 		handler.data = data
-		if not data.regions then 
+		if not data.region then 
 			data.next_id = 0;
-			data.regions = {}
-			data.regions[1] = handler.create_region()
+			data.region = handler.create_region()
 			data.show_ground = true
-			data.region_index = 1
 		end
 		data.setting = data.setting or {}
 		data.version = DATA_VERSION
@@ -96,8 +94,7 @@ local function new ()
 	--- 得到当前选中的区域
 	---@return chess_map_region_tpl 
 	function handler.cur_region()
-		local data = handler.data
-		return data.regions[data.region_index]
+		return handler.data.region
 	end
 
 	--- 清空所有选择的层级

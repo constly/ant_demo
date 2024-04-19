@@ -17,7 +17,7 @@ local function new(editor)
 	local selected_pkg 
 	local icons = {}
 	local selected_file = ""
-	local view_path
+	local view_path = ""
 	local is_window_active
 	local tb_new_file_desc = {}
 	local drop_menu_name = "drop_menu_name"
@@ -37,7 +37,7 @@ local function new(editor)
 			{"style", 	"style 编辑器样式文件"},
 			{"def", 	"def 数据定义文件"},
 		}
-		for i, name in ipairs({"ai", "txt", "csv", "folder", "ini", "map", "mod", "room", "def", "fsm", "tag", "goap", "attr", "style"}) do 
+		for i, name in ipairs({"txt", "csv", "glb", "unknown", "folder", "ini", "map", "room", "def", "fsm", "tag", "goap", "attr", "style"}) do 
 			icons[name] = dep.assetmgr.resource(string.format("/pkg/ly.game_editor/assets/icon/icon_%s.texture", name), { compile = true })
 		end
 		selected_pkg = user_data.get("editor.selected.pkg")
@@ -401,7 +401,8 @@ local function new(editor)
 			index = index + 1
 			local temp = {x = pos.x + cell.x * 0.5, y = pos.y}
 			ImGui.SetCursorPos(temp.x - texSize.x * 0.5, temp.y)
-			ImGui.Image(dep.textureman.texture_get(icons[ext].id), texSize.x, texSize.y)
+			local icon = icons[ext] or icons["unknown"]
+			ImGui.Image(dep.textureman.texture_get(icon.id), texSize.x, texSize.y)
 			
 			do
 				ImGui.SetCursorPos(temp.x - maskSize.x * 0.5, temp.y)
@@ -412,7 +413,7 @@ local function new(editor)
 				end
 				if ImGui.IsItemHovered() and ImGui.IsMouseDoubleClicked(ImGui.MouseButton.Left) then 
 					if isDir then 
-						set_view_path(view_path and (view_path .. "/" .. name) or name)
+						set_view_path((view_path and view_path ~= "") and (view_path .. "/" .. name) or name)
 					else
 						editor.open_tab(selected_pkg .. "/" .. path)
 					end
@@ -496,7 +497,7 @@ local function new(editor)
 	end
 
 	function api.get_icon_id_by_ext(ext)
-		local icon = icons[ext]
+		local icon = icons[ext] or icons['unknown']
 		return icon and icon.id 
 	end
 

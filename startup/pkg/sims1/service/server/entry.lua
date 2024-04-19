@@ -43,7 +43,7 @@ end
 
 function S.dispatch_netmsg(cmd, tbParams)
 	--print("logic dispatch_netmsg", cmd ,tbParams)
-	server.room.dispatch_rpc(0, cmd, tbParams)
+	server.room.dispatch_rpc(0, cmd, tbParams or {})
 end 
 
 function S.shutdown()

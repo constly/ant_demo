@@ -14,7 +14,13 @@ local function new(api)
 		function(tbParam)				
 			api.client.map.load_region(tbParam.map_id, tbParam.map_tpl_id, tbParam.regions)
 		end)
-
+	
+	api.reg_rpc(api.rpc_restart, 
+		function(player, tbParam, fd)
+			print("server rpc restart")
+		end, 
+		function(tbParam)
+		end)
 
 end
 

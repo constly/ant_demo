@@ -24,15 +24,13 @@ local function new(map_mgr, server)
 		assert(map_data.path)
 		local map_handler = server.loader.map_data.get_data_handler(map_data.path)
 
-		for _, region in ipairs(map_handler.data.regions) do 
-			for _, layer in ipairs(region.layers) do 
-				for gridId, grid in pairs(layer.grids) do 
-					local y = layer.height + (grid.height or 0)
-					local x, z = map_handler.grid_id_to_grid_pos(gridId)
-					local regionId = api.world_pos_to_region_id(x, y, z)
-					local region = api.get_or_create_region(regionId)
-					region.add_grid(x, y, z, grid)
-				end
+		for _, layer in ipairs(map_handler.data.region.layers) do 
+			for gridId, grid in pairs(layer.grids) do 
+				local y = layer.height + (grid.height or 0)
+				local x, z = map_handler.grid_id_to_grid_pos(gridId)
+				local regionId = api.world_pos_to_region_id(x, y, z)
+				local region = api.get_or_create_region(regionId)
+				region.add_grid(x, y, z, grid)
 			end
 		end
 		--common.lib.dump(api.regions)

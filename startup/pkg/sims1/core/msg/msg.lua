@@ -14,7 +14,8 @@ local function new()
 	api.rpc_exit = 2					-- 退出房间
 	api.rpc_room_begin = 3				-- 房间战斗开始
 	api.rpc_ping = 4
-	api.rpc_apply_map = 5
+	api.rpc_apply_map = 5				-- 请求获取地图
+	api.rpc_restart = 6					-- 重启服务器
 
 	--- 服务器全是主动通知 
 	api.s2c_room_members = 1			-- 通知房间成员列表

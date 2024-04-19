@@ -21,14 +21,17 @@ local function new(client)
 			for _, grid in ipairs(grids) do 
 				local def = client.loader.map_grid_def.get_grid_def(path_grid_def, grid.tpl_id)
 				print(grid.tpl_id, def, def.id, def.name)
-				world:create_instance {
-					prefab = "/pkg/game.res/npc/cube/cube_green.glb/mesh.prefab",
-					on_ready = function(e)
-						local eid = e.tag['*'][1]
-						local ee<close> = world:entity(eid)
-						iom.set_position(ee, math3d.vector(grid.pos_x, grid.pos_y, grid.pos_z))
-					end
-				}
+				if def.model then
+					world:create_instance {
+						prefab = def.model .. "/mesh.prefab",
+						on_ready = function(e)
+							local eid = e.tag['*'][1]
+							local ee<close> = world:entity(eid)
+							iom.set_position(ee, math3d.vector(grid.pos_x, grid.pos_y, grid.pos_z))
+							iom.set_scale(ee, def.scale)
+						end
+					}
+				end
 			end
 		end
 		--common.lib.dump(regions)

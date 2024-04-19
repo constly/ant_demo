@@ -31,6 +31,7 @@ local function new(editor, data_hander, stack, clipboard)
 	end
 
 	local function draw_left()
+		ImGui.SetCursorPos(3, 0)
 		ImGui.BeginGroup()
 		ImGui.Dummy(5, 2)
 		local checkbox_value = {}
