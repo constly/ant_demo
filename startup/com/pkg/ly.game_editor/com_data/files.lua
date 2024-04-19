@@ -114,7 +114,7 @@ local function new(editor)
 			for item in lfs.pairs(value) do
 				local _, pkgname = item:string():match'(.*/)(.*)'
 				local skip = false
-				if pkgname:sub(1, 4) == "ant." then
+				if pkgname:sub(1, 4) == "ant." or pkgname:sub(1, 1) == "." then
 					skip = true
 				end
 				if not skip then

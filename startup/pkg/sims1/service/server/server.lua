@@ -9,7 +9,8 @@ local function new()
 	---@field msg sims1.msg
 	local api = {}
 
-	api.msg = require 'core.msg'.new()
+	api.msg = require 'core.msg.msg'.new()
+	api.loader = require 'core.loader.loader'.new()			
 	api.room = require 'service.server.room.server_room'.new(api)  
 	api.map_mgr = require 'service.server.map.map_mgr'.new(api)
 	api.npc_mgr = require 'service.server.npc.npc_mgr'.new(api)

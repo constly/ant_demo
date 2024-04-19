@@ -9,25 +9,22 @@ local function new(server)
 	api.next_dynamic_map_id = 10000;
 	
 	local function init()
-		api.create_map(1, false)
+		api.create_map("1", false)
 	end
 
-	---@param map_id number 地图id
+	---@param tpl_id string 地图模板id
 	---@param is_dynamic boolean 是不是动态地图
-	function api.create_map(map_id, is_dynamic)
-		local map = require 'service.server.map.map'.new(api)
-		local id = map_id
-		if is_dynamic then 
-			api.next_dynamic_map_id = api.next_dynamic_map_id + 1
-			id = api.next_dynamic_map_id
-		end
-		map.init(id, map_id)
+	function api.create_map(tpl_id, is_dynamic)
+		local map = require 'service.server.map.server_map'.new(api, server)
+		api.next_dynamic_map_id = api.next_dynamic_map_id + 1
+		local id = api.next_dynamic_map_id
+		map.init(id, tpl_id)
 		api.maps[id] = map
 	end
 
 	---@param player sims1.server_player 玩家对象
 	function api.on_login(player)
-		local map = api.find_map_by_id(1)
+		local map = api.find_map_by_tpl_id("1")
 		map.on_login(player.npc)
 	end
 
@@ -39,6 +36,14 @@ local function new(server)
 
 	function api.find_map_by_id(id)
 		return api.maps[id]
+	end
+
+	function api.find_map_by_tpl_id(tpl_id)
+		for i, v in pairs(api.maps) do 
+			if v.tpl_id == tpl_id then 
+				return v
+			end
+		end
 	end
 
 	init();

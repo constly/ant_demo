@@ -1,12 +1,12 @@
 --------------------------------------------------------------
---- 房间消息定义 和 通用协议注册
+--- 客户端/服务器通信 协议注册
 --------------------------------------------------------------
 
 local function new()
 	---@class sims1.msg
 	local api = {tb_s2c = {}, tb_rpc = {}} 		
 
-	api.client = nil 				---@type sims1
+	api.client = nil 				---@type sims1.client
 	api.server = nil 				---@type sims1.server
 
 	--- 客户端全是rpc
@@ -51,7 +51,7 @@ local function new()
 
 	--- 注册rpc
 	reg_rpc = function()
-		require 'core.msg_map'.new(api)
+		require 'core.msg.msg_map'.new(api)
 
 		-- 登录
 		api.reg_rpc(api.rpc_login, 

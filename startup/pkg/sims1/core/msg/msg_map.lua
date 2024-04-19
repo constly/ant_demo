@@ -8,12 +8,11 @@ local function new(api)
 		function(player, tbParam, fd)  	
 			local npc = player.npc  ---@type sims1.server.npc
 			local map = api.server.map_mgr.find_map_by_id(npc.map_id)
-			local region = map.get_region(npc.region_id)
-			local grids = region.get_sync_grids()
-			return {grids = grids, map_id = npc.map_id, region_id = npc.region_id}
+			local regions = map.get_sync_regions(npc)
+			return {map_id = npc.map_id, map_tpl_id = map.tpl_id, regions = regions}
 		end, 
 		function(tbParam)				
-			api.client.map.load_region(tbParam.map_id, tbParam.region_id, tbParam.grids)
+			api.client.map.load_region(tbParam.map_id, tbParam.map_tpl_id, tbParam.regions)
 		end)
 
 

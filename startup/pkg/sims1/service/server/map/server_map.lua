@@ -4,10 +4,11 @@ local common = import_package 'ly.common'
 local game_core = import_package 'ly.game_core'
 
 ---@param map_mgr sims1.server.map_mgr
-local function new(map_mgr)
+---@param server sims1.server
+local function new(map_mgr, server)
 	---@class sims1.server.map 
 	---@field id number 地图id
-	---@field tpl_id number 模板id
+	---@field tpl_id string 模板id
 	---@field npcs npc[] 地图上npc列表
 	---@field regions sims1.server.map<int, sims1.server.region> 区域列表
 	local api = {
@@ -19,11 +20,9 @@ local function new(map_mgr)
 	function api.init(uid, tpl_id)
 		api.id = uid
 		api.tpl_id = tpl_id
-		
-		local path = "/pkg/sims1.res/goap/main_map.map"
-		local datalist = common.file.load_datalist(path)
-		local map_handler = game_core.create_map_handler()
-		map_handler.init(datalist)
+		local map_data = server.loader.map_list.get_by_id(tpl_id)
+		assert(map_data.path)
+		local map_handler = server.loader.map_data.get_data_handler(map_data.path)
 
 		for _, region in ipairs(map_handler.data.regions) do 
 			for _, layer in ipairs(region.layers) do 
@@ -79,6 +78,15 @@ local function new(map_mgr)
 	---@return sims1.server.region
 	function api.get_region(regionId)
 		return api.regions[regionId]
+	end
+
+	---@param npc sims1.server.npc 
+	function api.get_sync_regions(npc)
+		local rets = {}
+		for region_id, v in pairs(api.regions) do 
+			rets[region_id] = v.get_sync_grids()
+		end
+		return rets
 	end
 
 	return api

@@ -14,7 +14,7 @@ local icamera = ecs.require "ant.camera|camera"
 
 function system.preinit()
 	---@class sims1
-	Sims1 = require 'client.sims1'.new(ecs)
+	Sims1 = require 'client.client'.new(ecs)
 end 
 
 function system.init()

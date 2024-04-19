@@ -7,15 +7,15 @@ local protocol = require "protocol"
 local ltask = require "ltask"
 local players = require 'client.room.client_players'  	---@type sims1.client_players
 
----@param sims1 sims1
-local function new(sims1)
+---@param client sims1.client
+local function new(client)
 	---@class sims1.client_room
 	local api = {} 											
 	api.players = players 
 	api.self_player_id = 0;			--- 自己的角色id
 	api.local_player = nil 			---@type sims1.client_player 本地玩家对象
 
-	local msg = sims1.msg
+	local msg = client.msg
 	local client_fd
 	local quit = false
 
@@ -56,9 +56,9 @@ local function new(sims1)
 		net.send(client_fd, pack)
 	end
 
-	function api.apply_login(code) sims1.call_server(msg.rpc_login, {code = code}) end
-	function api.apply_exit() sims1.call_server(msg.rpc_exit) end 
-	function api.apply_begin() sims1.call_server(msg.rpc_room_begin) end
+	function api.apply_login(code) client.call_server(msg.rpc_login, {code = code}) end
+	function api.apply_exit() client.call_server(msg.rpc_exit) end 
+	function api.apply_begin() client.call_server(msg.rpc_room_begin) end
 
 	--- 初始化客户端房间
 	function api.init(ip, port)
