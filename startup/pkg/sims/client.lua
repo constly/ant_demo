@@ -7,10 +7,14 @@ local core = import_package 'sims.core'
 local function new(ecs)
 	---@class sims.client
 	---@field ecs any
+	---@field world any
 	---@field msg sims.msg
 	---@field is_listen_player boolean 是不是聆听玩家
 	---@field serviceId number 服务器地址，只有聆听玩家才有这个值
 	local api = {}
+	api.ecs 			= ecs
+	api.world 			= ecs.world
+	api.world.client 	= api
 	api.msg 			= core.new_msg()
 	api.loader 			= core.new_loader()
 	api.room 			= require 'room.client_room'.new(api)
@@ -19,8 +23,6 @@ local function new(ecs)
 	api.npc_mgr			= require 'npc.client_npc_mgr'.new(api)
 	api.players 		= require 'player.client_players'.new()
 	api.player_ctrl 	= require 'player.player_ctrl'.new(api)
-
-	api.ecs 			= ecs
 
 	local S
 	local function init()

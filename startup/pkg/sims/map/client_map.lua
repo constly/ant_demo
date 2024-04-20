@@ -11,7 +11,7 @@ local function new(client)
 	local instances = {}
 
 	function api.cleanup()
-		local world = client.ecs.world
+		local world = client.world
 		for i, eid in ipairs(entities) do 
 			world:remove_entity(eid)
 		end

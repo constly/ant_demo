@@ -9,7 +9,7 @@ local function new(client)
 	---@field root number
 	---@field model any
 	local api = {}
-	local world = client.ecs.world
+	local world = client.world
 
 	function api.init()
 		-- npc根节点

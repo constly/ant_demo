@@ -21,6 +21,10 @@ local function new(client)
 		api.npcs[1] = npc
 	end
 
+	function api.get_npc_by_id(id)
+		return api.npcs[id]
+	end
+
 	return api
 end
 
