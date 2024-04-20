@@ -8,6 +8,12 @@ local function new()
 	api.map_data 		= require 'core.loader.file_map_data'.new()
 	api.map_grid_def 	= require 'core.loader.file_map_grid_def'.new()
 	api.map_list 		= require 'core.loader.file_map_list'.new()
+
+	function api.restart()
+		api.map_data.restart()
+		api.map_grid_def.restart()
+		api.map_list.restart()
+	end
 	
 	return api
 end

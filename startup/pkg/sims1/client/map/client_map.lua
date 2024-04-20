@@ -7,6 +7,21 @@ local function new(client)
 	---@class sims1.client.map 
 	local api = {}
 
+	local entities = {}
+	local instances = {}
+
+	function api.cleanup()
+		local world = client.ecs.world
+		for i, eid in ipairs(entities) do 
+			world:remove_entity(eid)
+		end
+		for i, eid in ipairs(instances) do 
+			world:remove_instance(eid)
+		end
+		entities = {}
+		instances = {}
+	end
+
 	---@param regions map<string, sims1.server.grid[]>
 	function api.load_region(map_id, tpl_id, regions)
 		local ecs = client.ecs
@@ -22,7 +37,7 @@ local function new(client)
 				local def = client.loader.map_grid_def.get_grid_def(path_grid_def, grid.tpl_id)
 				print(grid.tpl_id, def, def.id, def.name)
 				if def.model then
-					world:create_instance {
+					local instance = world:create_instance {
 						prefab = def.model .. "/mesh.prefab",
 						on_ready = function(e)
 							local eid = e.tag['*'][1]
@@ -31,6 +46,7 @@ local function new(client)
 							iom.set_scale(ee, def.scale)
 						end
 					}
+					table.insert(instances, instance)
 				end
 			end
 		end

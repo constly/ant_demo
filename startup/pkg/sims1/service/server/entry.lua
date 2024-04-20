@@ -21,7 +21,7 @@ local S = {}
 
 function S.init_standalone()
 	server.init()
-	local tb = server.room.player_mgr.add_member(0, 0)
+	local tb = server.player_mgr.add_member(0, 0)
 	tb.is_leader = true 
 	tb.is_local = true
 end
@@ -34,7 +34,7 @@ function S.init_server(ip, port, tb_members)
 	server.room.init_server(ip, port)
 	for i, v in ipairs(tb_members) do 
 		if not v.is_leader then 
-			local p = server.room.player_mgr.add_member(-1, false)
+			local p = server.player_mgr.add_member(-1, false)
 			p.is_online = false
 			p.code = v.code
 		end

@@ -97,7 +97,7 @@ function system.data_changed()
     	local size_x, size_y = viewport.WorkSize.x, viewport.WorkSize.y
 		ImGui.SetNextWindowSize(size_x, size_y);
 	else 
-		ImGui.SetNextWindowSize(170 * dpi, 40 * dpi);
+		ImGui.SetNextWindowSize(120 * dpi, 40 * dpi);
 	end
 	if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoScrollWithMouse", "NoCollapse", "NoTitleBar"}) then 
 		if dep.common.imgui_utils.draw_btn(" 返 回 ", not expand) then 
@@ -108,12 +108,11 @@ function system.data_changed()
 			end
 		end
 		ImGui.SameLine()
-		if dep.common.imgui_utils.draw_btn("刷 新", false) then 
-			Sims1.call_server(Sims1.msg.rpc_restart)
-		end
-		ImGui.SameLine()
 		if dep.common.imgui_utils.draw_btn("编辑器", expand) then 
 			expand = not expand
+			if not expand then 
+				Sims1.call_server(Sims1.msg.rpc_restart)
+			end
 		end
 		if expand then 
 			if not editor then 

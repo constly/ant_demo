@@ -5,13 +5,11 @@ local net 	= import_package "ant.net"
 local seri 	= require "bee.serialization"
 local protocol = require "protocol"
 local ltask = require "ltask"
-local players = require 'client.room.client_players'  	---@type sims1.client_players
 
 ---@param client sims1.client
 local function new(client)
 	---@class sims1.client_room
-	local api = {} 											
-	api.players = players 
+	local api = {} 		
 	api.self_player_id = 0;			--- 自己的角色id
 	api.local_player = nil 			---@type sims1.client_player 本地玩家对象
 
@@ -38,7 +36,7 @@ local function new(client)
 	--- 清空
 	function api.close()
 		if client_fd then 
-			players.reset()
+			client.players.reset()
 			net.close(client_fd)
 			client_fd = nil
 		end 

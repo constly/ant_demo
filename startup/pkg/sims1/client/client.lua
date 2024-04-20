@@ -14,6 +14,8 @@ local function new(ecs)
 	api.room 			= require 'client.room.client_room'.new(api)
 	api.statemachine 	= require 'client.state_machine'.new(api)  		---@type sims1.client.state_machine
 	api.map  			= require 'client.map.client_map'.new(api)		---@type sims1.client.map
+	api.players 		= require 'client.room.client_players'.new()
+
 	api.ecs 			= ecs
 
 	local S
@@ -73,6 +75,12 @@ local function new(ecs)
 
 	function api.update(delta_time)
 		api.statemachine.update(delta_time)
+	end
+
+	function api.restart()
+		api.loader.restart()
+		api.map.cleanup()
+		Sims1.call_server(api.msg.rpc_apply_map)
 	end
 
 	init()

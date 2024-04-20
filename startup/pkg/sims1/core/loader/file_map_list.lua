@@ -13,10 +13,14 @@ local common = import_package 'ly.common'
 
 local function new()
 	---@class sims1.file_map_list
+	---@field data map<string, sims1.file_map_list.line>
 	local api = {}
-	api.data = {}  ---@type map<string, sims1.file_map_list.line>
-
 	local path<const> = "/pkg/sims1.res/goap/map_list.txt"
+
+	function api.restart()
+		api.data = {}
+		api.reload()
+	end
 
 	function api.reload()
 		local lines = common.file.load_csv(path)
@@ -35,7 +39,6 @@ local function new()
 		return api.data[id]
 	end
 
-	api.reload()
 	return api
 end
 

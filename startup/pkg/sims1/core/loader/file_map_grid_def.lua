@@ -15,10 +15,12 @@ local common = import_package 'ly.common'
 
 local function new()
 	---@class sims1.file_map_grid_def
+	---@field data map<string, map<int, sims1.grid_def.line>> 
 	local api = {}
 	
-	---@type map<string, map<int, sims1.grid_def.line>> 
-	api.data = {} 
+	function api.restart()
+		api.data = {}
+	end
 
 	function api.get_file_data(path)
 		local data = api.data[path]

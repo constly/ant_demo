@@ -9,10 +9,12 @@ local game_core = import_package 'ly.game_core'
 
 local function new()
 	---@class sims1.file_map_data
+	---@field handlers map<string, chess_data_handler>
 	local api = {}
 
-	---@type map<string, chess_data_handler>
-	api.handlers = {}
+	function api.restart()
+		api.handlers = {}
+	end
 
 	---@return chess_data_handler
 	function api.get_data_handler(path)

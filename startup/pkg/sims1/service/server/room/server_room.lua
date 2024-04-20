@@ -13,7 +13,6 @@ local room_list = ly_room.get_room_list()
 ---@param server sims1.server
 local function new(server)	
 	---@class sims1.server_room
-	---@field player_mgr sims1.server_player_mgr
 	local api = {}												
 	local server_ip
 	local server_port
@@ -23,9 +22,7 @@ local function new(server)
 	local listen_fd
 	local quit = false
 	local msg = server.msg
-
-	local player_mgr = require 'service.server.room.player_mgr'.new(server) 
-	api.player_mgr = player_mgr
+	local player_mgr = server.player_mgr
 
 	function api.dispatch_rpc(client_fd, cmd, tbParam)
 		local tb = msg.tb_rpc[cmd]
@@ -52,6 +49,14 @@ local function new(server)
 		end
 	end
 
+	function api.notify_restart()
+		api.refresh_members()
+		for i, v in ipairs(player_mgr.tb_members) do 
+			server.map_mgr.on_login(v)
+		end
+		api.notify_to_all_client(msg.s2c_restart, {})
+	end
+
 	function api.refresh_members()
 		local players = {}
 		for i, v in ipairs(player_mgr.tb_members) do 
@@ -62,6 +67,7 @@ local function new(server)
 			p.is_online = v.is_online
 			p.is_local = v.is_local
 			p.is_leader = v.is_leader
+			p.npc_id = v.npc.id
 			table.insert(players, p)
 		end
 		api.notify_to_all_client(msg.s2c_room_members, players)

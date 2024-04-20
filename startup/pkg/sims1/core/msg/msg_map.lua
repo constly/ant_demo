@@ -17,9 +17,7 @@ local function new(api)
 	
 	api.reg_rpc(api.rpc_restart, 
 		function(player, tbParam, fd)
-			print("server rpc restart")
-		end, 
-		function(tbParam)
+			api.server.restart()
 		end)
 
 end

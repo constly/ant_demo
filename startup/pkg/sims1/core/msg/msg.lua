@@ -22,6 +22,7 @@ local function new()
 	api.s2c_kick = 3;					-- 通知踢人
 	api.s2c_entry_room = 4;				-- 通知进入房间
 	api.s2c_ping = 5
+	api.s2c_restart = 6;				-- 通知重启
 
 	local reg_rpc
 	local reg_s2c
@@ -57,7 +58,7 @@ local function new()
 		-- 登录
 		api.reg_rpc(api.rpc_login, 
 			function(player, tbParam, fd)  	-- 服务器执行
-				player = api.server.room.player_mgr.find_by_code(tbParam.code)
+				player = api.server.player_mgr.find_by_code(tbParam.code)
 				if player then 
 					player.fd = fd
 					player.is_online = true
@@ -70,7 +71,7 @@ local function new()
 			end, 
 			function(tbParam)				--- 服务器返回后，客户端执行
 				if tbParam and tbParam.id then
-					local player = api.client.room.players.find_by_id(tbParam.id)
+					local player = api.client.players.find_by_id(tbParam.id)
 					if player then 
 						player.is_self = true
 						api.client.room.local_player = player
@@ -78,13 +79,13 @@ local function new()
 				else 
 					api.client.room.need_exit = true
 				end
-				Sims1.call_server(api.rpc_apply_map)
+				api.client.restart()
 			end)
 
 		-- 退出房间
 		api.reg_rpc(api.rpc_exit, 
 			function(player, tbParam)
-				api.server.room.player_mgr.remove_member(player.fd)
+				api.server.player_mgr.remove_member(player.fd)
 				api.server.room.refresh_members() 
 				return {ok = true}
 			end,
@@ -109,8 +110,8 @@ local function new()
 	reg_s2c = function()
 		-- 通知房间成员列表
 		api.reg_s2c(api.s2c_room_members, function(tbParam)
-			api.client.room.players.set_members(tbParam)
-			local player = api.client.room.players.find_by_id(tbParam.id)
+			api.client.players.set_members(tbParam)
+			local player = api.client.players.find_by_id(tbParam.id)
 			if player then player.is_self = true end
 		end)
 
@@ -129,6 +130,11 @@ local function new()
 		-- 通知进入房间
 		api.reg_s2c(api.s2c_entry_room, function(tbParam)
 			
+		end)
+
+		-- 通知进入房间
+		api.reg_s2c(api.s2c_restart, function(tbParam)
+			api.client.restart()
 		end)
 	end
 	return api

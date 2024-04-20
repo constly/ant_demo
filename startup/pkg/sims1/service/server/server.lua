@@ -11,6 +11,7 @@ local function new()
 
 	api.msg = require 'core.msg.msg'.new()
 	api.loader = require 'core.loader.loader'.new()			
+	api.player_mgr = require 'service.server.room.player_mgr'.new(api) 
 	api.room = require 'service.server.room.server_room'.new(api)  
 	api.map_mgr = require 'service.server.map.map_mgr'.new(api)
 	api.npc_mgr = require 'service.server.npc.npc_mgr'.new(api)
@@ -20,6 +21,7 @@ local function new()
 		api.serviceGoap = ltask.spawn("sims1|goap/entry", ltask.self())
 		api.servicePathfinder = ltask.spawn("sims1|pathfinder/entry", ltask.self())
 		ltask.send(api.serviceGoap, "init", {"/pkg/sims1.res/goap/test.goap"})	
+		api.restart()
 	end 
 
 	function api.shutdown()
@@ -32,6 +34,15 @@ local function new()
 			api.servicePathfinder = nil
 		end
 	end
+
+	-- 重启服务器(socket连接保留)
+	function api.restart()
+		api.loader.restart()
+		api.map_mgr.restart()
+		api.npc_mgr.restart()
+		api.player_mgr.reset_players_npc()
+		api.room.notify_restart()
+	end 
 
 	function api.tick(delta_time)
 		api.room.tick()

@@ -28,6 +28,12 @@ local function new(server)
 		api.tb_members = {}
 	end
 
+	function api.reset_players_npc()
+		for i, v in ipairs(api.tb_members) do 
+			v.npc = server.npc_mgr.create_npc()
+		end
+	end
+
 	---@param fd number
 	---@param code number
 	---@return sims1.server_player 添加成员
