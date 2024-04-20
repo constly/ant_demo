@@ -1,0 +1,44 @@
+next_id: 4
+nodes:
+  ---
+  body:
+    data:
+      ---
+      lines:
+        ---
+        actions:
+          ---
+          id: action_wait_time
+          params:
+            time: 0
+          ---
+    type: sections
+  conditions:
+    and, {}
+  desc: ""
+  effects:
+    {npc, attr, -=, 1}, {npc, attr, "+=", 1}
+  id: 3
+  name: node1
+  tags:
+    new_tag4, new_tag5
+  ---
+  body:
+    data:
+      ---
+      lines:
+        ---
+        actions:
+          {}
+    type: sections
+  conditions:
+    and, {}
+  desc: ""
+  effects:
+    {}
+  id: 4
+  name: node
+  tags: {}
+settings:
+  attr: /pkg/sims.res/goap/def_attr.attr
+  tag: /pkg/sims.res/goap/def_tag.tag

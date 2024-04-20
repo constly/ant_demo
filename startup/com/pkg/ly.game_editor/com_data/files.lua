@@ -38,7 +38,7 @@ local function new(editor)
 	---@class ly.game_editor.files
 	local api = {} 	
 	api.packages = {}  			---@type ly.game_editor.package_item[]
-	api.resource_tree = {}		---@type sims1.server.map<string, ly.game_editor.tree>
+	api.resource_tree = {}		---@type sims.server.map<string, ly.game_editor.tree>
 
 	---@return ly.game_editor.tree_item
 	function api.construct_resource_tree(fspath, root)

@@ -1,0 +1,64 @@
+import_feature "ant.render"
+import_feature "ant.pipeline"
+import_feature "ant.imgui"
+import_feature "ant.rmlui"
+import_feature "ant.efk"
+import_feature 	"ant.sky|sky"
+import_feature 	"ant.modifier"
+import_feature 	"ant.animation"
+import_feature 	"ant.shadow_bounding|scene_bounding"
+
+-----------------------------------------------------------------------
+--- 定义 组件 和 系统
+-----------------------------------------------------------------------
+-- 负责游戏初始化 和 销毁
+system "init_system".implement "init_system.lua"
+
+-- 存储关联的instance，比如npc entity的渲染对象
+---@class comp_play_anim
+---@field model any 模型instance
+component "comp_instance".type "lua"
+
+-- 负责播放动画
+---@class comp_play_anim
+---@field anim string 准备播放的动画名
+---@field last_anim string 上次播放的动画名(system内部自己维护)
+component "comp_play_anim".type "lua"
+component "comp_play_anim_flag"
+system "system_play_anim".implement "systems/system_play_anim.lua"
+
+-- 负责控制移动
+component "comp_move".type "lua"
+system "system_move".implement "systems/system_move.lua"
+
+-- 负责控制摄像机
+component "comp_camera_ctrl".type "lua"
+system "system_camera_ctrl".implement "systems/system_camera_ctrl.lua"
+
+-- 负责输入处理
+component "comp_input_process".type "lua"
+system "system_input_process".implement "systems/system_input_process.lua"
+
+
+-----------------------------------------------------------------------
+--- 定义 entity
+-----------------------------------------------------------------------
+--- npc entiy 
+policy "npc_ctrl"
+	.include_policy "ant.scene|scene_object" 
+	.component "comp_instance"
+    .component "comp_play_anim"
+	.component "comp_move"
+	.component_opt "comp_play_anim_flag"
+
+--- player entity 
+policy "player"
+	.component "comp_input_process"
+
+--- camera entity
+policy 'camera_ctrl'
+	.component "comp_camera_ctrl"
+
+
+--- end
+-----------------------------------------------------------------------

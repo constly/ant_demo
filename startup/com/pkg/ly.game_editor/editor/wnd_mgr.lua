@@ -21,7 +21,7 @@ local tb_wnd_base = {}
 ---@param editor ly.game_editor.editor
 local function new(editor)
 	local api = {}  	---@class ly.game_editor.wnd_mgr
-	api.windows = {}	---@type sims1.server.map<string, ly.game_editor.wnd_base> 所有窗口
+	api.windows = {}	---@type sims.server.map<string, ly.game_editor.wnd_base> 所有窗口
 
 	---@param delta_time number 更新间隔,单位秒
 	---@param view ly.game_editor.viewport  要渲染的窗口自身

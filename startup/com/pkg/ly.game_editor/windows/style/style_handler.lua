@@ -5,12 +5,12 @@ local dep = require 'dep'
 local lib = dep.common.lib
 
 ---@class ly.game_editor.style.data.style
----@field values sims1.server.map<string, table> 数据列表
+---@field values sims.server.map<string, table> 数据列表
 ---@field desc string 描述
 
 ---@class ly.game_editor.style.data 
 ---@field name string 样式名字
----@field styles sims1.server.map<string, ly.game_editor.style.data.style> 条目列表
+---@field styles sims.server.map<string, ly.game_editor.style.data.style> 条目列表
 
 local function new()
 	---@class ly.game_editor.style.handler
@@ -23,9 +23,9 @@ local function new()
 	}
 
 	local all_styles		---@type ly.game_editor.style.all[] 
-	local all_attr			---@type sims1.server.map<string, table>
+	local all_attr			---@type sims.server.map<string, table>
 
-	---@param _all_attr sims1.server.map<string, table>
+	---@param _all_attr sims.server.map<string, table>
 	---@param _all_styles ly.game_editor.style.all[] 
 	---@param data ly.game_editor.style.data
 	function api.init(_all_styles, _all_attr, data)
