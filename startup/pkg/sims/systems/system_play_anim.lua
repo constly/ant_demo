@@ -5,6 +5,7 @@ local w = world.w
 local iplayback = ecs.require "ant.animation|playback"
 local ianimation = ecs.require "ant.animation|animation"
 
+--- 播放动画
 function m.data_changed()
 	for e in w:select "comp_play_anim_flag:update comp_instance:in comp_play_anim:update" do
 		local instance = e.comp_instance ---@type comp_play_anim

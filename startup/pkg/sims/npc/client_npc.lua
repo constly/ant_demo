@@ -2,6 +2,7 @@
 --- 客户端 npc
 -----------------------------------------------------------------------
 
+local utils = require 'utils.utils'
 
 ---@param client sims.client
 local function new(client)
@@ -47,11 +48,7 @@ local function new(client)
 	end
 
 	function api.play_anim(name)
-		local e<close> = world:entity(api.root, "comp_play_anim_flag?update comp_play_anim?update")
-		if e then 
-			e.comp_play_anim_flag = true
-			e.comp_play_anim.anim = name
-		end
+		utils.play_animation(world, api.root, name)
 	end
 
 	return api

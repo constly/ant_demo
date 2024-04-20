@@ -87,6 +87,7 @@ local function new(ecs)
 		api.loader.restart()
 		api.npc_mgr.restart()
 		api.map.cleanup()
+		api.player_ctrl.restart()
 		api.call_server(api.msg.rpc_apply_map)
 	end
 
