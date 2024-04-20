@@ -83,7 +83,7 @@ local function new(ecs)
 		api.loader.restart()
 		api.npc_mgr.restart()
 		api.map.cleanup()
-		Sims1.call_server(api.msg.rpc_apply_map)
+		api.call_server(api.msg.rpc_apply_map)
 	end
 
 	init()

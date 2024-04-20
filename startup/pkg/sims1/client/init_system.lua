@@ -12,18 +12,17 @@ local game_editor  	= import_package 'ly.game_editor'
 local editor  
 local expand = false
 
-local imesh = ecs.require "ant.asset|mesh"
-local ientity = ecs.require "ant.entity|entity"
 local math3d = require "math3d"
 local icamera = ecs.require "ant.camera|camera"
+local client
 
 function system.preinit()
 	---@type sims1.client
-	Sims1 = require 'client.client'.new(ecs)
+	client = require 'client.client'.new(ecs)
 end 
 
 function system.init()
-	Sims1.start()
+	client.start()
 
 	print("system.init")
 	local fonts = {}
@@ -37,8 +36,8 @@ function system.init()
 end 
 
 function system.exit()
-	Sims1.shutdown()
-	Sims1 = nil
+	client.shutdown()
+	client = nil
 	if editor then 
 		editor.exit()
 		editor = nil
@@ -60,7 +59,6 @@ function system.init_world()
 end
 
 
-
 function system.data_changed()
 	--Sims1.call_server(msg.rpc_ping, {v = "2"})
 	ImGui.SetNextWindowPos(0, 0)
@@ -77,14 +75,14 @@ function system.data_changed()
 			if expand then 
 				expand = not expand
 			else 
-				Sims1.exitCB()
+				client.exitCB()
 			end
 		end
 		ImGui.SameLine()
 		if common.imgui_utils.draw_btn("编辑器", expand) then 
 			expand = not expand
 			if not expand then 
-				Sims1.call_server(Sims1.msg.rpc_restart)
+				client.call_server(client.msg.rpc_restart)
 			end
 		end
 		if expand then 
