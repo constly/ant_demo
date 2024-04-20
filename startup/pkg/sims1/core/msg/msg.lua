@@ -69,7 +69,7 @@ local function new()
 					return {} 
 				end
 			end, 
-			function(tbParam)				--- 服务器返回后，客户端执行
+			function(tbParam)				--- 客户端执行
 				if tbParam and tbParam.id then
 					local player = api.client.players.find_by_id(tbParam.id)
 					if player then 

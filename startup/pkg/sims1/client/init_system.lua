@@ -2,10 +2,15 @@ local ecs = ...
 local system = ecs.system "init_system"
 local world = ecs.world
 local w = world.w
-local dep 			= require 'client.dep' ---@type sims1.dep
-local ImGui 		= dep.ImGui
+
+local ImGui 		= require "imgui"
+---@type ly.common
+local common 		= import_package 'ly.common' 	
+---@type ly.game_editor	
+local game_editor  	= import_package 'ly.game_editor'
+---@type ly.game_editor.editor
+local editor  
 local expand = false
-local editor  ---@type ly.game_editor.editor
 
 local imesh = ecs.require "ant.asset|mesh"
 local ientity = ecs.require "ant.entity|entity"
@@ -42,40 +47,8 @@ end
 
 
 function system.init_world()
-	print("system.init_world")
-	
+	print("system.init_world")	
 	world:create_instance { prefab = "/pkg/game.res/light_skybox.prefab" }
-	-- world:create_entity{
-	-- 	policy = { "ant.render|simplerender", },
-	-- 	data = {
-	-- 		scene = { s = {250, 1, 250}, },
-	-- 		material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
-	-- 		visible	= true,
-	-- 		mesh_result = imesh.init_mesh(ientity.plane_mesh(), true),
-	-- 		owned_mesh_buffer = true,
-	-- 		on_ready = function(e) 
-	-- 			local main_queue = w:first "main_queue camera_ref:in"
-	-- 			local main_camera <close> = world:entity(main_queue.camera_ref, "camera:in")
-	-- 			local dir = math3d.vector(0, -1, 1)
-	-- 			local size = 4
-	-- 			local boxcorners = {math3d.vector(-size, -size, -size), math3d.vector(size, size, size)}
-	-- 			local aabb = math3d.aabb(boxcorners[1], boxcorners[2])
-	-- 			icamera.focus_aabb(main_camera, aabb, dir)
-	-- 		end,
-	-- 	}
-	-- }
-
-	-- local iom = ecs.require "ant.objcontroller|obj_motion"
-	-- for i = 1, 5 do 
-	-- 	world:create_instance {
-	-- 		prefab = "/pkg/game.res/npc/cube/cube_green.glb/mesh.prefab",
-	-- 		on_ready = function(e)
-	-- 			local eid = e.tag['*'][1]
-	-- 			local ee<close> = world:entity(eid)
-	-- 			iom.set_position(ee, math3d.vector(i * 2.5 - 10, 0, 0))
-	-- 		end
-	-- 	}
-	-- end
 
 	local main_queue = w:first "main_queue camera_ref:in"
 	local main_camera <close> = world:entity(main_queue.camera_ref, "camera:in")
@@ -100,7 +73,7 @@ function system.data_changed()
 		ImGui.SetNextWindowSize(120 * dpi, 40 * dpi);
 	end
 	if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoScrollWithMouse", "NoCollapse", "NoTitleBar"}) then 
-		if dep.common.imgui_utils.draw_btn(" 返 回 ", not expand) then 
+		if common.imgui_utils.draw_btn(" 返 回 ", not expand) then 
 			if expand then 
 				expand = not expand
 			else 
@@ -108,7 +81,7 @@ function system.data_changed()
 			end
 		end
 		ImGui.SameLine()
-		if dep.common.imgui_utils.draw_btn("编辑器", expand) then 
+		if common.imgui_utils.draw_btn("编辑器", expand) then 
 			expand = not expand
 			if not expand then 
 				Sims1.call_server(Sims1.msg.rpc_restart)
@@ -123,7 +96,7 @@ function system.data_changed()
 				tbParams.pkgs = {"sims1.res"}
 				tbParams.theme_path = "sims1.res/themes/default.style"
 				tbParams.goap_mgr = require 'goap.goap'
-				editor = dep.game_editor.create_editor(tbParams)
+				editor = game_editor.create_editor(tbParams)
 			end
 			local x, y = ImGui.GetContentRegionAvail()
 			ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 0, 0)

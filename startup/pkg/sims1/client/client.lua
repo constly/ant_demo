@@ -1,6 +1,6 @@
-local dep = require 'client.dep'
+local common = import_package 'ly.common'
 local ltask = require "ltask"
-local map = dep.common.map
+local map = common.map
 
 local function new(ecs)
 	---@class sims1.client
@@ -15,7 +15,8 @@ local function new(ecs)
 	api.statemachine 	= require 'client.state_machine'.new(api)  		---@type sims1.client.state_machine
 	api.map  			= require 'client.map.client_map'.new(api)		---@type sims1.client.map
 	api.npc_mgr			= require 'client.npc.client_npc_mgr'.new(api)
-	api.players 		= require 'client.room.client_players'.new()
+	api.players 		= require 'client.player.client_players'.new()
+	api.player_ctrl 	= require 'client.player.player_ctrl'.new(api)
 
 	api.ecs 			= ecs
 
