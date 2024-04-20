@@ -14,7 +14,7 @@ local function new(server)
 	---@return sims1.server.npc
 	function api.create_npc()
 		next_id = next_id + 1
-		local npc = require 'service.server.npc.npc'.new(server)
+		local npc = require 'service.server.npc.server_npc'.new(server)
 		npc.id = next_id
 		api.npcs[npc.id] = npc
 		return npc

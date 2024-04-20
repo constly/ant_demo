@@ -14,7 +14,7 @@ local function new()
 	api.player_mgr = require 'service.server.room.player_mgr'.new(api) 
 	api.room = require 'service.server.room.server_room'.new(api)  
 	api.map_mgr = require 'service.server.map.map_mgr'.new(api)
-	api.npc_mgr = require 'service.server.npc.npc_mgr'.new(api)
+	api.npc_mgr = require 'service.server.npc.server_npc_mgr'.new(api)
 
 	function api.init()
 		api.msg.init(false, api)

@@ -14,6 +14,7 @@ local function new(ecs)
 	api.room 			= require 'client.room.client_room'.new(api)
 	api.statemachine 	= require 'client.state_machine'.new(api)  		---@type sims1.client.state_machine
 	api.map  			= require 'client.map.client_map'.new(api)		---@type sims1.client.map
+	api.npc_mgr			= require 'client.npc.client_npc_mgr'.new(api)
 	api.players 		= require 'client.room.client_players'.new()
 
 	api.ecs 			= ecs
@@ -79,6 +80,7 @@ local function new(ecs)
 
 	function api.restart()
 		api.loader.restart()
+		api.npc_mgr.restart()
 		api.map.cleanup()
 		Sims1.call_server(api.msg.rpc_apply_map)
 	end
