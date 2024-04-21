@@ -583,6 +583,26 @@ local function new()
 		return name
 	end
 
+	function api.is_key_exist(name)
+		for i, v in ipairs(api.data.heads) do 
+			if v.key == name then 
+				return true
+			end
+		end
+	end
+
+	function api.notify_modify_key(oldKey, newKey)
+		for i, line in ipairs(api.data.bodies) do 
+			for key, v in pairs(line) do 
+				if key == oldKey then 
+					line[newKey] = v
+					line[key] = nil
+					break
+				end
+			end
+		end
+	end
+
 	return api
 end
 

@@ -99,7 +99,7 @@ local function new(editor, data_hander, stack, clipboard)
 			if keyIdx == input_x and lineIdx == input_y then 
 				ImGui.SetNextItemWidth(width)
 				local style<close> = editor.style.use(GStyle.cell_input)
-				if ImGui.InputTextEx("##tabel_input_cell", input_buf, ImGui.InputTextFlags {'AutoSelectAll', "EnterReturnsTrue"}) or not is_selected then 
+				if ImGui.InputText("##tabel_input_cell", input_buf, ImGui.InputTextFlags {'AutoSelectAll', "EnterReturnsTrue"}) or not is_selected then 
 					input_x, input_y = nil, nil
 					return tostring(input_buf)
 				end
@@ -121,7 +121,7 @@ local function new(editor, data_hander, stack, clipboard)
 				stack.snapshoot(false)
 			end
 		end
-		if ImGui.IsItemHovered() and ImGui.IsMouseDoubleClicked(ImGui.MouseButton.Left) then 
+		if lineIdx > 2 and ImGui.IsItemHovered() and ImGui.IsMouseDoubleClicked(ImGui.MouseButton.Left) then 
 			input_x = keyIdx
 			input_y = lineIdx
 			input_buf:Assgin(tostring(content or ""))
@@ -312,8 +312,13 @@ local function new(editor, data_hander, stack, clipboard)
 			if lineIdx == 1 then 
 				local draw_data = {value = col.key, header = "关键字", header_len = header_len, content_len = content_len}
 				if data_def.show_inspector("string", draw_data) then 
-					col.key = draw_data.new_value
-					stack.snapshoot(true)
+					if not data_hander.is_key_exist(draw_data.new_value) then
+						data_hander.notify_modify_key(col.key, draw_data.new_value)
+						col.key = draw_data.new_value
+						stack.snapshoot(true)
+					else 
+						editor.msg_hints.show(draw_data.new_value .. "已经存在", "error")
+					end
 				end
 			elseif lineIdx == 2 then 
 				local draw_data = {value = col.type, header = "数据类型", header_len = header_len, content_len = content_len}

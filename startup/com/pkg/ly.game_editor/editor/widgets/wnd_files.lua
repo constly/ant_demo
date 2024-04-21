@@ -401,10 +401,19 @@ local function new(editor)
 			index = index + 1
 			local temp = {x = pos.x + cell.x * 0.5, y = pos.y}
 			ImGui.SetCursorPos(temp.x - texSize.x * 0.5, temp.y)
-			local icon = icons[ext] or icons["unknown"]
+			local icon = icons[ext] 
+			local isUnknown = false
+			if not icon then
+				icon = icons["unknown"]
+				isUnknown = true;
+			end
 			ImGui.Image(dep.textureman.texture_get(icon.id), texSize.x, texSize.y)
 			
 			do
+				if isUnknown then 
+					ImGui.SetCursorPos(temp.x - texSize.x * 0.5 + 5, temp.y + 3)
+					ImGui.TextColored(0, 0, 0, 1, ext)
+				end
 				ImGui.SetCursorPos(temp.x - maskSize.x * 0.5, temp.y)
 				local label = "##btn_file_node_mask_" .. index
 				local style<close> = editor.style.use(GStyle.file_normal)

@@ -35,7 +35,13 @@ local function new(editor)
 			window.update(is_active, delta_time, tab.show_mode);
 		else 
 			ImGui.SetCursorPos(5, 5)
-			ImGui.TextColored(0.8, 0, 0, 1, "文件不存在: " .. path)
+
+			local full_path = editor.files.vfs_path_to_full_path(path)
+			if full_path then 
+				ImGui.TextColored(0.8, 0.8, 0.8, 1, "功能尚未实现: " .. path)
+			else 
+				ImGui.TextColored(0.8, 0, 0, 1, "文件不存在: " .. path)
+			end
 		end		
 	end
 
