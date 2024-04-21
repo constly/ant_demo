@@ -31,7 +31,9 @@ local function new(client)
 	end
 
 	function api.get_npc()
-		return client.npc_mgr.get_npc_by_id(api.local_player.npc_id)
+		if api.local_player then
+			return client.npc_mgr.get_npc_by_id(api.local_player.npc_id)
+		end
 	end
 
 	return api

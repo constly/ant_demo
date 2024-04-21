@@ -51,8 +51,19 @@ local function new(editor)
 		if window then return window end
 
 		if lib.start_with(path, editor.__inner_wnd) then 
-			local name = lib.split(path, ":")[2]
-			if name == "code_analysis" then 
+			local arr = lib.split(path, ":")
+			local name = arr[2]
+			if name == "custom" then 
+				for i, k in ipairs(editor.tbParams.menus or {}) do 
+					if k.name == arr[3] then 
+						window = k.window
+						if window.init then 
+							window.init(editor)
+						end
+						break
+					end
+				end
+			elseif name == "code_analysis" then 
 				window = require 'windows._code_analysis.wnd_code_analysis' .new(editor, path, path)
 			end
 		else

@@ -18,6 +18,13 @@ local function new(editor)
 	local tb_inner = {
 		{"代码统计", "code_analysis"},
 	}
+	
+	local function init()
+		for i, v in ipairs(editor.tbParams.menus or {}) do 
+			local tb = {v.name, string.format("custom:%s", v.name)}
+			table.insert(tb_inner, tb)
+		end
+	end
 
 	function api.draw(deltatime, line_y)
 		space = editor.workspaces.current_space()
@@ -279,14 +286,14 @@ local function new(editor)
 			ImGui.OpenPopup(menu, ImGui.PopupFlags { "None" });
 		end
 		if ImGui.BeginPopupContextItemEx(menu) then 
-			if ImGui.MenuItem("+ 收藏") then 
-			end
-			if ImGui.MenuItem("+ 文件夹") then 
-			end
-			if ImGui.MenuItem("+ GM界面") then 
-			end
-			if ImGui.MenuItem("+ 自定义界面") then 
-			end
+			-- if ImGui.MenuItem("+ 收藏") then 
+			-- end
+			-- if ImGui.MenuItem("+ 文件夹") then 
+			-- end
+			-- if ImGui.MenuItem("+ GM界面") then 
+			-- end
+			-- if ImGui.MenuItem("+ 自定义界面") then 
+			-- end
 			for i, v in ipairs(tb_inner) do 
 				if ImGui.MenuItem("+ " .. v[1]) then 
 					view.tabs.open_tab(__inner_wnd .. v[2])
@@ -365,6 +372,7 @@ local function new(editor)
 		end
 	end
 
+	init()
 	return api
 end
 

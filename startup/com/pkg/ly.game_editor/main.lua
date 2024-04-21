@@ -2,6 +2,10 @@
 ---@class ly.game_editor
 local api = {}
 
+---@class ly.game_editor.custommenu
+---@field name string 菜单名字
+---@field window ly.game_editor.wnd_base 窗口
+
 ---@class ly.game_editor.create_params 编辑器创建参数
 ---@field roots string[] 文件根目录列表
 ---@field cb_file_saved function 通知文件保存
@@ -10,6 +14,7 @@ local api = {}
 ---@field pkgs string[] 资源包
 ---@field theme_path string 主题路径
 ---@field goap_mgr goap_mgr goap节点定义
+---@field menus ly.game_editor.custommenu[] 自定义菜单列明
 local create_params = {}
 
 --- 创建游戏编辑器
