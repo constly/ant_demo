@@ -23,14 +23,29 @@ local function new(map_mgr, server)
 		local map_data = server.loader.map_list.get_by_id(tpl_id)
 		assert(map_data.path)
 		local map_handler = server.loader.map_data.get_data_handler(map_data.path)
+		local path_grid_def = map_handler.data.setting.grid_def
 
 		for _, layer in ipairs(map_handler.data.region.layers) do 
 			for gridId, grid in pairs(layer.grids) do 
-				local y = layer.height + (grid.height or 0)
-				local x, z = map_handler.grid_id_to_grid_pos(gridId)
-				local regionId = api.world_pos_to_region_id(x, y, z)
-				local region = api.get_or_create_region(regionId)
-				region.add_grid(x, y, z, grid)
+				local def = server.loader.map_grid_def.get_grid_def(path_grid_def, grid.tpl)
+				if def then
+					local y = layer.height + (grid.height or 0)
+					local x, z = map_handler.grid_id_to_grid_pos(gridId)
+					local regionId = api.world_pos_to_region_id(x, y, z)
+					local region = api.get_or_create_region(regionId)
+
+					if def.className == "npc" then 
+						---@type sims.server.npc.create_param
+						local params = {}
+						params.tplId = def.param1
+						params.mapId = uid
+						params.pos_x, params.pos_y, params.pos_z = x, y, z
+						local npc = server.npc_mgr.create_npc(params)
+						region.add_npc(npc)
+					else
+						region.add_grid(x, y, z, grid)
+					end
+				end
 			end
 		end
 		--common.lib.dump(api.regions)
@@ -82,7 +97,7 @@ local function new(map_mgr, server)
 	function api.get_sync_regions(npc)
 		local rets = {}
 		for region_id, v in pairs(api.regions) do 
-			rets[region_id] = v.get_sync_grids()
+			rets[region_id] = v.get_sync_data()
 		end
 		return rets
 	end

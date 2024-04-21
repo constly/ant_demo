@@ -3,7 +3,6 @@ local m = ecs.system "system_camera_ctrl"
 local world = ecs.world
 local w = world.w
 local math3d = require "math3d"
-local timer = ecs.require "ant.timer|timer_system"
 local iom = ecs.require "ant.objcontroller|obj_motion"
 local utils = require 'utils.utils'
 

@@ -9,17 +9,26 @@ local function new(client)
 	---@class sims.client.npc
 	---@field root number
 	---@field model any
+	---@field id number 唯一id
+	---@field tplId number 模板id
 	local api = {}
 	local world = client.world
 
-	function api.init()
+	---@param syncNpc sims.server.npc.sync.data
+	function api.init(syncNpc)
+		api.id = syncNpc.id
+		api.tplId = syncNpc.tplId
+
+		local cfg = client.loader.npcs.get_by_id(syncNpc.tplId)
+		assert(cfg.model, string.format("npc=%d 未配置模型", syncNpc.tplId))
+
 		-- npc根节点
 		api.root = world:create_entity {
 			policy = { "sims|npc_ctrl" },
 			data = {
 				scene = { 
-					s = {1, 1, 1}, 
-					t = {0, 0, 0}, 
+					s = {cfg.scale, cfg.scale, cfg.scale}, 
+					t = {syncNpc.pos_x, syncNpc.pos_y, syncNpc.pos_z}, 
 					r = {0, 0, 0}
 				},
 				comp_instance = {},
@@ -27,10 +36,10 @@ local function new(client)
 				comp_move = {},
 			}
 		}
-
+		
 		-- npc模型, 挂在root下
 		api.model = world:create_instance {
-			prefab = "/pkg/game.res/npc/test_003/scene.gltf/mesh.prefab",
+			prefab = cfg.model .. "/mesh.prefab",
 			on_ready = function (e)
 				world:instance_set_parent(e, api.root)
 				local p<close> = world:entity(api.root, "comp_instance?update")

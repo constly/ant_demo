@@ -12,13 +12,13 @@ local function new(client)
 			npc.destroy()
 		end
 		api.npcs = {}
-		api.create_npc()
 	end
 
-	function api.create_npc()
+	---@param syncNpc sims.server.npc.sync.data
+	function api.create_npc(syncNpc)
 		local npc = require 'npc.client_npc'.new(client)
-		npc.init()
-		api.npcs[1] = npc
+		npc.init(syncNpc)
+		api.npcs[npc.id] = npc
 	end
 
 	function api.get_npc_by_id(id)

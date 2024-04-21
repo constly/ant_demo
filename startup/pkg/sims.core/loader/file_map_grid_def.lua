@@ -12,6 +12,9 @@ local common = import_package 'ly.common'
 ---@field txt_color number[] 格子文本颜色
 ---@field model string 格子模型路径
 ---@field scale number[] 模型缩放
+---@field className string 类名
+---@field param1 string 扩展参数1
+---@field param2 string 扩展参数2
 
 local function new()
 	---@class sims.file_map_grid_def
@@ -36,6 +39,9 @@ local function new()
 					tb.size = common.lib.eval(line.size)
 					tb.model = line.model
 					tb.scale = common.lib.eval(line.scale) or {1, 1, 1}
+					tb.className = line.className
+					tb.param1 = line.param1
+					tb.param2 = line.param2
 					data[id] = tb
 				end
 			end

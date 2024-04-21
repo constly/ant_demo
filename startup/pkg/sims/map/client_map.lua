@@ -22,7 +22,7 @@ local function new(client)
 		instances = {}
 	end
 
-	---@param regions map<string, sims.server.grid[]>
+	---@param regions map<string, sims.server.region.sync>
 	function api.load_region(map_id, tpl_id, regions)
 		local ecs = client.ecs
 		local world = ecs.world
@@ -32,10 +32,9 @@ local function new(client)
 		local path_grid_def = client.loader.map_data.get_grid_def(map_data.path)
 		
 		local iom = ecs.require "ant.objcontroller|obj_motion"
-		for region_id, grids in pairs(regions) do 
-			for _, grid in ipairs(grids) do 
+		for region_id, region in pairs(regions) do 
+			for _, grid in ipairs(region.grids) do 
 				local def = client.loader.map_grid_def.get_grid_def(path_grid_def, grid.tpl_id)
-				print(grid.tpl_id, def, def.id, def.name)
 				if def.model then
 					local instance = world:create_instance {
 						prefab = def.model .. "/mesh.prefab",
@@ -48,6 +47,9 @@ local function new(client)
 					}
 					table.insert(instances, instance)
 				end
+			end
+			for _, npc in ipairs(region.npcs) do 
+				client.npc_mgr.create_npc(npc)
 			end
 		end
 		--common.lib.dump(regions)

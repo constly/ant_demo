@@ -103,10 +103,12 @@ local function new()
 					data.visible = arr[2] == "1"
 					data.explain = arr[3]
 					heads[j] = data
-				elseif i == 2 then
-					heads[j].type = str 
-				elseif i == 3 then
-					heads[j].key = str 
+				elseif heads[j] then
+					if i == 2 then
+						heads[j].type = str 
+					elseif i == 3 then
+						heads[j].key = str 
+					end
 				end
 			end
 		end

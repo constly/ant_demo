@@ -37,9 +37,31 @@ local function new(map)
 		table.insert(api.grids, grid)
 	end
 
+	---@param npc sims.server.npc
+	function api.add_npc(npc)
+		table.insert(api.npcs, npc)
+	end 
+
+	---@param npc sims.server.npc
+	function api.remove_npc(npc)
+		for i, v in ipairs(api.npcs) do 
+			if v == npc then 
+				return table.remove(api.npcs, i)
+			end
+		end
+	end
+
+	---@class sims.server.region.sync
+	---@field grids sims.server.grid[]
+	---@field npcs sims.server.npc.sync.data[]
 	-- 得到同步数据
-	function api.get_sync_grids()
-		return api.grids
+	---@return sims.server.region.sync
+	function api.get_sync_data()
+		local npcs = {}
+		for i, v in pairs(api.npcs) do 
+			table.insert(npcs, v.get_sync_data())
+		end
+		return {grids = api.grids, npcs = npcs}
 	end
 
 	return api

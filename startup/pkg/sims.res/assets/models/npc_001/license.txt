@@ -1,0 +1,11 @@
+Model Information:
+* title:	Stylized Roman Warrior
+* source:	https://sketchfab.com/3d-models/stylized-roman-warrior-838a087bd2d54808bdf106eba40fdab1
+* author:	YPalmer (https://sketchfab.com/jinvalelll)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Stylized Roman Warrior" (https://sketchfab.com/3d-models/stylized-roman-warrior-838a087bd2d54808bdf106eba40fdab1) by YPalmer (https://sketchfab.com/jinvalelll) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

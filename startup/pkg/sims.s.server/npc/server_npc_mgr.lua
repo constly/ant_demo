@@ -1,3 +1,11 @@
+---@class sims.server.npc.create_param
+---@field tplId number npc模板id
+---@field mapId number 所在地图id 
+---@field pos_x number 坐标x
+---@field pos_y number 坐标y
+---@field pos_z number 坐标z
+
+
 ---@param server sims.server
 local function new(server)
 	---@class sims.server.npc_mgr
@@ -12,10 +20,11 @@ local function new(server)
 
 	--- 创建npc
 	---@return sims.server.npc
-	function api.create_npc()
+	---@param params sims.server.npc.create_param
+	function api.create_npc(params)
 		next_id = next_id + 1
 		local npc = require 'npc.server_npc'.new(server)
-		npc.id = next_id
+		npc.init(next_id, params)
 		api.npcs[npc.id] = npc
 		return npc
 	end

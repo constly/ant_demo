@@ -1,12 +1,13 @@
-80;1;唯一标识	80;1;注释说明	80;1;格子大小	80;1;背景色	80;1;文本色	60;1;模型路径	129;1;模型缩放
-int	string	vec2_int	color	color	string	vec3
-id	name	size	bg_color	txt_color	model	scale
-1	地面	{1, 1}	{0.201,0.201,0.201,1}	{0.915,0.915,0.915,1}	/pkg/sims.res/assets/cube/cube_white.glb	{0.5, 0.5, 0.5}
-2	阻挡	{1, 1}	{0.846,0.114,0.114,1}	{0.927,0.927,0.927,1}	/pkg/sims.res/assets/cube/cube_red.glb	{0.5, 0.5, 0.5}
-						
-10	出生点	{1, 1}	{0.784,0.784,0.784,1}	{0.062,0.061,0.061,1}		
-						
-101	商店	{2, 2}	{0.076,0.591,0.073,1}	{0.927,0.927,0.927,1}	/pkg/sims.res/assets/cube/cube_yellow.glb	{2, 2, 2}
-102	铁匠铺	{2, 2}	{0.74,0.772,0.021,1}	{0,0,0,1}	/pkg/sims.res/assets/cube/cube_purple.glb	{2, 2, 2}
-						
-						
+56;1;唯一标识	61;1;注释说明	42;1;格子大小	52;1;背景色	54;1;文本色	60;1;模型路径	58;1;模型缩放	76;1;类名	60;1;参数1	60;1;参数2
+int	string	vec2_int	color	color	string	vec3	string	string	string
+id	name	size	bg_color	txt_color	model	scale	className	param1	param2
+1	地面	{1, 1}	{0.201,0.201,0.201,1}	{0.915,0.915,0.915,1}	/pkg/sims.res/assets/cube/cube_white.glb	{0.5, 0.5, 0.5}			
+2	阻挡	{1, 1}	{0.846,0.114,0.114,1}	{0.927,0.927,0.927,1}	/pkg/sims.res/assets/cube/cube_red.glb	{0.5, 0.5, 0.5}			
+									
+10	出生点	{1, 1}	{0.784,0.784,0.784,1}	{0.062,0.061,0.061,1}					
+									
+101	商店	{2, 2}	{0.076,0.591,0.073,1}	{0.927,0.927,0.927,1}	/pkg/sims.res/assets/cube/cube_yellow.glb	{2, 2, 2}			
+102	铁匠铺	{2, 2}	{0.74,0.772,0.021,1}	{0,0,0,1}	/pkg/sims.res/assets/cube/cube_purple.glb	{2, 2, 2}			
+									
+201	市民	{1, 1}	{0.919,0.905,0.905,1}	{0,0,0,1}			npc	1	
+									
