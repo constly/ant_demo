@@ -18,6 +18,16 @@ local function new(server)
 		next_id = 0;
 	end
 
+	--- 创建玩家npc
+	---@param player sims.server_player
+	function api.create_player_npc(player)
+		---@class sims.server.npc.create_param
+		local params = {}
+		params.mapId = 1
+		params.tplId = 1
+		return api.create_npc(params)
+	end
+
 	--- 创建npc
 	---@return sims.server.npc
 	---@param params sims.server.npc.create_param

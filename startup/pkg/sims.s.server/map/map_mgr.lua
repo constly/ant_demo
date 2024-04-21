@@ -4,10 +4,10 @@ local function new(server)
 	---@class sims.server.map_mgr
 	---@field maps sims.server.map<int, sims.server.map> 地图列表
 	local api = {}
-	local next_dynamic_map_id = 0
+	local next_id = 0
 
 	function api.restart()
-		next_dynamic_map_id = 10000
+		next_id = 0
 		api.maps = {}
 		api.create_map("1", false)
 	end
@@ -16,8 +16,8 @@ local function new(server)
 	---@param is_dynamic boolean 是不是动态地图
 	function api.create_map(tpl_id, is_dynamic)
 		local map = require 'map.server_map'.new(api, server)
-		next_dynamic_map_id = next_dynamic_map_id + 1
-		local id = next_dynamic_map_id
+		next_id = next_id + 1
+		local id = next_id
 		map.init(id, tpl_id)
 		api.maps[id] = map
 	end

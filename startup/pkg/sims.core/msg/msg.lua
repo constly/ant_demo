@@ -74,7 +74,7 @@ local function new()
 					local player = api.client.players.find_by_id(tbParam.id)
 					if player then 
 						player.is_self = true
-						api.client.room.local_player = player
+						api.client.player_ctrl.local_player = player
 					end
 				else 
 					api.client.room.need_exit = true
@@ -111,8 +111,6 @@ local function new()
 		-- 通知房间成员列表
 		api.reg_s2c(api.s2c_room_members, function(tbParam)
 			api.client.players.set_members(tbParam)
-			local player = api.client.players.find_by_id(tbParam.id)
-			if player then player.is_self = true end
 		end)
 
 		-- ping
@@ -122,7 +120,7 @@ local function new()
 
 		-- 通知踢人
 		api.reg_s2c(api.s2c_kick, function(tbParam)
-			if tbParam.id == api.client.room.self_player_id then 
+			if tbParam.id == api.client.player_ctrl.local_player.id then 
 				api.client.room.close()
 			end 
 		end)

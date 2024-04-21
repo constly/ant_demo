@@ -1,7 +1,3 @@
----@type ly.common
-local common = import_package 'ly.common'
----@type ly.game_core
-local game_core = import_package 'ly.game_core'
 
 ---@param map_mgr sims.server.map_mgr
 ---@param server sims.server
@@ -11,9 +7,11 @@ local function new(map_mgr, server)
 	---@field tpl_id string 模板id
 	---@field npcs npc[] 地图上npc列表
 	---@field regions sims.server.map<int, sims.server.region> 区域列表
+	---@field classes map<string, sims.server.grid[]> 按class分类
 	local api = {
 		npcs = {}, 
 		regions = {},
+		classes = {},
 	}
 
 	--- 初始化地图
@@ -43,7 +41,12 @@ local function new(map_mgr, server)
 						local npc = server.npc_mgr.create_npc(params)
 						region.add_npc(npc)
 					else
-						region.add_grid(x, y, z, grid)
+						local data = region.add_grid(x, y, z, grid)
+						if def.className and def.className ~= "" then 
+							local list = api.classes[def.className] or {}
+							api.classes[def.className] = list
+							table.insert(list, data)
+						end
 					end
 				end
 			end
@@ -54,11 +57,14 @@ local function new(map_mgr, server)
 	--- 加入地图
 	---@param npc sims.server.npc 
 	function api.on_login(npc)
+		local grid = api.get_first_gird_by_className("born") or {}
 		npc.map_id = api.id
-		npc.pos_x = 0;
-		npc.pos_y = 0;
-		npc.pos_z = 0;
+		npc.pos_x = grid.pos_x;
+		npc.pos_y = grid.pos_y;
+		npc.pos_z = grid.pos_z;
 		npc.region_id = api.world_pos_to_region_id(npc.pos_x, npc.pos_y, npc.pos_z)
+		local region = api.get_or_create_region(npc.region_id)
+		region.add_npc(npc)
 	end 
 
 	--- 离开地图
@@ -100,6 +106,12 @@ local function new(map_mgr, server)
 			rets[region_id] = v.get_sync_data()
 		end
 		return rets
+	end
+
+	---@return sims.server.grid
+	function api.get_first_gird_by_className(className)
+		local list = api.classes[className]
+		return list and list[1]
 	end
 
 	return api

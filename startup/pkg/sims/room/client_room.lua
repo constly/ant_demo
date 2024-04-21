@@ -10,9 +10,6 @@ local ltask = require "ltask"
 local function new(client)
 	---@class sims.client_room
 	local api = {} 		
-	api.self_player_id = 0;			--- 自己的角色id
-	api.local_player = nil 			---@type sims.client_player 本地玩家对象
-
 	local msg = client.msg
 	local client_fd
 	local quit = false

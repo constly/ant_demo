@@ -18,13 +18,7 @@ local function new_player(server, id)
 	api.name = "玩家" .. id
 	api.is_leader = false
 	api.is_online = true
-
-	---@class sims.server.npc.create_param
-	local params = {}
-	params.mapId = 1
-	params.tplId = 1
-	api.npc = server.npc_mgr.create_npc(params)
-
+	api.npc = server.npc_mgr.create_player_npc(api) 
 	return api
 end
 
@@ -43,11 +37,8 @@ local function new(server)
 
 	function api.reset_players_npc()
 		for i, v in ipairs(api.tb_members) do 
-			---@type sims.server.npc.create_param
-			local tb = {}
-			tb.tplId = 1
-			tb.mapId = 1
-			v.npc = server.npc_mgr.create_npc(tb)
+			v.npc = server.npc_mgr.create_player_npc(v)
+			server.map_mgr.on_login(v)
 		end
 	end
 

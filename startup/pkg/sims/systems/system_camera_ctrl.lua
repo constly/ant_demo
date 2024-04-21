@@ -33,11 +33,11 @@ function m.data_changed()
 	---@type sims.client
 	local client = world.client
 	local eid = client.player_ctrl.e_camera
-	if not eid then return end 
+	local npc = client.player_ctrl.get_npc()
+	if not eid or not npc then return end 
 
 	local e<close> = world:entity(eid, "comp_camera?in")
 	if e then 
-		local npc = client.player_ctrl.get_npc()
 		local pe<close> = world:entity(npc.root)
 		update(pe, e.comp_camera)
 	end

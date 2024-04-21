@@ -1,5 +1,5 @@
 cur_object_id: 201
-next_id: 32
+next_id: 39
 region:
   id: 1
   layers:
@@ -86,11 +86,21 @@ region:
     ---
     active: true
     grids:
-      -2_-1:
-        id: 31
+      -2_-2:
+        id: 38
+        tpl: 201
+      -2_2:
+        id: 39
+        tpl: 201
+      0_0:
+        id: 33
+        rotate: 180
+        tpl: 10
+      2_-2:
+        id: 36
         tpl: 201
       2_2:
-        id: 32
+        id: 37
         tpl: 201
     height: 0
     id: 3

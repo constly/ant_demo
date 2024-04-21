@@ -6,7 +6,9 @@
 local function new(client)
 	---@class sims.client.player_ctrl
 	---@field e_camera number 摄像机
+	---@field local_player sims.client_player 本地玩家对象
 	local api = {}
+	api.local_player = nil
 
 	function api.restart()
 		if api.e_camera then 
@@ -29,7 +31,7 @@ local function new(client)
 	end
 
 	function api.get_npc()
-		return client.npc_mgr.get_npc_by_id(1)
+		return client.npc_mgr.get_npc_by_id(api.local_player.npc_id)
 	end
 
 	return api

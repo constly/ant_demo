@@ -1,4 +1,4 @@
----@class sims.server.npc.sync.data
+---@class sims.server.npc.sync
 ---@field id number 唯一id
 ---@field tplId number npc模板id
 ---@field map_id number 
@@ -23,7 +23,7 @@ local function new(server)
 	---@param params sims.server.npc.create_param
 	function api.init(uid, params)
 		api.id = uid
-		api.tplId = params.tplId
+		api.tplId = tostring(params.tplId)
 		api.map_id = params.mapId
 		api.pos_x = params.pos_x
 		api.pos_y = params.pos_y
@@ -31,7 +31,7 @@ local function new(server)
 	end
 
 	function api.get_sync_data()
-		---@type sims.server.npc.sync.data
+		---@type sims.server.npc.sync
 		local npc = {}
 		npc.id = api.id
 		npc.tplId = api.tplId

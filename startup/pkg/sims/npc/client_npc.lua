@@ -14,12 +14,13 @@ local function new(client)
 	local api = {}
 	local world = client.world
 
-	---@param syncNpc sims.server.npc.sync.data
+	---@param syncNpc sims.server.npc.sync
 	function api.init(syncNpc)
 		api.id = syncNpc.id
 		api.tplId = syncNpc.tplId
 
 		local cfg = client.loader.npcs.get_by_id(syncNpc.tplId)
+		assert(cfg, string.format("npc 模板id 不存在: %s", syncNpc.tplId or "unknown"))
 		assert(cfg.model, string.format("npc=%d 未配置模型", syncNpc.tplId))
 
 		-- npc根节点

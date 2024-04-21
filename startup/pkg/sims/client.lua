@@ -21,7 +21,7 @@ local function new(ecs)
 	api.statemachine 	= require 'state_machine'.new(api)  		
 	api.map  			= require 'map.client_map'.new(api)		
 	api.npc_mgr			= require 'npc.client_npc_mgr'.new(api)
-	api.players 		= require 'player.client_players'.new()
+	api.players 		= require 'player.client_players'.new(api)
 	api.player_ctrl 	= require 'player.player_ctrl'.new(api)
 
 	local S
