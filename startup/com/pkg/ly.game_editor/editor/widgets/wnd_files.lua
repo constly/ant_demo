@@ -411,7 +411,7 @@ local function new(editor)
 			
 			do
 				if isUnknown then 
-					ImGui.SetCursorPos(temp.x - texSize.x * 0.5 + 5, temp.y + 3)
+					ImGui.SetCursorPos(temp.x - texSize.x * 0.5 + 1, temp.y + 3)
 					ImGui.TextColored(0, 0, 0, 1, ext)
 				end
 				ImGui.SetCursorPos(temp.x - maskSize.x * 0.5, temp.y)

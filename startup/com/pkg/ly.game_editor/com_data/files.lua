@@ -204,6 +204,22 @@ local function new(editor)
 		end
 	end
 
+	function api.vfs_path_to_full_path2(vfs_path)
+		if lib.start_with(vfs_path, "/pkg/") then 
+			vfs_path = string.gsub(vfs_path, "/pkg/", "")
+		end 
+		local arr = lib.split(vfs_path, "/")
+		if arr[1] == "" then 
+			table.remove(arr, 1)
+		end
+		local pkg = arr[1]
+		local r_path = table.concat(arr, "/", 2)
+		local root = api.resource_tree[pkg]
+		if root then 
+			return root.full_path .. "/" .. r_path;
+		end
+	end
+
 	function api.get_all_file_by_ext(ext)
 		---@param tree ly.game_editor.tree_item
 		local function find(tb, tree)

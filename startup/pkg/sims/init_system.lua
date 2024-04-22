@@ -104,9 +104,11 @@ function system.data_changed()
 				tbParams.project_root = world.args.ecs.project_root
 				tbParams.pkgs = {"sims.res"}
 				tbParams.theme_path = "sims.res/themes/default.style"
+				tbParams.workspace_path = "/pkg/sims.res/space.work"
 				tbParams.goap_mgr = require 'goap.goap'
 				tbParams.menus = {
 					{name = "存档助手", window = wnd_saved },
+					{name = "开发计划", window = require 'debug.wnd_dev_plan'.new(client) },
 				}
 				tbParams.notify_file_saved = function(vfs_path, full_path)
 					is_editor_dirty = true;

@@ -370,7 +370,9 @@ local function new(editor)
 	api.works = {} 		---@type ly.game_editor.space[]
 	api.index = 1; 		---@type number 当前选中的work
 
-	local file_path = string.format("%s/%s_workspace.ant", path_def.cache_root, editor.tbParams.module_name) 
+--	local file_path = string.format("%s/%s_workspace.ant", path_def.cache_root, editor.tbParams.module_name) 
+	local file_path = editor.files.vfs_path_to_full_path2(editor.tbParams.workspace_path) or "unknown path"
+	
 
 	-- 初始化
 	local function init()
