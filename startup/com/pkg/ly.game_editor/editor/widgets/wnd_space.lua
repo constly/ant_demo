@@ -183,9 +183,6 @@ local function new(editor)
 			local wnd = editor.wnd_mgr.find_window(v.path)
 			local is_file = not lib.start_with(v.path, __inner_wnd)
 			local name = v.name
-			if wnd and wnd.is_dirty() then 
-				name = "*" .. name
-			end
 			if not is_file then 
 				for i, tb in ipairs(tb_inner) do 
 					if lib.end_with(v.path, tb[2]) then 
@@ -193,6 +190,9 @@ local function new(editor)
 						break
 					end
 				end
+			end
+			if wnd and wnd.is_dirty and wnd.is_dirty() then 
+				name = "*" .. name
 			end
 			local label = string.format("%s##btn_view_%d_%s", name, view.id, v.name)
 			local style_name

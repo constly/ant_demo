@@ -56,6 +56,7 @@ local function new(editor, vfs_path, full_path)
 
 	function api.save()
 		uitls.save_file(full_path, data_hander, stack)
+		editor.wnd_mgr.when_file_save_complete(self, vfs_path, full_path)
 	end 
 
 	init()

@@ -10,14 +10,19 @@ local common 		= import_package 'ly.common'
 local game_editor  	= import_package 'ly.game_editor'
 ---@type ly.game_editor.editor
 local editor  
-local expand = false
+local expand = true
 
 local math3d = require "math3d"
 local icamera = ecs.require "ant.camera|camera"
+---@type sims.client
 local client
+local is_editor_dirty = false
+
+---@type sims.debug.wnd_saved
+local wnd_saved
+
 
 function system.preinit()
-	---@type sims.client
 	client = require 'client'.new(ecs)
 end 
 
@@ -38,6 +43,7 @@ end
 function system.exit()
 	client.shutdown()
 	client = nil
+	wnd_saved = nil
 	if editor then 
 		editor.exit()
 		editor = nil
@@ -60,7 +66,6 @@ end
 
 
 function system.data_changed()
-	--Sims1.call_server(msg.rpc_ping, {v = "2"})
 	ImGui.SetNextWindowPos(0, 0)
 	local dpi = ImGui.GetMainViewport().DpiScale
 	if expand then 
@@ -81,12 +86,18 @@ function system.data_changed()
 		ImGui.SameLine()
 		if common.imgui_utils.draw_btn("编辑器", expand) then 
 			expand = not expand
-			if not expand then 
-				client.call_server(client.msg.rpc_restart)
+			if not expand and is_editor_dirty then 
+				is_editor_dirty = false
+				local type = wnd_saved.get_restart_type()
+				if type then
+					client.call_server(client.msg.rpc_restart, {type = type})
+				end
 			end
 		end
 		if expand then 
 			if not editor then 
+				wnd_saved = require 'debug.wnd_saved'.new(client)
+
 				---@type ly.game_editor.create_params
 				local tbParams = {}
 				tbParams.module_name = "richmango"
@@ -95,8 +106,11 @@ function system.data_changed()
 				tbParams.theme_path = "sims.res/themes/default.style"
 				tbParams.goap_mgr = require 'goap.goap'
 				tbParams.menus = {
-					{name = "存档辅助", window = require 'debug.wnd_saved'.new() },
+					{name = "存档助手", window = wnd_saved },
 				}
+				tbParams.notify_file_saved = function(vfs_path, full_path)
+					is_editor_dirty = true;
+				end
 				editor = game_editor.create_editor(tbParams)
 			end
 			local x, y = ImGui.GetContentRegionAvail()

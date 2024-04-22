@@ -18,6 +18,7 @@ local function create(tbParams)
 	api.portal = (require 'com_data.portal').new(api)
 	api.workspaces = (require 'com_data.workspaces').new(api)
 	api.style = (require 'editor.style').new(api)			---@type ly.game_editor.style.draw
+	api.GStyle = GStyle
 
 	api.wnd_files = (require 'editor.widgets.wnd_files').new(api)
 	api.wnd_space = (require 'editor.widgets.wnd_space').new(api)

@@ -10,12 +10,12 @@
 local function new(server)
 	---@class sims.server.npc_mgr
 	---@field npcs sims.server.npc[] npc列表
+	---@field next_id number 
 	local api = {}
-	local next_id = 0
 
 	function api.restart()
 		api.npcs = {}
-		next_id = 0;
+		api.next_id = 0
 	end
 
 	--- 创建玩家npc
@@ -32,9 +32,9 @@ local function new(server)
 	---@return sims.server.npc
 	---@param params sims.server.npc.create_param
 	function api.create_npc(params)
-		next_id = next_id + 1
+		api.next_id = api.next_id + 1
 		local npc = require 'npc.server_npc'.new(server)
-		npc.init(next_id, params)
+		npc.init(api.next_id, params)
 		api.npcs[npc.id] = npc
 		return npc
 	end

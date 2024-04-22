@@ -17,6 +17,19 @@ local function new(api)
 	
 	api.reg_rpc(api.rpc_restart, 
 		function(player, tbParam, fd)
+			if tbParam.type == "only_save" then 			-- 只存档
+				api.server.save_mgr.save()
+				return
+			end
+			if tbParam.type == "load" then					-- 读档
+				api.server.save_mgr.load_save(tbParam.save_id)
+			elseif tbParam.type == "new_save" then 			-- 新建存档
+				api.server.save_mgr.new_save()
+			elseif tbParam.type == "save_and_load" then 	-- 存档后马上读档
+				api.server.save_mgr.save_and_load()
+			elseif tbParam.type == "load_last" then 		-- 读取最近一次存档
+				api.server.save_mgr.load_save_last()
+			end
 			api.server.restart()
 		end)
 

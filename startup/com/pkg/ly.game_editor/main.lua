@@ -8,7 +8,7 @@ local api = {}
 
 ---@class ly.game_editor.create_params 编辑器创建参数
 ---@field roots string[] 文件根目录列表
----@field cb_file_saved function 通知文件保存
+---@field notify_file_saved function 通知数据发生变化（即有保存操作）
 ---@field module_name string 模块名
 ---@field project_root string 项目根目录
 ---@field pkgs string[] 资源包
