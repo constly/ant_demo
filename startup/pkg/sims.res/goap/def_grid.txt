@@ -9,5 +9,5 @@ id	name	size	bg_color	txt_color	model	scale	className	param1	param2
 101	商店	{2, 2}	{0.076,0.591,0.073,1}	{0.927,0.927,0.927,1}	/pkg/sims.res/assets/cube/cube_yellow.glb	{2, 2, 2}			
 102	铁匠铺	{2, 2}	{0.74,0.772,0.021,1}	{0,0,0,1}	/pkg/sims.res/assets/cube/cube_purple.glb	{2, 2, 2}			
 									
-201	市民	{1, 1}	{0.919,0.905,0.905,1}	{0,0,0,1}			npc	1	
+201	市民	{1, 1}	{0.12,0.518,0.564,1}	{1,1,1,1}			npc	1	
 									

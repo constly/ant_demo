@@ -25,7 +25,7 @@ local function new(api)
 				api.server.save_mgr.load_save(tbParam.save_id)
 			elseif tbParam.type == "new_save" then 			-- 新建存档
 				api.server.save_mgr.new_save()
-			elseif tbParam.type == "save_and_load" then 	-- 存档后马上读档
+			elseif tbParam.type == "save_and_load" then 	-- 存档后马上读档（不写文件）
 				api.server.save_mgr.save_and_load()
 			elseif tbParam.type == "load_last" then 		-- 读取最近一次存档
 				api.server.save_mgr.load_save_last()

@@ -7,7 +7,7 @@ local ltask = require "ltask"
 local server = require 'server'.new()
 local quit
 
-local function Update()
+local function update()
 	while not quit do 		
 		server.tick(0.001)
 		--room.test()
@@ -18,6 +18,12 @@ local function Update()
 end
 
 local S = {}
+
+--- 设置存档根目录
+function S.set_saved_root(saved_root)
+	server.save_mgr.saved_root = saved_root
+	print("set_saved_root", server.save_mgr.saved_root)
+end
 
 function S.init_standalone()
 	server.init()
@@ -53,7 +59,6 @@ function S.shutdown()
     ltask.quit()
 end
 
-
-ltask.fork(Update)
+ltask.fork(update)
 
 return S;

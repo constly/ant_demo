@@ -2,10 +2,17 @@
 --- 存档数据操作
 --------------------------------------------------------------
 
---- 全局
+--- 全局数据
 ---@class sims.save.global
 ---@field next_npc_id number 下个npcid
 ---@field next_map_id number 下个mapid
+---@field next_player_id number 下个playerid
+
+--- 玩家数据
+---@class sims.save.player
+---@field id number 玩家id
+---@field guid string 玩家guid
+---@field npc_id number 操控的npcid
 
 --- npc数据
 ---@class sims.save.npc_data  
@@ -29,6 +36,7 @@
 --- 存档数据
 ---@class sims.save_data
 ---@field global sims.save.global 全局数据
+---@field players sims.save.player[] 玩家列表
 ---@field maps sims.save.map_data[] 地图列表
 ---@field npcs sims.save.npc_data[] npc列表
 
@@ -45,14 +53,17 @@ local function new(server)
 		data.maps = {}
 		data.npcs = {}
 		data.global = {}
-
+		data.players = {}
 		api.save_data = data
 	end 
 
-	function api.load(path)
+	--- 得到存档内容
+	function api.get_saved()
+		return ""
 	end
 
-	function api.save(path)
+	--- 设置存档内容
+	function api.set_saved(content)
 	end
 
 	return api

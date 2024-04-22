@@ -15,7 +15,7 @@ items:
       children: {}
       id: 3
       size_rate: 0.2603053435114504
-      tabs: "__inner:custom:存档助手;__inner:code_analysis|1;__inner:custom:存档助手|1;__inner:custom:开发计划|1"
+      tabs: "__inner:custom:开发计划;__inner:code_analysis|1;__inner:custom:存档助手|1;__inner:custom:开发计划|1"
       type: 0
     id: 1
     size_rate: 1

@@ -4,6 +4,9 @@ local map = common.map
 ---@type sims.core
 local core = import_package 'sims.core'
 
+---@type ly.game_core
+local game_core = import_package 'ly.game_core'
+
 local function new(ecs)
 	---@class sims.client
 	---@field ecs any
@@ -41,6 +44,12 @@ local function new(ecs)
 		api.is_listen_player = tbParam.is_listen_player or tbParam.is_standalone
 		if api.is_listen_player then 
 			api.serviceId = ltask.spawn("sims.s.server|entry", ltask.self())
+			do 
+				local package_handler = game_core.create_package_handler(ecs.world.args.ecs.project_root)
+				local root_path = package_handler.get_pkg_path("sims.res")
+				assert(root_path, "编辑器下走sims.res包, 运行时走cache目录")
+				ltask.send(api.serviceId, "set_saved_root",  tostring(root_path) .. "/saved/")
+			end
 			if tbParam.is_standalone then
 				ltask.send(api.serviceId, "init_standalone")
 			else

@@ -1,7 +1,7 @@
 local arg = ...
 
 import_package "ant.window".start {
-    window_size = "1400x800",
+    window_size = "1400x900",
     enable_mouse = true,
     --feature = { "game.demo" },
 	feature = { "sims" },

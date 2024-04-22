@@ -5,6 +5,9 @@ local dep 		= require 'dep'
 local lfs       = require "bee.filesystem"
 local lib 		= dep.common.lib
 
+---@type ly.game_core
+local game_core = import_package 'ly.game_core'
+
 ---@class ly.game_editor.code.data 
 ---@field name string
 ---@field lua number lua代码行数
@@ -20,14 +23,15 @@ local function new(editor)
 		isModify = false,
 		cache = {},			-- 缓存数据，存档时忽略
 	}
+	local package_handler = game_core.create_package_handler(editor.tbParams.project_root)
 
 	function api.reload()
 		api.data = {}
-		local packages = editor.files.get_package(editor.tbParams.project_root)
+		local packages = package_handler.get_packages()
 		local tb = {}
 		local total_lua = 0
 		for _, item in ipairs(packages) do
-			local res = {tree = editor.files.construct_resource_tree(item.path, tostring(item.path) .. "/")}
+			local res = {tree = package_handler.construct_resource_tree(item.path, tostring(item.path) .. "/")}
 			local data = api.get_pkg_lines(item.name, res)
 			if data.lua > 0 then
 				data.name = item.name
@@ -60,7 +64,7 @@ local function new(editor)
 	function api.get_pkg_lines(pkg_name, res)
 		local data = {lua = 0, c = 0}
 
-		---@param tree ly.game_editor.tree_item
+		---@param tree ly.game_core.tree_item
 		local function check (tree)
 			for i, v in ipairs(tree.dirs) do 
 				check(v.tree)
