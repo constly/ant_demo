@@ -18,9 +18,9 @@ local function new(server)
 	--------------------------------------------------
 	function api.to_save_data()
 		---@type sims.save.npc_data
-		local tb = {}
-		tb.next_id = api.next_id
-		tb.npcs = {}
+		local data = {}
+		data.next_id = api.next_id
+		data.npcs = {}
 		for i, npc in pairs(api.npcs) do 
 			---@type sims.save.npc
 			local tb = {}
@@ -30,9 +30,9 @@ local function new(server)
 			tb.pos_x = npc.pos_x
 			tb.pos_y = npc.pos_y
 			tb.pos_z = npc.pos_z
-			table.insert(tb.npcs, tb)
+			table.insert(data.npcs, tb)
 		end
-		return tb
+		return data
 	end
 
 	---@param data sims.save.npc_data
@@ -40,7 +40,14 @@ local function new(server)
 		api.next_id = data.next_id or 0
 		api.npcs = {}
 		for i, npc in ipairs(data.npcs or {}) do 
-			-- create npc
+			---@type sims.server.npc.create_param
+			local param = {}
+			param.mapId = npc.map_id
+			param.pos_x = npc.pos_x
+			param.pos_y = npc.pos_y
+			param.pos_z = npc.pos_z
+			param.tplId = npc.tpl_id
+			api.create_npc(param, npc.id)
 		end
 	end
 
@@ -60,12 +67,21 @@ local function new(server)
 	--- 创建npc
 	---@return sims.server.npc
 	---@param params sims.server.npc.create_param
-	function api.create_npc(params)
-		api.next_id = api.next_id + 1
+	function api.create_npc(params, npc_id)
 		local npc = require 'npc.server_npc'.new(server)
-		npc.init(api.next_id, params)
+		local id = npc_id
+		if not id then 
+			api.next_id = api.next_id + 1
+			id = api.next_id
+		end
+		npc.init(id, params)
 		api.npcs[npc.id] = npc
 		return npc
+	end
+
+	--- 得到npc id
+	function api.get_npc_by_id(npc_id)
+		return api.npcs[npc_id]
 	end
 
 	--- 销毁npc

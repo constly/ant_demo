@@ -21,33 +21,35 @@ local function new(server)
 	--------------------------------------------------
 	function api.to_save_data()
 		---@type sims.save.player_data
-		local tb = {}
-		tb.next_id = next_id
-		tb.npcs = {}
-		for i, npc in pairs(api.npcs) do 
+		local data = {}
+		data.next_id = next_id
+		data.players = {}
+		for i, player in pairs(api.players) do 
 			---@type sims.save.player
 			local tb = {}
-			tb.id = npc.id
-			table.insert(tb.npcs, tb)
+			tb.id = player.id
+			tb.guid = player.guid
+			tb.npc_id = player.npc.id
+			tb.name = player.name
+			table.insert(data.players, tb)
 		end
-		return tb
+		return data
 	end
 
 	---@param data sims.save.player_data
 	function api.load_from_save(data)
 		next_id = data.next_id or 0
-		api.npcs = {}
-		for i, player in ipairs(data.players or {}) do 
-			-- create player
-		end
-
-		api.reset_players_npc()
-	end
-
-	function api.reset_players_npc()
-		for i, v in ipairs(api.players) do 
-			v.npc = server.npc_mgr.create_player_npc(v)
-			server.map_mgr.on_login(v)
+		api.players = {}
+		for i, p in ipairs(data.players or {}) do 
+			local player = new_player_handler.new(server, p.id)
+			player.guid = p.guid
+			player.name = p.name
+			player.npc = server.npc_mgr.get_npc_by_id(p.npc_id) 
+			if not player.npc then 
+				player.npc = server.npc_mgr.create_player_npc(player)
+				server.map_mgr.on_login(player)
+			end
+			table.insert(api.players, player)
 		end
 	end
 
@@ -56,15 +58,24 @@ local function new(server)
 	--------------------------------------------------
 	---@param fd number
 	---@param code number
+	---@param guid string
 	---@return sims.server_player 添加成员
-	function api.add_member(fd, code)
+	function api.add_player(fd, code, guid)
+		for i, v in ipairs(api.players) do 
+			if v.guid == guid then 
+				v.fd = fd
+				v.code = code
+				return v
+			end
+		end
+
 		next_id = next_id + 1;
 		local player = new_player_handler.new(server, next_id)
 		player.fd = fd
 		player.code = code
-
+		player.guid = guid
+		player.npc = server.npc_mgr.create_player_npc(player) 
 		table.insert(api.players, player)
-		print("add member", fd, next_id, code)
 		return player;
 	end
 
@@ -95,8 +106,8 @@ local function new(server)
 		end 
 	end
 
-	function api.remove_member(fd)
-		print("remove member", fd)
+	function api.remove_player(fd)
+		print("remove player", fd)
 		for i, v in ipairs(api.players) do 
 			if v.fd == fd then 
 				return table.remove(api.players, i);

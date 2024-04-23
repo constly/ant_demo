@@ -47,6 +47,7 @@
 ---@field id number 玩家id
 ---@field guid string 玩家guid
 ---@field npc_id number 操控的npcid
+---@field name string 玩家名字
 
 --- 所有玩家数据
 ---@class sims.save.player_data

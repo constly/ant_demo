@@ -85,7 +85,7 @@ local function new()
 		-- 退出房间
 		api.reg_rpc(api.rpc_exit, 
 			function(player, tbParam)
-				api.server.player_mgr.remove_member(player.fd)
+				api.server.player_mgr.remove_player(player.fd)
 				api.server.room.refresh_members() 
 				return {ok = true}
 			end,

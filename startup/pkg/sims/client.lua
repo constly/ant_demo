@@ -26,6 +26,7 @@ local function new(ecs)
 	api.npc_mgr			= require 'npc.client_npc_mgr'.new(api)
 	api.players 		= require 'player.client_players'.new(api)
 	api.player_ctrl 	= require 'player.player_ctrl'.new(api)
+	api.saved_root		= "";	-- 存档根目录
 
 	local S
 	local function init()
@@ -48,7 +49,8 @@ local function new(ecs)
 				local package_handler = game_core.create_package_handler(ecs.world.args.ecs.project_root)
 				local root_path = package_handler.get_pkg_path("sims.res")
 				assert(root_path, "编辑器下走sims.res包, 运行时走cache目录")
-				ltask.send(api.serviceId, "set_saved_root",  tostring(root_path) .. "/saved/")
+				api.saved_root = tostring(root_path) .. "/saved/"
+				ltask.send(api.serviceId, "set_saved_root", api.saved_root)
 			end
 			if tbParam.is_standalone then
 				ltask.send(api.serviceId, "init_standalone")

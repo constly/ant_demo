@@ -10,6 +10,9 @@ local dep = require 'dep'
 ---@class ly.common.file
 local api = {}
 
+---@class ly.common.datalist
+local datalist = require 'tools.datalist'
+
 ---@param file_path string 文件磁盘路径
 ---@return string 文本内容
 function api.load_file_from_disk(file_path)
@@ -93,12 +96,18 @@ function api.load_csv(file_path)
 end 
 
 ---@param full_path string 文件磁盘路径
----@param stack common_data_stack
+---@param content string 文件内容
 function api.save_file(full_path, content)
 	local f<close> = assert(io.open(full_path, "w"))
 	if f then
 		f:write(content)
 	end
+end
+
+---@param full_path string 文件磁盘路径
+---@param data table 数据内容
+function api.save_datalist(full_path, data)
+	api.save_file(full_path, datalist.serialize(data or {}))
 end
 
 

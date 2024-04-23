@@ -50,11 +50,6 @@ local function new()
 		api.room.notify_restart()
 	end
 
-	-- -- 重启服务器(socket连接保留)
-	-- function api.restart()
-	-- 	api.room.notify_restart()
-	-- end 
-
 	function api.tick(delta_time)
 		api.room.tick()
 	end

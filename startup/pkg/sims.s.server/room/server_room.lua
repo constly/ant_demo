@@ -128,7 +128,7 @@ local function new(server)
 		local close_session = function(s, notify)
 			if s.fd then 
 				net.close(s.fd)
-				player_mgr.remove_member(s.fd)
+				player_mgr.remove_player(s.fd)
 				s.fd = nil
 				if notify then
 					api.refresh_members()
@@ -185,7 +185,7 @@ local function new(server)
 			close_all_session();
 		end)
 
-		local tb = player_mgr.add_member(0, 0)
+		local tb = player_mgr.add_player(0, 0, "local_player")
 		tb.is_leader = true 
 		tb.is_local = true
 		return true;

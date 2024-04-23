@@ -36,7 +36,7 @@ local function new(server)
 		save_data.player_data = server.player_mgr.to_save_data()
 
 		api.save_data = save_data
-		return ""
+		return common.datalist.serialize(save_data)
 	end
 
 	--- 设置存档内容
