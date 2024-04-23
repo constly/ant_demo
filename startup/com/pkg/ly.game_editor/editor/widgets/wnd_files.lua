@@ -138,7 +138,6 @@ local function new(editor)
 			else 
 				lfs.remove(path)
 			end
-			editor.files.refresh_tree(selected_pkg, view_path)
 		end
 		editor.dialogue_msgbox.open(open_param)
 	end
@@ -184,7 +183,6 @@ local function new(editor)
 				local to = string.format("%s/%s", full_path, _name)
 				lfs.copy_file(from, to)
 			end
-			editor.files.refresh_tree(selected_pkg, view_path)
 			set_selected_file(_name)
 		end
 		editor.dialogue_input.open(param)
@@ -217,7 +215,6 @@ local function new(editor)
 			local f<close> = assert(io.open(path, "w"))
 			f:write("")
 			print("create file", path)
-			editor.files.refresh_tree(selected_pkg, view_path)
 			set_selected_file(file_name)
 		end
 		editor.dialogue_input.open(param)
@@ -248,7 +245,6 @@ local function new(editor)
 			local path = string.format("%s/%s", full_path, name)
 			lfs.create_directory(path)
 			print("create dir", path)
-			editor.files.refresh_tree(selected_pkg, view_path)
 			set_selected_file(name)
 		end
 		editor.dialogue_input.open(param)
@@ -295,7 +291,6 @@ local function new(editor)
 				local to = string.format("%s/%s", full_path, _name)
 				lfs.rename(from, to)
 			end
-			editor.files.refresh_tree(selected_pkg, view_path)
 			set_selected_file(_name)
 		end
 		editor.dialogue_input.open(param)
@@ -490,13 +485,11 @@ local function new(editor)
 				print("move from to:", drop_from, drop_to)
 				editor.msg_hints.show("文件移动成功", "ok")
 				lfs.remove_all(drop_from)
-				editor.files.refresh_tree(selected_pkg, "")
 			end
 			if ImGui.MenuItem("克隆到此处") then 
 				lfs.copy(drop_from, drop_to, lfs.copy_options.overwrite_existing)
 				print("copy from to:", drop_from, drop_to)
 				editor.msg_hints.show("文件克隆成功", "ok")
-				editor.files.refresh_tree(selected_pkg, "")
 			end
 			ImGui.EndPopup()
 		end

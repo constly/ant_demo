@@ -133,6 +133,7 @@ local function create(tbParams)
 	end
 
 	function api.draw()
+		api.files.update_filewatch()
 		local dpi = dep.common.imgui_utils.get_dpi_scale()
 		height_bottom = 50 + 150 * dpi
 		size_portal_x = 100 + 200 * dpi

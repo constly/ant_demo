@@ -29,16 +29,12 @@ local function new(client)
 
 	---@type sims.client.wnd_saved.savedata[]
 	local tb_saves = {}
-	local filewatch
+	local filewatch = require "bee.filewatch".create()
 
 	function api.init(_editor)
 		editor = _editor
 		api.refresh()
-
-		local bfw = require "bee.filewatch"
-		local fw = bfw.create()
-		fw:add(client.saved_root)
-		filewatch = fw
+		filewatch:add(client.saved_root)
 	end
 
 	--- 得到服务器重启类型

@@ -17,6 +17,8 @@ local function new(editor)
 	api.packages = {}  			---@type ly.game_core.package_item[]
 	api.resource_tree = {}		---@type sims.server.map<string, ly.game_core.tree>
 
+	local filewatch = require "bee.filewatch".create()
+	local watch_paths = {}
 	local package_handler = game_core.create_package_handler(editor.tbParams.project_root)
 
 	---@return ly.game_core.tree_item
@@ -38,7 +40,10 @@ local function new(editor)
 					full_path = tostring(item.path), 
 					v_path = tostring(vpath),
 					r_path = "", 
-					tree = api.construct_resource_tree(item.path, tostring(item.path) .. "/")}
+					tree = api.construct_resource_tree(item.path, tostring(item.path) .. "/")
+				}
+				filewatch:add(tostring(item.path))
+				watch_paths[item.name] = tostring(item.path)
 			end
 		end
 		api.resource_tree = resource_tree
@@ -135,6 +140,26 @@ local function new(editor)
 			end
 		end
 		return rets
+	end
+
+	function api.update_filewatch()
+		local lib = dep.common.lib
+		local type, path = filewatch:select()
+		local tb_dirty = {}
+		while type do
+			if type == "modify" or type == "rename" then 
+				for name, v in pairs(watch_paths) do 
+					if lib.start_with(path, v) then 
+						table.insert(tb_dirty, name)
+						break
+					end
+				end
+			end
+			type, path = filewatch:select()
+		end
+		for _, name in ipairs(tb_dirty) do 
+			api.refresh_tree(name)
+		end
 	end
 
 	init()
