@@ -25,8 +25,10 @@ local function new()
 		api.serviceGoap = ltask.spawn("sims.s.goap|entry", ltask.self())
 		api.servicePathfinder = ltask.spawn("sims.s.path|entry", ltask.self())
 		ltask.send(api.serviceGoap, "init", {"/pkg/sims.res/goap/test.goap"})	
+		
+		api.restart_before()
 		api.save_mgr.load_save_last()
-		api.restart()
+		api.restart_after()
 	end 
 
 	function api.shutdown()
@@ -40,14 +42,18 @@ local function new()
 		end
 	end
 
-	-- 重启服务器(socket连接保留)
-	function api.restart()
+	function api.restart_before()
 		api.loader.restart()
-		api.npc_mgr.restart()
-		api.map_mgr.restart()
-		api.player_mgr.reset_players_npc()
+	end
+
+	function api.restart_after()
 		api.room.notify_restart()
-	end 
+	end
+
+	-- -- 重启服务器(socket连接保留)
+	-- function api.restart()
+	-- 	api.room.notify_restart()
+	-- end 
 
 	function api.tick(delta_time)
 		api.room.tick()

@@ -44,14 +44,14 @@ local function new(server)
 	end
 
 	function api.notify_to_all_client(cmd, tbParam)
-		for i, v in ipairs(player_mgr.tb_members) do 
+		for i, v in ipairs(player_mgr.players) do 
 			api.send_to_client(v.fd, cmd, tbParam)
 		end
 	end
 
 	function api.notify_restart()
 		api.refresh_members()
-		for i, v in ipairs(player_mgr.tb_members) do 
+		for i, v in ipairs(player_mgr.players) do 
 			server.map_mgr.on_login(v)
 		end
 		api.notify_to_all_client(msg.s2c_restart, {})
@@ -59,7 +59,7 @@ local function new(server)
 
 	function api.refresh_members()
 		local players = {}
-		for i, v in ipairs(player_mgr.tb_members) do 
+		for i, v in ipairs(player_mgr.players) do 
 			---@type sims.client_player
 			local p = {}
 			p.id = v.id

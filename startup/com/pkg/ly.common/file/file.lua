@@ -92,5 +92,14 @@ function api.load_csv(file_path)
     return rets
 end 
 
+---@param full_path string 文件磁盘路径
+---@param stack common_data_stack
+function api.save_file(full_path, content)
+	local f<close> = assert(io.open(full_path, "w"))
+	if f then
+		f:write(content)
+	end
+end
+
 
 return api
