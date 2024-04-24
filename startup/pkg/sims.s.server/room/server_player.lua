@@ -12,6 +12,7 @@ local function new(server, id)
 	---@field code number 验证码
 	---@field map_id number 所在地图id
 	---@field npc sims.server.npc 玩家控制的npc
+	---@field move_dir vec2 移动方向
 	local api = {}
 	api.id = id
 	api.name = "玩家" .. id

@@ -34,6 +34,12 @@ local function new(api)
 			api.server.restart_after()
 		end)
 
+	api.reg_rpc(api.rpc_set_move_dir, 
+		function(player, tbParam)
+			---@type sims.server_player
+			local p = player
+			p.move_dir = tbParam.dir
+		end)
 end
 
 return {new = new}

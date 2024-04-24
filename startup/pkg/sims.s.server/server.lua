@@ -52,6 +52,7 @@ local function new()
 
 	function api.tick(delta_time)
 		api.room.tick()
+		api.player_mgr.tick(delta_time)
 	end
 
 	return api

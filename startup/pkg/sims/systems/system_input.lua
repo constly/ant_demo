@@ -20,9 +20,10 @@ function m.exit()
 	world:unsub(eventGesturePinch)
 end
 
+---@param client sims.client
 ---@param comp_camera comp_camera
 ---@param npc sims.client.npc
-local function process_keyboard(comp_camera, npc)
+local function process_keyboard(client, comp_camera, npc)
 	for _, key, press, status in kb_mb:unpack() do
 		--[[ 
 			press: 
@@ -65,7 +66,12 @@ local function process_keyboard(comp_camera, npc)
 			move_dir.x = x
 			move_dir.z = z
 		end
-		e.comp_move.move_dir = move_dir
+		local last_dir = client.player_ctrl.move_dir
+		if not last_dir or (last_dir.x ~= move_dir.x or last_dir.z ~= move_dir.z) then 
+			client.player_ctrl.move_dir = move_dir
+			client.call_server(client.msg.rpc_set_move_dir, {dir = move_dir})
+		end
+		--e.comp_move.move_dir = move_dir
 	end
 end
 
@@ -120,7 +126,7 @@ function m.stage_input_process()
 		camera_cfg.rotate_speed = 270		-- 摄像机旋转速度
 	end
 
-	process_keyboard(camera_cfg, npc)
+	process_keyboard(client, camera_cfg, npc)
 	process_mouse(camera_cfg)
 end
 

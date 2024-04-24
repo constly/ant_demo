@@ -111,7 +111,6 @@ local function new(server)
 
 	--- 初始化服务器
 	function api.init_server(ip, port)
-		player_mgr.reset()
 		quit = false
 		server_ip = ip
 		server_port = tonumber(port)

@@ -8,11 +8,18 @@ local server = require 'server'.new()
 local quit
 
 local function update()
+	local time = os.clock()
+	local interval<const> = 0.05
 	while not quit do 		
-		server.tick(0.001)
-		--room.test()
-		--print("logic update", os.clock())
-		ltask.sleep(5)
+		local cur = os.clock()
+		server.tick(cur - time)
+		time = cur
+
+		local delta = os.clock() - time
+		if delta < interval then
+			local wait = math.ceil((interval - delta) * 100)
+			ltask.sleep(wait)
+		end
 	end
 	ltask.wakeup(quit)
 end

@@ -10,7 +10,7 @@ local common 		= import_package 'ly.common'
 local game_editor  	= import_package 'ly.game_editor'
 ---@type ly.game_editor.editor
 local editor  
-local expand = true
+local expand = false
 
 local math3d = require "math3d"
 local icamera = ecs.require "ant.camera|camera"

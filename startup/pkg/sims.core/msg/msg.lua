@@ -9,13 +9,14 @@ local function new()
 	api.client = nil 				---@type sims.client
 	api.server = nil 				---@type sims.server
 
-	--- 客户端全是rpc
+	--- 客户端全是rpc（服务器可以不返回）
 	api.rpc_login = 1					-- 登录
 	api.rpc_exit = 2					-- 退出房间
 	api.rpc_room_begin = 3				-- 房间战斗开始
 	api.rpc_ping = 4
 	api.rpc_apply_map = 5				-- 请求获取地图
 	api.rpc_restart = 6					-- 重启服务器
+	api.rpc_set_move_dir = 7			-- 设置移动方向
 
 	--- 服务器全是主动通知 
 	api.s2c_room_members = 1			-- 通知房间成员列表

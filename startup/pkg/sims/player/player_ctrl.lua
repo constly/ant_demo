@@ -7,6 +7,7 @@ local function new(client)
 	---@class sims.client.player_ctrl
 	---@field e_camera number 摄像机
 	---@field local_player sims.client_player 本地玩家对象
+	---@field move_dir vec2 最近移动方向
 	local api = {}
 	api.local_player = nil
 

@@ -11,11 +11,6 @@ local function new(server)
 	local next_id = 0;
 	api.players = {} ---@type sims.server_player[]
 
-	function api.reset()
-		next_id = 0
-		api.players = {}
-	end
-
 	--------------------------------------------------
 	-- 存档 和 读档
 	--------------------------------------------------
@@ -133,6 +128,14 @@ local function new(server)
 				return table.remove(api.players, i);
 			end 
 		end 
+	end
+
+	function api.tick(delta_time)
+		for i, v in ipairs(api.players) do 
+			if v.move_dir then 
+				print("delta time", v.move_dir.x, v.move_dir.z)
+			end
+		end
 	end
 
 	return api
