@@ -41,6 +41,7 @@ local function new(server)
 
 	--- 设置存档内容
 	function api.set_saved(content)
+		---@type sims.save_data
 		local data = content and common.datalist.deserialize(content)
 		if not data or not data.npc_data then 
 			api.init()
@@ -48,7 +49,7 @@ local function new(server)
 			api.save_data = data
 		end
 		server.npc_mgr.load_from_save(api.save_data.npc_data)
-		server.map_mgr.load_from_save(api.save_data.map_data)
+		server.map_mgr.load_from_save(api.save_data.map_data, api.save_data.npc_data)
 		server.player_mgr.load_from_save(api.save_data.player_data)
 	end
 

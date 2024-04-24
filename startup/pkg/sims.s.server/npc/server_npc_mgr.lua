@@ -9,7 +9,7 @@
 ---@param server sims.server
 local function new(server)
 	---@class sims.server.npc_mgr
-	---@field npcs sims.server.npc[] npc列表
+	---@field npcs map<number, sims.server.npc> npc列表
 	---@field next_id number 
 	local api = {}
 
@@ -21,16 +21,14 @@ local function new(server)
 		local data = {}
 		data.next_id = api.next_id
 		data.npcs = {}
+		data.map_npcs = {}
 		for i, npc in pairs(api.npcs) do 
-			---@type sims.save.npc
-			local tb = {}
-			tb.id = npc.id
-			tb.tpl_id = npc.tplId
-			tb.map_id = npc.map_id
-			tb.pos_x = npc.pos_x
-			tb.pos_y = npc.pos_y
-			tb.pos_z = npc.pos_z
-			table.insert(data.npcs, tb)
+			local type, m = npc.get_save_data()
+			if type == "map_npc" then 
+				data.map_npcs[m.grid_id] = m
+			else 
+				table.insert(data.npcs, m)
+			end
 		end
 		return data
 	end
@@ -39,7 +37,7 @@ local function new(server)
 	function api.load_from_save(data)
 		api.next_id = data.next_id or 0
 		api.npcs = {}
-		for i, npc in ipairs(data.npcs or {}) do 
+		for _, npc in ipairs(data.npcs or {}) do 
 			---@type sims.server.npc.create_param
 			local param = {}
 			param.mapId = npc.map_id

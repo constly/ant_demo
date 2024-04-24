@@ -15,7 +15,9 @@ local function new(map_mgr, server)
 	}
 
 	--- 初始化地图
-	function api.init(uid, tpl_id)
+	---@param map_save_data sims.save.map 地图存档数据
+	---@param npc_data sims.save.npc_data npc存档数据
+	function api.init(uid, tpl_id, map_save_data, npc_save_data)
 		api.id = uid
 		api.tpl_id = tpl_id
 		local map_data = server.loader.map_list.get_by_id(tpl_id)
@@ -29,18 +31,32 @@ local function new(map_mgr, server)
 				if def then
 					local y = layer.height + (grid.height or 0)
 					local x, z = map_handler.grid_id_to_grid_pos(gridId)
-					local regionId = api.world_pos_to_region_id(x, y, z)
-					local region = api.get_or_create_region(regionId)
-
+					---@type sims.server.region
+					local region
 					if def.className == "npc" then 
 						---@type sims.server.npc.create_param
 						local params = {}
 						params.tplId = def.param1
 						params.mapId = uid
-						params.pos_x, params.pos_y, params.pos_z = x, y, z
-						local npc = server.npc_mgr.create_npc(params)
+
+						local _gridId = string.format("%s_%s", uid, grid.id)
+						local npc_data = npc_save_data and npc_save_data.map_npcs[_gridId]
+						local id = nil
+						if npc_data then
+							id = npc_data.npc.id
+							params.pos_x, params.pos_y, params.pos_z = npc_data.npc.pos_x, npc_data.npc.pos_y, npc_data.npc.pos_z
+						else
+							params.pos_x, params.pos_y, params.pos_z = x, y, z
+						end
+						local npc = server.npc_mgr.create_npc(params, id)
+						npc.gridId = _gridId
+
+						local regionId = api.world_pos_to_region_id(npc.pos_x, npc.pos_y, npc.pos_z)
+						region = api.get_or_create_region(regionId)
 						region.add_npc(npc)
 					else
+						local regionId = api.world_pos_to_region_id(x, y, z)
+						region = api.get_or_create_region(regionId)
 						local data = region.add_grid(x, y, z, grid)
 						if def.className and def.className ~= "" then 
 							local list = api.classes[def.className] or {}

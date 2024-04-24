@@ -13,6 +13,7 @@ local function new(server)
 	---@class sims.server.npc
 	---@field id number 唯一id
 	---@field tplId number npc模板id
+	---@field gridId string 所属地图格子id
 	---@field map_id number 
 	---@field region_id number 在地图中的区域id
 	---@field pos_x number 位置x
@@ -30,6 +31,7 @@ local function new(server)
 		api.pos_z = params.pos_z
 	end
 
+	--- 得到同步到客户端的数据
 	function api.get_sync_data()
 		---@type sims.server.npc.sync
 		local npc = {}
@@ -41,6 +43,28 @@ local function new(server)
 		npc.pos_y = api.pos_y
 		npc.pos_z = api.pos_z
 		return npc
+	end
+
+	--- 得到存档数据
+	function api.get_save_data()
+		---@type sims.save.npc
+		local npc = {}
+		npc.id = api.id
+		npc.tpl_id = api.tplId
+		npc.map_id = api.map_id
+		npc.pos_x = api.pos_x
+		npc.pos_y = api.pos_y
+		npc.pos_z = api.pos_z
+
+		if api.gridId then 
+			---@type sims.save.map_npc
+			local m = {}
+			m.npc = npc
+			m.grid_id = api.gridId
+			return "map_npc", m
+		else 
+			return "npc", npc
+		end
 	end
 
 	return api

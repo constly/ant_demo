@@ -100,6 +100,7 @@ local function new(server)
 	end
 
 	function api.send_to_client(fd, cmd, tbParam)
+		fd = fd or 0
 		if fd > 0 then 
 			local pack = string.pack("<s2", seri.packstring(2, cmd, tbParam))
 			net.send(fd, pack);

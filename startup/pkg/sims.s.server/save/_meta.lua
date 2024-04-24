@@ -2,7 +2,7 @@
 --- npc 存档数据定义
 --------------------------------------------------------------
 
---- 单个npc数据
+--- 单个普通npc数据
 ---@class sims.save.npc  
 ---@field id number npc数据
 ---@field tpl_id number npc模板id
@@ -11,10 +11,16 @@
 ---@field pos_y number 在地图中的位置y
 ---@field pos_z number 在地图中的位置z
 
+--- 单个地图npc数据
+---@class sims.save.map_npc
+---@field npc sims.save.npc npc基础数据
+---@field grid_id string 所在格子id
+
 --- 所有npc数据
 ---@class sims.save.npc_data
 ---@field next_id number 下个npcid
 ---@field npcs sims.save.npc[] npc列表
+---@field map_npcs map<string, sims.save.map_npc> 地图npc列表
 
 
 

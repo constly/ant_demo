@@ -27,11 +27,14 @@ local function new(server)
 	end
 
 	---@param data sims.save.map_data
-	function api.load_from_save(data)
+	---@param npc_data sims.save.npc_data
+	function api.load_from_save(data, npc_data)
 		api.next_id = data.next_id or 0
 		api.maps = {}
 		for i, map in ipairs(data.maps or {}) do 
-			-- create map
+			local data = require 'map.server_map'.new(api, server)
+			data.init(map.id, map.tpl_id, map, npc_data)
+			api.maps[map.id] = data
 		end
 
 		if api.next_id == 0 then
@@ -48,7 +51,7 @@ local function new(server)
 		local map = require 'map.server_map'.new(api, server)
 		api.next_id = api.next_id + 1
 		local id = api.next_id
-		map.init(id, tpl_id)
+		map.init(id, tpl_id, nil)
 		api.maps[id] = map
 	end
 

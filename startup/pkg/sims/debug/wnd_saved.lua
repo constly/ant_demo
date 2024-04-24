@@ -21,6 +21,7 @@ local function new(client)
 	local cur_line_idx
 	local is_dirty = false
 	local curType = 1
+	local cur_index
 	local tbTypes = {
 		"自动存档/读档",
 		"新建存档",
@@ -60,7 +61,10 @@ local function new(client)
 			else 
 				local label = string.format(" %s ##btn_desc_%d", v.name, i)
 				ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
-				editor.style.draw_color_btn(label, {0.2, 0.2, 0.2, 1}, {0.9, 0.9, 0.9, 1}, {size_x = 220}) 
+				local color = (cur_index == i) and {0, 0.5, 0, 1} or {0.2, 0.2, 0.2, 1}
+				if editor.style.draw_color_btn(label, color, {0.9, 0.9, 0.9, 1}, {size_x = 220}) then 
+					cur_index = i
+				end
 				if ImGui.IsItemHovered() and ImGui.IsMouseDoubleClicked(ImGui.MouseButton.Left) then 
 					cur_line_idx = i
 					input_buf:Assgin(v.name)
@@ -73,6 +77,7 @@ local function new(client)
 				end
 				if ImGui.BeginPopupContextItem() then
 					cur_line_idx = nil
+					cur_index = i
 					if ImGui.MenuItem("改 名") then
 						cur_line_idx = i
 						input_buf:Assgin(v.name)
@@ -92,6 +97,7 @@ local function new(client)
 			ImGui.SameLineEx(math.min(size_x - 80, 300))
 			local label = string.format(" 应 用 ##btn_apply_%d", i)
 			if editor.style.draw_btn(label, true) then 
+				cur_index = i
 				client.call_server(client.msg.rpc_restart, {type = "load", save_id = v.save_id})
 			end
 			ImGui.Separator()
