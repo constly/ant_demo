@@ -31,6 +31,7 @@ local function new(server)
 			tb.guid = player.guid
 			tb.npc_id = player.npc.id
 			tb.name = player.name
+			tb.map_id = player.map_id
 			table.insert(data.players, tb)
 		end
 		return data
@@ -38,17 +39,36 @@ local function new(server)
 
 	---@param data sims.save.player_data
 	function api.load_from_save(data)
+		local _players = api.players
+		local function get_player(id)
+			for i, v in ipairs(_players) do 
+				if v.id == id then 
+					return v;
+				end
+			end
+		end
+
 		next_id = data.next_id or 0
 		api.players = {}
 		for i, p in ipairs(data.players or {}) do 
+			local pre = get_player(p.id)
+			---@type sims.server_player
 			local player = new_player_handler.new(server, p.id)
 			player.guid = p.guid
 			player.name = p.name
+			player.map_id = p.map_id
+			if pre then
+				player.fd = pre.fd
+				player.code = pre.code
+				player.is_leader = pre.is_leader
+				player.is_local = pre.is_local
+				player.is_online = pre.is_online
+			end
 			player.npc = server.npc_mgr.get_npc_by_id(p.npc_id) 
 			if not player.npc then 
 				player.npc = server.npc_mgr.create_player_npc(player)
-				server.map_mgr.on_login(player)
 			end
+			server.map_mgr.on_login(player)
 			table.insert(api.players, player)
 		end
 	end

@@ -58,6 +58,7 @@ local function new(server)
 	---@param player sims.server_player 玩家对象
 	function api.on_login(player)
 		local map = api.find_map_by_tpl_id("1")
+		player.map_id = map.id
 		map.on_login(player.npc)
 	end
 
