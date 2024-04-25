@@ -1,7 +1,7 @@
-62;1;唯一标识	51;1;注释说明	56;1;模型路径	54;1;缩放	60;1;注释说明
-string	string	string	number	string
-id	nul	model	scale	key4
-1	主角	/pkg/sims.res/assets/models/npc_001/scene.gltf	1	
+62;1;唯一标识	51;1;注释说明	56;1;模型路径	54;1;缩放	102;1;移动速度(米/秒)
+string	string	string	number	number
+id	nul	model	scale	speed
+1	主角	/pkg/sims.res/assets/models/npc_001/scene.gltf	1	4
 				
 				
 				
