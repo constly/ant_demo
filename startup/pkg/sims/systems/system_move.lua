@@ -14,6 +14,34 @@ function m.data_changed()
 
 	for e in w:select "comp_move:in" do
 		local move = e.comp_move
+
+		---@type sims.msg.s2c_npc_move
+		local s = move.server
+		if s then 
+			local dir = s.dir
+			local pos = s.pos
+			local speed = s.speed
+			local moving = dir[1] ~= 0 or dir[2] ~= 0
+
+			--print("update", dir[1], dir[2], pos[1], pos[2], pos[3])
+
+			local new_pos = math3d.vector(pos[1], pos[2], pos[3], 1)
+			local dir = math3d.vector(-dir[1], 0, -dir[2])
+			
+			-- 设置玩家位置和朝向
+			iom.set_view(e, new_pos, dir)
+				
+			if moving ~= move.moving then 
+				move.moving = moving
+				if moving then 
+					utils.play_animation(world, e, "run2_loop")
+				else 
+					utils.play_animation(world, e, "idle_loop")
+				end
+			end
+		end
+
+		--[[
 		local move_dir = move.move_dir
 		if move_dir then
 			local moving = false
@@ -39,5 +67,6 @@ function m.data_changed()
 				end
 			end
 		end
+		--]]
 	end
 end

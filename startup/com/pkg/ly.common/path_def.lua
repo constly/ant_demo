@@ -1,7 +1,5 @@
 local dep = require 'dep' ---@type ly.common.dep
 local fs = dep.fs
-local lfs               = require "bee.filesystem"
-local vfs               = require "vfs"
 
 ---@class ly.common.path_def
 local api = {}

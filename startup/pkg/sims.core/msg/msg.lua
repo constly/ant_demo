@@ -24,6 +24,7 @@ local function new()
 	api.s2c_entry_room = 4;				-- 通知进入房间
 	api.s2c_ping = 5
 	api.s2c_restart = 6;				-- 通知重启
+	api.s2c_npc_move = 7;				-- 通知npc移动
 
 	local reg_rpc
 	local reg_s2c
@@ -109,6 +110,8 @@ local function new()
 
 	--- 注册s2c
 	reg_s2c = function()
+		require 'msg.msg_s2c'.new(api)
+
 		-- 通知房间成员列表
 		api.reg_s2c(api.s2c_room_members, function(tbParam)
 			api.client.players.set_members(tbParam)

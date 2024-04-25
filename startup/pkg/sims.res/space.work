@@ -9,7 +9,7 @@ items:
       children: {}
       id: 2
       size_rate: 0.7396946564885496
-      tabs: sims.res/goap/main_map.map;sims.res/goap/def_grid.txt|1;sims.res/goap/main_map.map|1
+      tabs: sims.res/goap/def_grid.txt;sims.res/goap/def_grid.txt|1;sims.res/goap/main_map.map|1
       type: 0
       ---
       children: {}

@@ -10,6 +10,7 @@ local function new()
 	---@field room sims.server_room
 	---@field msg sims.msg
 	---@field save_mgr sims.server.save_mgr
+	---@field clock_time number 游戏时间
 	local api = {}
 
 	api.msg = core.new_msg()
@@ -53,6 +54,7 @@ local function new()
 	function api.tick(delta_time)
 		api.room.tick()
 		api.player_mgr.tick(delta_time)
+		api.map_mgr.tick(delta_time)
 	end
 
 	return api

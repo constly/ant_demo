@@ -71,8 +71,10 @@ local function new(map_mgr, server)
 	end
 
 	--- 加入地图
-	---@param npc sims.server.npc 
-	function api.on_login(npc)
+	---@param player sims.server_player 玩家对象
+	function api.on_login(player)
+		---@type sims.server.npc 
+		local npc = player.npc
 		local grid = api.get_first_gird_by_className("born") or {}
 		npc.map_id = api.id
 		npc.pos_x = grid.pos_x;
@@ -81,6 +83,7 @@ local function new(map_mgr, server)
 		npc.region_id = api.world_pos_to_region_id(npc.pos_x, npc.pos_y, npc.pos_z)
 		local region = api.get_or_create_region(npc.region_id)
 		region.add_npc(npc)
+		region.add_player(player)
 	end 
 
 	--- 离开地图
@@ -102,7 +105,7 @@ local function new(map_mgr, server)
 	function api.get_or_create_region(regionId)
 		local region = api.regions[regionId] 
 		if not region then 
-			region = require 'map.region'.new(api)
+			region = require 'map.region'.new(api, server)
 			region.id = regionId
 			region.init()
 			api.regions[regionId] = region
@@ -128,6 +131,15 @@ local function new(map_mgr, server)
 	function api.get_first_gird_by_className(className)
 		local list = api.classes[className]
 		return list and list[1]
+	end
+
+	--------------------------------------------------
+	-- 每帧更新
+	--------------------------------------------------
+	function api.tick(delta_time)
+		for region_id, region in pairs(api.regions) do 
+			region.tick(delta_time)
+		end
 	end
 
 	return api

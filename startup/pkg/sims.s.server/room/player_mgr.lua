@@ -133,7 +133,10 @@ local function new(server)
 	function api.tick(delta_time)
 		for i, v in ipairs(api.players) do 
 			if v.move_dir then 
-				print("delta time", v.move_dir.x, v.move_dir.z)
+				local dir = v.npc.move_dir
+				dir.x = v.move_dir.x
+				dir.y = v.move_dir.y
+				dir.z = v.move_dir.z
 			end
 		end
 	end

@@ -12,6 +12,7 @@ local function update()
 	local interval<const> = 0.05
 	while not quit do 		
 		local cur = os.clock()
+		server.clock_time = cur
 		server.tick(cur - time)
 		time = cur
 

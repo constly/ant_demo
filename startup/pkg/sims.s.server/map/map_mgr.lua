@@ -4,7 +4,7 @@ local function new(server)
 	---@class sims.server.map_mgr
 	---@field maps sims.server.map<int, sims.server.map> 地图列表
 	---@field next_id number
-	local api = {}
+	local api = {maps = {}}
 
 	--------------------------------------------------
 	-- 存档 和 读档
@@ -59,7 +59,7 @@ local function new(server)
 	function api.on_login(player)
 		local map = api.find_map_by_tpl_id("1")
 		player.map_id = map.id
-		map.on_login(player.npc)
+		map.on_login(player)
 	end
 
 	---@param player sims.server_player 玩家对象
@@ -77,6 +77,15 @@ local function new(server)
 			if v.tpl_id == tpl_id then 
 				return v
 			end
+		end
+	end
+
+	--------------------------------------------------
+	-- 每帧更新
+	--------------------------------------------------
+	function api.tick(delta_time)
+		for map_id, map in pairs(api.maps) do 
+			map.tick(delta_time)
 		end
 	end
 

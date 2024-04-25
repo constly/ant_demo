@@ -11,6 +11,7 @@
 ---@param server sims.server
 local function new(server)
 	---@class sims.server.npc
+	---public
 	---@field id number 唯一id
 	---@field tplId number npc模板id
 	---@field gridId string 所属地图格子id
@@ -19,6 +20,9 @@ local function new(server)
 	---@field pos_x number 位置x
 	---@field pos_y number 位置y
 	---@field pos_z number 位置z
+	---@field move_dir vec3 移动方向
+	---private
+	---@field inner_move_dir vec2 实际移动方向（）
 	local api = {}
 
 	---@param params sims.server.npc.create_param
@@ -29,6 +33,8 @@ local function new(server)
 		api.pos_x = params.pos_x
 		api.pos_y = params.pos_y
 		api.pos_z = params.pos_z
+		api.move_dir = {x = 0, z = 0}
+		api.inner_move_dir = {x = 0, z = 0}
 	end
 
 	--- 得到同步到客户端的数据
