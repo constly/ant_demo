@@ -132,12 +132,12 @@ if lm.os == "macos" then
     return
 end
 
-lm:exe "ant_demo" {	-- 编辑器版本
+lm:exe "ant_demo" {	
     deps = {
-        "ant_editor",
+        "ant_runtime",
         "bgfx-lib",
         "ant_links",
-        "bootstrap_lua",
+		"bootstrap_lua",
         modules
     },
     includes = {
@@ -146,24 +146,6 @@ lm:exe "ant_demo" {	-- 编辑器版本
     },
     msvc = {
         defines = "LUA_BUILD_AS_DLL",
-    },
-    sources = {
-        "../modules.c",
-        "../../runtime/win32/ant_demo.rc"
-    }
-}
-
-lm:exe "ant_demo_rt" {	-- 运行时版本
-    deps = {
-        "ant_runtime",
-        "bgfx-lib",
-        "ant_links",
-        "bootstrap_lua",
-        modules
-    },
-    includes = {
-        LuaInclude,
-        lm.AntDir .. "/runtime/common",
     },
     sources = {
         "../modules.c",

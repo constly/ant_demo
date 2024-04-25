@@ -8,16 +8,15 @@ lm.AntDir = lm:path "../ant"
 
 lm:conf {
     mode = "debug",
-    --optimize = "speed"
     visibility = "default",
     c = "c17",
     cxx = "c++20",
     macos = {
-        sys = "macos13.0",
+        sys = "macos13.3",
     },
     ios = {
         arch = "arm64",
-        sys = "ios16.0",
+        sys = "ios16.3",
         flags = {
             "-fembed-bitcode",
             "-fobjc-arc"
@@ -36,10 +35,13 @@ local plat = (function ()
         if lm.compiler == "gcc" then
             return "mingw"
         end
+        if lm.cc == "clang-cl" then
+            return "clang-cl"
+        end
         return "msvc"
     end
     if lm.os == "android" then
-        return lm.os.."-"..lm.arch
+        return "android-"..lm.arch
     end
     return lm.os
 end)()
@@ -63,9 +65,10 @@ if lm.os == "windows" then
         },
     }
     lm:default {
+        "ant",
         "copy_dll",
-        "ant_demo_rt",
         "ant_demo",
+        lm.sanitize and "copy_asan_v2",
     }
     return
 end
@@ -78,15 +81,7 @@ if lm.os == "ios" then
     return
 end
 
-if lm.os == "android" then
-    lm:default {
-        "ant_demo",
-    }
-    return
-end
-
 lm:default {
-    "ant_demo_rt_static",
-    "ant_demo_rt",
+    "ant",
     "ant_demo",
 }
