@@ -27,7 +27,7 @@ lm:source_set "ly.imgui.node_editor" {
 }
 
 -- lua绑定相关代码只能放在 lua_source中，不然编译不过
-lm:lua_source "imgui" {
+lm:lua_src "imgui" {
     includes = {
         lm.AntDir .. "/clibs/imgui",
         lm.AntDir .. "/3rd/imgui",
