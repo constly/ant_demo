@@ -21,6 +21,7 @@ local is_editor_dirty = false
 ---@type sims.debug.wnd_saved
 local wnd_saved
 
+local timer = common.new_timer()
 
 function system.preinit()
 	-- 设置项目根目录
@@ -28,6 +29,15 @@ function system.preinit()
 		common.path_def.project_root = world.args.ecs.project_root
 	end
 	client = require 'client'.new(ecs)
+	timer:add(1, function()
+		print("exec timer1")
+	end)
+	timer:add(2, function()
+		print("exec timer2")
+	end)
+	timer:add(3, function()
+		print("exec timer3")
+	end)
 end 
 
 function system.init()
@@ -66,8 +76,8 @@ function system.init_world()
 	icamera.focus_aabb(main_camera, aabb, dir)
 end
 
-
 function system.data_changed()
+	timer:update()
 	ImGui.SetNextWindowPos(0, 0)
 	local dpi = ImGui.GetMainViewport().DpiScale
 	if expand then 
@@ -119,11 +129,15 @@ function system.data_changed()
 		end
 	end 
 	ImGui.End()
+	system.check_keyboard()
 end
 
 function system.set_expand(v)
 	expand = v
 	common.user_data.set("sims.expand", expand and 1 or 0, true)
+	if not expand and editor then 
+		editor.wnd_mgr.notify_auto_save()
+	end
 	if not expand and is_editor_dirty then 
 		is_editor_dirty = false
 		local type = wnd_saved and wnd_saved.get_restart_type()
@@ -133,10 +147,8 @@ function system.set_expand(v)
 	end
 end
 
--- function system.check_keyboard()
--- 	if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
--- 		if ImGui.IsKeyPressed(ImGui.Key.S, false) then 
-
--- 		end
--- 	end
--- end
+function system.check_keyboard()
+	if not ImGui.IsAnyItemActive() and ImGui.IsKeyPressed(ImGui.Key.Q, false) then 
+		system.set_expand(not expand)
+	end
+end

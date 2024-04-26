@@ -60,6 +60,11 @@ local function process_keyboard(client, comp_camera, npc)
 	local e<close> = world:entity(npc.root, "comp_move:update")
 	if e then 
 		if move_dir.x ~= 0 or move_dir.z ~= 0 then 
+			-- 归一化
+			local size = math.sqrt(move_dir.x * move_dir.x + move_dir.z * move_dir.z)
+			move_dir.x = move_dir.x / size
+			move_dir.z = move_dir.z / size
+
 			local degree = uitls.get_camera_degree(comp_camera, 90)						
 			local x = move_dir.x * math.cos(degree) - move_dir.z * math.sin(degree)
 			local z = move_dir.z * math.cos(degree) + move_dir.x * math.sin(degree)
@@ -71,7 +76,7 @@ local function process_keyboard(client, comp_camera, npc)
 			client.player_ctrl.move_dir = move_dir
 			client.call_server(client.msg.rpc_set_move_dir, {dir = move_dir})
 		end
-		--e.comp_move.move_dir = move_dir
+		e.comp_move.move_dir = move_dir
 	end
 end
 
@@ -107,11 +112,12 @@ end
 
 -- 处理输入
 function m.stage_input_process()
+	do return end 
+	
 	---@type sims.client
 	local client = world.client
 	local eid = client.player_ctrl.e_camera
 	local npc = client.player_ctrl.get_npc()
-	do return end
 	if not eid or not npc then return end 
 
 	local e<close> = world:entity(eid, "comp_camera?in")

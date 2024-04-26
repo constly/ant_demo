@@ -13,6 +13,7 @@ local lib = dep.common.lib
 ---@field save function 保存数据
 ---@field reload function 重新加载文件
 ---@field onAnyFileSaveComplete function 通知文件保存完成(任意)
+---@field notify_auto_save function 当关闭编辑器时，通知自动保存
 ---@field get_all_related_files function 得到所有相关文件
 ---@field notify_related_files_changed function 通知相关文件发生了变化
 ---@field has_preview_mode function 是否有预览模式
@@ -102,6 +103,15 @@ local function new(editor)
 	function api.find_window(path)
 		return api.windows[path]
 	end 
+
+	--- 关闭编辑器时，通知自动保存
+	function api.notify_auto_save()
+		for i, v in pairs(api.windows) do 
+			if v.notify_auto_save then 
+				v.notify_auto_save()
+			end
+		end
+	end
 
 	--- 当文件保存完成时
 	---@param wnd ly.game_editor.wnd_base 窗口对象

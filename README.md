@@ -23,14 +23,12 @@ run.bat
 ## 工具链相关
 ### 一. 客户端多开
 1. 运行文件服务器: "./bin/msvc/debug/ant_demo.exe" -s
-2. 启动运行时版本: "./bin/msvc/debug/ant_demo_rt.exe"
-3. 只有运行时版本才可以多开
-4. 日志输出在: startup/.app/log/runtime-1.log
+2. 启动运行时版本: "./bin/msvc/debug/ant_demo.exe" -rt
+3. 日志输出在: startup/.app/log/runtime-1.log
 
 ### 二. 调试C++
 1. 用Visual Studio打开项目根目录
 2. 将bin/msvc/debug/ant_demo.exe设置为启动项, 启动即可调试C++
-3. 运行时版本 ant_demo_rt.exe 也可以用同样的方式调试
 
 ### 三. 关于编译
 1. 某些情况下会报奇怪的编译报错，这时可以看文件中是否有中文，改下文件的编码或者把中文删掉试试

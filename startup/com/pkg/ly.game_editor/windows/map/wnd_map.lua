@@ -58,6 +58,10 @@ local function new(editor, vfs_path, full_path)
 	function api.onAnyFileSaveComplete(_vfs_path, _full_path)
 	end
 
+	function api.notify_auto_save()
+		api.save()
+	end
+
 	---@return string[] 得到所有相关文件
 	function api.get_all_related_files()
 		local files = {}

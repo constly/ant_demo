@@ -18,7 +18,7 @@ local games = {
 	{name = "sims", feature = {"sims"}, desc = "sample project 1"},
 }
 
-local selected = tonumber(common.user_data.get("entry.las")) or 1
+local selected = tonumber(common.user_data.get("entry.last")) or 1
 
 function m.init_world()
 	window.set_title("Ant Game Engine 学习记录")
@@ -54,7 +54,7 @@ function m.data_changed()
 		for i, game in ipairs(games) do 
 			if common.imgui_utils.draw_btn(game.name, selected == i, {size_x = 200, size_y = 35}) then 
 				selected = i
-				common.user_data.set("entry.las", selected, true)
+				common.user_data.set("entry.last", selected, true)
 			end
 		end
 		ImGui.EndGroup()

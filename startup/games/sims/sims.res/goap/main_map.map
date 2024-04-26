@@ -89,13 +89,13 @@ region:
       -2_-2:
         id: 38
         tpl: 201
-      -2_0:
-        id: 33
-        rotate: 180
-        tpl: 10
       -2_2:
         id: 39
         tpl: 201
+      0_0:
+        id: 33
+        rotate: 180
+        tpl: 10
       2_-2:
         id: 36
         tpl: 201
