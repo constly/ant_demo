@@ -1,0 +1,121 @@
+cur_object_id: 201
+next_id: 39
+region:
+  id: 1
+  layers:
+    ---
+    active: true
+    grids:
+      -1_-1:
+        id: 8
+        tpl: 1
+      -1_-2:
+        id: 16
+        tpl: 1
+      -1_0:
+        id: 5
+        tpl: 1
+      -1_1:
+        id: 13
+        tpl: 1
+      -1_2:
+        id: 26
+        tpl: 1
+      -2_-1:
+        id: 14
+        tpl: 1
+      -2_-2:
+        id: 15
+        tpl: 1
+      -2_0:
+        id: 29
+        tpl: 1
+      -2_1:
+        id: 28
+        tpl: 1
+      -2_2:
+        id: 27
+        tpl: 1
+      0_-1:
+        id: 7
+        tpl: 1
+      0_-2:
+        id: 17
+        tpl: 1
+      0_0:
+        id: 6
+        tpl: 2
+      0_1:
+        id: 12
+        tpl: 1
+      0_2:
+        id: 25
+        tpl: 1
+      1_-1:
+        id: 9
+        tpl: 1
+      1_-2:
+        id: 18
+        tpl: 1
+      1_0:
+        id: 10
+        tpl: 1
+      1_1:
+        id: 11
+        tpl: 1
+      1_2:
+        id: 24
+        tpl: 1
+      2_-1:
+        id: 20
+        tpl: 1
+      2_-2:
+        id: 19
+        tpl: 1
+      2_0:
+        id: 21
+        tpl: 1
+      2_1:
+        id: 22
+        tpl: 1
+      2_2:
+        id: 23
+        tpl: 1
+    height: -1
+    id: 2
+    ---
+    active: true
+    grids:
+      -2_-2:
+        id: 38
+        tpl: 201
+      -2_0:
+        id: 33
+        rotate: 180
+        tpl: 10
+      -2_2:
+        id: 39
+        tpl: 201
+      2_-2:
+        id: 36
+        tpl: 201
+      2_2:
+        id: 37
+        tpl: 201
+    height: 0
+    id: 3
+    ---
+    active: false
+    grids: {}
+    height: 1
+    id: 4
+  max:
+    x: 2
+    y: 2
+  min:
+    x: -2
+    y: -2
+setting:
+  grid_def: /pkg/sims.res/goap/def_grid.txt
+show_ground: true
+version: 1
