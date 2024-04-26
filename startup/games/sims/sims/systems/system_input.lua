@@ -111,6 +111,7 @@ function m.stage_input_process()
 	local client = world.client
 	local eid = client.player_ctrl.e_camera
 	local npc = client.player_ctrl.get_npc()
+	do return end
 	if not eid or not npc then return end 
 
 	local e<close> = world:entity(eid, "comp_camera?in")
