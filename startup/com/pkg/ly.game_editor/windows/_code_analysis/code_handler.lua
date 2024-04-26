@@ -40,10 +40,7 @@ local function new(editor)
 			end
 		end
 		table.sort(tb, function(a, b)
-			if a.lua == b.lua then 
-				return a.name < b.name
-			end 
-			return a.lua > b.lua 
+			return a.name < b.name
 		end)
 		table.insert(tb, {name = "合计", lua = total_lua})
 		api.data = tb
