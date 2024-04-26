@@ -79,12 +79,12 @@ local function new(project_root)
 				return
 			end
 			assert(vpath:sub(1,1) == "/")
-			for _, value in ipairs(_mountlpath) do
-				if value:string() == lpath then
+			for _, one in ipairs(_mountlpath) do
+				if one.path:string() == lpath then
 					return
 				end
 			end
-			_mountlpath[#_mountlpath+1] = lfs.absolute(lpath):lexically_normal()
+			_mountlpath[#_mountlpath+1] = {path = lfs.absolute(lpath):lexically_normal(), vpath = vpath}
 		end
 
 		local cfg = loadmount(project_root)
@@ -96,12 +96,13 @@ local function new(project_root)
 			}))
 		end
 		local packages = {}
-		for _, value in ipairs(_mountlpath) do
+		for _, one in ipairs(_mountlpath) do
+			local value = one.path
 			local strvalue = value:string()
 			if strvalue:sub(-7) == '/engine' then
 				goto continue
 			end
-			if strvalue:sub(-4) ~= '/pkg' then
+			if one.vpath == "/" and strvalue:sub(-4) ~= '/pkg' then
 				value = value / 'pkg'
 			end
 			for item in lfs.pairs(value) do

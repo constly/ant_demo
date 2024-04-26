@@ -23,13 +23,15 @@ local wnd_saved
 
 
 function system.preinit()
+	-- 设置项目根目录
+	if world.args.ecs.project_root then
+		common.path_def.project_root = world.args.ecs.project_root
+	end
 	client = require 'client'.new(ecs)
 end 
 
 function system.init()
 	client.start()
-
-	print("system.init")
 	local fonts = {}
 	fonts[#fonts+1] = {
 		FontPath = "/pkg/ant.resources.binary/font/Alibaba-PuHuiTi-Regular.ttf",
@@ -38,6 +40,7 @@ function system.init()
 	}
 	local ImGuiAnt  = import_package "ant.imgui"
 	ImGuiAnt.FontAtlasBuild(fonts)	
+	expand = tonumber(common.user_data.get("sims.expand")) == 1
 end 
 
 function system.exit()
@@ -50,10 +53,9 @@ function system.exit()
 	end
 end
 
-
 function system.init_world()
 	print("system.init_world")	
-	world:create_instance { prefab = "/pkg/game.res/light_skybox.prefab" }
+	world:create_instance { prefab = "/pkg/demo.res/light_skybox.prefab" }
 
 	local main_queue = w:first "main_queue camera_ref:in"
 	local main_camera <close> = world:entity(main_queue.camera_ref, "camera:in")
@@ -76,23 +78,16 @@ function system.data_changed()
 		ImGui.SetNextWindowSize(120 * dpi, 40 * dpi);
 	end
 	if ImGui.Begin("window_body", nil, ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoScrollWithMouse", "NoCollapse", "NoTitleBar"}) then 
-		if common.imgui_utils.draw_btn(" 返 回 ", not expand) then 
+		if common.imgui_utils.draw_btn(" 主 页 ", not expand) then 
 			if expand then 
-				expand = not expand
+				system.set_expand(not expand)
 			else 
 				client.exitCB()
 			end
 		end
 		ImGui.SameLine()
 		if common.imgui_utils.draw_btn("编辑器", expand) then 
-			expand = not expand
-			if not expand and is_editor_dirty then 
-				is_editor_dirty = false
-				local type = wnd_saved.get_restart_type()
-				if type then
-					client.call_server(client.msg.rpc_restart, {type = type})
-				end
-			end
+			system.set_expand(not expand)
 		end
 		if expand then 
 			if not editor then 
@@ -101,7 +96,7 @@ function system.data_changed()
 				---@type ly.game_editor.create_params
 				local tbParams = {}
 				tbParams.module_name = "richmango"
-				tbParams.project_root = world.args.ecs.project_root
+				tbParams.project_root = common.path_def.project_root
 				tbParams.pkgs = {"sims.res"}
 				tbParams.theme_path = "sims.res/themes/default.style"
 				tbParams.workspace_path = "/pkg/sims.res/space.work"
@@ -125,3 +120,23 @@ function system.data_changed()
 	end 
 	ImGui.End()
 end
+
+function system.set_expand(v)
+	expand = v
+	common.user_data.set("sims.expand", expand and 1 or 0, true)
+	if not expand and is_editor_dirty then 
+		is_editor_dirty = false
+		local type = wnd_saved and wnd_saved.get_restart_type()
+		if type then
+			client.call_server(client.msg.rpc_restart, {type = type})
+		end
+	end
+end
+
+-- function system.check_keyboard()
+-- 	if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
+-- 		if ImGui.IsKeyPressed(ImGui.Key.S, false) then 
+
+-- 		end
+-- 	end
+-- end

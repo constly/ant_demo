@@ -3,6 +3,6 @@
 res
 bin/
 build/
-startup/pkg/game.res/test/
+startup/games/demo/demo.res/test/
 .log
 lua.booster.lint.json

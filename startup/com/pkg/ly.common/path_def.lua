@@ -4,6 +4,9 @@ local fs = dep.fs
 ---@class ly.common.path_def
 local api = {}
 
+---@type 项目根目录
+api.project_root = nil
+
 if __ANT_RUNTIME__ then 
 	-- 是否任意ant项目的 fs.current_path() 都是同一个目录呢？ 
 	api.cache_root 	= (fs.current_path() / "ant_demo/"):string()

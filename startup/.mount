@@ -2,6 +2,6 @@ mount:
     /engine/ %engine%/engine
     /pkg/    %engine%/pkg
     /        %project%
-    /        %project%/mod
     /        %project%/com
-	
+	/pkg/        %project%/games/demo
+	/pkg/        %project%/games/sims

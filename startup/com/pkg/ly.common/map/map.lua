@@ -3,8 +3,8 @@ local window 		= import_package "ant.window"
 
 ---@class ly.common.map.params 
 ---@field feature table 特性列表 
+---@field pre string 前一个场景
 ---@field any any 其他参数
-local tbParam = {}
 
 ---@class ly.common.map 地图切换相关
 ---@field tbParam table 地图传入参数

@@ -1,5 +1,0 @@
--- 定义feature
-feature "gameplay".import "gameplay.ecs"
-
--- 默认导入feature
-import_feature "game.demo|gameplay"

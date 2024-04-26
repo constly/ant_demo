@@ -41,12 +41,15 @@ local function new(ecs)
 			if tb then tb(tbParam) end
 		end
 		api.msg.init(true, api)
-		local tbParam = map.tbParam or {is_standalone = true}
+		local tbParam = map.tbParam or {}
+		if not tbParam.is_online then 
+			tbParam.is_standalone = true
+		end
 		api.is_listen_player = tbParam.is_listen_player or tbParam.is_standalone
 		if api.is_listen_player then 
 			api.serviceId = ltask.spawn("sims.s.server|entry", ltask.self())
 			do 
-				local package_handler = game_core.create_package_handler(ecs.world.args.ecs.project_root)
+				local package_handler = game_core.create_package_handler(common.path_def.project_root)
 				local root_path = package_handler.get_pkg_path("sims.res")
 				assert(root_path, "编辑器下走sims.res包, 运行时走cache目录")
 				api.saved_root = tostring(root_path) .. "/saved/"
@@ -79,7 +82,7 @@ local function new(ecs)
 
 	--- 退出场景
 	function api.exitCB()
-		map.load({feature = {"game.demo|gameplay"}})
+		map.load({feature = {"entry"}, pre = "sims"})
 	end
 
 	function api.call_server(cmd, tbParam)

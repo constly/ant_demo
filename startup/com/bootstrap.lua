@@ -25,11 +25,11 @@ end
 arg = {}
 
 if options["-s"] then
-    arg[0] = "3rd/ant/tools/fileserver/main.lua"
+    arg[0] = "../ant/tools/fileserver/main.lua"
 elseif options["-p"] then
-    arg[0] = "3rd/ant/tools/filepack/main.lua"
+    arg[0] = "../ant/tools/filepack/main.lua"
 elseif options["-d"] then
-    arg[0] = "3rd/ant/tools/editor/main.lua"
+    arg[0] = "../ant/tools/editor/main.lua"
 elseif arguments[1] == nil or arguments[1] == "" then
     arg[0] = "startup/main.lua"
 else
