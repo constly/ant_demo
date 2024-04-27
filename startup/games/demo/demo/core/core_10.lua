@@ -50,7 +50,7 @@ function system.on_entry()
 	glbs = {}
 	local repo = dep.common.path_def.project_root
 	if repo then
-		local pkg_name = "/pkg/game.res"
+		local pkg_name = "/games/demo/demo.res"
 		local root = repo .. pkg_name 
 		local files = {}
 		system.get_all_files(root, files)
@@ -188,7 +188,7 @@ end
 function system.draw_anim()
 	ImGui.SetNextWindowPos(mgr.get_content_start())
     if ImGui.Begin("wnd_entities", nil, ImGui.WindowFlags {"AlwaysAutoResize", "NoMove", "NoTitleBar"}) then
-        ImGui.Text("浏览pkg/game.res目录下的模型\n如有需要, 请自行将vaststars工程里面\n的资源拷贝到game.res下")
+        ImGui.Text("浏览pkg/demo.res目录下的模型\n如有需要, 请自行将vaststars工程里面\n的资源拷贝到demo.res下")
 		local animation_eid = {}
         if ImGui.TreeNode "mesh" then
             for i = 1, #entities do

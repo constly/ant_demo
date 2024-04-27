@@ -69,7 +69,7 @@ run.bat
 ![core_11](./img/core_11.png)
 
 ## sims场景部分内容展示
-玩法编辑器支持窗口任意分屏和dock
+玩法编辑器支持任意分屏和dock
 ![editor_02](./img/editor_02.png)
 
 
