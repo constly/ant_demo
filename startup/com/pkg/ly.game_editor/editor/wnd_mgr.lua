@@ -66,6 +66,8 @@ local function new(editor)
 				end
 			elseif name == "code_analysis" then 
 				window = require 'windows._code_analysis.wnd_code_analysis' .new(editor, path, path)
+			elseif name == "asset_collect" then
+				window = require 'windows._asset_collect.wnd_asset_collect' .new(editor, path, path)
 			end
 		else
 			local ext = lib.get_file_ext(path)

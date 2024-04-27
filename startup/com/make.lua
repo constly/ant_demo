@@ -4,13 +4,13 @@ local fs = require "bee.filesystem"
 local modules = {}
 local libs = {"clibs", "pkg", "../pkg"}
 for i, name in ipairs(libs) do 
-	for path in fs.pairs(fs.path(lm.workdir) / name) do
+	for path in fs.pairs(lm.workdir .. "/" .. name) do
 		if fs.exists(path / "make.lua") then
 			local filename = path:filename():string()
 			local makefile = ("%s/%s/make.lua"):format(name, filename)
 			modules[#modules + 1] = filename
 			lm:import (makefile)
-			print("import", filename, makefile)
+			--print("import", filename, makefile)
 		end
 	end
 end

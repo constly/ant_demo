@@ -32,6 +32,24 @@ local function new(server)
 		return data
 	end
 
+	--- 根据玩家信息新建存档
+	function api.get_new_save_data()
+		---@type sims.save.player_data
+		local data = {}
+		data.next_id = next_id
+		data.players = {}
+		for i, player in pairs(api.players) do 
+			---@type sims.save.player
+			local tb = {}
+			tb.id = player.id
+			tb.guid = player.guid
+			tb.name = player.name
+			tb.map_id = 1  -- 默认都在1号地图
+			table.insert(data.players, tb)
+		end
+		return data
+	end
+
 	---@param data sims.save.player_data
 	function api.load_from_save(data)
 		local _players = api.players
@@ -63,7 +81,14 @@ local function new(server)
 			if not player.npc then 
 				player.npc = server.npc_mgr.create_player_npc(player)
 			end
-			server.map_mgr.on_login(player)
+
+			--- 登录参数
+			---@type sims.server.login.param
+			local login_param = {}
+			login_param.pos_x = player.npc.pos_x
+			login_param.pos_y = player.npc.pos_y
+			login_param.pos_z = player.npc.pos_z
+			server.map_mgr.on_login(player, login_param)
 			table.insert(api.players, player)
 		end
 	end

@@ -23,13 +23,11 @@ local function create(tbParams)
 	api.wnd_files = (require 'editor.widgets.wnd_files').new(api)
 	api.wnd_space = (require 'editor.widgets.wnd_space').new(api)
 	api.wnd_log = (require 'editor.widgets.wnd_log').new(api)
-	api.wnd_portal = (require 'editor.widgets.wnd_portal').new(api)
 	api.wnd_mgr = (require 'editor.wnd_mgr').new(api)
 	
 	--local height_title = 30 
 	local height_bottom = 200
 	local is_buttom_collapse = false
-	local size_portal_x = 300  --- 传送门
 	local size_x, size_y
 	local show_type = 1
 	local line_y = 30
@@ -85,8 +83,9 @@ local function create(tbParams)
 	end
 
 	local function draw_bottom(dpi, deltatime)
+		local txt_size = ImGui.CalcTextSize(" 查 找 ") + 10
 		if is_buttom_collapse then 
-			ImGui.SetCursorPos(size_x - 70, size_y - line_y + 1.5)
+			ImGui.SetCursorPos(size_x - txt_size, size_y - line_y + 1.5)
 			if api.style.draw_btn(" ↑↑ ") then 
 				is_buttom_collapse = false
 			end
@@ -102,29 +101,22 @@ local function create(tbParams)
 			if api.style.draw_btn(" 日 志 ", show_type == 2) then 
 				show_type = 2
 			end
-			ImGui.SameLineEx(size_x - size_portal_x - 70)
+			
+			ImGui.SameLineEx(size_x - txt_size)
+			if api.style.draw_btn(" ↓↓ ", false) then 
+				is_buttom_collapse = true
+			end
+			ImGui.SameLineEx(size_x - txt_size * 2 - 5)
 			if api.style.draw_btn(" 查 找 ") then 
 				
 			end
 			local x, y = ImGui.GetContentRegionAvail()
-			ImGui.BeginChild("wnd_bottom_1", size_x - size_portal_x, y, ImGui.ChildFlags({"Border"}))
+			ImGui.BeginChild("wnd_bottom_1", size_x, y, ImGui.ChildFlags({"Border"}))
 			if show_type == 1 then api.wnd_files.draw(deltatime, line_y) 
 			elseif show_type == 2 then api.wnd_log.draw(deltatime, line_y) end
 			ImGui.EndChild()
 
-			ImGui.SetCursorPos(size_x - size_portal_x, 0)
-			ImGui.BeginChild("wnd_portal", size_portal_x, height_bottom, ImGui.ChildFlags({"Border"}))
-			ImGui.SetCursorPos(5, 3)
-			api.style.draw_btn(" 收 藏 ", true)
-			ImGui.SetCursorPos(size_portal_x - 70, 3)
-			if api.style.draw_btn(" ↓↓ ", false) then 
-				is_buttom_collapse = true
-			end
-				local x, y = ImGui.GetContentRegionAvail()
-				ImGui.BeginChild("wnd_portal_1", size_portal_x, y, ImGui.ChildFlags({"Border"}))
-				api.wnd_portal.draw(dpi, deltatime, line_y)
-				ImGui.EndChild()
-			ImGui.EndChild()
+			
 		ImGui.EndChild()
 	end
 
@@ -136,7 +128,6 @@ local function create(tbParams)
 		api.files.update_filewatch()
 		local dpi = dep.common.imgui_utils.get_dpi_scale()
 		height_bottom = 50 + 150 * dpi
-		size_portal_x = 100 + 200 * dpi
 		size_x, size_y = ImGui.GetContentRegionAvail()
 		draw_viewports()
 		draw_bottom(dpi)
@@ -152,6 +143,11 @@ local function create(tbParams)
 		if viewport then 
 			viewport.tabs.open_tab(path)
 		end
+	end
+
+	function api.browse_and_open(path)
+		api.wnd_files.browse(path)
+		api.open_tab(path)
 	end
 
 	---@param data string|table 主题路径或者数据

@@ -30,8 +30,6 @@ end
 
 --- 摄像机移动控制
 function m.data_changed()
-	do return end 
-	
 	---@type sims.client
 	local client = world.client
 	local eid = client.player_ctrl.e_camera

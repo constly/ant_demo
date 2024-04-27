@@ -22,6 +22,8 @@ local function new(client)
 		local cfg = client.loader.npcs.get_by_id(syncNpc.tplId)
 		assert(cfg, string.format("npc 模板id 不存在: %s", syncNpc.tplId or "unknown"))
 		assert(cfg.model, string.format("npc=%d 未配置模型", syncNpc.tplId))
+		print("create npc", syncNpc.id, syncNpc.pos_x, syncNpc.pos_y, syncNpc.pos_z,
+			syncNpc.dir_x, syncNpc.dir_z)
 
 		-- npc根节点
 		api.root = world:create_entity {
@@ -46,6 +48,12 @@ local function new(client)
 				local p<close> = world:entity(api.root, "comp_instance?update")
 				if p and p.comp_instance then 
 					p.comp_instance.model = api.model
+				end
+
+				if syncNpc.dir_x then
+					local math3d = require "math3d"
+					local iom = client.ecs.require "ant.objcontroller|obj_motion"
+					iom.set_direction(p, math3d.vector(-syncNpc.dir_x, 0, -syncNpc.dir_z))
 				end
 				api.play_anim("idle_loop")
 			end,

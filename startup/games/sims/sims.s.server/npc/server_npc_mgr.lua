@@ -4,6 +4,9 @@
 ---@field pos_x number 坐标x
 ---@field pos_y number 坐标y
 ---@field pos_z number 坐标z
+---@field dir_x number 朝向x
+---@field dir_y number 朝向y
+---@field dir_z number 朝向z
 
 
 ---@param server sims.server
@@ -45,6 +48,8 @@ local function new(server)
 			param.pos_y = npc.pos_y
 			param.pos_z = npc.pos_z
 			param.tplId = npc.tpl_id
+			param.dir_x = npc.dir_x
+			param.dir_z = npc.dir_z
 			api.create_npc(param, npc.id)
 		end
 	end

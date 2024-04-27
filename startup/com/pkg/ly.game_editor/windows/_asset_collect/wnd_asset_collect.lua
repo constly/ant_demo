@@ -14,8 +14,8 @@ local function new(editor)
 	local api = {}
 	local hover_idx = 0;
 
-	function api.draw(dpi, deltatime, line_y)
-		local size_x, size_y = ImGui.GetContentRegionAvail()
+	function api.update(is_active, delta_time)
+		local dpi = dep.common.imgui_utils.get_dpi_scale()
 		ImGui.SetCursorPos(5, 3)
 		ImGui.BeginGroup()
 		local portal = editor.portal
@@ -27,9 +27,10 @@ local function new(editor)
 			ImGui.SameLine()
 		end
 		ImGui.EndGroup()
-		
+		local line_y = ImGui.GetCursorPosY()
 		ImGui.SetCursorPos(0, line_y)
-		ImGui.BeginChild("wnd_portal_content", size_x, size_y - line_y, ImGui.ChildFlags({"Border"}))
+		local size_x, size_y = ImGui.GetContentRegionAvail()
+		ImGui.BeginChild("wnd_portal_content", size_x, size_y, ImGui.ChildFlags({"Border"}))
 		ImGui.SetCursorPos(8, 5)
 		local list = portal.pages[portal.cur_page] or {}
 		local wnd_files = editor.wnd_files
@@ -43,7 +44,7 @@ local function new(editor)
 			ImGui.BeginGroup()
 			local x, y = ImGui.GetCursorScreenPos()
 			if i == hover_idx then 
-				draw_list.AddRectFilled({min = {x, y}, max = {x + size_x - 10, y + line_y}, col = {0.25, 0.25, 0.25, 1}});                                    
+				draw_list.AddRectFilled({min = {x, y}, max = {x + size_x - 10, y + line_y - 5}, col = {0.25, 0.25, 0.25, 1}});                                    
 			end
 			local img_size = 23 * dpi
 			ImGui.Image(dep.textureman.texture_get(id), img_size, img_size)
@@ -110,6 +111,17 @@ local function new(editor)
 		ImGui.EndGroup()
 		ImGui.EndChild()
 	end
+
+	---@return boolean 文件是否有修改
+	function api.is_dirty()
+		return false
+	end
+
+	function api.close()
+	end 
+
+	function api.save()
+	end 
 
 	return api
 end

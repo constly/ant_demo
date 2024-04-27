@@ -17,6 +17,7 @@ local function new(editor)
 
 	local tb_inner = {
 		{"代码统计", "code_analysis"},
+		{"收藏列表", "asset_collect"}
 	}
 	
 	local function init()

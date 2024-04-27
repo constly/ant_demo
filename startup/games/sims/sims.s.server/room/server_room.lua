@@ -51,9 +51,6 @@ local function new(server)
 
 	function api.notify_restart()
 		api.refresh_members()
-		for i, v in ipairs(player_mgr.players) do 
-			server.map_mgr.on_login(v)
-		end
 		api.notify_to_all_client(msg.s2c_restart, {})
 	end
 

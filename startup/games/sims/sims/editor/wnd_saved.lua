@@ -20,14 +20,8 @@ local function new(client)
 	local input_buf = ImGui.StringBuf()
 	local cur_line_idx
 	local is_dirty = false
-	local curType = 1
 	local cur_index
-	local tbTypes = {
-		"自动存档/读档",
-		"新建存档",
-		"啥都不做",
-	}
-
+	
 	---@type sims.client.wnd_saved.savedata[]
 	local tb_saves = {}
 	local filewatch = require "bee.filewatch".create()
@@ -36,13 +30,6 @@ local function new(client)
 		editor = _editor
 		api.refresh()
 		filewatch:add(client.saved_root)
-	end
-
-	--- 得到服务器重启类型
-	function api.get_restart_type()
-		if curType == 1 then return "save_and_load"
-		elseif curType == 2 then return "new_save"
-		else return nil end
 	end
 
 	local function draw_save_list(size_x)
@@ -82,23 +69,30 @@ local function new(client)
 						cur_line_idx = i
 						input_buf:Assgin(v.name)
 					end
-					if ImGui.MenuItem("删 除") then
+					if v.save_id ~= "default" and ImGui.MenuItem("删 除") then
 						local path = string.format("%s%s.save", client.saved_root, v.save_id)
 						lfs.remove(path)
 					end
 					if ImGui.MenuItem("在文件浏览器中查看") then
 						local path = string.format("%s%s.save", client.saved_root, v.save_id)
+						path = path:gsub("/","\\")
 						os.execute("c:\\windows\\explorer.exe /select,".. path)
 					end
 					ImGui.EndPopup()
 				end
 			end
 
-			ImGui.SameLineEx(math.min(size_x - 80, 300))
-			local label = string.format(" 应 用 ##btn_apply_%d", i)
+			ImGui.SameLineEx(math.min(size_x - 110, 300))
+			local label = string.format(" 加 载 ##btn_load_%d", i)
 			if editor.style.draw_btn(label, true) then 
 				cur_index = i
 				client.call_server(client.msg.rpc_restart, {type = "load", save_id = v.save_id})
+			end
+			ImGui.SameLine()
+			local label = string.format(" 覆 盖 ##btn_cover_%d", i)
+			if editor.style.draw_btn(label, false) then 
+				cur_index = i
+				client.call_server(client.msg.rpc_restart, {type = "cover", save_id = v.save_id})
 			end
 			ImGui.Separator()
 		end
@@ -107,17 +101,6 @@ local function new(client)
 
 	local function draw_bottom()
 		ImGui.BeginGroup()
-		ImGui.Text("当数据变化时:")
-		ImGui.SameLine()
-		ImGui.SetNextItemWidth(150)
-		if ImGui.BeginCombo("##combo1", tbTypes[curType] or "") then
-			for i, name in ipairs(tbTypes) do
-				if ImGui.Selectable(name, i == curType) then
-					curType = i
-				end
-			end
-			ImGui.EndCombo()
-		end
 		ImGui.Dummy(5, 1)
 		if editor.style.draw_btn(" 立刻存档 ##btn_save", false) then 
 			client.call_server(client.msg.rpc_restart, {type = "only_save"})
@@ -197,6 +180,7 @@ local function new(client)
 	end 
 
 	function api.refresh()
+		lfs.create_directories(client.saved_root)
 		tb_saves = common.file.load_datalist(get_meta_path()) or {}
 		local set = {}
 		for item in lfs.pairs(client.saved_root) do

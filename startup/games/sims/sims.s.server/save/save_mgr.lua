@@ -41,6 +41,14 @@ local function new(server)
 		api.save_handler.set_saved(data);
 	end
 
+	--- 覆盖存档
+	function api.cover_save(save_id)
+		bfs.create_directories(api.saved_root)
+		local data = api.save_handler.get_saved()
+		local path = string.format("%s%s.save", api.saved_root, save_id)
+		common.file.save_file(path, data)
+	end
+
 	--- 读取最近一次存档
 	function api.load_save_last()
 		local save_id = ""

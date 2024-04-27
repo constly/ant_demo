@@ -23,7 +23,7 @@ local function new(server)
 		local data = {}
 		data.map_data = {}
 		data.npc_data = {}
-		data.player_data = {}
+		data.player_data = server.player_mgr.get_new_save_data()
 		api.save_data = data
 	end 
 

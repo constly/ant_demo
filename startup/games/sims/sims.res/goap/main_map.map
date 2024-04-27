@@ -1,5 +1,5 @@
-cur_object_id: 201
-next_id: 39
+cur_object_id: 2
+next_id: 83
 region:
   id: 1
   layers:
@@ -12,6 +12,9 @@ region:
       -1_-2:
         id: 16
         tpl: 1
+      -1_-3:
+        id: 49
+        tpl: 1
       -1_0:
         id: 5
         tpl: 1
@@ -21,11 +24,17 @@ region:
       -1_2:
         id: 26
         tpl: 1
+      -1_3:
+        id: 78
+        tpl: 1
       -2_-1:
         id: 14
         tpl: 1
       -2_-2:
         id: 15
+        tpl: 1
+      -2_-3:
+        id: 43
         tpl: 1
       -2_0:
         id: 29
@@ -36,26 +45,59 @@ region:
       -2_2:
         id: 27
         tpl: 1
+      -2_3:
+        id: 76
+        tpl: 1
+      -3_-1:
+        id: 45
+        tpl: 1
+      -3_-2:
+        id: 42
+        tpl: 1
+      -3_-3:
+        id: 44
+        tpl: 1
+      -3_0:
+        id: 46
+        tpl: 1
+      -3_1:
+        id: 47
+        tpl: 1
+      -3_2:
+        id: 48
+        tpl: 1
+      -3_3:
+        id: 75
+        tpl: 1
       0_-1:
         id: 7
         tpl: 1
       0_-2:
         id: 17
         tpl: 1
+      0_-3:
+        id: 50
+        tpl: 1
       0_0:
-        id: 6
-        tpl: 2
+        id: 41
+        tpl: 1
       0_1:
         id: 12
         tpl: 1
       0_2:
         id: 25
         tpl: 1
+      0_3:
+        id: 77
+        tpl: 1
       1_-1:
         id: 9
         tpl: 1
       1_-2:
         id: 18
+        tpl: 1
+      1_-3:
+        id: 51
         tpl: 1
       1_0:
         id: 10
@@ -66,11 +108,17 @@ region:
       1_2:
         id: 24
         tpl: 1
+      1_3:
+        id: 74
+        tpl: 1
       2_-1:
         id: 20
         tpl: 1
       2_-2:
         id: 19
+        tpl: 1
+      2_-3:
+        id: 52
         tpl: 1
       2_0:
         id: 21
@@ -81,27 +129,105 @@ region:
       2_2:
         id: 23
         tpl: 1
+      2_3:
+        id: 73
+        tpl: 1
+      3_-1:
+        id: 55
+        tpl: 1
+      3_-2:
+        id: 54
+        tpl: 1
+      3_-3:
+        id: 53
+        tpl: 1
+      3_0:
+        id: 56
+        tpl: 1
+      3_1:
+        id: 57
+        tpl: 1
+      3_2:
+        id: 58
+        tpl: 1
+      3_3:
+        id: 72
+        tpl: 1
+      4_-1:
+        id: 62
+        tpl: 1
+      4_-2:
+        id: 63
+        tpl: 1
+      4_-3:
+        id: 64
+        tpl: 1
+      4_0:
+        id: 61
+        tpl: 1
+      4_1:
+        id: 60
+        tpl: 1
+      4_2:
+        id: 59
+        tpl: 1
+      4_3:
+        id: 71
+        tpl: 1
+      5_-1:
+        id: 67
+        tpl: 1
+      5_-2:
+        id: 66
+        tpl: 1
+      5_-3:
+        id: 65
+        tpl: 1
+      5_0:
+        id: 68
+        tpl: 1
+      5_1:
+        id: 69
+        tpl: 1
+      5_2:
+        id: 70
+        tpl: 1
+      5_3:
+        id: 79
+        tpl: 1
     height: -1
     id: 2
     ---
     active: true
     grids:
-      -2_-2:
+      -1_-2:
         id: 38
         tpl: 201
-      -2_2:
+      -1_2:
         id: 39
         tpl: 201
-      0_0:
+      -3_-3:
+        id: 80
+        tpl: 2
+      -3_3:
+        id: 81
+        tpl: 2
+      1_0:
         id: 33
         rotate: 180
         tpl: 10
-      2_-2:
+      3_-2:
         id: 36
         tpl: 201
-      2_2:
+      3_2:
         id: 37
         tpl: 201
+      5_-3:
+        id: 82
+        tpl: 2
+      5_3:
+        id: 83
+        tpl: 2
     height: 0
     id: 3
     ---
@@ -110,11 +236,11 @@ region:
     height: 1
     id: 4
   max:
-    x: 2
-    y: 2
+    x: 7
+    y: 8
   min:
-    x: -2
-    y: -2
+    x: -7
+    y: -7
 setting:
   grid_def: /pkg/sims.res/goap/def_grid.txt
 show_ground: true

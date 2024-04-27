@@ -20,8 +20,11 @@ local function create(editor, renderer)
 	local ui_setting = require 'windows.map.ui.chess_ui_setting'.new(renderer)
 
 	local dpiScale
-	local header_y
+	local header_y = 30
 	chess.region_draw = region_draw
+	local show_left = true
+	local show_right = true
+	local size_left, size_right
 
 	function chess.on_destroy()
 		region_draw.on_destroy()
@@ -34,13 +37,18 @@ local function create(editor, renderer)
 		local fix_x, fix_y = 6, 7;
 		ImGui.SetCursorPos(start_x, 0)
 		local size_x, size_y = ImGui.GetContentRegionMax()
-		local size_left = 165 * dpiScale;
-		local size_right = 150 * dpiScale;
+		size_left = 165 * dpiScale;
+		size_right = 150 * dpiScale;
 		local offset_x = 0
+		if not show_left then size_left = 0 end
+		if not show_right then size_right = 0 end 
+
 		size_y = size_y + fix_y
-		ImGui.BeginChild("##chess_left", size_left, size_y, ImGui.ChildFlags({"Border"}))
-			chess.draw_left()
-		ImGui.EndChild()
+		if size_left > 0 then
+			ImGui.BeginChild("##chess_left", size_left, size_y, ImGui.ChildFlags({"Border"}))
+				chess.draw_left()
+			ImGui.EndChild()
+		end
 
 		ImGui.SetCursorPos(size_left + offset_x + start_x, 0)
 		local size = size_x - size_left - size_right - 2 * offset_x
@@ -48,10 +56,12 @@ local function create(editor, renderer)
 			chess.draw_middle(_deltatime)
 		ImGui.EndChild()
 
-		ImGui.SetCursorPos(size_left + size + offset_x * 2 + start_x, 0)
-		ImGui.BeginChild("##chess_right", size_right + fix_x, size_y, ImGui.ChildFlags({"Border"}))
-			chess.draw_right(_deltatime)
-		ImGui.EndChild()
+		if size_right > 0 then
+			ImGui.SetCursorPos(size_left + size + offset_x * 2 + start_x, 0)
+			ImGui.BeginChild("##chess_right", size_right + fix_x, size_y, ImGui.ChildFlags({"Border"}))
+				chess.draw_right(_deltatime)
+			ImGui.EndChild()
+		end
 		ImGui.PopStyleVar()
 
 		ui_setting.update()
@@ -97,19 +107,19 @@ local function create(editor, renderer)
 	function chess.draw_middle(_deltatime)
 		local size_x, size_y = ImGui.GetContentRegionAvail()
 		ImGui.SetCursorPos(3, 4)
-		if imgui_utils.draw_btn("清 空", false) then 
+		if editor.style.draw_btn("清 空", false) then 
 			renderer.on_reset()
 		end
 		ImGui.SameLine()
-		if imgui_utils.draw_btn("还 原", false) then 
+		if editor.style.draw_btn("还 原", false) then 
 			renderer.on_init()
 		end
 		ImGui.SameLineEx(size_x - 100)
-		if imgui_utils.draw_btn("事 件", false) then 
+		if editor.style.draw_btn("事 件", false) then 
 			editor.msg_hints.show("点击事件", "warning")
 		end
 		ImGui.SameLine()
-		if imgui_utils.draw_btn("设 置", false) then 
+		if editor.style.draw_btn("设 置", false) then 
 			ui_setting.open()
 		end
 
@@ -206,6 +216,31 @@ local function create(editor, renderer)
 		ImGui.SetCursorPos(0, top)
 		ImGui.BeginChild("##chess_middle_2", size_x, size_y, ImGui.ChildFlags({"Border"}))
 			region_draw.on_render(_deltatime)
+
+			local pos_y = size_y - 35
+			if show_left then
+				ImGui.SetCursorPos(3, pos_y)
+				if editor.style.draw_btn(" << ##btn_left_1") then 
+					show_left = false
+				end
+			else 
+				ImGui.SetCursorPos(3, pos_y)
+				if editor.style.draw_btn(" >> ##btn_left_2") then 
+					show_left = true
+				end
+			end
+			local len_x = 30
+			if show_right then
+				ImGui.SetCursorPos(size_x - len_x, pos_y)
+				if editor.style.draw_btn(" >> ##btn_right_1") then 
+					show_right = false
+				end
+			else 
+				ImGui.SetCursorPos(size_x - len_x, pos_y)
+				if editor.style.draw_btn(" << ##btn_right_2") then 
+					show_right = true
+				end
+			end
 		ImGui.EndChild()
 	end
 

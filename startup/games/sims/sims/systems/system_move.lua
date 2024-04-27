@@ -124,8 +124,6 @@ end
 
 --- 处理移动
 function m.data_changed()
-	do return end 
-	
 	local delta = timer.delta() * 0.001
 	for e in w:select "comp_move:in" do
 		local move = e.comp_move

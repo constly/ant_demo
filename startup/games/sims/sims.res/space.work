@@ -8,16 +8,34 @@ items:
       ---
       children: {}
       id: 2
-      size_rate: 0.7396946564885496
+      size_rate: 0.7886997910796619
       tabs: sims.res/goap/main_map.map;sims.res/goap/def_grid.txt|1;sims.res/goap/main_map.map|1;sims.res/goap/npcs.txt|1
       type: 0
       ---
       children: {}
       id: 3
-      size_rate: 0.2603053435114504
-      tabs: "__inner:custom:存档助手;__inner:code_analysis|1;__inner:custom:存档助手|1;__inner:custom:开发计划|1"
+      size_rate: 0.21130020892033807
+      tabs: "__inner:code_analysis"
       type: 0
     id: 1
     size_rate: 1
+    tabs: sims.res/goap/main_map.map;sims.res/goap/def_grid.txt|1;sims.res/goap/main_map.map|1;sims.res/goap/npcs.txt|1
+    type: 0
+  ---
+  lock: false
+  next_id: 1
+  view:
+    children: {}
+    id: 1
+    size_rate: 1
+    tabs: "__inner:custom:存档助手;__inner:custom:存档助手|1;__inner:code_analysis|1;__inner:custom:开发计划|1;__inner:asset_collect|1"
+    type: 0
+  ---
+  lock: false
+  next_id: 1
+  view:
+    children: {}
+    id: 1
+    size_rate: 1
     tabs: ""
-    type: 2
+    type: 0

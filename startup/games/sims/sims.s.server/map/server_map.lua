@@ -70,16 +70,28 @@ local function new(map_mgr, server)
 		--common.lib.dump(api.regions)
 	end
 
+	---@class sims.server.login.param
+	---@field pos_x number 登录位置
+	---@field pos_y number 
+	---@field pos_z number 
+
 	--- 加入地图
 	---@param player sims.server_player 玩家对象
-	function api.on_login(player)
+	---@param param sims.server.login.param
+	function api.on_login(player, param)
 		---@type sims.server.npc 
 		local npc = player.npc
-		local grid = api.get_first_gird_by_className("born") or {}
 		npc.map_id = api.id
-		npc.pos_x = grid.pos_x;
-		npc.pos_y = grid.pos_y;
-		npc.pos_z = grid.pos_z;
+		if param and param.pos_x then 
+			npc.pos_x = param.pos_x
+			npc.pos_y = param.pos_y
+			npc.pos_z = param.pos_z
+		else 
+			local grid = api.get_first_gird_by_className("born") or {}
+			npc.pos_x = grid.pos_x;
+			npc.pos_y = grid.pos_y;
+			npc.pos_z = grid.pos_z;
+		end
 		npc.region_id = api.world_pos_to_region_id(npc.pos_x, npc.pos_y, npc.pos_z)
 		local region = api.get_or_create_region(npc.region_id)
 		region.add_npc(npc)

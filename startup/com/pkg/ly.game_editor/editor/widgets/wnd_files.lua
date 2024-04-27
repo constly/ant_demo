@@ -458,7 +458,7 @@ local function new(editor)
 				end
 			end
 
-			if pos.x + cell.x * 2 >= size_x + 10 then 
+			if pos.x + cell.x * 2 >= size_x + 20 then 
 				pos.y = pos.y + cell.y 
 				pos.x = start_x
 			else 
@@ -504,7 +504,12 @@ local function new(editor)
 	end
 
 	function api.browse(path)
+		print("path is", path)
+		path = lib.trim(path, "/")
 		local arr = lib.split(path, "/")
+		if arr[1] == "pkg" then 
+			table.remove(arr, 1)
+		end
 		set_selected_pkg(arr[1])
 		local r_path = table.concat(arr, "/", 2)
 		local ext = lib.get_file_ext(r_path)

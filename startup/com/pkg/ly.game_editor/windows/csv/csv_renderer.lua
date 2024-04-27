@@ -17,13 +17,14 @@ local function new(editor, data_hander, stack, clipboard)
 	api.data_hander = data_hander
 	api.stack = stack
 
+	local show_left = false
 	local color_edit_flag = ImGui.ColorEditFlags { "Float", "NoInputs" } 
 	local refresh_width = false
 	local table_index = 0;
 	local random_id = math.random(1 << 32)
 	local input_x, input_y
 	local input_buf = ImGui.StringBuf()
-	local line_y
+	local line_y = 30
 	function api.set_data(data)
 		data_hander.set_data(data)
 		stack.set_data_handler(data_hander)
@@ -231,7 +232,7 @@ local function new(editor, data_hander, stack, clipboard)
 
 		local label = string.format("table_%s_%s", random_id, table_index)
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.CellPadding, 0, 0)
-		ImGui.BeginTableEx(label, #cols + 2, ImGui.TableFlags {'Resizable', 'Borders', 'ScrollX', "ScrollY" })
+		if ImGui.BeginTableEx(label, #cols + 2, ImGui.TableFlags {'Resizable', 'Borders', 'ScrollX', "ScrollY" }) then
 			ImGui.TableSetupScrollFreeze(2, 1); 
 			ImGui.TableSetupColumnEx("",  ImGui.TableColumnFlags {'WidthFixed'}, 30);
 			for i, col in ipairs(cols) do 
@@ -288,7 +289,8 @@ local function new(editor, data_hander, stack, clipboard)
 				data_hander.insert_line()
 				stack.snapshoot(true)
 			end
-		ImGui.EndTable();
+			ImGui.EndTable();
+		end
 		ImGui.PopStyleVar()
 	end
 
@@ -307,7 +309,7 @@ local function new(editor, data_hander, stack, clipboard)
 
 		local header_len = 120
 		local content_len = 200
-		local content_len2 = detail_x - 250
+		local content_len2 = math.max(content_len, detail_x - 300)
 		if lineIdx <= 3 then 
 			if lineIdx == 1 then 
 				local draw_data = {value = col.key, header = "关键字", header_len = header_len, content_len = content_len}
@@ -357,22 +359,34 @@ local function new(editor, data_hander, stack, clipboard)
 	function api.update(delta_time)
 		local all_x, size_y = ImGui.GetContentRegionAvail()
 		local left_x = 120
-		ImGui.BeginChild("left", left_x, size_y, ImGui.ChildFlags({"Border"}))
-		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
-		draw_left()
-		ImGui.PopStyleVar()
-		ImGui.EndChild()
+		if not show_left then left_x = 0 end
+		if left_x > 0 then
+			ImGui.BeginChild("left", left_x, size_y, ImGui.ChildFlags({"Border"}))
+			ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
+			draw_left()
+			ImGui.PopStyleVar()
+			ImGui.EndChild()
+		end
 
 		ImGui.SetCursorPos(left_x, line_y)
 		local size_x = all_x - left_x
-		
 		ImGui.BeginChild("content", size_x, size_y - line_y, ImGui.ChildFlags({"Border"}))
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 10, 10)
 		draw_body()
 		ImGui.PopStyleVar()
 		ImGui.EndChild()
 
-		ImGui.SetCursorPos(left_x + 10, 5)
+		ImGui.SetCursorPos(left_x + 3, 5)
+		if show_left then
+			if editor.style.draw_btn(" << ##btn_left_1", true) then 
+				show_left = false
+			end
+		else 
+			if editor.style.draw_btn(" >> ##btn_left_2", true) then 
+				show_left = true
+			end
+		end
+		ImGui.SameLine()
 		draw_detail(size_x)
 	end
 

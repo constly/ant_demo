@@ -56,10 +56,11 @@ local function new(server)
 	end
 
 	---@param player sims.server_player 玩家对象
-	function api.on_login(player)
+	---@param param sims.server.login.param
+	function api.on_login(player, param)
 		local map = api.find_map_by_tpl_id("1")
 		player.map_id = map.id
-		map.on_login(player)
+		map.on_login(player, param)
 	end
 
 	---@param player sims.server_player 玩家对象

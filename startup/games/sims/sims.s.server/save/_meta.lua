@@ -10,6 +10,8 @@
 ---@field pos_x number 在地图中的位置x
 ---@field pos_y number 在地图中的位置y
 ---@field pos_z number 在地图中的位置z
+---@field dir_x number 朝向x
+---@field dir_z number 朝向z
 
 --- 单个地图npc数据
 ---@class sims.save.map_npc

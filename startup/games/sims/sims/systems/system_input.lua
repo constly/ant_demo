@@ -112,8 +112,6 @@ end
 
 -- 处理输入
 function m.stage_input_process()
-	do return end 
-	
 	---@type sims.client
 	local client = world.client
 	local eid = client.player_ctrl.e_camera

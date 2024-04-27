@@ -75,6 +75,10 @@ local function new(map, server)
 			if _x and _z and (_x ~= 0 or _z ~= 0) then 
 				npc.pos_x = npc.pos_x + _x * delta_move
 				npc.pos_z = npc.pos_z + _z * delta_move
+
+				-- 更新面朝方向
+				npc.dir_x = _x	
+				npc.dir_z = _z
 			end
 
 			local x, z = npc.inner_move_dir.x, npc.inner_move_dir.z
