@@ -9,6 +9,7 @@ local path_def = require "path_def"
 
 local fs = dep.fs 
 local file_path = path_def.cache_root .. 'user_data.txt'
+local version = "0.0.1"
 
 local function load_string_from_disk(path)
     local f<close> = io.open(path, 'r')
@@ -26,22 +27,10 @@ local function save_string_to_disk(_path, _content)
     end
 end
 
-local data = {}
-do
-    local content = load_string_from_disk(file_path);
-    local lines = lib.split(content, "\n")
-    for _, v in ipairs(lines) do 
-        local pos = string.find(v, '=')
-        if pos then 
-            local key = string.sub(v, 1, pos - 1)
-            local value = string.sub(v, pos + 1)
-            data[key] = value 
-        end
-    end
-end
-
 ---@class ly.common.user_data
 local api = {}
+local data = {}
+
 function api.get_number(key, default)
     return tonumber(api.get(key)) or default or 0
 end
@@ -72,6 +61,23 @@ function api.save()
     end
     table.sort(tb)
     save_string_to_disk(file_path, table.concat(tb, "\n"));
+end
+
+do
+    local content = load_string_from_disk(file_path);
+    local lines = lib.split(content, "\n")
+    for _, v in ipairs(lines) do 
+        local pos = string.find(v, '=')
+        if pos then 
+            local key = string.sub(v, 1, pos - 1)
+            local value = string.sub(v, pos + 1)
+            data[key] = value 
+        end
+    end
+	if api.get("_user_data.version") ~= version then 
+		data = {}
+		api.set("_user_data.version", version)
+	end
 end
 
 return api

@@ -10,9 +10,8 @@ local function new()
 	tbParams.project_root = dep.common.path_def.project_root
 	tbParams.pkgs = {"demo.res"}
 	tbParams.theme_path = "demo.res/themes/default.style"
-	tbParams.workspace_path = "/pkg/demo.res/space.work"
+	tbParams.workspace_path = "/pkg/demo.res/designer/space.work"
 	tbParams.menus = {}
-
 	return game_editor.create_editor(tbParams)
 end
 

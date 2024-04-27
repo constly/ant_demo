@@ -1,0 +1,11 @@
+index: 1
+items:
+  ---
+  lock: false
+  next_id: 1
+  view:
+    children: {}
+    id: 1
+    size_rate: 1
+    tabs: /pkg/demo.res/designer/map/demo_map.map;/pkg/demo.res/designer/map/demo_map.map|1;/pkg/demo.res/designer/csv/demo_csv.txt|1;/pkg/demo.res/designer/ini/demo.ini|1
+    type: 0

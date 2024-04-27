@@ -124,6 +124,10 @@ local function create(tbParams)
 		api.workspaces.exit()
 	end
 
+	function api.save()
+		api.workspaces.save()
+	end
+
 	function api.draw()
 		api.files.update_filewatch()
 		local dpi = dep.common.imgui_utils.get_dpi_scale()

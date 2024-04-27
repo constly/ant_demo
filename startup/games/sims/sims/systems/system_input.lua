@@ -121,6 +121,10 @@ function m.stage_input_process()
 	local e<close> = world:entity(eid, "comp_camera?in")
 	---@type comp_camera
 	local camera_cfg = e.comp_camera
+	if not camera_cfg then
+		return
+	end
+	
 	if not camera_cfg.angle then 
 		camera_cfg.dis = 10					-- 摄像机距离玩家平面距离
 		camera_cfg.height = 7				-- 摄像机高度

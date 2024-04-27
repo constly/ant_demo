@@ -22,6 +22,7 @@ function system.on_entry()
 end
 
 function system.on_leave()
+	editor.save()
 end
 
 function system.data_changed()

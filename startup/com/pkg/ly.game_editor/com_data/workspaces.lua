@@ -397,6 +397,7 @@ local function new(editor)
 	-- 保存
 	function api.save()
 		dep.bfs.create_directories(path_def.cache_root)
+		dep.bfs.create_directories(dep.common.lib.get_file_root(file_path))
 		local tb_save = {items = {}, index = api.index}
 		for i, v in ipairs(api.works) do 
 			tb_save.items[i] = v.get_data()
