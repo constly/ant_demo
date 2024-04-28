@@ -48,6 +48,25 @@ end)()
 lm.builddir = ("build/%s/%s"):format(plat, lm.mode)
 lm.bindir = ("bin/%s/%s"):format(plat, lm.mode)
 
+if lm.sanitize then
+    lm.builddir = ("build/%s/sanitize"):format(plat)
+    lm.bindir = ("bin/%s/sanitize"):format(plat)
+    lm.mode = "debug"
+    lm:conf {
+        flags = "-fsanitize=address",
+        gcc = {
+            ldflags = "-fsanitize=address"
+        },
+        clang = {
+            ldflags = "-fsanitize=address"
+        }
+    }
+    lm:msvc_copydll "copy_asan_v2" {
+        type = "asan",
+        outputs = lm.bindir,
+    }
+end
+
 lm:import(lm.AntDir .. "/make.lua")
 lm:import "startup/com/make.lua"
 
