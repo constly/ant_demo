@@ -191,13 +191,31 @@ local function new ()
 	---@param type string ground or object 
 	---@param id number|string id
 	---@param layerId number 层级id
-	function handler.add_selected(region, type, id, layerId)
+	---@param pos number[] 所在位置
+	function handler.add_selected(region, type, id, layerId, pos)
 		if handler.has_selected(region, type, id, layerId) then return end
 
 		local _cache = handler.data.cache ---@type chess_map_tpl_cache
 		local list = _cache.selects[region.id] or {}
 		_cache.selects[region.id] = list
-		table.insert(list, {type = type, id = id, layer = layerId});
+		_cache.shift = false
+		table.insert(list, {type = type, id = id, layer = layerId, pos = pos});
+		return true;
+	end
+
+	function handler.add_selected_shift(region, type, id, layerId, pos)
+		local _cache = handler.data.cache ---@type chess_map_tpl_cache
+		local list = _cache.selects[region.id] or {}
+		if #list == 0 then 
+			return handler.add_selected(region, type, id, layerId, pos)
+		end
+		_cache.selects[region.id] = list
+		_cache.shift = true
+		for i = #list, 2, -1 do 
+			table.remove(list, i)
+		end
+		table.insert(list, {type = type, id = id, layer = layerId, pos = pos});
+		return true;
 	end
 
 	-- 是否选中
@@ -206,12 +224,13 @@ local function new ()
 	---@param id number id
 	---@param layerId number 层级id
 	function handler.has_selected(region, type, id, layerId)
-		local list = handler.data.cache.selects[region.id] or {}
+		local _cache = handler.data.cache
+		local list = _cache.selects[region.id] or {}
 		for i, v in ipairs(list) do 
 			if v.type == type and v.id == id and v.layer == layerId then 
 				return true;
 			end
-		end
+		end 
 	end
 
 	-- 得到首个选中的（不算空格子）
@@ -227,26 +246,48 @@ local function new ()
 		end
 	end
 
-	-- 得到首个选中的（算空格子）
-	function handler.get_first_selected_only(region)
-		local list = handler.data.cache.selects[region.id] or {}
-		for i, v in ipairs(list) do 
-			return v.type, v.id, v.layer
-		end
-	end
-
 	--- 删除所有选中的
 	---@param region chess_map_region_tpl
 	function handler.delete_all_selected(region)
-		local list = handler.data.cache.selects[region.id] or {}
+		local cache = handler.data.cache
+		local list = cache.selects[region.id] or {}
 		local ret = false
-		for i, v in ipairs(list) do 
-			local layer = handler.get_layer_by_id(region, v.layer)
-			if layer then 
-				for key, grid in pairs(layer.grids) do 
-					if grid.id == v.id then 
-						layer.grids[key] = nil
-						ret = true
+		if cache.shift and #list == 2 then 
+			local x1, y1, x2, y2 = handler.get_shift_selected_range(region)
+			for i, layer in ipairs(region.layers) do 
+				if layer.active then
+					for gridId, v in pairs(layer.grids) do 
+						local pos_x, pos_y = handler.grid_id_to_grid_pos(gridId)
+						if pos_x >= x1 and pos_x <= x2 and pos_y >= y1 and pos_y <= y2 then 
+							local check_end_x = pos_x + handler.max_object_size_x - 1  -- 先做大概筛选
+							local check_end_y = pos_y + handler.max_object_size_y - 1
+							local need_delete = true
+							if check_end_x > x2 or check_end_y > y2 then 
+								local tpl = handler.get_object_tpl(v.tpl)
+								check_end_x = pos_x + tpl.size.x - 1
+								check_end_y = pos_y + tpl.size.y - 1
+								if check_end_x > x2 or check_end_y > y2 then 
+									need_delete = false
+								end
+							end
+
+							if need_delete then
+								layer.grids[gridId] = nil
+								ret = true;
+							end
+						end
+					end
+				end
+			end
+		else
+			for i, v in ipairs(list) do 
+				local layer = handler.get_layer_by_id(region, v.layer)
+				if layer then 
+					for key, grid in pairs(layer.grids) do 
+						if grid.id == v.id then 
+							layer.grids[key] = nil
+							ret = true
+						end
 					end
 				end
 			end
@@ -260,6 +301,27 @@ local function new ()
 	function handler.is_multi_selected(region)
 		local list = handler.data.cache.selects[region.id] or {}
 		return #list > 1
+	end
+
+	--- 是不是shift选中
+	function handler.is_shift_selected(region)
+		local cache = handler.data.cache
+		return cache.shift
+	end
+
+	--- 得到shift选中范围
+	function handler.get_shift_selected_range(region)
+		local cache = handler.data.cache
+		local list = cache.selects[region.id] or {}
+		if cache.shift and #list == 2 then 
+			local first = list[1]
+			local second = list[2]
+			local x1, y1 = table.unpack(first.pos or {})
+			local x2, y2 = table.unpack(second.pos or {})
+			if x1 > x2 then x1, x2 = x2, x1 end
+			if y1 > y2 then y1, y2 = y2, y1 end
+			return x1, y1, x2, y2
+		end
 	end
 
 	--- 得到格子数据

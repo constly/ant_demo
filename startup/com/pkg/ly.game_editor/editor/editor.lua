@@ -9,6 +9,7 @@ local function create(tbParams)
 	api.__inner_wnd = "__inner:"
 	
 	api.tbParams = tbParams
+	api.cache = require 'com_data.cache'.new(api)
 	api.data_def = (require 'editor.data_def.data_def').new(api)  	
 	api.dialogue_input = (require 'com_ui.dialogue_input').create(api)  	
 	api.dialogue_msgbox = (require 'com_ui.dialogue_msgbox').create(api)
@@ -121,11 +122,12 @@ local function create(tbParams)
 	end
 
 	function api.exit()
-		api.workspaces.exit()
+		api.save()
 	end
 
 	function api.save()
 		api.workspaces.save()
+		api.cache.save()
 	end
 
 	function api.draw()

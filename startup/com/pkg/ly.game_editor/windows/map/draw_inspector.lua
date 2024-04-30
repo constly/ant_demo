@@ -4,9 +4,9 @@ local imgui_utils = dep.common.imgui_utils
 
 ---@param editor ly.game_editor.editor
 ---@param renderer ly.map.renderer
----@return chess_region_inspector
+---@return ly.game_editor.draw_inspector
 local function new(editor, renderer)
-	---@class chess_region_inspector
+	---@class ly.game_editor.draw_inspector
 	local api = {}
 	local data_hander = renderer.data_hander
 	local stack = renderer.stack

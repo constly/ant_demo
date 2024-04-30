@@ -4,30 +4,28 @@
 local dep = require 'dep' ---@type ly.game_editor.dep 
 local ImGui = dep.ImGui
 local imgui_utils = dep.common.imgui_utils
-local chess_region_draw = require 'windows.map.chess_region_draw'
-local chess_inspector_draw = require 'windows.map.chess_inspector'
 
 ---@param editor ly.game_editor.editor
 ---@param renderer ly.map.renderer
-local function create(editor, renderer)
-	---@class chess_editor_draw
+---@param wnd ly.game_editor.wnd_map
+local function create(editor, renderer, wnd)
+	---@class ly.game_editor.draw_main
 	local chess = {}
-	local region_draw = chess_region_draw.new(editor, renderer)
+	local draw_map = require 'windows.map.draw_map'.new(editor, renderer)
+	local draw_inspector = require 'windows.map.draw_inspector'.new(editor, renderer)
 	local input_content = ImGui.StringBuf()
-	local inspector = chess_inspector_draw.new(editor, renderer)
-	
+
 	---@type ly.map.chess.ui_setting
 	local ui_setting = require 'windows.map.ui.chess_ui_setting'.new(renderer)
 
 	local dpiScale
 	local header_y = 30
-	chess.region_draw = region_draw
-	local show_left = true
-	local show_right = true
+	chess.draw_map = draw_map
+	local data_cacha = editor.cache.get(wnd.vfs_path)
 	local size_left, size_right
 
 	function chess.on_destroy()
-		region_draw.on_destroy()
+		draw_map.on_destroy()
 	end
 
 	function chess.on_render(_deltatime)
@@ -40,8 +38,8 @@ local function create(editor, renderer)
 		size_left = 165 * dpiScale;
 		size_right = 150 * dpiScale;
 		local offset_x = 0
-		if not show_left then size_left = 0 end
-		if not show_right then size_right = 0 end 
+		if data_cacha.hide_left then size_left = 0 end
+		if data_cacha.hide_right then size_right = 0 end 
 
 		size_y = size_y + fix_y
 		if size_left > 0 then
@@ -215,30 +213,30 @@ local function create(editor, renderer)
 		size_y = size_y - top
 		ImGui.SetCursorPos(0, top)
 		ImGui.BeginChild("##chess_middle_2", size_x, size_y, ImGui.ChildFlags({"Border"}))
-			region_draw.on_render(_deltatime)
+			draw_map.on_render(_deltatime)
 
 			local pos_y = size_y - 35
-			if show_left then
+			if data_cacha.hide_left then
 				ImGui.SetCursorPos(3, pos_y)
-				if editor.style.draw_btn(" << ##btn_left_1") then 
-					show_left = false
+				if editor.style.draw_btn(" >> ##btn_left_1") then 
+					data_cacha.hide_left = false
 				end
 			else 
 				ImGui.SetCursorPos(3, pos_y)
-				if editor.style.draw_btn(" >> ##btn_left_2") then 
-					show_left = true
+				if editor.style.draw_btn(" << ##btn_left_2") then 
+					data_cacha.hide_left = true
 				end
 			end
 			local len_x = 30
-			if show_right then
+			if data_cacha.hide_right then
 				ImGui.SetCursorPos(size_x - len_x, pos_y)
-				if editor.style.draw_btn(" >> ##btn_right_1") then 
-					show_right = false
+				if editor.style.draw_btn(" << ##btn_right_1") then 
+					data_cacha.hide_right = false
 				end
 			else 
 				ImGui.SetCursorPos(size_x - len_x, pos_y)
-				if editor.style.draw_btn(" << ##btn_right_2") then 
-					show_right = true
+				if editor.style.draw_btn(" >> ##btn_right_2") then 
+					data_cacha.hide_right = true
 				end
 			end
 		ImGui.EndChild()
@@ -250,7 +248,7 @@ local function create(editor, renderer)
 		size_y = size_y - top
 		ImGui.SetCursorPos(0, top)
 		ImGui.BeginChild("##chess_right_1", size_x, size_y, ImGui.ChildFlags({"Border"}))
-			inspector.on_render(_deltatime)
+			draw_inspector.on_render(_deltatime)
 		ImGui.EndChild()
 	end
 

@@ -7,7 +7,8 @@ local game_core = import_package 'ly.game_core'
 
 ---@param editor ly.game_editor.editor
 ---@param args chess_editor_create_args
-local function new(editor, args)
+---@param wnd ly.game_editor.wnd_map
+local function new(editor, args, wnd)
 	---@class ly.map.renderer
 	local api = {}	
 	local stack = dep.common.data_stack.create()		---@type common_data_stack
@@ -18,7 +19,7 @@ local function new(editor, args)
 	api.tb_object_def = args.tb_objects					---@type chess_object_tpl[]
 	api.is_window_active = true
 		
-	local draw = require 'windows.map.chess_draw'.create(editor, api)				---@type chess_editor_draw
+	local draw_main = require 'windows.map.draw_main'.create(editor, api, wnd)				---@type ly.game_editor.draw_main
 
 	function api.on_init()
 		stack.set_data_handler(data_hander)	
@@ -28,7 +29,7 @@ local function new(editor, args)
 	end
 
 	function api.on_destroy()
-		draw.on_destroy()
+		draw_main.on_destroy()
 	end
 
 	function api.on_reset()
@@ -54,7 +55,7 @@ local function new(editor, args)
 	---@param delta_time number 更新间隔，秒
 	function api.on_render(is_active, delta_time)
 		api.is_window_active = is_active
-		draw.on_render(delta_time)
+		draw_main.on_render(delta_time)
 	end 
 
 	function api.handleKeyEvent()
@@ -71,19 +72,51 @@ local function new(editor, args)
 		if ImGui.IsKeyPressed(ImGui.Key.P, false) then 
 			local region = data_hander.cur_region()
 			local object_id = data_hander.data.cur_object_id
-			if region and object_id and not data_hander.is_multi_selected(region) then 
-				local t, id, layerId = data_hander.get_first_selected_only(region)
-				if id then
-					if t == "ground" then
-						local x, y = data_hander.grid_id_to_grid_pos(id)
-						draw.region_draw.notify_drop_object_to_grid(object_id, x, y)
-					elseif t == "object"  then
-						local gridData, gridId = data_hander.get_grid_data_by_uid(region, layerId, id)
-						if gridData then 
-							local x, y = data_hander.grid_id_to_grid_pos(gridId)
-							draw.region_draw.notify_drop_object_to_grid(object_id, x, y)
+			if region and object_id then
+				local dirty = false
+				if data_hander.is_multi_selected(region) and data_hander.is_shift_selected(region)  then 
+					local x1, y1, x2, y2 = data_hander.get_shift_selected_range(region)
+					local tpl = data_hander.get_object_tpl(object_id)
+					if tpl then
+						local layer = data_hander.get_top_active_layer(region)
+						for x = x1, x2 do 
+							for y = y1, y2 do 
+								local gridId = data_hander.grid_pos_to_grid_id(x, y)
+								if layer then 
+									layer.grids[gridId] = nil
+								end
+							end
+						end
+						
+						for x = x1, x2, tpl.size.x do 
+							for y = y1, y2, tpl.size.y do 
+								if (x + tpl.size.x - 1 <= x2) and (y + tpl.size.y - 1 <= y2) then
+									dirty = draw_main.draw_map.notify_drop_object_to_grid(object_id, x, y)
+								end
+							end
 						end
 					end
+
+				else 
+					local list = data_hander.data.cache.selects[region.id] or {}
+					for i, v in ipairs(list) do 
+						local t, id, layerId = v.type, v.id, v.layer
+						if id then 
+							if t == "ground" then
+								local x, y = data_hander.grid_id_to_grid_pos(id)
+								dirty = draw_main.draw_map.notify_drop_object_to_grid(object_id, x, y)
+							elseif t == "object"  then
+								local gridData, gridId = data_hander.get_grid_data_by_uid(region, layerId, id)
+								if gridData then 
+									local x, y = data_hander.grid_id_to_grid_pos(gridId)
+									dirty = draw_main.draw_map.notify_drop_object_to_grid(object_id, x, y)
+								end
+							end
+						end
+					end
+				end
+				if dirty then 
+					stack.snapshoot(true)
 				end
 			end
 		end

@@ -47,6 +47,7 @@ local chess_map_region_tpl = {}
 ---@class chess_map_tpl_cache
 ---@field selects table<number, chess_selected_grid[]> 		regionId -> 选中的格子列表
 ---@field invisibles table<number, chess_selected_grid>  	regionId -> 不可见的格子列表
+---@field shift boolean 是不是shift选中
 local chess_map_tpl_cache = {}
 
 ---@class chess_map_setting 

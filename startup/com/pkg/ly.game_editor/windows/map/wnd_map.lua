@@ -7,7 +7,7 @@ local ImGui = dep.ImGui
 ---@param editor ly.game_editor.editor
 local function new(editor, vfs_path, full_path)
 	local api = {} 			---@class ly.game_editor.wnd_map
-	
+	api.vfs_path = vfs_path
 	---@type ly.map.renderer
 	local main = nil 
 
@@ -18,7 +18,7 @@ local function new(editor, vfs_path, full_path)
 		---@type chess_editor_create_args
 		local params = {}
 		params.data = data
-		main = require 'windows.map.map_renderer'.new(editor, params);
+		main = require 'windows.map.map_renderer'.new(editor, params, api);
 	end
 
 	function api.update(is_active, delta_time, show_mode)
@@ -56,6 +56,7 @@ local function new(editor, vfs_path, full_path)
 	end
 
 	function api.onAnyFileSaveComplete(_vfs_path, _full_path)
+		
 	end
 
 	function api.notify_auto_save()

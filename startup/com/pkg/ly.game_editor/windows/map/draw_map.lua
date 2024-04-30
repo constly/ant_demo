@@ -8,9 +8,9 @@ local tb_drag_data = {}
 
 ---@param editor ly.game_editor.editor
 ---@param renderer ly.map.renderer
----@return chess_region_draw
+---@return ly.game_editor.draw_map
 local function new(editor, renderer)
-	---@class chess_region_draw
+	---@class ly.game_editor.draw_map
 	local api = {}
 	local region 	---@type chess_map_region_tpl
 	local context
@@ -110,7 +110,9 @@ local function new(editor, renderer)
             	if payload then
 					local objId = tonumber(payload)
 					if objId then 
-						api.notify_drop_object_to_grid(objId, x, y)
+						if api.notify_drop_object_to_grid(objId, x, y) then 
+							renderer.stack.snapshoot(true)
+						end
 					end
 				end
 
@@ -190,12 +192,12 @@ local function new(editor, renderer)
 				txt_color = {table.unpack(txt_color)}; txt_color[4] = txt_color[4] * 0.1
 			end
 			if imgui_utils.draw_color_btn(label, bg_color, txt_color, {size_x = size_x - 5, size_y = size_y - 5}) then 
-				api.notify_click_object(layerId, uid)
+				api.notify_click_object(layerId, uid, {pos_x, pos_y})
 			end
 
 			if ImGui.BeginDragDropSource() then 
-				if not data_hander.has_selected(region, "object", gridId, layerId) then 
-					api.notify_click_object(layerId, uid)
+				if not data_hander.has_selected(region, "object", uid, layerId) then 
+					api.notify_click_object(layerId, uid, {pos_x, pos_y})
 				end
 				tb_drag_data = {layerId, gridId}
 				ImGui.SetDragDropPayload("DragObject", string.format("%s,%s", layerId, gridId));
@@ -229,22 +231,28 @@ local function new(editor, renderer)
 			draw_list.AddRectFilled({min = {p1, p2}, max = {p1 + size.x * 100, p2 + size.y * 100}, col = bg_color});      
 		end
 
-		local list = data_hander.data.cache.selects[region.id] or {}
-		
-		for i, v in ipairs(list) do 
-			if v.type == "ground" then 
-				local x, y = data_hander.grid_id_to_grid_pos(v.id)
-				draw(x, y, {x = 1, y = 1})
+		local cache = data_hander.data.cache
+		local list = cache.selects[region.id] or {}
+		if cache.shift and #list == 2 then 
+			local x1, y1, x2, y2 = data_hander.get_shift_selected_range(region)
+			draw(x1, y1, {x = x2 - x1 + 1, y = y2 - y1 + 1})
 
-			elseif v.type == "object" then
-				local layer = data_hander.get_layer_by_id(region, v.layer)
-				if layer and layer.active then 
-					local data, gridId = data_hander.get_grid_data_by_uid(region, v.layer, v.id)
-					if data then 
-						local x, y = data_hander.grid_id_to_grid_pos(gridId)
-						local tpl = data_hander.get_object_tpl(data.tpl)
-						if tpl then 
-							draw(x, y, tpl.size)
+		else
+			for i, v in ipairs(list) do 
+				if v.type == "ground" then 
+					local x, y = data_hander.grid_id_to_grid_pos(v.id)
+					draw(x, y, {x = 1, y = 1})
+
+				elseif v.type == "object" then
+					local layer = data_hander.get_layer_by_id(region, v.layer)
+					if layer and layer.active then 
+						local data, gridId = data_hander.get_grid_data_by_uid(region, v.layer, v.id)
+						if data then 
+							local x, y = data_hander.grid_id_to_grid_pos(gridId)
+							local tpl = data_hander.get_object_tpl(data.tpl)
+							if tpl then 
+								draw(x, y, tpl.size)
+							end
 						end
 					end
 				end
@@ -255,14 +263,34 @@ local function new(editor, renderer)
 	-- 点击地面格子
 	function api.notify_click_ground(x, y)
 		local id = data_hander.grid_pos_to_grid_id(x, y)
-		data_hander.clear_selected(region)
-		data_hander.add_selected(region, "ground", id, nil)
+		local ok = true
+		if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) then 
+			ok = data_hander.add_selected(region, "ground", id, nil, {x, y})
+		elseif ImGui.IsKeyDown(ImGui.Key.LeftShift) then 
+			ok = data_hander.add_selected_shift(region, "ground", id, nil, {x, y})
+		else
+			data_hander.clear_selected(region)
+			ok = data_hander.add_selected(region, "ground", id, nil, {x, y})
+		end
+		if ok then 
+			renderer.stack.snapshoot(false)
+		end
 	end
 
 	-- 点击物件
-	function api.notify_click_object(layerId, uid)
-		data_hander.clear_selected(region)
-		data_hander.add_selected(region, "object", uid, layerId)
+	function api.notify_click_object(layerId, uid, pos)
+		local ok = true
+		if ImGui.IsKeyDown(ImGui.Key.LeftCtrl) and pos then 
+			ok = data_hander.add_selected(region, "object", uid, layerId, pos)
+		elseif ImGui.IsKeyDown(ImGui.Key.LeftShift) and pos then 
+			ok = data_hander.add_selected_shift(region, "object", uid, layerId, pos)
+		else 
+			data_hander.clear_selected(region)
+			ok = data_hander.add_selected(region, "object", uid, layerId, pos)
+		end 
+		if ok then 
+			renderer.stack.snapshoot(false)
+		end
 	end
 
 	-- 拖动物件到格子
@@ -273,7 +301,7 @@ local function new(editor, renderer)
 			local data = top.grids[gridId]
 			if not data or data.tpl ~= objId then 
 				top.grids[gridId] = data_hander.create_grid_tpl(objId)
-				renderer.stack.snapshoot(true)
+				return true;
 			end
 		end
 	end
