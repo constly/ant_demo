@@ -40,7 +40,10 @@ local function new(editor, renderer)
 			api.draw_selected()
 			api.draw_grounds()
 			api.draw_layers()
-			if needNavigateTo or ImGui.IsKeyPressed(ImGui.Key.Space, false) then api.NavigateToContent(); needNavigateTo = false end
+			if needNavigateTo or ImGui.IsKeyPressed(ImGui.Key.Space, false) then 
+				api.NavigateToContent(); 
+				needNavigateTo = false 
+			end
 			context:End()
 		end
 	end
@@ -118,12 +121,19 @@ local function new(editor, renderer)
 
 				payload = ImGui.AcceptDragDropPayload("DragObject")
 				if payload then
-					local layerId, gridId = tb_drag_data[1], tb_drag_data[2]
-					local layer = data_hander.get_layer_by_id(region, layerId)
-					local newGridId = data_hander.grid_pos_to_grid_id(x, y)
-					if gridId and layer and newGridId ~= gridId then 
-						layer.grids[gridId], layer.grids[newGridId] = layer.grids[newGridId], layer.grids[gridId]
-						renderer.stack.snapshoot(true)
+					local layerId, gridId, pos_x, pos_y = table.unpack(tb_drag_data)
+					if data_hander.is_multi_selected(region) then 
+						local offset_x, offset_y = x - pos_x, y - pos_y
+						if data_hander.drag_selected_object(region, offset_x, offset_y) then 
+							renderer.stack.snapshoot(true)
+						end
+					else
+						local layer = data_hander.get_layer_by_id(region, layerId)
+						local newGridId = data_hander.grid_pos_to_grid_id(x, y)
+						if gridId and layer and newGridId ~= gridId then 
+							layer.grids[gridId], layer.grids[newGridId] = layer.grids[newGridId], layer.grids[gridId]
+							renderer.stack.snapshoot(true)
+						end
 					end
 				end
 				ImGui.EndDragDropTarget()
@@ -196,10 +206,10 @@ local function new(editor, renderer)
 			end
 
 			if ImGui.BeginDragDropSource() then 
-				if not data_hander.has_selected(region, "object", uid, layerId) then 
+				if not data_hander.has_selected(region, "object", uid, layerId, {pos_x, pos_y}) then 
 					api.notify_click_object(layerId, uid, {pos_x, pos_y})
 				end
-				tb_drag_data = {layerId, gridId}
+				tb_drag_data = {layerId, gridId, pos_x, pos_y}
 				ImGui.SetDragDropPayload("DragObject", string.format("%s,%s", layerId, gridId));
 				ImGui.EndDragDropSource();
 			end

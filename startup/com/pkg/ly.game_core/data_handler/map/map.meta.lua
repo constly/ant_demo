@@ -71,6 +71,7 @@ local chess_map_tpl = {}
 ---@field type string 类型,ground or object
 ---@field id number|string 选中的id
 ---@field layer number 所属层级
+---@field pos number[] 位置
 local chess_selected_grid = {}
 
 

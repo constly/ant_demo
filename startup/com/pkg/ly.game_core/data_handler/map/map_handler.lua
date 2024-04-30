@@ -223,14 +223,21 @@ local function new ()
 	---@param type string ground or object 
 	---@param id number id
 	---@param layerId number 层级id
-	function handler.has_selected(region, type, id, layerId)
+	---@param pos number[] 位置
+	function handler.has_selected(region, type, id, layerId, pos)
 		local _cache = handler.data.cache
 		local list = _cache.selects[region.id] or {}
-		for i, v in ipairs(list) do 
-			if v.type == type and v.id == id and v.layer == layerId then 
-				return true;
-			end
-		end 
+		if _cache.shift and pos and #list == 2 then
+			local x1, y1, x2, y2 = handler.get_shift_selected_range(region)
+			local x, y = pos[1], pos[2]
+			return x >= x1 and x <= x2 and y >= y1 and y <= y2
+		else
+			for i, v in ipairs(list) do 
+				if v.type == type and v.id == id and v.layer == layerId then 
+					return true;
+				end
+			end 
+		end
 	end
 
 	-- 得到首个选中的（不算空格子）
@@ -322,6 +329,71 @@ local function new ()
 			if y1 > y2 then y1, y2 = y2, y1 end
 			return x1, y1, x2, y2
 		end
+	end
+
+	--- 拖动选中的对象
+	---@param region chess_map_region_tpl
+	function handler.drag_selected_object(region, offset_x, offset_y)
+		local cache = handler.data.cache
+		local list = cache.selects[region.id] or {}
+		local tb_delete = {}
+		local tb_new = {}
+		if cache.shift and #list == 2 then
+			local x1, y1, x2, y2 = handler.get_shift_selected_range(region)
+			for i, layer in ipairs(region.layers) do 
+				if layer.active then 
+					for gridId, v in pairs(layer.grids) do 
+						local pos_x, pos_y = handler.grid_id_to_grid_pos(gridId)
+						if pos_x >= x1 and pos_x <= x2 and pos_y >= y1 and pos_y <= y2 then 
+							local check_end_x = pos_x + handler.max_object_size_x - 1  -- 先做大概筛选
+							local check_end_y = pos_y + handler.max_object_size_y - 1
+							local check = true
+							if check_end_x > x2 or check_end_y > y2 then 
+								local tpl = handler.get_object_tpl(v.tpl)
+								check_end_x = pos_x + tpl.size.x - 1
+								check_end_y = pos_y + tpl.size.y - 1
+								if check_end_x > x2 or check_end_y > y2 then 
+									check = false
+								end
+							end
+
+							if check then
+								local new_x, new_y = pos_x + offset_x, pos_y + offset_y
+								local newId = handler.grid_pos_to_grid_id(new_x, new_y)
+								table.insert(tb_delete, {layer, gridId})
+								table.insert(tb_new, {layer, newId, v})
+							end
+						end
+					end
+				end
+			end
+			list[1].pos = {x1 + offset_x, y1 + offset_y}
+			list[2].pos = {x2 + offset_x, y2 + offset_y}
+		else 
+			for i, v in ipairs(list) do 
+				if v.type == "object" then
+					local layer = handler.get_layer_by_id(region, v.layer)
+					local gridData, gridId = handler.get_grid_data_by_uid(region, v.layer, v.id)
+					local pos_x, pos_y = handler.grid_id_to_grid_pos(gridId)
+					local new_x, new_y = pos_x + offset_x, pos_y + offset_y
+					local newId = handler.grid_pos_to_grid_id(new_x, new_y)
+					table.insert(tb_delete, {layer, gridId})
+					table.insert(tb_new, {layer, newId, gridData})
+				end
+			end
+		end
+
+		for i, v in ipairs(tb_delete) do 
+			local layer = v[1] ---@type chess_map_region_layer_tpl 
+			local gridId = v[2]
+			layer.grids[gridId] = nil
+		end
+		for i, v in ipairs(tb_new) do 
+			local layer = v[1] ---@type chess_map_region_layer_tpl 
+			local gridId = v[2]
+			layer.grids[gridId] = v[3]
+		end
+		return #tb_new > 0;
 	end
 
 	--- 得到格子数据
