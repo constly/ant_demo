@@ -16,7 +16,7 @@ local function create(editor, renderer, wnd)
 	local input_content = ImGui.StringBuf()
 
 	---@type ly.map.chess.ui_setting
-	local ui_setting = require 'windows.map.ui.chess_ui_setting'.new(renderer)
+	local ui_setting = require 'windows.map.ui.ui_setting'.new(renderer)
 
 	local dpiScale
 	local header_y = 30
@@ -110,7 +110,7 @@ local function create(editor, renderer, wnd)
 		end
 		ImGui.SameLine()
 		if editor.style.draw_btn("还 原", false) then 
-			renderer.on_init()
+			renderer.on_init(renderer.args)
 		end
 		ImGui.SameLineEx(size_x - 100)
 		if editor.style.draw_btn("事 件", false) then 

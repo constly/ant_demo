@@ -113,8 +113,12 @@ local function new(editor, renderer)
             	if payload then
 					local objId = tonumber(payload)
 					if objId then 
-						if api.notify_drop_object_to_grid(objId, x, y) then 
-							renderer.stack.snapshoot(true)
+						if data_hander.is_multi_selected(region) then
+							renderer.put_object_to_selected(objId)
+						else
+							if api.notify_drop_object_to_grid(objId, x, y) then 
+								renderer.stack.snapshoot(true)
+							end
 						end
 					end
 				end
