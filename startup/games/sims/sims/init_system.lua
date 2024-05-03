@@ -13,6 +13,7 @@ local icamera = ecs.require "ant.camera|camera"
 local client
 local timer = common.new_timer()
 
+local pre
 
 function system.preinit()
 	-- 设置项目根目录
@@ -54,5 +55,14 @@ function system.init_world()
 end
 
 function system.data_changed()
-	timer:update()	
+	timer:update()
+	
+	local cur = os.clock()
+	if not pre then 
+		pre = cur
+	end
+
+	local delta = cur - pre
+	pre = os.clock()
+	client.update(delta)
 end

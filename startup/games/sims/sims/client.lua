@@ -28,17 +28,17 @@ local function new(ecs)
 	api.player_ctrl 	= require 'player.player_ctrl'.new(api)
 	api.saved_root		= "";	-- 存档根目录
 
+	local tb_msg = {}
+
 	local S
 	local function init()
 		-- 扩展服务通信接口
 		S = ltask.dispatch {}
 		function S.exec_richman_client_rpc(cmd, tbParam)  
-			local tb = api.msg.tb_rpc[cmd]
-			if tb then tb.client(tbParam) end
+			table.insert(tb_msg, {type = "rpc", cmd = cmd, param = tbParam})
 		end
 		function S.exec_richman_client_s2c(cmd, tbParam)
-			local tb = api.msg.tb_s2c[cmd]
-			if tb then tb(tbParam) end
+			table.insert(tb_msg, {type = "s2c", cmd = cmd, param = tbParam})
 		end
 		api.msg.init(true, api)
 		local tbParam = map.tbParam or {}
@@ -94,6 +94,24 @@ local function new(ecs)
 	end
 
 	function api.update(delta_time)
+		-- 网络消息只能在ecs主循环中处理，否则会出现各种奇怪的问题（主要指涉及到引擎相关时，比如entity创建）
+		if #tb_msg > 0 then
+			for _, v in ipairs(tb_msg) do 
+				if v.type == "rpc" then
+					local tb = api.msg.tb_rpc[v.cmd]
+					if tb then 
+						tb.client(v.param) 
+					end
+				elseif v.type == "s2c" then
+					local tb = api.msg.tb_s2c[v.cmd]
+					if tb then 
+						tb(v.param) 
+					end
+				end
+			end
+			tb_msg = {}
+		end
+
 		api.statemachine.update(delta_time)
 	end
 
