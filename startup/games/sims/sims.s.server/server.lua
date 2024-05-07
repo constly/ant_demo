@@ -6,7 +6,6 @@ local function new()
 	---@class sims.server 
 	---@field serviceGoap number goap规划服务地址
 	---@field servicePathfinder number 寻路服务地址
-	---@field map_mgr sims.server.map_mgr 地图管理
 	---@field room sims.server_room
 	---@field msg sims.msg
 	---@field save_mgr sims.server.save_mgr
@@ -15,11 +14,12 @@ local function new()
 
 	api.msg = core.new_msg()
 	api.loader = core.new_loader()
+	api.define = core.define
 	api.player_mgr = require 'room.player_mgr'.new(api) 
 	api.room = require 'room.server_room'.new(api)  
-	api.map_mgr = require 'map.map_mgr'.new(api)
 	api.npc_mgr = require 'npc.server_npc_mgr'.new(api)
 	api.save_mgr = require 'save.save_mgr'.new(api)			
+	api.main_world = require 'world.world'.new(api) ---@type sims.server.world 主世界
 
 	function api.init()
 		api.msg.init(false, api)
@@ -54,7 +54,8 @@ local function new()
 	function api.tick(delta_time)
 		api.room.tick()
 		api.player_mgr.tick(delta_time)
-		api.map_mgr.tick(delta_time)
+		api.npc_mgr.tick(delta_time)
+		api.main_world.tick(delta_time)
 	end
 
 	return api

@@ -142,6 +142,7 @@ function system.data_changed()
 				tbParams.menus = {
 					{name = "存档助手", window = require 'editor.wnd_saved'.new(client) },
 					{name = "开发计划", window = require 'editor.wnd_dev_plan'.new(client) },
+					{name = "调试面板", window = require 'editor.wnd_debug'.new(client) },
 				}
 				editor = game_editor.create_editor(tbParams)
 			end

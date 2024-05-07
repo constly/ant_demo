@@ -209,7 +209,12 @@ end
 function lib.string_to_vec2(str)
 	local tb = lib.eval(str)
 	if not tb then return {x = 0, y = 0} end 
-	return {x = tb[1] or 0, y = tb[2] or 0}
+	if #tb >= 3 then
+		--- x, y, z; y为向上
+		return {x = tb[1] or 0, y = tb[3] or 0}
+	else
+		return {x = tb[1] or 0, y = tb[2] or 0}
+	end
 end
 
 function lib.string_to_color_array(str)

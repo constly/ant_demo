@@ -1,8 +1,0 @@
-80;1;唯一标识	80;1;名字	80;1;路径	80;1;背景音乐	80;1;注释说明
-string	string	string	string	string
-id	name	path	bgm	key4
-1	主地图	/pkg/sims.res/goap/main_map.map		
-				
-				
-				
-				

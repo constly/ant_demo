@@ -1,3 +1,4 @@
+---@type ly.common
 local common = import_package 'ly.common'
 local ltask = require "ltask"
 local map = common.map
@@ -20,16 +21,18 @@ local function new(ecs)
 	api.world.client 	= api
 	api.msg 			= core.new_msg()
 	api.loader 			= core.new_loader()
+	api.define 			= core.define
+	api.time_timer		= common.new_time_timer()
+	api.tick_timer		= common.new_tick_timer()
 	api.room 			= require 'room.client_room'.new(api)
 	api.statemachine 	= require 'state_machine'.new(api)  		
-	api.map  			= require 'map.client_map'.new(api)		
 	api.npc_mgr			= require 'npc.client_npc_mgr'.new(api)
 	api.players 		= require 'player.client_players'.new(api)
 	api.player_ctrl 	= require 'player.player_ctrl'.new(api)
+	api.client_world 	= require 'world.client_world'.new(api)
 	api.saved_root		= "";	-- 存档根目录
 
 	local tb_msg = {}
-
 	local S
 	local function init()
 		-- 扩展服务通信接口
@@ -112,15 +115,21 @@ local function new(ecs)
 			tb_msg = {}
 		end
 
+		api.tick_timer.update()
+		api.time_timer.update(delta_time)
 		api.statemachine.update(delta_time)
+		api.client_world.update_current_region()
 	end
 
-	function api.restart()
+	---@param pos vec3 出生位置
+	function api.restart(pos)
+		api.tick_timer.reset()
+		api.time_timer.reset()
+
 		api.loader.restart()
 		api.npc_mgr.restart()
-		api.map.cleanup()
-		api.player_ctrl.restart()
-		api.call_server(api.msg.rpc_apply_map)
+		api.player_ctrl.restart(pos)
+		api.client_world.restart()
 	end
 
 	init()

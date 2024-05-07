@@ -38,9 +38,17 @@ function api.new_goap_mgr()
 	return mgr.new()
 end
 
----@return ly.common.timer
-function api.new_timer()
-	local timer = require 'tools.timer'
+--- 通过tick驱动的timer（更推荐使用这个）
+---@return ly.common.tick_timer
+function api.new_tick_timer()
+	local timer = require 'timer.tick_timer'
+	return timer.new()
+end
+
+--- 通过time驱动的timer
+---@return ly.common.time_timer
+function api.new_time_timer()
+	local timer = require 'timer.time_timer'
 	return timer.new()
 end
 

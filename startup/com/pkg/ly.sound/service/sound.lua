@@ -1,6 +1,6 @@
 local ltask = require "ltask"
 local aio = import_package "ant.io"
-local GameSound = require "ly.impl.sound"
+local GameSound = require "ly.sound.impl"
 
 local mgr 
 local quit

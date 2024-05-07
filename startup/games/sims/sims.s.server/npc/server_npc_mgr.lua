@@ -1,6 +1,6 @@
 ---@class sims.server.npc.create_param
 ---@field tplId number npc模板id
----@field mapId number 所在地图id 
+---@field world_id number 所在世界id 
 ---@field pos_x number 坐标x
 ---@field pos_y number 坐标y
 ---@field pos_z number 坐标z
@@ -14,7 +14,7 @@ local function new(server)
 	---@class sims.server.npc_mgr
 	---@field npcs map<number, sims.server.npc> npc列表
 	---@field next_id number 
-	local api = {}
+	local api = {npcs = {}}
 
 	--------------------------------------------------
 	-- 存档 和 读档
@@ -64,7 +64,9 @@ local function new(server)
 		local params = {}
 		params.mapId = 1
 		params.tplId = 1
-		return api.create_npc(params)
+		local npc = api.create_npc(params)
+		npc.player = player
+		return npc
 	end
 
 	--- 创建npc
@@ -91,6 +93,12 @@ local function new(server)
 	---@param npc sims.server.npc
 	function api.destroy_npc(npc)
 		api.npcs[npc.id] = nil
+	end
+	
+	function api.tick(delta_time)
+		for i, npc in pairs(api.npcs) do 
+			npc.tick(delta_time)
+		end
 	end
 
 	return api

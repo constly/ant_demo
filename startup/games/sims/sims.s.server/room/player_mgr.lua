@@ -26,7 +26,7 @@ local function new(server)
 			tb.guid = player.guid
 			tb.npc_id = player.npc.id
 			tb.name = player.name
-			tb.map_id = player.map_id
+			tb.world_id = player.world_id
 			table.insert(data.players, tb)
 		end
 		return data
@@ -44,7 +44,7 @@ local function new(server)
 			tb.id = player.id
 			tb.guid = player.guid
 			tb.name = player.name
-			tb.map_id = 1  -- 默认都在1号地图
+			tb.world_id = 1  -- 默认都在1号地图
 			table.insert(data.players, tb)
 		end
 		return data
@@ -69,7 +69,7 @@ local function new(server)
 			local player = new_player_handler.new(server, p.id)
 			player.guid = p.guid
 			player.name = p.name
-			player.map_id = p.map_id
+			player.world_id = p.world_id
 			if pre then
 				player.fd = pre.fd
 				player.code = pre.code
@@ -88,7 +88,7 @@ local function new(server)
 			login_param.pos_x = player.npc.pos_x
 			login_param.pos_y = player.npc.pos_y
 			login_param.pos_z = player.npc.pos_z
-			server.map_mgr.on_login(player, login_param)
+			server.main_world.on_login(player, login_param)
 			table.insert(api.players, player)
 		end
 	end

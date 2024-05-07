@@ -14,9 +14,11 @@ local function new()
 	api.rpc_exit = 2					-- 退出房间
 	api.rpc_room_begin = 3				-- 房间战斗开始
 	api.rpc_ping = 4
-	api.rpc_apply_map = 5				-- 请求获取地图
 	api.rpc_restart = 6					-- 重启服务器
 	api.rpc_set_move_dir = 7			-- 设置移动方向
+	api.rpc_apply_region = 8			-- 请求获取区域数据
+	api.rpc_exit_region = 9				-- 请求离开区域
+	api.rpc_apply_npc_data = 11			-- 获取npc数据
 
 	--- 服务器全是主动通知 
 	api.s2c_room_members = 1			-- 通知房间成员列表
@@ -43,6 +45,9 @@ local function new()
 
 	--- 初始化
 	function api.init(isClient, outer)
+		require 'msg.msg_npc'.new(api)
+		require 'msg.msg_world'.new(api)
+
 		if isClient then
 			api.client = outer
 			reg_rpc()
@@ -55,8 +60,6 @@ local function new()
 
 	--- 注册rpc
 	reg_rpc = function()
-		require 'msg.msg_map'.new(api)
-
 		-- 登录
 		api.reg_rpc(api.rpc_login, 
 			function(player, tbParam, fd)  	-- 服务器执行
@@ -65,23 +68,23 @@ local function new()
 					player.fd = fd
 					player.is_online = true
 					api.server.room.refresh_members()
-					api.server.map_mgr.on_login(player)
-					return {id = player.id}
-				else
-					return {} 
+					local npc = api.server.main_world.on_login(player)
+					return {id = player.id, pos = {x = npc.pos_x, y = npc.pos_y, z = npc.pos_z}}
 				end
+				return {}
 			end, 
 			function(tbParam)				--- 客户端执行
-				if tbParam and tbParam.id then
+				if tbParam.id then
 					local player = api.client.players.find_by_id(tbParam.id)
 					if player then 
 						player.is_self = true
 						api.client.player_ctrl.local_player = player
 					end
+					api.client.restart(tbParam.pos)
 				else 
+					assert(tbParam, "登录失败")
 					api.client.room.need_exit = true
 				end
-				api.client.restart()
 			end)
 
 		-- 退出房间
@@ -110,8 +113,6 @@ local function new()
 
 	--- 注册s2c
 	reg_s2c = function()
-		require 'msg.msg_s2c'.new(api)
-
 		-- 通知房间成员列表
 		api.reg_s2c(api.s2c_room_members, function(tbParam)
 			api.client.players.set_members(tbParam)
@@ -134,9 +135,9 @@ local function new()
 			
 		end)
 
-		-- 通知进入房间
+		-- 通知重启客户端
 		api.reg_s2c(api.s2c_restart, function(tbParam)
-			api.client.restart()
+			api.client.restart(tbParam.pos)
 		end)
 	end
 	return api

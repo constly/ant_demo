@@ -51,7 +51,9 @@ local function new(server)
 
 	function api.notify_restart()
 		api.refresh_members()
-		api.notify_to_all_client(msg.s2c_restart, {})
+		for i, v in ipairs(player_mgr.players) do 
+			api.send_to_client(v.fd, msg.s2c_restart, {pos = {x = v.npc.pos_x, y = v.npc.pos_y, z = v.npc.pos_z}})
+		end
 	end
 
 	function api.refresh_members()

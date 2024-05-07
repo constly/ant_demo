@@ -92,6 +92,7 @@ local function new(editor)
 		require 'editor.data_def.reg_color'.reg(api)
 		require 'editor.data_def.reg_vec'.reg(api)
 		require 'editor.data_def.reg_attr'.reg(api)
+		require 'editor.data_def.reg_enum'.reg(api)
 
 		-- test
 		-- api.reg_type({}, "test_int", "int", {name = "整数", hint = "", range = {min = 1, max = 2}})

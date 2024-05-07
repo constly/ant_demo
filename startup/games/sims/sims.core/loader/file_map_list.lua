@@ -3,10 +3,12 @@
 --------------------------------------------------------------
 
 ---@class sims.file_map_list.line
----@field string number 地图id
+---@field id string 地图id
 ---@field name string 地图名字
 ---@field path string 地图路径
 ---@field bgm string 背景音乐
+---@field position number[] 世界位置
+---@field world number 所属world
 
 ---@type ly.common
 local common = import_package 'ly.common'
@@ -15,7 +17,7 @@ local function new()
 	---@class sims.file_map_list
 	---@field data map<string, sims.file_map_list.line>
 	local api = {}
-	local path<const> = "/pkg/sims.res/goap/map_list.txt"
+	local path<const> = "/pkg/sims.res/goap/maps/_maps.txt"
 
 	function api.restart()
 		api.data = {}
@@ -28,7 +30,15 @@ local function new()
 		for i, line in ipairs(lines) do 
 			local id = line.id 
 			if id and #id > 0 then 
-				data[id] = line
+				---@type sims.file_map_list.line
+				local tb = {}
+				tb.id = line.id
+				tb.name = line.name
+				tb.path = line.path
+				tb.bgm = line.bgm
+				tb.world = tonumber(line.world) or 0
+				tb.position = common.lib.eval(line.position) or {}
+				data[id] = tb
 			end
 		end
 		api.data = data

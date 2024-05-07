@@ -6,7 +6,8 @@ local math3d = require "math3d"
 local iom = ecs.require "ant.objcontroller|obj_motion"
 local utils = require 'utils.utils'
 
-local function update (pe, camera_cfg)
+---@param client sims.client
+local function update (client, pe, camera_cfg)
 	local mq = w:first("main_queue camera_ref:in render_target:in")
 	local ce <close> = world:entity(mq.camera_ref, "scene:update")
 	local pos = iom.get_position(pe)
@@ -26,6 +27,10 @@ local function update (pe, camera_cfg)
 
 	local viewdir = math3d.sub(view_target, camera_pos) 
 	iom.lookto(ce, camera_pos, viewdir)
+	local ps = client.player_ctrl.position 
+	ps.x = tpos[1]
+	ps.y = tpos[2]
+	ps.z = tpos[3]
 end
 
 --- 摄像机移动控制
@@ -39,7 +44,7 @@ function m.data_changed()
 	local e<close> = world:entity(eid, "comp_camera?in")
 	if e then 
 		local pe<close> = world:entity(npc.root)
-		update(pe, e.comp_camera)
+		update(client, pe, e.comp_camera)
 	end
 end
 

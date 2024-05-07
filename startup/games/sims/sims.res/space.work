@@ -9,7 +9,7 @@ items:
       children: {}
       id: 4
       size_rate: 0.5743006993006993
-      tabs: sims.res/goap/def_grid.txt;sims.res/goap/def_grid.txt|1;sims.res/goap/main_map.map|1;sims.res/goap/npcs.txt|1
+      tabs: sims.res/goap/main_map.map;sims.res/goap/def_grid.txt|1;sims.res/goap/main_map.map|1;sims.res/goap/npcs.txt|1
       type: 0
       ---
       children:
@@ -31,28 +31,16 @@ items:
       type: 0
     id: 1
     size_rate: 1
-    tabs: sims.res/goap/main_map.map;sims.res/goap/def_grid.txt|1;sims.res/goap/main_map.map|1;sims.res/goap/npcs.txt|1;sims.res/config.ini|1
+    tabs: sims.res/goap/maps/born.map;sims.res/goap/maps/_maps.txt|1;sims.res/goap/maps/_grid_def.txt|1;sims.res/goap/maps/born.map|1;sims.res/goap/maps/test.map|1
     type: 0
   ---
   lock: false
-  next_id: 3
+  next_id: 1
   view:
-    children:
-      ---
-      children: {}
-      id: 2
-      size_rate: 0.5868852459016394
-      tabs: "__inner:custom:存档助手;__inner:custom:存档助手|1;__inner:custom:开发计划|1;__inner:asset_collect|1"
-      type: 0
-      ---
-      children: {}
-      id: 3
-      size_rate: 0.4131147540983606
-      tabs: "__inner:code_analysis"
-      type: 0
+    children: {}
     id: 1
     size_rate: 1
-    tabs: "__inner:custom:存档助手;__inner:custom:存档助手|1;__inner:custom:开发计划|1;__inner:asset_collect|1;__inner:code_analysis|1"
+    tabs: "__inner:custom:调试面板;__inner:code_analysis|1;__inner:custom:开发计划|1;__inner:custom:调试面板|1"
     type: 0
   ---
   lock: false

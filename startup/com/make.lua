@@ -2,7 +2,7 @@ local lm = require "luamake"
 local fs = require "bee.filesystem"
 
 local modules = {}
-local libs = {"clibs", "pkg", "../pkg"}
+local libs = {"clibs", "pkg", "../pkg", "../games/sims"}
 for i, name in ipairs(libs) do 
 	for path in fs.pairs(lm.workdir .. "/" .. name) do
 		if fs.exists(path / "make.lua") then

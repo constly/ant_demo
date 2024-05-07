@@ -10,7 +10,7 @@ local function new(server, id)
 	---@field is_local boolean 是不是本地玩家
 	---@field is_online boolean 是否在线
 	---@field code number 验证码
-	---@field map_id number 所在地图id
+	---@field world_id number 所在world id
 	---@field npc sims.server.npc 玩家控制的npc
 	---@field move_dir vec2 移动方向
 	local api = {}

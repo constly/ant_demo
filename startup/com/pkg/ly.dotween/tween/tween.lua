@@ -1,4 +1,4 @@
-local impl = require 'ly.impl.dotween'
+local impl = require 'ly.dotween.impl'
 
 ---@param type ly.dotween.EaseType
 local function create(EaseType, startValue, endValue, duration)

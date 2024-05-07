@@ -23,7 +23,7 @@ local function new(client)
 		local cfg = client.loader.npcs.get_by_id(syncNpc.tplId)
 		assert(cfg, string.format("npc 模板id 不存在: %s", syncNpc.tplId or "unknown"))
 		assert(cfg.model, string.format("npc=%d 未配置模型", syncNpc.tplId))
-		print("create npc", syncNpc.id, syncNpc.pos_x, syncNpc.pos_y, syncNpc.pos_z, syncNpc.dir_x, syncNpc.dir_z)
+		print(string.format("create npc id:%d pos:%s %s %s dir:%s %s", syncNpc.id, syncNpc.pos_x, syncNpc.pos_y, syncNpc.pos_z, syncNpc.dir_x, syncNpc.dir_z))
 
 		-- npc根节点
 		api.root = world:create_entity {
@@ -44,8 +44,7 @@ local function new(client)
 		api.model = world:create_instance {
 			prefab = cfg.model .. "/mesh.prefab",
 			on_ready = function (e)
-				api.is_ready = true;
-
+				api.is_ready = true
 				world:instance_set_parent(e, api.root)
 				local p<close> = world:entity(api.root, "comp_instance?update")
 				if p and p.comp_instance then 

@@ -1,4 +1,4 @@
-#include <lua.hpp>
+﻿#include <lua.hpp>
 #include <bee/lua/binding.h>
 
 namespace luabind {
@@ -243,7 +243,7 @@ static int bEvaluate(lua_State* L) {
     lua_pushinteger(L, static_cast<lua_Integer>(luabind::CLASS::MEMBER)); \
     lua_setfield(L, -2, #MEMBER);
 
-extern "C" int luaopen_ly_impl_dotween(lua_State *L) {
+extern "C" int luaopen_ly_dotween_impl(lua_State *L) {
 	lua_newtable(L);
 	lua_pushcfunction(L, bEvaluate);
 	lua_setfield(L, -2, "Evaluate");

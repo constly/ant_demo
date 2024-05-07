@@ -21,22 +21,29 @@ static const luaL_Reg loadedlibs[] = {
     {NULL, NULL}
 };
 
-
+// com pkg
 int luaopen_ly_imgui_extend(lua_State* L);
 int luaopen_ly_imgui_node_editor(lua_State* L);
 int luaopen_ly_net(lua_State *L);
-int luaopen_ly_impl_sound(lua_State* L);
-int luaopen_ly_impl_dotween(lua_State *L);
+int luaopen_ly_sound_impl(lua_State* L);
+int luaopen_ly_dotween_impl(lua_State *L);
 
+// game pkg
+int luaopen_sims_world_impl(lua_State *L);
 
 static void loadmodules(lua_State* L) {
 	static const luaL_Reg modules[] = {
+		// com pkg
 		{ "ly.imgui.extend", luaopen_ly_imgui_extend },
 		{ "ly.imgui.node_editor", luaopen_ly_imgui_node_editor },
 		{ "ly.net", luaopen_ly_net},
-		{ "ly.impl.sound", luaopen_ly_impl_sound},
-		{ "ly.impl.dotween", luaopen_ly_impl_dotween},
+		{ "ly.sound.impl", luaopen_ly_sound_impl},
+		{ "ly.dotween.impl", luaopen_ly_dotween_impl},
+
+		// game pkg
+		{ "sims.world.impl", luaopen_sims_world_impl},
 		
+		// end
         { NULL, NULL},
 	};
 

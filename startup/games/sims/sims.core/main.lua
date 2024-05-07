@@ -1,6 +1,9 @@
 ---@class sims.core
 local api = {}
 
+---@type sims.define
+api.define = require 'define'
+
 ---- 文件加载相关
 ---@return sims.loader
 function api.new_loader()
