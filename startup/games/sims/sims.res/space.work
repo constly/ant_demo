@@ -1,4 +1,4 @@
-index: 1
+index: 2
 items:
   ---
   lock: false
@@ -31,7 +31,7 @@ items:
       type: 0
     id: 1
     size_rate: 1
-    tabs: sims.res/goap/maps/born.map;sims.res/goap/maps/_maps.txt|1;sims.res/goap/maps/_grid_def.txt|1;sims.res/goap/maps/born.map|1;sims.res/goap/maps/test.map|1
+    tabs: sims.res/goap/maps/test.map;sims.res/goap/maps/_maps.txt|1;sims.res/goap/maps/_grid_def.txt|1;sims.res/goap/maps/born.map|1;sims.res/goap/maps/test.map|1
     type: 0
   ---
   lock: false
@@ -49,5 +49,5 @@ items:
     children: {}
     id: 1
     size_rate: 1
-    tabs: ""
+    tabs: sims.res/scenes/grid_def.txt
     type: 0
