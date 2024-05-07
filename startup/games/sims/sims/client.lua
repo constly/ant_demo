@@ -24,8 +24,9 @@ local function new(ecs)
 	api.define 			= core.define
 	api.time_timer		= common.new_time_timer()
 	api.tick_timer		= common.new_tick_timer()
+	api.editor 			= require 'editor.editor'.new(api)		---@type sims.client.editor
 	api.room 			= require 'room.client_room'.new(api)
-	api.statemachine 	= require 'state_machine'.new(api)  		
+	api.statemachine 	= require 'states.machine'.new(api)  		
 	api.npc_mgr			= require 'npc.client_npc_mgr'.new(api)
 	api.players 		= require 'player.client_players'.new(api)
 	api.player_ctrl 	= require 'player.player_ctrl'.new(api)
@@ -71,6 +72,7 @@ local function new(ecs)
 	end 
 	
 	function api.start()
+		api.editor.init()
 		api.statemachine.init(false, api.is_listen_player)
 	end
 
@@ -81,6 +83,7 @@ local function new(ecs)
 		if api.serviceId then
 			ltask.send(api.serviceId, "shutdown")
 		end
+		api.editor.exit()
 	end
 
 	--- 退出场景

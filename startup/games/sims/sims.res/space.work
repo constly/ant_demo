@@ -1,4 +1,4 @@
-index: 2
+index: 1
 items:
   ---
   lock: false
@@ -31,7 +31,7 @@ items:
       type: 0
     id: 1
     size_rate: 1
-    tabs: sims.res/goap/maps/test.map;sims.res/goap/maps/_maps.txt|1;sims.res/goap/maps/_grid_def.txt|1;sims.res/goap/maps/born.map|1;sims.res/goap/maps/test.map|1
+    tabs: sims.res/goap/maps/born.map;sims.res/goap/maps/_maps.txt|1;sims.res/goap/maps/_grid_def.txt|1;sims.res/goap/maps/born.map|1;sims.res/goap/maps/test.map|1
     type: 0
   ---
   lock: false
@@ -40,7 +40,7 @@ items:
     children: {}
     id: 1
     size_rate: 1
-    tabs: "__inner:custom:调试面板;__inner:code_analysis|1;__inner:custom:开发计划|1;__inner:custom:调试面板|1"
+    tabs: "__inner:code_analysis;__inner:code_analysis|1;__inner:custom:开发计划|1;__inner:custom:调试面板|1"
     type: 0
   ---
   lock: false

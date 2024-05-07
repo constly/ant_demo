@@ -8,6 +8,8 @@ local common = import_package 'ly.common'
 
 local math3d = require "math3d"
 local icamera = ecs.require "ant.camera|camera"
+local window = require "window"
+local ientity = ecs.require "ant.entity|entity"
 
 ---@type sims.client
 local client
@@ -26,6 +28,7 @@ end
 
 function system.init()
 	client.start()
+	window.set_title("Ant Game Engine 学习记录 - 局域网联机测试")
 end 
 
 function system.exit()
@@ -36,6 +39,20 @@ end
 function system.init_world()
 	print("system.init_world")	
 	world:create_instance { prefab = "/pkg/demo.res/light_skybox.prefab" }
+	world:create_entity{
+		policy = {
+			"ant.render|simplerender",
+		},
+		data = {
+			scene 		= {
+				s = {1, 1, 1},
+            },
+			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
+			visible     = false,
+			mesh_result	= ientity.plane_mesh(),
+            owned_mesh_buffer = true,
+		}
+	}
 
 	world:create_entity{
 		policy = {
