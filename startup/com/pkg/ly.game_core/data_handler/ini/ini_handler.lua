@@ -2,7 +2,9 @@
 -- ini 数据处理
 --------------------------------------------------------
 
-local dep = require 'dep'
+local serialize 		= import_package "ant.serialize"
+local common 			= import_package 'ly.common' 	
+
 
 ---@class ly.game_editor.ini.item
 ---@field type string	数据类型
@@ -24,10 +26,14 @@ local function new()
 		isModify = false,
 	}
 
+	function api.load_by_path(path)
+		api.data = common.file.load_datalist(path)
+	end
+
 	function api.to_string()
 		local cache = api.data.cache
 		api.data.cache = nil
-		local content = dep.serialize.stringify(api.data)
+		local content = serialize.stringify(api.data)
 		api.data.cache = cache
 		return content
 	end
@@ -49,6 +55,11 @@ local function new()
 				return v
 			end
 		end
+	end
+
+	function api.get_value(region, key)
+		local item = api.get_item(region, key)
+		return item and item.value
 	end
 
 	---@return ly.game_editor.ini.region
@@ -94,7 +105,7 @@ local function new()
 		if not region then return end 
 		for i, item in ipairs(region.items) do 
 			if item.key == key then 
-				local new = dep.common.lib.copy(item)
+				local new = common.lib.copy(item)
 				new.key = api.gen_next_item_name(region_name, item.key)
 				table.insert(region.items, i + 1, new)	
 				return new
@@ -114,7 +125,7 @@ local function new()
 	---@return ly.game_editor.ini.region
 	function api.clone_region(region_name, index)
 		local region = api.get_region(region_name)
-		local new = dep.common.lib.copy(region)
+		local new = common.lib.copy(region)
 		new.name = api.gen_next_region_name(region_name)
 		table.insert(api.data, index, new);
 		return new

@@ -1,6 +1,13 @@
 ---@class ly.game_core
 local api = {}
 
+--- 创建ini_handler
+---@return ly.game_editor.ini.handler
+function api.create_ini_handler()
+	local ini_handler = require 'data_handler.ini.ini_handler'
+	return ini_handler.new()
+end
+
 --- 创建goap_handler
 ---@return ly.game_core.goap.handler
 function api.create_goap_handler(vfs_path)

@@ -30,12 +30,14 @@ local function new(project_root)
 	local datalist	= require 'datalist'
 	local fastio  	= require "fastio"
 	local lfs       = require "bee.filesystem"
+
+	---@type ly.common.lib
 	local lib 		= import_package 'ly.common'.lib
 
 	---@return ly.game_core.tree_item
 	function api.construct_resource_tree(fspath, root)
 		local tree = {files = {}, dirs = {}}
-		if fspath then
+		if fspath and lfs.is_directory(fspath) then
 			local sorted_path = {}
 			for item in lfs.pairs(fspath) do
 				sorted_path[#sorted_path+1] = item
@@ -127,6 +129,27 @@ local function new(project_root)
 				return item.path
 			end
 		end
+	end
+
+	---@param pkg_name string 包名
+	---@param relative_path string 相对路径
+	---@return string[] 路径列表
+	function api.get_all_files(pkg_name, relative_path)
+		local pkg_path = tostring(api.get_pkg_path(pkg_name))
+		local tree = api.construct_resource_tree(pkg_path .. "/" .. relative_path, pkg_path .. "/")
+		local ret = {}
+
+		---@param tree ly.game_core.tree_item
+		local function get(tree)
+			for i, v in ipairs(tree.dirs) do 
+				get(v.tree)
+			end
+			for i, v in ipairs(tree.files) do 
+				table.insert(ret, string.format("/pkg/%s/%s", pkg_name, v.r_path))
+			end
+		end
+		get(tree)
+		return ret;
 	end
 	
 	return api
