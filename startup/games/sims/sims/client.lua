@@ -32,6 +32,9 @@ local function new(ecs)
 	api.player_ctrl 	= require 'player.player_ctrl'.new(api)
 	api.client_world 	= require 'world.client_world'.new(api)
 	api.saved_root		= "";	-- 存档根目录
+	api.is_listen_player = false
+	api.create_room_param = {}	---@type sims.server.start.params
+	api.lan_broadcast_port = 17669  -- 局域网广播ip
 
 	local tb_msg = {}
 	local S
@@ -45,50 +48,68 @@ local function new(ecs)
 			table.insert(tb_msg, {type = "s2c", cmd = cmd, param = tbParam})
 		end
 		api.msg.init(true, api)
-		local tbParam = map.tbParam or {}
-		if not tbParam.is_online then 
-			tbParam.is_standalone = true
-		end
-		api.is_listen_player = tbParam.is_listen_player or tbParam.is_standalone
-		if api.is_listen_player then 
-			api.serviceId = ltask.spawn("sims.s.server|entry", ltask.self())
-			do 
-				local package_handler = game_core.create_package_handler(common.path_def.project_root)
-				local root_path = package_handler.get_pkg_path("sims.res")
-				assert(root_path, "编辑器下走sims.res包, 运行时走cache目录")
-				api.saved_root = tostring(root_path) .. "/saved/"
-				ltask.send(api.serviceId, "set_saved_root", api.saved_root)
-			end
-			if tbParam.is_standalone then
-				ltask.send(api.serviceId, "init_standalone")
-			else
-				ltask.send(api.serviceId, "init_server", tbParam.ip, tbParam.port, tbParam.tb_members)
-			end
-		else 
-			if api.room.init(tbParam.ip, tbParam.port) then 
-				api.room.apply_login(tbParam.code)
-			end
-		end
 	end 
 	
 	function api.start()
 		api.editor.init()
-		api.statemachine.init(false, api.is_listen_player)
+		api.statemachine.init()
 	end
 
 	function api.shutdown()
-		api.statemachine.reset()
+		api.statemachine.shutdown()
 		S.exec_richman_client_rpc = nil
 		S.exec_richman_client_s2c = nil
-		if api.serviceId then
-			ltask.send(api.serviceId, "shutdown")
-		end
+		api.destroy_room()
 		api.editor.exit()
 	end
 
 	--- 退出场景
 	function api.exitCB()
 		map.load({feature = {"entry"}, pre = "sims"})
+	end
+
+	--- 销毁房间
+	function api.destroy_room()
+		if api.serviceId then
+			ltask.send(api.serviceId, "shutdown")
+			api.serviceId = nil
+		end
+		api.is_listen_player = false
+		api.room.close()
+	end
+
+	--- 创建房间
+	---@param scene_path string 启动场景路径
+	---@param scene sims.client.create_room.scene 场景详情
+	function api.create_room(scene_path, scene)
+		api.destroy_room()
+		api.serviceId = ltask.spawn("sims.s.server|entry", ltask.self())
+		local package_handler = game_core.create_package_handler(common.path_def.project_root)
+		local root_path = package_handler.get_pkg_path("sims.res")
+		assert(root_path, "编辑器下走sims.res包, 运行时走cache目录")
+		api.saved_root = tostring(root_path) .. "/saved/"
+		
+		---@type sims.server.start.params
+		local tbParam = {}
+		tbParam.save_root = api.saved_root
+		tbParam.scene = scene_path
+		tbParam.ip = common.net.get_lan_ipv4()
+		tbParam.port = 9876
+		tbParam.ip_type = "IPv4"
+		tbParam.room_name = string.format("%s - %s", scene.key, scene.name)
+		api.create_room_param = tbParam
+		api.is_listen_player = true
+		ltask.send(api.serviceId, "start", tbParam)
+
+		api.call_server(api.msg.rpc_login, {code = ""})
+	end
+
+	--- 加入房间
+	function api.join_room(ip, port)
+		api.destroy_room()
+		if api.room.init(ip, port) then 
+			api.room.apply_login(tbParam.code)
+		end
 	end
 
 	function api.call_server(cmd, tbParam)
@@ -129,7 +150,11 @@ local function new(ecs)
 		api.tick_timer.reset()
 		api.time_timer.reset()
 
-		api.loader.restart()
+		---@type sims.core.loader.param
+		local tbParam = {}
+		tbParam.path_map_list = api.create_room_param.scene
+		api.loader.restart(tbParam)
+
 		api.npc_mgr.restart()
 		api.player_ctrl.restart(pos)
 		api.client_world.restart()

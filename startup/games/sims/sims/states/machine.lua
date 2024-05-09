@@ -5,7 +5,7 @@
 ---@field on_entry function
 ---@field on_exit function
 ---@field on_update function
-
+---@field on_destroy function
 
 ---@param client sims.client
 local function new(client)
@@ -34,10 +34,19 @@ local function new(client)
 		api.all_states[api.state_room_running] 	= require 'states.state_room_running'.new(api, client) 
 	end
 
-	function api.init(is_reconnect, is_listen_player)
+	function api.init()
 		cur_state = nil
-		api.goto_state(api.state_entry)
+		api.goto_state(api.state_create_room)
 	end 
+
+	function api.shutdown()
+		for i, v in pairs(api.all_states) do 
+			if v.on_destroy then 
+				v.on_destroy()
+			end
+		end
+		api.reset()
+	end
 
 	function api.reset()
 		cur_state = nil

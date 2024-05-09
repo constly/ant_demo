@@ -12,6 +12,7 @@ local function new()
 	---@field clock_time number 游戏时间
 	local api = {}
 
+	api.start_param = {}					---@type sims.server.start.params 服务器启动参数
 	api.msg = core.new_msg()
 	api.loader = core.new_loader()
 	api.define = core.define
@@ -44,7 +45,10 @@ local function new()
 	end
 
 	function api.restart_before()
-		api.loader.restart()
+		---@type sims.core.loader.param
+		local tbParam = {}
+		tbParam.path_map_list = api.start_param.scene
+		api.loader.restart(tbParam)
 	end
 
 	function api.restart_after()

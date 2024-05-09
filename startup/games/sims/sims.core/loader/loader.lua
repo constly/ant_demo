@@ -10,10 +10,13 @@ local function new()
 	api.map_list 		= require 'loader.file_map_list'.new()
 	api.npcs 			= require 'loader.file_npcs'.new()
 
-	function api.restart()
+	---@class sims.core.loader.param
+	---@field path_map_list string
+	---@param tbParam sims.core.loader.param
+	function api.restart(tbParam)
 		api.map_data.restart()
 		api.map_grid_def.restart()
-		api.map_list.restart()
+		api.map_list.restart(tbParam)
 		api.npcs.restart()
 	end
 	

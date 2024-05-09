@@ -32,6 +32,9 @@ api.file 			= require 'tools.file'
 ---@type ly.common.datalist
 api.datalist 		= require 'tools.datalist'
 
+---@type ly.common.net
+api.net 			= require 'tools.net'
+
 ---@return goap_mgr
 function api.new_goap_mgr()
 	local mgr = require 'goap.goap_mgr'

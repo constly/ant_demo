@@ -17,14 +17,16 @@ local function new()
 	---@class sims.file_map_list
 	---@field data map<string, sims.file_map_list.line>
 	local api = {}
-	local path<const> = "/pkg/sims.res/goap/maps/_maps.txt"
-
-	function api.restart()
+	
+	---@param tbParam sims.core.loader.param
+	function api.restart(tbParam)
 		api.data = {}
-		api.reload()
+		api.reload(tbParam)
 	end
 
-	function api.reload()
+	---@param tbParam sims.core.loader.param
+	function api.reload(tbParam)
+		local path = tbParam.path_map_list
 		local lines = common.file.load_csv(path)
 		local data = {}
 		for i, line in ipairs(lines) do 

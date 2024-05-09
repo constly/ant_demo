@@ -25,7 +25,6 @@ local function new(s, client)
 	local cur_idx = 1
 
 	function api.on_entry()
-		--client.call_server(s.msg.rpc_login, {code = 0})
 		scenes = api.get_scenes()
 	end
 
@@ -71,8 +70,13 @@ local function new(s, client)
 			end
 			ImGui.EndGroup()
 			ImGui.SetCursorPos(130, height - 80)
-			if common.imgui_utils.draw_btn("确 定", true, {size_x = 120, size_y = 28}) then 
-				
+			if common.imgui_utils.draw_btn("确 定", scenes[cur_idx] ~= nil, {size_x = 120, size_y = 28}) then 
+				local scene = scenes[cur_idx]
+				if scene then 
+					local path = string.format("%s/%s.txt", scene.path, scene.key)
+					--client.call_server(s.msg.rpc_login, {code = 0, scene = path})
+					client.create_room(path, scene)
+				end
 			end
 			ImGui.End()
 		end
