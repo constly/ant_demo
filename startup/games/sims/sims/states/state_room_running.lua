@@ -25,6 +25,7 @@ local function new(s, client)
 		end
 	end
 
+	-- 每帧向局域网广播自身地址
 	function api.broadcast_room_addr()
 		if not broadcast then
 			broadcast = ly_net.CreateBroadCast()

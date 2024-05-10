@@ -12,14 +12,18 @@ local function new(client)
 	
 	local last_check_pos = {}
 
-	function api.restart()
+	function api.reset()
 		last_check_pos = {}
 		api.regionId = nil
 		for i, v in pairs(api.regions) do 
 			v.destroy()
 		end
-		api.c_world:Reset()
 		api.regions = {}
+		api.c_world:Reset()
+	end
+
+	function api.restart()
+		api.reset()
 		api.update_current_region()
 	end
 

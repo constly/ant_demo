@@ -74,7 +74,6 @@ local function new(s, client)
 				local scene = scenes[cur_idx]
 				if scene then 
 					local path = string.format("%s/%s.txt", scene.path, scene.key)
-					--client.call_server(s.msg.rpc_login, {code = 0, scene = path})
 					client.create_room(path, scene)
 				end
 			end

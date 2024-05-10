@@ -76,6 +76,7 @@ local function new(ecs)
 		end
 		api.is_listen_player = false
 		api.room.close()
+		api.reset_world()
 	end
 
 	--- 创建房间
@@ -100,8 +101,8 @@ local function new(ecs)
 		api.create_room_param = tbParam
 		api.is_listen_player = true
 		ltask.send(api.serviceId, "start", tbParam)
-
-		api.call_server(api.msg.rpc_login, {code = ""})
+		api.call_server(api.msg.rpc_login, {code = 0})
+		api.statemachine.goto_state(api.statemachine.state_room_running)
 	end
 
 	--- 加入房间
@@ -145,17 +146,25 @@ local function new(ecs)
 		api.client_world.update_current_region()
 	end
 
-	---@param pos vec3 出生位置
-	function api.restart(pos)
+	--- 重置整个世界
+	function api.reset_world()
 		api.tick_timer.reset()
 		api.time_timer.reset()
+		api.npc_mgr.reset()
+		api.player_ctrl.reset()
+		api.client_world.reset()
+	end
 
+	--- 重启整个世界
+	---@param pos vec3 出生位置
+	function api.restart(pos)
+		api.reset_world()
+		
 		---@type sims.core.loader.param
 		local tbParam = {}
 		tbParam.path_map_list = api.create_room_param.scene
 		api.loader.restart(tbParam)
 
-		api.npc_mgr.restart()
 		api.player_ctrl.restart(pos)
 		api.client_world.restart()
 	end

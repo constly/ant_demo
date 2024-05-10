@@ -13,13 +13,17 @@ local function new(client)
 	api.local_player = nil
 	api.position = {}
 
-	---@param pos vec3 角色出生的
-	function api.restart(pos)
+	function api.reset()
 		if api.e_camera then 
 			client.world:remove_entity(api.e_camera)
+			api.e_camera = nil
 		end
-
 		api.position = {}	
+	end
+
+	---@param pos vec3 角色出生的
+	function api.restart(pos)
+		api.reset()
 		-- 创建摄像机
 		api.e_camera = client.world:create_entity {
 			policy = { "sims|camera" },

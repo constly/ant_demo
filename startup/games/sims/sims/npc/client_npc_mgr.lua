@@ -7,7 +7,7 @@ local function new(client)
 	---@field npcs map<int, sims.client.npc>
 	local api = {npcs = {}}
 
-	function api.restart()
+	function api.reset()
 		for i, npc in pairs(api.npcs or {}) do 
 			npc.destroy()
 		end

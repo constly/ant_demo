@@ -31,7 +31,7 @@ items:
       type: 0
     id: 1
     size_rate: 1
-    tabs: sims.res/goap/maps/test.map;sims.res/goap/maps/_maps.txt|1;sims.res/goap/maps/_grid_def.txt|1;sims.res/goap/maps/born.map|1;sims.res/goap/maps/test.map|1
+    tabs: sims.res/scenes/scene_01/map_01.map;sims.res/scenes/scene_01/map_01.map|1
     type: 0
   ---
   lock: false

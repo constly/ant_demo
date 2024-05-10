@@ -113,7 +113,7 @@ local function new(client)
 				if expand then 
 					set_expand(not expand)
 				else 
-					client.exitCB()
+					client.statemachine.goto_state(client.statemachine.state_entry)
 				end
 			end
 			ImGui.SameLine()

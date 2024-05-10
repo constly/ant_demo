@@ -12,7 +12,7 @@ local function new(s, client)
 	local api = {} ---@type sims.client.state_machine.state_base 
 
 	function api.on_entry()
-
+		client.destroy_room()
 	end
 
 	function api.on_update()
