@@ -183,10 +183,6 @@ local function new(server)
 			end
 			close_all_session();
 		end)
-
-		local tb = player_mgr.add_player(0, 0, "local_player")
-		tb.is_leader = true 
-		tb.is_local = true
 		return true;
 	end 
 

@@ -51,7 +51,7 @@ local function new(client)
 		net.send(client_fd, pack)
 	end
 
-	function api.apply_login(code) client.call_server(msg.rpc_login, {code = code}) end
+	function api.apply_login(guid) client.call_server(msg.rpc_login, {guid = guid}) end
 	function api.apply_exit() client.call_server(msg.rpc_exit) end 
 	function api.apply_begin() client.call_server(msg.rpc_room_begin) end
 

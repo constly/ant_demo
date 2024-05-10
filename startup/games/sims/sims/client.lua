@@ -98,10 +98,11 @@ local function new(ecs)
 		tbParam.port = 9876
 		tbParam.ip_type = "IPv4"
 		tbParam.room_name = string.format("%s - %s", scene.key, scene.name)
+		tbParam.leader_guid = math.random(100000, 100000000)
 		api.create_room_param = tbParam
 		api.is_listen_player = true
 		ltask.send(api.serviceId, "start", tbParam)
-		api.call_server(api.msg.rpc_login, {code = 0})
+		api.call_server(api.msg.rpc_login, {guid = tbParam.leader_guid})
 		api.statemachine.goto_state(api.statemachine.state_room_running)
 	end
 
@@ -109,7 +110,7 @@ local function new(ecs)
 	function api.join_room(ip, port)
 		api.destroy_room()
 		if api.room.init(ip, port) then 
-			api.room.apply_login(tbParam.code)
+			api.room.apply_login(guid)
 		end
 	end
 

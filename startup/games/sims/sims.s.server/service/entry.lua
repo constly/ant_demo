@@ -54,6 +54,7 @@ local S = {}
 这里使用了一个队列，保证前一个响应执行完毕后才会执行后面的
 之所以这样，是因为：函数中有io操作时，会导致函数挂起，从而出现并行执行现象
 具体问题描述见这里：https://github.com/ejoy/ant/discussions/138
+不过目前这个写法会带来另外一个问题: 另外一个service通过call调用时，无法取到返回值
 --]]
 local QUEUE = setmetatable({}, {
 	__newindex = function(_, name, f)
@@ -71,13 +72,14 @@ local QUEUE = setmetatable({}, {
 ---@field port number 服务器监听端口号
 ---@field ip_type string ip类型
 ---@field room_name string 房间名字
+---@field leader_guid string 房主客户端的guid
 ---@param tbParam sims.server.start.params
 function QUEUE.start(tbParam)
 	server.start_param = tbParam
 	server.save_mgr.saved_root = tbParam.save_root
 	server.init()
 	server.room.init_server(tbParam.ip, tbParam.port)
-	local tb = server.player_mgr.add_player(0, 0, "local_player")
+	local tb = server.player_mgr.add_player(0, tbParam.leader_guid)
 	tb.is_leader = true 
 	tb.is_local = true
 end

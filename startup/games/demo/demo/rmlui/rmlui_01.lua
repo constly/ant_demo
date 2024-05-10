@@ -13,7 +13,7 @@ local system = mgr.create_system(tbParam)
 local ImGui     = require "imgui"
 local iRmlUi = ecs.require "ant.rmlui|rmlui_system"
 local font = import_package "ant.font"
-font.import "/pkg/ant.resources.binary/font/Alibaba-PuHuiTi-Regular.ttf"
+font.import "/pkg/demo.res/font/Alibaba-PuHuiTi-Regular.ttf"
 
 local ui
 local desc = 

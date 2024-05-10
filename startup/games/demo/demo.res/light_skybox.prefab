@@ -13,7 +13,7 @@ data:
       prefilter:
         size: 128
       source:
-        tex_name: /pkg/ant.resources.test/sky/colorcube2x2.texture
+        tex_name: /pkg/demo.res/sky/colorcube2x2.texture
         facesize: 512
     material: $path ./skybox.material
     render_layer: "background"

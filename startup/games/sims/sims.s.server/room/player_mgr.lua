@@ -72,7 +72,6 @@ local function new(server)
 			player.world_id = p.world_id
 			if pre then
 				player.fd = pre.fd
-				player.code = pre.code
 				player.is_leader = pre.is_leader
 				player.is_local = pre.is_local
 				player.is_online = pre.is_online
@@ -97,14 +96,12 @@ local function new(server)
 	-- 创建 和 销毁player
 	--------------------------------------------------
 	---@param fd number
-	---@param code number
 	---@param guid string
 	---@return sims.server_player 添加成员
-	function api.add_player(fd, code, guid)
+	function api.add_player(fd, guid)
 		for i, v in ipairs(api.players) do 
 			if v.guid == guid then 
 				v.fd = fd
-				v.code = code
 				return v
 			end
 		end
@@ -112,7 +109,6 @@ local function new(server)
 		next_id = next_id + 1;
 		local player = new_player_handler.new(server, next_id)
 		player.fd = fd
-		player.code = code
 		player.guid = guid
 		player.npc = server.npc_mgr.create_player_npc(player) 
 		table.insert(api.players, player)
@@ -138,9 +134,9 @@ local function new(server)
 	end
 
 	---@return sims.server_player 查找房间成员
-	function api.find_by_code(code)
+	function api.find_by_guid(guid)
 		for i, v in ipairs(api.players) do 
-			if v.code == code then 
+			if v.guid == guid then 
 				return v
 			end 
 		end 

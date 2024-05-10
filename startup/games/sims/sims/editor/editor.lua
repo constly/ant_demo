@@ -42,7 +42,7 @@ local function new(client)
 	function api.init()
 		local fonts = {}
 		fonts[#fonts+1] = {
-			FontPath = "/pkg/ant.resources.binary/font/Alibaba-PuHuiTi-Regular.ttf",
+			FontPath = "/pkg/demo.res/font/Alibaba-PuHuiTi-Regular.ttf",
 			--FontPath = "/pkg/sims.res/assets/font/WenQuanDengKuanWeiMiHei.ttf",
 			SizePixels = 18,
 			GlyphRanges = { 0x0020, 0xFFFF }

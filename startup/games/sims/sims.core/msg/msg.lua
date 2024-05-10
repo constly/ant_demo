@@ -27,6 +27,7 @@ local function new()
 	api.s2c_ping = 5
 	api.s2c_restart = 6;				-- 通知重启
 	api.s2c_npc_move = 7;				-- 通知npc移动
+	api.s2c_test = 99;					-- 测试
 
 	local reg_rpc
 	local reg_s2c
@@ -63,7 +64,7 @@ local function new()
 		-- 登录
 		api.reg_rpc(api.rpc_login, 
 			function(player, tbParam, fd)  	-- 服务器执行
-				player = api.server.player_mgr.find_by_code(tbParam.code)
+				player = api.server.player_mgr.find_by_guid(tbParam.guid)
 				if player then 
 					player.fd = fd
 					player.is_online = true
@@ -138,6 +139,11 @@ local function new()
 		-- 通知重启客户端
 		api.reg_s2c(api.s2c_restart, function(tbParam)
 			api.client.restart(tbParam.pos)
+		end)
+
+		-- 
+		api.reg_s2c(api.s2c_test, function(tbParam)
+			print(tbParam.msg)
 		end)
 	end
 	return api
