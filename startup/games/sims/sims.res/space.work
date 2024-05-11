@@ -31,7 +31,7 @@ items:
       type: 0
     id: 1
     size_rate: 1
-    tabs: sims.res/scenes/scene_02/map_01.map;sims.res/scenes/scene_02/map_01.map|1
+    tabs: sims.res/scenes/grid_def.txt;sims.res/scenes/grid_def.txt|1
     type: 0
   ---
   lock: false

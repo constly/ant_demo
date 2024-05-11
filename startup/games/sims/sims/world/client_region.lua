@@ -47,7 +47,7 @@ local function new(client, client_world)
 		local ecs_world = ecs.world
 		local iom = ecs.require "ant.objcontroller|obj_motion"
 		local math3d = require "math3d"
-		local path_grid_def = "/pkg/sims.res/goap/maps/_grid_def.txt"
+		local path_grid_def = "/pkg/sims.res/scenes/grid_def.txt"
 		for i, grid in ipairs(data.grids) do 
 			local index = grid[1]
 			local tpl_id = grid[2]
