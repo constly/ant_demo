@@ -39,9 +39,9 @@ local function new(s, client)
 		local window_flag = ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoScrollWithMouse", "NoCollapse"}
 		local ret, open = ImGui.Begin("##window_body", true, window_flag) 
 		if ret then 
-			ImGui.Dummy(20, 10)
+			ImGui.Dummy(20, 5)
 			common.imgui_utils.draw_text_center("创建局域网房间")
-			ImGui.SetCursorPos(60, 80)
+			ImGui.SetCursorPos(60, 90)
 			ImGui.BeginGroup()
 
 			local pos_x, pos_y = ImGui.GetCursorPos()
@@ -57,7 +57,7 @@ local function new(s, client)
 					ImGui.EndTooltip()
 				end
 
-				y = y + 5
+				y = y + 3
 				ImGui.SetCursorPos(pos_x + 10, y)
 				ImGui.Text(string.format("%d.", i))
 

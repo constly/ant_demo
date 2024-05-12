@@ -26,9 +26,9 @@ local function new(s, client)
 		local window_flag = ImGui.WindowFlags {"NoResize", "NoMove", "NoScrollbar", "NoScrollWithMouse", "NoCollapse"}
 		local ret, open = ImGui.Begin("##window_body", true, window_flag) 
 		if ret then 
-			ImGui.Dummy(20, 20)
+			ImGui.Dummy(20, 10)
 			common.imgui_utils.draw_text_center("局域网联机")
-			ImGui.SetCursorPos(120, 100)
+			ImGui.SetCursorPos(120, 110)
 			ImGui.BeginGroup()
 			if common.imgui_utils.draw_btn("加入房间", true, {size_x = 150, size_y = 35}) then 
 				s.goto_state(s.state_join_room)
