@@ -6,3 +6,7 @@ build/
 startup/games/demo/demo.res/test/
 .log
 lua.booster.lint.json
+
+publish/ant_demo.exe
+publish/fmod.dll
+publish/fmodstudio.dll
