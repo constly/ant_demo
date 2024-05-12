@@ -10,3 +10,4 @@ lua.booster.lint.json
 publish/ant_demo.exe
 publish/fmod.dll
 publish/fmodstudio.dll
+publish/internal
