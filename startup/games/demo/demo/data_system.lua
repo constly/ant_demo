@@ -36,7 +36,7 @@ end
 function system.preinit()
 	-- 设置项目根目录
 	if world.args.ecs.project_root then
-		dep.common.path_def.project_root = world.args.ecs.project_root
+		dep.common.path_def.set_project_root(world.args.ecs.project_root)
 	end
 end 
 

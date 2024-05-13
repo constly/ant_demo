@@ -21,7 +21,7 @@ local pre
 function system.preinit()
 	-- 设置项目根目录
 	if world.args.ecs.project_root then
-		common.path_def.project_root = world.args.ecs.project_root
+		common.path_def.set_project_root(world.args.ecs.project_root)
 	end
 	client = require 'client'.new(ecs)
 end 

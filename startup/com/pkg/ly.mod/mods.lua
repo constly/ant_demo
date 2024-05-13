@@ -12,7 +12,7 @@ local function new()
 
 	---@type map<string, ly.mod.item>
 	local data = {}
-
+	
 	local memfs = import_package "ant.vfs".memory
 
 	---@param tbParams ly.mods.param
@@ -45,7 +45,7 @@ local function new()
 	-- 得到有哪些mod 
 	function api.get_pkgs()
 		local rets = {}
-		for name, item in package(data) do 
+		for name, item in pairs(data) do 
 			table.insert(rets, name)
 		end
 		return rets

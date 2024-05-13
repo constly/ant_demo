@@ -8,6 +8,9 @@ local core = import_package 'sims.core'
 ---@type ly.game_core
 local game_core = import_package 'ly.game_core'
 
+---@type ly.mod
+local mod = import_package 'ly.mod'
+
 local function new(ecs)
 	---@class sims.client
 	---@field ecs any
@@ -48,6 +51,11 @@ local function new(ecs)
 			table.insert(tb_msg, {type = "s2c", cmd = cmd, param = tbParam})
 		end
 		api.msg.init(true, api)
+
+		---@type ly.mods.param
+		local tbParam = {}
+		tbParam.root = common.path_def.mod_root .. "/sims"
+		mod.init(tbParam)
 	end 
 	
 	function api.start()

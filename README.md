@@ -25,7 +25,7 @@ git clone https://github.com/ejoy/ant.git
 git clone https://github.com/constly/ant_demo.git
 
 cd ant_demo
-compile.bat
+run_build.bat
 run.bat 
 
 -- 双击 ant_demo.code-workspace 打开vscode
