@@ -36,11 +36,11 @@ function api.create_map_handler()
 	return map_handler.new()
 end
 
+--- 创建包管理相关接口
 ---@return ly.game_core.utils.package
 function api.create_package_handler(project_root)
 	local map_handler = require 'utils.package'
 	return map_handler.new(project_root)
 end
-
 
 return api

@@ -56,9 +56,11 @@ run.bat
 
 ### 六. bgfx学习
 1. 如何 [build](https://github.com/bkaradzic/bgfx/blob/master/docs/build.rst)
-1. bgfx下有大量使用示例, 网上也有 [学习笔记](https://hinageshi01.github.io/2022/05/30/bgfx/)
+2. bgfx下有大量使用示例, 网上也有 [学习笔记](https://hinageshi01.github.io/2022/05/30/bgfx/)
 
-
+### 七. 打包
+1. 执行run_pack.bat，相关文件会发布在publish/下
+2. 目前只考虑了windows平台
 
 ## deom场景部分内容展示
 ![imgui_02](./img/imgui_02.png)
