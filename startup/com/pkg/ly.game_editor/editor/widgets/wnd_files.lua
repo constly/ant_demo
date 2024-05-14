@@ -85,7 +85,7 @@ local function new(editor)
 		ImGui.BeginGroup()
 		ImGui.PushStyleVarImVec2(ImGui.StyleVar.ButtonTextAlign, 0, 0.5)
 		for i, name in ipairs(editor.tbParams.pkgs) do 
-			if not selected_pkg then set_selected_pkg(name) end
+			if not selected_pkg or selected_pkg  == "" then set_selected_pkg(name) end
 			if editor.style.draw_btn(name, selected_pkg == name, {size_x = size_x - 10} ) then 
 				set_selected_pkg(name)
 			end

@@ -14,15 +14,16 @@ function api.set_project_root(root)
 	api.project_root = root
 
 	local root = api.project_root .. "/../publish/mods" 
-	if fs.is_directory(root) then
-		api.mod_root = fs.absolute(root):lexically_normal():string()
-	else 
-		error("mod root is nil")
+	if not fs.is_directory(root) then
+		root = fs.current_path() .. "/../mods" 
+	end
+	api.mod_root = fs.absolute(root):lexically_normal():string()
+	if not fs.is_directory(api.mod_root) then 
+		error("mod 目录不存在")
 	end
 end
 
 if __ANT_RUNTIME__ then 
-	-- 是否任意ant项目的 fs.current_path() 都是同一个目录呢？ 
 	api.cache_root 	= (fs.current_path() / "/"):string()
 else
 	local vfs = require "vfs"

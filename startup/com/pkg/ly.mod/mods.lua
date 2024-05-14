@@ -38,6 +38,10 @@ local function new()
 		end
 	end
 
+	function api.get_root()
+		return root_path
+	end
+
 	--- 判断包是不是mod包
 	function api.is_mod(pkg_name)
 		return data[pkg_name] ~= nil
@@ -54,7 +58,7 @@ local function new()
 	function api.get_pkgs()
 		local rets = {}
 		for name, item in pairs(data) do 
-			table.insert(rets, name)
+			table.insert(rets, {name = name, path = string.format("%s/%s", root_path, name) })
 		end
 		return rets
 	end

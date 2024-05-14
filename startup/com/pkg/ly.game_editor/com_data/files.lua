@@ -9,6 +9,9 @@ local lib 		= dep.common.lib
 ---@type ly.game_core
 local game_core = import_package 'ly.game_core'
 
+---@type ly.mod
+local mod = import_package 'ly.mod'
+
 ---@return ly.game_editor.files
 ---@param editor ly.game_editor.editor
 local function new(editor)
@@ -20,6 +23,7 @@ local function new(editor)
 	local filewatch = require "bee.filewatch".create()
 	local watch_paths = {}
 	local package_handler = game_core.create_package_handler(editor.tbParams.project_root)
+	local pkg_mods = {}
 
 	---@return ly.game_core.tree_item
 	function api.construct_resource_tree(fspath, root)
@@ -31,6 +35,7 @@ local function new(editor)
 		for i, pkg in ipairs(editor.tbParams.pkgs) do 
 			tb_show[pkg] = true
 		end
+		pkg_mods = {}
 		api.packages = package_handler.get_packages()
 		local resource_tree = {}
 		for _, item in ipairs(api.packages) do
@@ -42,6 +47,9 @@ local function new(editor)
 					r_path = "", 
 					tree = api.construct_resource_tree(item.path, tostring(item.path) .. "/")
 				}
+				if item.isMod then
+					pkg_mods[item.name] = true
+				end
 				filewatch:add(tostring(item.path))
 				watch_paths[item.name] = tostring(item.path)
 			end
@@ -54,6 +62,9 @@ local function new(editor)
 	function api.refresh_tree(pkg_name, dir)
 		local root = api.resource_tree[pkg_name]
 		if not root then return end 
+		if pkg_mods[pkg_name] and mod.mods then 
+			mod.mods.refresh_pkg(pkg_name)
+		end
 		local tree, dir = api.find_tree_by_path(root, dir)
 		if tree then 
 			local new_tree = api.construct_resource_tree(dir.full_path, root.full_path .. "/")

@@ -1,7 +1,7 @@
 ---@class ly.game_core.package_item
 ---@field name string
 ---@field path string 
-
+---@field isMod boolean 是不是mod包
 
 ---@class ly.game_core.file_data
 ---@field full_path string 全路径
@@ -22,6 +22,9 @@
 ---@field name string 文件名
 ---@field tree ly.game_core.tree_item
 ---@field parent ly.game_core.tree_item
+
+---@type ly.mod
+local mod = import_package 'ly.mod'
 
 ---@return ly.game_core.utils.package
 local function new(project_root)
@@ -119,6 +122,14 @@ local function new(project_root)
 			end
 			::continue::
 		end
+
+		if mod.mods then 
+			local list = mod.mods.get_pkgs()
+			for i, item in ipairs(list) do 
+				packages[#packages + 1] = {name = item.name, path = item.path, isMod = true}
+			end
+		end
+
 		return packages
 	end
 

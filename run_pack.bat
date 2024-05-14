@@ -5,7 +5,7 @@ set current_dir=%~dp0
 
 set mode=%1
 if not defined mode (
-	set mode=release
+	set mode=debug
 )
 
 luamake -mode %mode%

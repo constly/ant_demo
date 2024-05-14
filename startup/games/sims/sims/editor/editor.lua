@@ -150,7 +150,7 @@ local function new(client)
 					local tbParams = {}
 					tbParams.module_name = "sims"
 					tbParams.project_root = common.path_def.project_root
-					tbParams.pkgs = {"sims.res"}
+					tbParams.pkgs = {"sims.res", "mod.main"}
 					tbParams.theme_path = "sims.res/themes/default.style"
 					tbParams.workspace_path = "/pkg/sims.res/space.work"
 					tbParams.goap_mgr = require 'goap.goap'
