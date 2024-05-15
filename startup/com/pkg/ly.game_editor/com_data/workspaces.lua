@@ -370,16 +370,12 @@ local function new(editor)
 	api.works = {} 		---@type ly.game_editor.space[]
 	api.index = 1; 		---@type number 当前选中的work
 
---	local file_path = string.format("%s/%s_workspace.ant", path_def.cache_root, editor.tbParams.module_name) 
-	local file_path = editor.files.vfs_path_to_full_path2(editor.tbParams.workspace_path) or "unknown path"
-	
+	local file_path = editor.tbParams.workspace_path
 
 	-- 初始化
 	local function init()
-		local f<close> = io.open(file_path, 'r')
-		if f then 
-			local content = f:read "a"
-			local tb_save = dep.datalist.parse(content) or {}
+		local tb_save = dep.common.file.load_datalist(file_path) 
+		if tb_save and tb_save.items then
 			for i, v in ipairs(tb_save.items) do 
 				local space = create_space()
 				space.set_data(v)
@@ -396,15 +392,17 @@ local function new(editor)
 
 	-- 保存
 	function api.save()
+		local path = file_path
+		if dep.common.file.is_vfs_path(path) then
+			path = editor.files.vfs_path_to_full_path2(path)
+		end
 		dep.bfs.create_directories(path_def.cache_root)
-		dep.bfs.create_directories(dep.common.lib.get_file_root(file_path))
+		dep.bfs.create_directories(dep.common.lib.get_file_root(path))
 		local tb_save = {items = {}, index = api.index}
 		for i, v in ipairs(api.works) do 
 			tb_save.items[i] = v.get_data()
 		end
-		local content = dep.serialize.stringify(tb_save)
-		local f<close> = assert(io.open(file_path, "w"))
-    	f:write(content)
+		dep.common.file.save_datalist(path, tb_save)
 	end
 
 	function api.exit()

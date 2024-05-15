@@ -94,7 +94,7 @@ local function new(s, client)
 		local game_core = import_package 'ly.game_core'
 		local package_handler = game_core.create_package_handler(common.path_def.project_root)
 		local handler = game_core.create_ini_handler()
-		local files = package_handler.get_all_files("sims.res", "scenes")
+		local files = package_handler.get_all_files("mod.main", "scenes")
 		for _, file in ipairs(files) do 
 			if lib.end_with(file, "desc.ini") then 
 				local path = lib.get_file_root(file)

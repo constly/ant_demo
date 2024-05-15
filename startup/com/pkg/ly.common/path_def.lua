@@ -24,7 +24,16 @@ function api.set_project_root(root)
 end
 
 if __ANT_RUNTIME__ then 
-	api.cache_root 	= (fs.current_path() / "/"):string()
+	local net = require 'ly.net'
+	local sys = require "bee.sys"
+	local lib = require 'tools.lib'
+	local exe_name = lib.get_file_name(sys.exe_path():string())
+	local count = net.get_process_count(exe_name)
+	local file_name = "cache"
+	if count > 1 then
+		file_name = file_name .. count
+	end
+	api.cache_root 	= (fs.current_path() / file_name / ""):string()
 else
 	local vfs = require "vfs"
 	local path = vfs.directory("external")

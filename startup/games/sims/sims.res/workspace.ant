@@ -1,0 +1,20 @@
+index: 2
+items:
+  ---
+  lock: false
+  next_id: 1
+  view:
+    children: {}
+    id: 1
+    size_rate: 1
+    tabs: ""
+    type: 0
+  ---
+  lock: false
+  next_id: 1
+  view:
+    children: {}
+    id: 1
+    size_rate: 1
+    tabs: ""
+    type: 0

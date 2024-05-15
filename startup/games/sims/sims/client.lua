@@ -94,7 +94,7 @@ local function new(ecs)
 		api.destroy_room()
 		api.serviceId = ltask.spawn("sims.s.server|entry", ltask.self())
 		local package_handler = game_core.create_package_handler(common.path_def.project_root)
-		local root_path = package_handler.get_pkg_path("sims.res")
+		local root_path = __ANT_RUNTIME__ and common.path_def.cache_root or package_handler.get_pkg_path("sims.res")
 		assert(root_path, "编辑器下走sims.res包, 运行时走cache目录")
 		api.saved_root = tostring(root_path) .. "/saved/"
 		

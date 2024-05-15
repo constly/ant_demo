@@ -1,4 +1,4 @@
-//-------------------------------------------------------------
+﻿//-------------------------------------------------------------
 // Local area network (LAN) broadcasting
 // for LAN room discovery functionality.
 //-------------------------------------------------------------
@@ -7,6 +7,8 @@
 
 #if defined(_WIN32)
 #   include <Ws2tcpip.h>
+#	include <windows.h>
+#	include <tlhelp32.h>
 #else
 #    include <arpa/inet.h>
 #    include <netdb.h>
@@ -245,12 +247,37 @@ static int bGetLanIpList(lua_State* L) {
 	return 1;
 }
 
+// 得到系统中指定进程的数量
+static int bGetProcessCount(lua_State* L) {
+	const char* processName = luaL_checkstring(L, 1);	
+	int count = 0;
+#if defined(_WIN32)
+    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnapshot != INVALID_HANDLE_VALUE) {
+        PROCESSENTRY32 pe32;
+        pe32.dwSize = sizeof(PROCESSENTRY32);
+        if (Process32First(hSnapshot, &pe32)) {
+            do {
+                if (std::strcmp(pe32.szExeFile, processName) == 0) {
+                    count++;
+                }
+            } while (Process32Next(hSnapshot, &pe32));
+        }
+        CloseHandle(hSnapshot);
+    }
+#endif
+	lua_pushinteger(L, count);
+	return 1;
+}
+
 extern "C" int luaopen_ly_net(lua_State *L) {
 	lua_newtable(L);
 	lua_pushcfunction(L, luabind::create);
 	lua_setfield(L, -2, "CreateBroadCast");
 	lua_pushcfunction(L, bGetLanIpList);
 	lua_setfield(L, -2, "get_lan_ip_list");
+	lua_pushcfunction(L, bGetProcessCount);
+	lua_setfield(L, -2, "get_process_count");
 	return 1;
 }
 

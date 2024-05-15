@@ -11,3 +11,6 @@ publish/ant_demo.exe
 publish/fmod.dll
 publish/fmodstudio.dll
 publish/internal
+publish/external/cache
+publish/external/cache2
+publish/external/cache3

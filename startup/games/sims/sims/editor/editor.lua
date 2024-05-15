@@ -151,8 +151,8 @@ local function new(client)
 					tbParams.module_name = "sims"
 					tbParams.project_root = common.path_def.project_root
 					tbParams.pkgs = {"sims.res", "mod.main"}
-					tbParams.theme_path = "sims.res/themes/default.style"
-					tbParams.workspace_path = "/pkg/sims.res/space.work"
+					tbParams.theme_path = "/pkg/mod.main/themes/default.style"
+					tbParams.workspace_path = __ANT_RUNTIME__ and (common.path_def.cache_root .. "workspace.ant") or "/pkg/sims.res/workspace.ant"
 					tbParams.goap_mgr = require 'goap.goap'
 					tbParams.menus = {
 						{name = "存档助手", window = require 'editor.wnd_saved'.new(client) },

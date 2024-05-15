@@ -3,8 +3,6 @@
 ---@field excludes string[] 排除哪些mod
 ---@field includes string[] 只包含哪些mod
 
----@class ly.mod.item
-
 
 local function new()
 	---@class ly.mods
@@ -24,7 +22,7 @@ local function new()
 		local fs = require "filesystem"
 		local bfs = require 'bee.filesystem'
 		root_path = tbParams.root
-		print("set root path", root_path)
+		print("set mod root path", root_path)
 
 		-- fs遍历vfs目录
 		-- bfs遍历本地目录
@@ -84,12 +82,6 @@ local function new()
 		init_files(root_path .. "/" .. pkg_name, "/pkg/" .. pkg_name .. "/")
 	end
 
-	-- 刷新指定目录
-
-	-- 得到指定目录下有哪些文件
-
-	-- 删除文件（既要删除vfs，也要删除本地文件）
-	
 	return api
 end
 

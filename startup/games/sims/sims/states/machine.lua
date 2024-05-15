@@ -36,7 +36,7 @@ local function new(client)
 
 	function api.init()
 		cur_state = nil
-		api.goto_state(api.state_create_room)
+		api.goto_state(api.state_entry)
 	end 
 
 	function api.shutdown()

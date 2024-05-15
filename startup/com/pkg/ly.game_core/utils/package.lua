@@ -74,53 +74,55 @@ local function new(project_root)
 
 	---@return ly.game_core.package_item[] 包列表
 	function api.get_packages()
-		local function loadmount(rootpath)
-			local path = rootpath .. "/.mount"
-			return datalist.parse(fastio.readall_f(path))
-		end
-		local _mountlpath = {}
-		local function addmount(vpath, lpath)
-			if not lfs.exists(lpath) then
-				return
+		local packages = {}
+		if not __ANT_RUNTIME__ then
+			local function loadmount(rootpath)
+				local path = rootpath .. "/.mount"
+				return datalist.parse(fastio.readall_f(path))
 			end
-			assert(vpath:sub(1,1) == "/")
-			for _, one in ipairs(_mountlpath) do
-				if one.path:string() == lpath then
+			local _mountlpath = {}
+			local function addmount(vpath, lpath)
+				if not lfs.exists(lpath) then
 					return
 				end
+				assert(vpath:sub(1,1) == "/")
+				for _, one in ipairs(_mountlpath) do
+					if one.path:string() == lpath then
+						return
+					end
+				end
+				_mountlpath[#_mountlpath+1] = {path = lfs.absolute(lpath):lexically_normal(), vpath = vpath}
 			end
-			_mountlpath[#_mountlpath+1] = {path = lfs.absolute(lpath):lexically_normal(), vpath = vpath}
-		end
 
-		local cfg = loadmount(project_root)
-		for i = 1, #cfg.mount, 2 do
-			local vpath, lpath = cfg.mount[i], cfg.mount[i+1]
-			addmount(vpath, lpath:gsub("%%([^%%]*)%%", {
-				engine = lfs.current_path():string(),
-				project = project_root:gsub("(.-)[/\\]?$", "%1"),
-			}))
-		end
-		local packages = {}
-		for _, one in ipairs(_mountlpath) do
-			local value = one.path
-			local strvalue = value:string()
-			if strvalue:sub(-7) == '/engine' then
-				goto continue
+			local cfg = loadmount(project_root)
+			for i = 1, #cfg.mount, 2 do
+				local vpath, lpath = cfg.mount[i], cfg.mount[i+1]
+				addmount(vpath, lpath:gsub("%%([^%%]*)%%", {
+					engine = lfs.current_path():string(),
+					project = project_root:gsub("(.-)[/\\]?$", "%1"),
+				}))
 			end
-			if one.vpath == "/" and strvalue:sub(-4) ~= '/pkg' then
-				value = value / 'pkg'
-			end
-			for item in lfs.pairs(value) do
-				local _, pkgname = item:string():match'(.*/)(.*)'
-				local skip = false
-				if pkgname:sub(1, 4) == "ant." or pkgname:sub(1, 1) == "." then
-					skip = true
+			for _, one in ipairs(_mountlpath) do
+				local value = one.path
+				local strvalue = value:string()
+				if strvalue:sub(-7) == '/engine' then
+					goto continue
 				end
-				if not skip then
-					packages[#packages + 1] = {name = pkgname, path = item}
+				if one.vpath == "/" and strvalue:sub(-4) ~= '/pkg' then
+					value = value / 'pkg'
 				end
+				for item in lfs.pairs(value) do
+					local _, pkgname = item:string():match'(.*/)(.*)'
+					local skip = false
+					if pkgname:sub(1, 4) == "ant." or pkgname:sub(1, 1) == "." then
+						skip = true
+					end
+					if not skip then
+						packages[#packages + 1] = {name = pkgname, path = item}
+					end
+				end
+				::continue::
 			end
-			::continue::
 		end
 
 		if mod.mods then 
@@ -146,21 +148,28 @@ local function new(project_root)
 	---@param relative_path string 相对路径
 	---@return string[] 路径列表
 	function api.get_all_files(pkg_name, relative_path)
-		local pkg_path = tostring(api.get_pkg_path(pkg_name))
-		local tree = api.construct_resource_tree(pkg_path .. "/" .. relative_path, pkg_path .. "/")
+		local fs = require "filesystem"
+		local vfs = require "vfs"
 		local ret = {}
+		local function traverse(root)
+			for file in fs.pairs(fs.path(root)) do
+				local status = vfs.type(file:string())
+				if status == "dir" or status == 'd'  then 
+					traverse(file)
+				else 
+					table.insert(ret, file:string())
+				end
+			end	
+		end
 
-		---@param tree ly.game_core.tree_item
-		local function get(tree)
-			for i, v in ipairs(tree.dirs) do 
-				get(v.tree)
-			end
-			for i, v in ipairs(tree.files) do 
-				table.insert(ret, string.format("/pkg/%s/%s", pkg_name, v.r_path))
+		for d in fs.pairs("/pkg") do
+			if d:filename():string() == pkg_name then
+				traverse(string.format("%s/%s", d:string(), relative_path))
+				break
 			end
 		end
-		get(tree)
-		return ret;
+
+		return ret
 	end
 	
 	return api

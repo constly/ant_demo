@@ -207,8 +207,7 @@ local function new(editor)
 	function api.set_theme(data)
 		assert(data, "请输入主题文件路径或者数据")
 		if type(data) == "string" then 
-			local real_path = editor.files.vfs_path_to_full_path(data)
-			data = require 'windows.utils' .load_datalist(real_path)
+			data = dep.common.file.load_datalist(data)
 		end
 		if type(data) ~= "table" or not data.styles then 
 			log.warn("主题文件格式异常")

@@ -28,6 +28,9 @@ end
 
 ---@return boolean 是不是vfs路径
 function api.is_vfs_path(path)
+	if lib.start_with(path, "/pkg/") then 
+		return true
+	end
 	return string.find(path, ":") == nil
 end
 
