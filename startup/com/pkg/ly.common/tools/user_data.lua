@@ -35,6 +35,16 @@ function api.get_number(key, default)
     return tonumber(api.get(key)) or default or 0
 end
 
+function api.get_guid()
+	local key = "guid"
+	local v = api.get(key)
+	if not v then 
+		v = string.format("id_%s_%s", math.random(1 << 20, 1 << 45), os.time()) 
+		api.set(key, v)
+	end
+	return v
+end
+
 function api.get(key, default)
     return data[key] or default
 end 

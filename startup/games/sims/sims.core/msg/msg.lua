@@ -65,11 +65,15 @@ local function new()
 		api.reg_rpc(api.rpc_login, 
 			function(player, tbParam, fd)  	-- 服务器执行
 				player = api.server.player_mgr.find_by_guid(tbParam.guid)
+				if not player then 
+					player = api.server.player_mgr.add_player(fd, tbParam.guid)
+				end
 				if player then 
 					player.fd = fd
 					player.is_online = true
 					api.server.room.refresh_members()
-					local npc = api.server.main_world.on_login(player)
+					api.server.main_world.on_login(player)
+					local npc = player.npc 
 					return {id = player.id, pos = {x = npc.pos_x, y = npc.pos_y, z = npc.pos_z}}
 				end
 				return {}

@@ -67,6 +67,7 @@ local function new(s, client)
 
 				local label = string.format("加入##btn_join_%d", idx)
 				if common.imgui_utils.draw_btn(label, true, {size_x = 60}) then 
+					client.join_room(room.ip, room.port)
 				end
 				ImGui.Separator()
 			end

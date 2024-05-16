@@ -127,9 +127,13 @@ local function new(server)
 		return region
 	end
 
+	---@param player sims.server_player
 	---@param params sims.server.login.param
 	function api.on_login(player, params)
 		local npc = player.npc
+		if npc.region then 
+			return npc
+		end
 		local grid = api.get_first_gird_by_className("born")
 		assert(grid)
 		if params and params.pos_x then 

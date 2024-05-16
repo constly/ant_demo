@@ -23,9 +23,6 @@
 ---@field tree ly.game_core.tree_item
 ---@field parent ly.game_core.tree_item
 
----@type ly.mod
-local mod = import_package 'ly.mod'
-
 ---@return ly.game_core.utils.package
 local function new(project_root)
 	---@class ly.game_core.utils.package
@@ -33,6 +30,9 @@ local function new(project_root)
 	local datalist	= require 'datalist'
 	local fastio  	= require "fastio"
 	local lfs       = require "bee.filesystem"
+
+	---@type ly.game_core
+	local game_core = require 'main'
 
 	---@type ly.common.lib
 	local lib 		= import_package 'ly.common'.lib
@@ -125,8 +125,8 @@ local function new(project_root)
 			end
 		end
 
-		if mod.mods then 
-			local list = mod.mods.get_pkgs()
+		if game_core.mods then 
+			local list = game_core.mods.get_pkgs()
 			for i, item in ipairs(list) do 
 				packages[#packages + 1] = {name = item.name, path = item.path, isMod = true}
 			end

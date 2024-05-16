@@ -8,9 +8,6 @@ local core = import_package 'sims.core'
 ---@type ly.game_core
 local game_core = import_package 'ly.game_core'
 
----@type ly.mod
-local mod = import_package 'ly.mod'
-
 local function new(ecs)
 	---@class sims.client
 	---@field ecs any
@@ -55,7 +52,7 @@ local function new(ecs)
 		---@type ly.mods.param
 		local tbParam = {}
 		tbParam.root = common.path_def.mod_root .. "/sims"
-		mod.init(tbParam)
+		game_core.init_mod(tbParam)
 	end 
 	
 	function api.start()
@@ -106,7 +103,7 @@ local function new(ecs)
 		tbParam.port = 9876
 		tbParam.ip_type = "IPv4"
 		tbParam.room_name = string.format("%s - %s", scene.key, scene.name)
-		tbParam.leader_guid = math.random(100000, 100000000)
+		tbParam.leader_guid = common.user_data.get_guid()
 		api.create_room_param = tbParam
 		api.is_listen_player = true
 		ltask.send(api.serviceId, "start", tbParam)
@@ -118,7 +115,9 @@ local function new(ecs)
 	function api.join_room(ip, port)
 		api.destroy_room()
 		if api.room.init(ip, port) then 
+			local guid = common.user_data.get_guid()
 			api.room.apply_login(guid)
+			api.statemachine.goto_state(api.statemachine.state_room_running)
 		end
 	end
 

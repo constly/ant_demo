@@ -19,6 +19,6 @@ local ProjectDir = sys.exe_path()
     :parent_path()
 fs.current_path(ProjectDir / ".." / "ant")
 arg[0] = (ProjectDir / arg[0]):string()
-table.insert(arg, 1, tostring(ProjectDir) .. "/startup")
+arg[1] = tostring(ProjectDir) .. "/startup"
 
 dofile "/engine/console/bootstrap.lua"

@@ -1,5 +1,19 @@
 ---@class ly.game_core
+---@field mods ly.mods
 local api = {}
+
+---@return ly.mods
+---@param tbParams ly.mods.param
+function api.init_mod(tbParams)
+	if not api.mods then 
+		local mods_handler = require 'mod.mods'
+		api.mods = mods_handler.new()
+	end
+	api.mods.remove_all()
+	api.mods.init(tbParams)
+	return api.mods
+end
+
 
 --- 创建ini_handler
 ---@return ly.game_editor.ini.handler

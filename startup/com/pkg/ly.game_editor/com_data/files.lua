@@ -9,9 +9,6 @@ local lib 		= dep.common.lib
 ---@type ly.game_core
 local game_core = import_package 'ly.game_core'
 
----@type ly.mod
-local mod = import_package 'ly.mod'
-
 ---@return ly.game_editor.files
 ---@param editor ly.game_editor.editor
 local function new(editor)
@@ -62,8 +59,8 @@ local function new(editor)
 	function api.refresh_tree(pkg_name, dir)
 		local root = api.resource_tree[pkg_name]
 		if not root then return end 
-		if pkg_mods[pkg_name] and mod.mods then 
-			mod.mods.refresh_pkg(pkg_name)
+		if pkg_mods[pkg_name] and game_core.mods then 
+			game_core.mods.refresh_pkg(pkg_name)
 		end
 		local tree, dir = api.find_tree_by_path(root, dir)
 		if tree then 

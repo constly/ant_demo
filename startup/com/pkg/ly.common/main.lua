@@ -35,6 +35,9 @@ api.datalist 		= require 'tools.datalist'
 ---@type ly.common.net
 api.net 			= require 'tools.net'
 
+---@type ly.common.async
+api.async 			= require 'tools.async'
+
 ---@return goap_mgr
 function api.new_goap_mgr()
 	local mgr = require 'goap.goap_mgr'

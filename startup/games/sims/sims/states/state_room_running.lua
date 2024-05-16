@@ -19,8 +19,8 @@ local function new(s, client)
 	end
 
 	function api.on_update()
-		client.editor.update()
 		if client.is_listen_player then 
+			client.editor.update()
 			api.broadcast_room_addr()
 		end
 	end
