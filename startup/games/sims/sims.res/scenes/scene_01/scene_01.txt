@@ -1,7 +1,0 @@
-42;1;Id	61;1;名字	51;1;所属世界	76;1;路径	80;1;背景音乐	86;1;世界坐标	60;1;旋转(0/90/180/270)
-string	string	int	string	string	vec3	int
-id	name	world	path	bgm	position	rotate
-1	出生地	1	/pkg/sims.res/scenes/scene_01/map_01.map		{0,0,0}	0
-						
-						
-						
