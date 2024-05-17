@@ -90,7 +90,6 @@ local function new(client)
 			api.close()
 		end)
 		client_fd = fd
-		api.apply_login()
 		return true;
 	end
 

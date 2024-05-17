@@ -8,6 +8,7 @@ whitelist:
 	tag
 	attr
 	goap
+	style
 	
 block:
 	/pkg/ant.efk/efkbgfx
