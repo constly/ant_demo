@@ -59,8 +59,9 @@ run.bat
 2. bgfx下有大量使用示例, 网上也有 [学习笔记](https://hinageshi01.github.io/2022/05/30/bgfx/)
 
 ### 七. 打包
-1. 执行run_pack.bat，相关文件会发布在publish/下
+1. 执行run_pack.bat，相关文件会发布到publish/下
 2. 目前只考虑了windows平台
+3. 点击publish/run.bat启动游戏
 
 ## deom场景部分内容展示
 ![imgui_02](./img/imgui_02.png)
