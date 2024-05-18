@@ -55,6 +55,16 @@ local function move_lerp(e, move, delta_time, s, client_move_dir)
 	update_move_anim(e, true, move)
 end
 
+-- 同步世界中其他单位的位置
+---@param s sims.msg.s2c_npc_move
+local function move_other_npc(e, move, delta_time, s)
+	local s_pos = s.pos
+	local s_dir = s.dir
+	local new_pos = math3d.vector(s_pos[1], s_pos[2], s_pos[3])
+	local dir = math3d.vector(-s_dir[1], 0, -s_dir[2])
+	iom.set_view(e, new_pos, dir)
+end
+
 --- 如果只是服务器在移动
 ---@param s sims.msg.s2c_npc_move
 local function move_only_server(e, move, delta_time, s)
@@ -127,6 +137,7 @@ function m.data_changed()
 	local delta = timer.delta() * 0.001
 	for e in w:select "comp_move:in" do
 		local move = e.comp_move
+		local has_client_dir = move.move_dir and true or false  	-- 是不是客户端玩家控制的角色
 		local move_dir = move.move_dir or {}
 		local is_client_moving = move_dir.x and (move_dir.x ~= 0 or move_dir.z ~= 0)
 		
@@ -135,7 +146,10 @@ function m.data_changed()
 		if s then 
 			local dir = s.dir
 			local is_server_moving = dir[1] ~= 0 or dir[2] ~= 0
-			if is_server_moving then 
+			if not has_client_dir and is_server_moving then 
+				move_other_npc(e, move, delta, s)
+				update_move_anim(e, true, move)
+			elseif is_server_moving then 
 				if is_client_moving then 
 					move_lerp(e, move, delta, s, move_dir)
 				else 

@@ -113,7 +113,7 @@ local function new(client)
 			for x = 1, step do 
 				local idx = ((i - 1) * step) + x
 				if applyList[idx] then
-					client.tick_timer.add(i - 1, function()
+					client.tick_timer.add(i, function()
 						client.call_server(client.msg.rpc_apply_region, {region_id = applyList[idx].id})
 					end)
 				end

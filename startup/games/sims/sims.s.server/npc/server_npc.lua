@@ -99,18 +99,12 @@ local function new(server)
 		local cur_region = api.region
 		if is_move then
 			local region_id = server.define.world_pos_to_region_id(api.pos_x, api.pos_y, api.pos_z)
-			if region_id ~= api.region_id then 
+			if not cur_region or region_id ~= cur_region.id then 
 				if cur_region then 
 					cur_region.remove_npc(api)
 				end
 				local region = server.main_world.get_or_create_region(region_id)
-				if region then
-					region.add_npc(api)
-				end
-				if api.player and api.player.npc == api then 
-					if cur_region then cur_region.remove_player(api.player) end
-					if region then region.add_player(api.player) end
-				end
+				region.add_npc(api)
 				cur_region = region
 			end
 		end
@@ -133,7 +127,6 @@ local function new(server)
 	---@param region sims.server.region
 	function api.notify_region_players(region, cmd, tbParam)
 		if not region then return end 
-
 		for i, player in ipairs(region.notify_players) do 
 			server.room.send_to_client(player.fd, cmd, tbParam)
 		end

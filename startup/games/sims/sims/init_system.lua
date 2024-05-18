@@ -28,7 +28,7 @@ end
 
 function system.init()
 	client.start()
-	window.set_title("Ant Game Engine 学习记录 - 局域网联机测试")
+	window.set_title(string.format("Ant Game Engine 学习记录 - 局域网联机测试(%s)", __ANT_RUNTIME__ and "运行时" or "编辑器"))
 end 
 
 function system.exit()
