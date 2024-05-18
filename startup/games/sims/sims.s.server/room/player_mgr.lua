@@ -112,6 +112,8 @@ local function new(server)
 		player.guid = guid
 		player.npc = server.npc_mgr.create_player_npc(player) 
 		table.insert(api.players, player)
+		
+		print("add player", next_id, guid)
 		return player;
 	end
 
@@ -138,6 +140,16 @@ local function new(server)
 		for i, v in ipairs(api.players) do 
 			if v.guid == guid then 
 				return v
+			end 
+		end 
+	end
+
+	function api.notify_fd_close(fd)
+		print("notify_fd_close player", fd)
+		for i, v in ipairs(api.players) do 
+			if v.fd == fd then 
+				v.is_online = false
+				return
 			end 
 		end 
 	end

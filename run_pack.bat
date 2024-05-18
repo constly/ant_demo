@@ -8,14 +8,16 @@ if not defined mode (
 	set mode=debug
 )
 
+set src_dir=%current_dir%bin\msvc\%mode%\
+set dest_dir=%current_dir%publish\
+
+::rd /s /q %src_dir%internal
+
 luamake -mode %mode%
 luamake -mode release tools
 "./bin/msvc/%mode%/ant_demo.exe" -p
 
-set src_dir=%current_dir%bin\msvc\%mode%\
-set dest_dir=%current_dir%publish\
-
-copy %src_dir%ant_demo.exe %dest_dir%
+copy %src_dir%ant_demo.exe %dest_dir%\ant.exe
 copy %src_dir%fmod.dll %dest_dir%
 copy %src_dir%fmodstudio.dll %dest_dir%
 

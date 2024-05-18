@@ -73,6 +73,7 @@ local function new(client)
 				if reading == nil then 
 					quit = true
 					log.warn("服务器已关闭, recv error:", err)
+					client.statemachine.goto_state(client.statemachine.state_entry)
 					break 
 				end 
 				table.insert(reading_queue, reading)

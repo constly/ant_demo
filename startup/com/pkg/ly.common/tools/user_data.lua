@@ -40,7 +40,7 @@ function api.get_guid()
 	local v = api.get(key)
 	if not v then 
 		v = string.format("id_%s_%s", math.random(1 << 20, 1 << 45), os.time()) 
-		api.set(key, v)
+		api.set(key, v, true)
 	end
 	return v
 end

@@ -20,18 +20,22 @@ local function new(api)
 			return 
 		end 
 
-		local world = api.client.world
-		local e<close> = world:entity(npc.root, "comp_move:update")
-		if e then
-			---@type sims.msg.s2c_npc_move
-			local s = e.comp_move.server 
-			if not s then 
-				s = {}
-				e.comp_move.server = s
+		if npc.is_ready then
+			local world = api.client.world
+			local e<close> = world:entity(npc.root, "comp_move:update")
+			if e then
+				---@type sims.msg.s2c_npc_move
+				local s = e.comp_move.server 
+				if not s then 
+					s = {}
+					e.comp_move.server = s
+				end
+				s.dir = p.dir
+				s.pos = p.pos
+				s.speed = p.speed
 			end
-			s.dir = p.dir
-			s.pos = p.pos
-			s.speed = p.speed
+		else 
+			log.warn("npc is not ready", npc.id)
 		end
 	end)
 

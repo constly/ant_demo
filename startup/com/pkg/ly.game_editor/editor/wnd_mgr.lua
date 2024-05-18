@@ -31,6 +31,14 @@ local function new(editor)
 		local path = view.tabs.get_active_path()
 		local tab = view.tabs.find_by_path(path)
 		if not tab then return end
+
+		local is_file = not lib.start_with(path, editor.__inner_wnd)
+		if is_file and not editor.show_pkg then 
+			ImGui.SetCursorPos(5, 5)
+			ImGui.TextColored(0.8, 0, 0, 1, "本模式下不支持编辑和查看文件")
+			return
+		end
+
 		local window = api.get_or_create_window(path)
 		if window then 
 			window.update(is_active, delta_time, tab.show_mode);

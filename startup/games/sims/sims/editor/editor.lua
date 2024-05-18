@@ -121,20 +121,22 @@ local function new(client)
 				set_expand(not expand)
 			end
 			
-			ImGui.SameLineEx(math.max(120 * dpi, width - 250))
-			if common.imgui_utils.draw_btn(" 刷 新 ", true) then 
-				notify_refresh()
-			end
-			ImGui.SameLine()
-			ImGui.SetNextItemWidth(120 * dpi)
-			if ImGui.BeginCombo("##combo", refresh_def[refresh_type].name) then
-				for i, one in ipairs(refresh_def) do
-					if ImGui.Selectable(one.name, i == refresh_type) then
-						refresh_type = i
-						common.user_data.set("sims.refresh_type", i, true)
-					end
+			if client.is_listen_player then
+				ImGui.SameLineEx(math.max(120 * dpi, width - 250))
+				if common.imgui_utils.draw_btn(" 刷 新 ", true) then 
+					notify_refresh()
 				end
-				ImGui.EndCombo()
+				ImGui.SameLine()
+				ImGui.SetNextItemWidth(120 * dpi)
+				if ImGui.BeginCombo("##combo", refresh_def[refresh_type].name) then
+					for i, one in ipairs(refresh_def) do
+						if ImGui.Selectable(one.name, i == refresh_type) then
+							refresh_type = i
+							common.user_data.set("sims.refresh_type", i, true)
+						end
+					end
+					ImGui.EndCombo()
+				end
 			end
 			ImGui.SameLine()
 			if common.imgui_utils.draw_btn(" 全 屏 ", is_fullscreen) then 
@@ -150,7 +152,11 @@ local function new(client)
 					local tbParams = {}
 					tbParams.module_name = "sims"
 					tbParams.project_root = common.path_def.project_root
-					tbParams.pkgs = {"sims.res", "mod.main"}
+					if __ANT_RUNTIME__ then
+						tbParams.pkgs = {"mod.main"}
+					else 
+						tbParams.pkgs = {"sims.res", "mod.main"}
+					end
 					tbParams.theme_path = "/pkg/mod.main/themes/default.style"
 					tbParams.workspace_path = __ANT_RUNTIME__ and (common.path_def.cache_root .. "workspace.ant") or "/pkg/sims.res/workspace.ant"
 					tbParams.goap_mgr = require 'goap.goap'
@@ -164,7 +170,12 @@ local function new(client)
 				local x, y = ImGui.GetContentRegionAvail()
 				ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 0, 0)
 				ImGui.BeginChild("ImGui.BeginChild", x, y, ImGui.ChildFlags({"Border"}))
-				editor.draw()
+
+				---@type ly.game_editor.draw_param
+				local tbParam = {} 
+				tbParam.hide_all_pkgs = not client.is_listen_player
+				editor.draw(tbParam)
+
 				ImGui.EndChild()
 				ImGui.PopStyleVar()
 			end

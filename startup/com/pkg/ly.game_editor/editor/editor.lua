@@ -5,6 +5,7 @@ local ImGui = dep.ImGui
 ---@param tbParams ly.game_editor.create_params
 local function create(tbParams)
 	---@class ly.game_editor.editor
+	---@field show_pkg boolean 是否显示pkg相关
 	local api = {}
 	api.__inner_wnd = "__inner:"
 	
@@ -26,7 +27,6 @@ local function create(tbParams)
 	api.wnd_log = (require 'editor.widgets.wnd_log').new(api)
 	api.wnd_mgr = (require 'editor.wnd_mgr').new(api)
 	
-	--local height_title = 30 
 	local height_bottom = 200
 	local is_buttom_collapse = false
 	local size_x, size_y
@@ -130,13 +130,22 @@ local function create(tbParams)
 		api.cache.save()
 	end
 
-	function api.draw()
+	---@class ly.game_editor.draw_param
+	---@field hide_all_pkgs boolean 隐藏所有pkg
+	---@param tbParams ly.game_editor.draw_param
+	function api.draw(tbParams)
 		api.files.update_filewatch()
+		api.show_pkg = not tbParams or not tbParams.hide_all_pkgs
 		local dpi = dep.common.imgui_utils.get_dpi_scale()
-		height_bottom = 50 + 150 * dpi
 		size_x, size_y = ImGui.GetContentRegionAvail()
-		draw_viewports()
-		draw_bottom(dpi)
+		if api.show_pkg then
+			height_bottom = 50 + 150 * dpi
+			draw_viewports()
+			draw_bottom(dpi)
+		else 
+			height_bottom = 0
+			draw_viewports()
+		end
 
 		api.dialogue_input.update()
 		api.dialogue_msgbox.update()

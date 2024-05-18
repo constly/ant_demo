@@ -127,7 +127,7 @@ local function new(server)
 		local close_session = function(s, notify)
 			if s.fd then 
 				net.close(s.fd)
-				player_mgr.remove_player(s.fd)
+				player_mgr.notify_fd_close(s.fd)
 				s.fd = nil
 				if notify then
 					api.refresh_members()

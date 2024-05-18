@@ -32,6 +32,13 @@ local function new()
 	local reg_rpc
 	local reg_s2c
 
+	function api.clear()
+		reg_rpc = nil
+		reg_s2c = nil
+		api.client = nil
+		api.server = nil
+	end
+
 	--- 注册rpc
 	function api.reg_rpc(cmd, server_cb, client_cb)
 		assert(not api.tb_rpc[cmd])

@@ -42,6 +42,7 @@ local function new()
 			ltask.send(api.servicePathfinder, "shutdown")
 			api.servicePathfinder = nil
 		end
+		api.room.close()
 	end
 
 	function api.restart_before()

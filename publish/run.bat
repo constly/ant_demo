@@ -1,1 +1,1 @@
-ant_demo.exe -rt
+ant.exe -rt
