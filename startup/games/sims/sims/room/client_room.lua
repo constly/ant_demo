@@ -52,7 +52,7 @@ local function new(client)
 	end
 
 	function api.apply_login(guid) client.call_server(msg.rpc_login, {guid = guid}) end
-	function api.apply_exit() client.call_server(msg.rpc_exit) end 
+	function api.apply_exit() client.call_server(msg.rpc_logout) end 
 	function api.apply_begin() client.call_server(msg.rpc_room_begin) end
 
 	--- 初始化客户端房间

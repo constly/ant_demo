@@ -27,8 +27,9 @@ end
 local S = {}
 
 --- 启动服务器
----@param tbParam any
+---@param tbParam sims.server.start.params
 function S.start(tbParam)
+	tbParam.client_fd = SServer
 	main.start(tbParam)
 end
 

@@ -24,11 +24,11 @@ local function new(gate)
 		local close_session = function(s, notify)
 			if s.fd then 
 				net.close(s.fd)
-				player_mgr.notify_fd_close(s.fd)
-				s.fd = nil
+				gate.player_mgr.notify_fd_close(s.fd)
 				if notify then
-					api.refresh_members()
+					ltask.send(gate.addrDataCenter, "notify_player_fd_close", s.fd)
 				end
+				s.fd = nil
 			end
 		end
 
@@ -83,21 +83,32 @@ local function new(gate)
 	end
 
 	function api.dispatch_rpc(client_fd, cmd, tbParam)
-		local tb = msg.tb_rpc[cmd]
-		if not tb then return end
+		local tb = gate.msg.tb_rpc[cmd]
+		if not tb then 
+			log.warn("can not find rpc = %d", cmd)
+			return 
+		end
 
 		client_fd = client_fd or 0
-		local p = player_mgr.find_by_fd(client_fd)
-		if not p and cmd ~= msg.rpc_login then return end 
+		if tb.type == gate.msg.type_gate then
+			local p = gate.player_mgr.find_by_fd(client_fd)
+			if not p and cmd ~= gate.msg.rpc_login then return end 
 
-		local ret = tb.server(p, tbParam, client_fd)
-		if ret and (not p or p.is_online) then 
-			if client_fd > 0 then 
-				local pack = string.pack("<s2", seri.packstring(1, cmd, ret))
-				net.send(client_fd, pack);
-			elseif client_fd == 0 then
-				ltask.send(ServiceWindow, "exec_richman_client_rpc", cmd, ret)
+			local ret = tb.server(p, tbParam, client_fd)
+			if ret and (not p or p.is_online) then 
+				api.dispatch_rpc_rsp(client_fd, cmd, ret)
 			end 
+		elseif tb.type == gate.msg.type_data_center then 
+			ltask.send(gate.addrDataCenter, "dispatch_rpc", client_fd, cmd, tbParam)
+		end
+	end
+
+	function api.dispatch_rpc_rsp(client_fd, cmd, tbParam)
+		if client_fd > 0 then 
+			local pack = string.pack("<s2", seri.packstring(1, cmd, tbParam))
+			net.send(client_fd, pack);
+		elseif client_fd == 0 then
+			ltask.send(gate.addrClient, "exec_richman_client_rpc", cmd, tbParam)
 		end 
 	end
 

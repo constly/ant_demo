@@ -47,7 +47,7 @@ local function new(ecs)
 		function S.exec_richman_client_s2c(cmd, tbParam)
 			table.insert(tb_msg, {type = "s2c", cmd = cmd, param = tbParam})
 		end
-		api.msg.init(true, api)
+		api.msg.init(api.msg.type_client, api)
 
 		---@type ly.mods.param
 		local tbParam = {}
@@ -104,6 +104,7 @@ local function new(ecs)
 		tbParam.ip_type = "IPv4"
 		tbParam.room_name = string.format("%s - %s", scene.key, scene.name)
 		tbParam.leader_guid = common.user_data.get_guid()
+		tbParam.lan_broadcast_port = api.lan_broadcast_port
 		api.create_room_param = tbParam
 		api.is_listen_player = true
 		ltask.send(api.serviceId, "start", tbParam)

@@ -6,20 +6,34 @@ local function new()
 	---@field addrGate number gate地址
 	local api = {}
 
-	function api.start()
+	local function init()
 		api.addrDataCenter = ltask.spawn("sims.s.02.data_center|entry", ltask.self())
 		api.addrGate = ltask.spawn("sims.s.03.gate|entry", ltask.self())
+
+		-- 处理npc移动
+		api.addrMove = ltask.spawn("sims.s.04.move|entry", ltask.self())
+	end
+
+	---@param tbParam sims.server.start.params
+	function api.start(tbParam)
+		tbParam.addrDataCenter = api.addrDataCenter
+		tbParam.addrGate = api.addrGate
+		init()
+
+		ltask.send(api.addrGate, "start", tbParam)
+		ltask.send(api.addrDataCenter, "start", tbParam)
 	end 
 
 	function api.shutdown()
 		ltask.call(api.addrGate, "shutdown")	
 		ltask.call(api.addrDataCenter, "shutdown")	
+		ltask.call(api.addrMove, "shutdown")	
 	end
 
 	---@param totalTime number 服务器运行总时间
 	---@param deltaSecond number 本帧间隔，单位秒
 	function api.update(totalTime, deltaSecond)
-
+		ltask.send(api.addrGate, "update", totalTime, deltaSecond)	
 	end
 
 	return api

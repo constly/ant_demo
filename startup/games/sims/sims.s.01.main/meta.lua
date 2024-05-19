@@ -1,0 +1,13 @@
+--- 服务器启动参数
+---@class sims.server.start.params
+---@field scene string 启动场景
+---@field save_root string 存档根目录
+---@field ip string 服务器监听id地址
+---@field port number 服务器监听端口号
+---@field ip_type string ip类型
+---@field room_name string 房间名字
+---@field leader_guid string 房主客户端的guid
+---@field lan_broadcast_port number 广播端口
+---@field client_fd number 客户端服务fd
+---@field addrGate number gate地址
+---@field addrDataCenter number 数据中心地址

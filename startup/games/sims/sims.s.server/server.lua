@@ -23,7 +23,7 @@ local function new()
 	api.main_world = require 'world.world'.new(api) ---@type sims.server.world 主世界
 
 	function api.init()
-		api.msg.init(false, api)
+		api.msg.init(api.msg.type_old_server, api)
 		api.serviceGoap = ltask.spawn("sims.s.goap|entry", ltask.self())
 		api.servicePathfinder = ltask.spawn("sims.s.path|entry", ltask.self())
 		ltask.send(api.serviceGoap, "init", {"/pkg/sims.res/goap/test.goap"})	

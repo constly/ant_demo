@@ -39,15 +39,6 @@ local function new(api)
 		end
 	end)
 
-	api.reg_rpc(api.rpc_apply_npc_data, function(player, tbParam)
-		local npcId = tbParam.id
-		local npc = api.server.npc_mgr.get_npc_by_id(npcId)
-		if npc then 
-			return {data = npc.get_sync_data()}
-		end
-	end, function(tbParam)
-		api.client.npc_mgr.create_npc(tbParam.data)
-	end)
 end
 
 
