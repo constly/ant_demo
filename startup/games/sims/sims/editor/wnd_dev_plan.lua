@@ -21,6 +21,7 @@ local function new(client)
 	-- ]]
 
 	local tb_todo = {
+		"优化sims服务器架构，尽量拆分为service",
 		"声音支持播放mp3，wav实在太大了",
 		"客户端角色移动平滑插值",
 		"寻路走通，鼠标点击格子，其他npc自动走过去",
