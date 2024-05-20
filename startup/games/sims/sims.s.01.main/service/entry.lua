@@ -1,7 +1,7 @@
 ------------------------------------------------------
 --- 服务器主服务
 ------------------------------------------------------
-SServer = ...
+local addrClient = ...
 
 ---@type sims.s.main
 local main = require 'main'.new()
@@ -29,9 +29,13 @@ local S = {}
 --- 启动服务器
 ---@param tbParam sims.server.start.params
 function S.start(tbParam)
-	tbParam.client_fd = SServer
+	tbParam.addrClient = addrClient
 	main.start(tbParam)
 end
+
+function S.dispatch_netmsg(cmd, tbParams)
+	ltask.send(main.addrGate, "dispatch_rpc", 0, cmd, tbParams or {})
+end 
 
 --- 关闭服务器
 function S.shutdown()

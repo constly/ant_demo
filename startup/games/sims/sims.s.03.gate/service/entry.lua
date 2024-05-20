@@ -10,7 +10,7 @@ local core = import_package 'sims.core'
 
 local function new_gate()
 	---@class sims.s.gate
-	---@class addrDataCenter number 数据中心地址
+	---@class addrCenter number 数据中心地址
 	---@class addrClient number 本地客户端地址
 	local api = {}
 
@@ -25,8 +25,8 @@ local function new_gate()
 	function api.start(tbParam)
 		api.msg.init(api.msg.type_gate, api)
 
-		api.addrDataCenter = tbParam.addrDataCenter
-		api.addrClient = tbParam.client_fd
+		api.addrCenter = tbParam.addrCenter
+		api.addrClient = tbParam.addrClient
 		api.net_handler.start(tbParam.ip, tbParam.port)
 
 		assert(not broadcast)
@@ -68,8 +68,14 @@ function S.update(totalTime, deltaSecond)
 	gate.update()
 end
 
+--- 从其他service来的消息
 function S.dispatch_rpc_rsp(client_fd, cmd, tbParam)
 	gate.net_handler.dispatch_rpc_rsp(client_fd, cmd, tbParam)
+end
+
+--- 本地客户端的消息
+function S.dispatch_rpc(client_fd, cmd, tbParam)
+	gate.net_handler.dispatch_rpc(client_fd, cmd, tbParam)
 end
 
 function S.shutdown()

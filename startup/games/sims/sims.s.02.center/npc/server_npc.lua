@@ -9,8 +9,8 @@
 ---@field dir_z number 朝向
 
 
----@param data_center sims.s.data_center
-local function new(data_center)
+---@param center sims.s.center
+local function new(center)
 	---@class sims.server.npc
 	---public
 	---@field id number 唯一id
@@ -98,12 +98,12 @@ local function new(data_center)
 
 		local cur_region = api.region
 		if is_move then
-			local region_id = data_center.define.world_pos_to_region_id(api.pos_x, api.pos_y, api.pos_z)
+			local region_id = center.define.world_pos_to_region_id(api.pos_x, api.pos_y, api.pos_z)
 			if not cur_region or region_id ~= cur_region.id then 
 				if cur_region then 
 					cur_region.remove_npc(api)
 				end
-				local region = data_center.main_world.get_or_create_region(region_id)
+				local region = center.main_world.get_or_create_region(region_id)
 				region.add_npc(api)
 				cur_region = region
 			end

@@ -26,7 +26,7 @@ local function new(gate)
 				net.close(s.fd)
 				gate.player_mgr.notify_fd_close(s.fd)
 				if notify then
-					ltask.send(gate.addrDataCenter, "notify_player_fd_close", s.fd)
+					ltask.send(gate.addrCenter, "notify_player_offline", s.fd)
 				end
 				s.fd = nil
 			end
@@ -90,16 +90,21 @@ local function new(gate)
 		end
 
 		client_fd = client_fd or 0
+		local p = gate.player_mgr.find_by_fd(client_fd)
 		if tb.type == gate.msg.type_gate then
-			local p = gate.player_mgr.find_by_fd(client_fd)
 			if not p and cmd ~= gate.msg.rpc_login then return end 
 
 			local ret = tb.server(p, tbParam, client_fd)
 			if ret and (not p or p.is_online) then 
 				api.dispatch_rpc_rsp(client_fd, cmd, ret)
 			end 
-		elseif tb.type == gate.msg.type_data_center then 
-			ltask.send(gate.addrDataCenter, "dispatch_rpc", client_fd, cmd, tbParam)
+		end 
+		if not p then 
+			return log.warn("消息转发失败，请先发登录协议, cmd == ", cmd)
+		end
+
+		if tb.type == gate.msg.type_center then 
+			ltask.send(gate.addrCenter, "dispatch_rpc", client_fd, p.id, cmd, tbParam)
 		end
 	end
 

@@ -89,7 +89,7 @@ local function new(ecs)
 	---@param scene sims.client.create_room.scene 场景详情
 	function api.create_room(scene_path, scene)
 		api.destroy_room()
-		api.serviceId = ltask.spawn("sims.s.server|entry", ltask.self())
+		api.serviceId = ltask.spawn("sims.s.01.main|entry", ltask.self())
 		local package_handler = game_core.create_package_handler(common.path_def.project_root)
 		local root_path = __ANT_RUNTIME__ and common.path_def.cache_root or package_handler.get_pkg_path("sims.res")
 		assert(root_path, "编辑器下走sims.res包, 运行时走cache目录")
@@ -107,7 +107,7 @@ local function new(ecs)
 		tbParam.lan_broadcast_port = api.lan_broadcast_port
 		api.create_room_param = tbParam
 		api.is_listen_player = true
-		ltask.send(api.serviceId, "start", tbParam)
+		ltask.call(api.serviceId, "start", tbParam)
 		api.call_server(api.msg.rpc_login, {guid = tbParam.leader_guid})
 		api.statemachine.goto_state(api.statemachine.state_room_running)
 	end

@@ -9,8 +9,8 @@
 ---@field dir_z number 朝向z
 
 
----@param data_center sims.s.data_center
-local function new(data_center)
+---@param center sims.s.center
+local function new(center)
 	---@class sims.server.npc_mgr
 	---@field npcs map<number, sims.server.npc> npc列表
 	---@field next_id number 
@@ -73,7 +73,7 @@ local function new(data_center)
 	---@return sims.server.npc
 	---@param params sims.server.npc.create_param
 	function api.create_npc(params, npc_id)
-		local npc = require 'npc.server_npc'.new(data_center)
+		local npc = require 'npc.server_npc'.new(center)
 		local id = npc_id
 		if not id then 
 			api.next_id = api.next_id + 1

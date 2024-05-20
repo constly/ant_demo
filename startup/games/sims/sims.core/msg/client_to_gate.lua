@@ -1,35 +1,40 @@
+local ltask = require "ltask"
 
 ---@param api sims.msg
 local function new(api)
-	-- 登录
+	--- gate登录到center
+	api.reg_center_rpc(api.rpc_gate_to_center_login, 	--- center执行
+		function(player, tbParam)
+			local player = player or api.center.player_mgr.add_player(tbParam.id, tbParam.guid) ---@type sims.s.server_player
+			player.is_online = true
+
+			local world = api.center.world_mgr.get_world(player.world_id)
+			assert(world, string.format("登录到center失败, world_id = %s", player.world_id))
+			world.on_login(player)
+
+			local npc = player.npc 
+			return {id = player.id, pos = {x = npc.pos_x, y = npc.pos_y, z = npc.pos_z}}
+		end,
+		function(tbParam)								--- 客户端执行
+			local player = api.client.players.find_by_id(tbParam.id)
+			if player then 
+				player.is_self = true
+				api.client.player_ctrl.local_player = player
+			end
+			api.client.restart(tbParam.pos)
+		end
+	)
+
+	-- 客户端登录到gate
 	api.reg_gate_rpc(api.rpc_login, 
 		function(player, tbParam, fd)  	-- 服务器执行
-			player = api.server.player_mgr.find_by_guid(tbParam.guid)
+			local player = api.gate.player_mgr.find_by_guid(tbParam.guid) ---@type sims.s.gate.player
 			if not player then 
-				player = api.server.player_mgr.add_player(fd, tbParam.guid)
-			end
-			if player then 
-				player.fd = fd
-				player.is_online = true
-				api.server.room.refresh_members()
-				api.server.main_world.on_login(player)
-				local npc = player.npc 
-				return {id = player.id, pos = {x = npc.pos_x, y = npc.pos_y, z = npc.pos_z}}
-			end
-			return {}
-		end, 
-		function(tbParam)				--- 客户端执行
-			if tbParam.id then
-				local player = api.client.players.find_by_id(tbParam.id)
-				if player then 
-					player.is_self = true
-					api.client.player_ctrl.local_player = player
-				end
-				api.client.restart(tbParam.pos)
+				player = api.gate.player_mgr.create(tbParam.guid, fd)
 			else 
-				assert(tbParam, "登录失败")
-				api.client.room.need_exit = true
+				api.gate.player_mgr.set_fd(tbParam.guid, fd)
 			end
+			ltask.send(api.gate.addrCenter, "dispatch_rpc", fd, player.id, api.rpc_gate_to_center_login, {id = player.id, guid = tbParam.guid})
 		end
 	)
 

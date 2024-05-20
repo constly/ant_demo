@@ -16,12 +16,26 @@ local function new()
 	api.client = nil 				---@type sims.client
 	api.server = nil 				---@type sims.server
 	api.gate = nil					---@type sims.s.gate
-	api.data_center = nil			---@type sims.s.data_center
+	api.center = nil				---@type sims.s.center
 
 	api.type_client = 1
 	api.type_gate = 2
-	api.type_data_center = 3
+	api.type_center = 3
 	api.type_old_server = 9
+
+	--- 客户端到gate
+	api.rpc_client_to_gate_login 				= 1101   	-- 客户端登录到gate
+	
+	--- 客户端到center
+	api.rpc_client_to_center_set_move_dir 		= 2101		-- 客户端请求设置移动方向
+
+	--- gate到center
+	api.rpc_gate_to_center_login 				= 3101		-- gate通知有玩家登录
+
+	--- center到客户端
+	api.center_to_client_notify_players 		= 4101
+
+	
 
 
 	--- 客户端全是rpc（服务器可以不返回）
@@ -53,7 +67,7 @@ local function new()
 		api.client = nil
 		api.server = nil
 		api.gate = nil
-		api.data_center = nil
+		api.center = nil
 	end
 
 	--- 注册rpc
@@ -63,7 +77,7 @@ local function new()
 	end
 	
 	function api.reg_gate_rpc(cmd, server_cb, client_cb) api.reg_rpc(api.type_gate, cmd, server_cb, client_cb) end
-	function api.reg_data_center_rpc(cmd, server_cb, client_cb) api.reg_rpc(api.type_data_center, cmd, server_cb, client_cb) end
+	function api.reg_center_rpc(cmd, server_cb, client_cb) api.reg_rpc(api.type_center, cmd, server_cb, client_cb) end
 
 	--- 注册协议
 	function api.reg_s2c(cmd, cb)
@@ -75,7 +89,7 @@ local function new()
 	function api.init(type, outer)
 		require 'msg.msg_npc'.new(api)
 		require 'msg.client_to_gate'.new(api)
-		require 'msg.client_to_data_center'.new(api)
+		require 'msg.client_to_center'.new(api)
 
 		if type == api.type_client then
 			api.client = outer
@@ -84,8 +98,8 @@ local function new()
 		elseif type == api.type_gate then 
 			api.gate = outer
 
-		elseif type == api.type_data_center then
-			api.data_center = outer
+		elseif type == api.type_center then
+			api.center = outer
 
 		elseif type == api.type_old_server then
 			api.server = outer
