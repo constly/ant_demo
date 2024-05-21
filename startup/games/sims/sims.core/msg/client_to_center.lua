@@ -5,7 +5,7 @@ local function new(api)
 	api.reg_center_rpc(api.rpc_apply_npc_data, 
 		function(player, tbParam)
 			local npcId = tbParam.id
-			local npc = api.server.npc_mgr.get_npc_by_id(npcId)
+			local npc = api.center.npc_mgr.get_npc_by_id(npcId)
 			if npc then 
 				return {data = npc.get_sync_data()}
 			end
@@ -19,21 +19,21 @@ local function new(api)
 		function(player, tbParam, fd)
 			print("save type", tbParam.type, tbParam.save_id)
 			if tbParam.type == "only_save" then 			-- 只存档
-				return api.server.save_mgr.save()
+				return api.center.save_mgr.save()
 			elseif tbParam.type == "cover" then				-- 覆盖存档
-				return api.server.save_mgr.cover_save(tbParam.save_id)
+				return api.center.save_mgr.cover_save(tbParam.save_id)
 			end
-			api.server.restart_before()
+			api.center.restart_before()
 			if tbParam.type == "load" then					-- 读档
-				api.server.save_mgr.load_save(tbParam.save_id)	
+				api.center.save_mgr.load_save(tbParam.save_id)	
 			elseif tbParam.type == "new_save" then 			-- 新建存档
-				api.server.save_mgr.new_save()
+				api.center.save_mgr.new_save()
 			elseif tbParam.type == "save_and_load" then 	-- 存档后马上读档（不写文件）
-				api.server.save_mgr.save_and_load()
+				api.center.save_mgr.save_and_load()
 			elseif tbParam.type == "load_last" then 		-- 读取最近一次存档
-				api.server.save_mgr.load_save_last()
+				api.center.save_mgr.load_save_last()
 			end
-			api.server.restart_after()
+			api.center.restart_after()
 		end)
 
 
@@ -49,7 +49,7 @@ local function new(api)
 	api.reg_center_rpc(api.rpc_apply_region, 
 		function(player, tbParam)
 			local regionId = tbParam.region_id
-			local region = api.server.main_world.get_or_create_region(regionId)
+			local region = api.center.main_world.get_or_create_region(regionId)
 			if region then 
 				region.add_player(player)
 				return {regionId = regionId, data = region.get_sync_data()}	
@@ -70,7 +70,7 @@ local function new(api)
 	api.reg_center_rpc(api.rpc_exit_region, 
 		function(player, tbParam)
 			for _, regionId in ipairs(tbParam.list) do 
-				local region = api.server.main_world.get_region(regionId)
+				local region = api.center.main_world.get_region(regionId)
 				if region then 
 					region.remove_player(player)
 				end

@@ -2,16 +2,32 @@
 --- 服务器world
 --- 一个world由多个region组成
 ------------------------------------------------------
+local ltask = require "ltask"
+
 ---@param center sims.s.center
 local function new(center)
 	---@class sims.server.world
 	---@field id number 唯一id
 	---@field tpl_id number 模板id
-	local api = {}
+	---@field regions map<number, sims.server.region> 区域列表
+	---@field addrWorld number world移动服务
+	local api = {regions = {}}
+	api.classes = {}
+
+	function api.destroy()
+		if api.addrWorld then
+			ltask.send(api.addrWorld, "shutdown")
+			api.addrWorld = nil
+		end
+	end
 
 	function api.init(id, tpl_id)
+		api.addrWorld = ltask.spawn("sims.s.03.world|entry", ltask.self())
+
 		api.id = id
 		api.tpl_id = id
+		api.classes = {}
+		api.regions = {}
 
 		---@param map_data sims.file_map_list.line
 		local function load_map(map_data)
@@ -38,12 +54,12 @@ local function new(center)
 							params.world_id = api.id
 							params.pos_x, params.pos_y, params.pos_z = x, y, z
 						
-							local npc = server.npc_mgr.create_npc(params)
-							local regionId = define.world_pos_to_region_id(npc.pos_x, npc.pos_y, npc.pos_z)
+							local npc = center.npc_mgr.create_npc(params)
+							local regionId = center.define.world_pos_to_region_id(npc.pos_x, npc.pos_y, npc.pos_z)
 							region = api.get_or_create_region(regionId)
 							region.add_npc(npc)
 						else
-							local regionId = define.world_pos_to_region_id(x, y, z)
+							local regionId = center.define.world_pos_to_region_id(x, y, z)
 							region = api.get_or_create_region(regionId)
 							local data = region.add_grid(x, y, z, grid)
 							if def.className and def.className ~= "" then 
@@ -82,7 +98,7 @@ local function new(center)
 			npc.pos_y = grid[2];
 			npc.pos_z = grid[3];
 		end
-		local region_id = define.world_pos_to_region_id(npc.pos_x, npc.pos_y, npc.pos_z)
+		local region_id = center.define.world_pos_to_region_id(npc.pos_x, npc.pos_y, npc.pos_z)
 		local region = api.get_region(region_id)
 		assert(region)
 		region.add_npc(npc)
@@ -110,9 +126,9 @@ local function new(center)
 	function api.get_or_create_region(regionId)
 		local region = api.regions[regionId] 
 		if not region then 
-			region = require 'world.region'.new(api, server)
+			region = require 'world.region'.new(api, center)
 			region.id = regionId
-			local x, y, z = define.region_id_to_world_pos(regionId)
+			local x, y, z = center.define.region_id_to_world_pos(regionId)
 			local start = {x = x , y = y, z = z}
 			region.init(regionId, start)
 			api.regions[regionId] = region

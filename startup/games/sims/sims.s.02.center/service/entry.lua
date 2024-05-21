@@ -3,9 +3,7 @@
 --- 服务器数据中心，其他服务都来这里存取数据
 --- 本服务还负责处理存档/读档
 ------------------------------------------------------
-SServer = ...
 local ltask = require "ltask"
-local quit
 
 ---@type sims.s.center
 local center = require 'center'.new()
@@ -35,8 +33,6 @@ end
 
 function S.shutdown()
 	center.shutdown()
-	quit = {}
-    ltask.wait(quit)
     ltask.quit()
 end
 

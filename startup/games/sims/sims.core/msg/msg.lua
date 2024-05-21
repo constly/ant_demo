@@ -14,14 +14,12 @@ local function new()
 	local api = {tb_s2c = {}, tb_rpc = {}} 		
 
 	api.client = nil 				---@type sims.client
-	api.server = nil 				---@type sims.server
 	api.gate = nil					---@type sims.s.gate
 	api.center = nil				---@type sims.s.center
 
 	api.type_client = 1
 	api.type_gate = 2
 	api.type_center = 3
-	api.type_old_server = 9
 
 	--- 客户端到gate
 	api.rpc_client_to_gate_login 				= 1101   	-- 客户端登录到gate
@@ -65,7 +63,6 @@ local function new()
 		reg_rpc = nil
 		reg_s2c = nil
 		api.client = nil
-		api.server = nil
 		api.gate = nil
 		api.center = nil
 	end
@@ -101,8 +98,8 @@ local function new()
 		elseif type == api.type_center then
 			api.center = outer
 
-		elseif type == api.type_old_server then
-			api.server = outer
+		else 
+			assert(false, string.format("无限的msg type = %s", type))
 		end
 	end
 

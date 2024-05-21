@@ -160,6 +160,36 @@ local function new(center)
 		end
 	end
 
+	--------------------------------------------------
+	-- 同步
+	--------------------------------------------------
+	function api.notify_restart()
+		api.refresh_members()
+		for i, v in ipairs(api.players) do 
+			api.send_to_client(v.fd, center.msg.s2c_restart, {pos = {x = v.npc.pos_x, y = v.npc.pos_y, z = v.npc.pos_z}})
+		end
+	end
+
+	function api.refresh_members()
+		local players = {}
+		for i, v in ipairs(api.players) do 
+			---@type sims.client_player
+			local p = {}
+			p.id = v.id
+			p.map_id = v.map_id
+			p.name = v.name
+			p.is_online = v.is_online
+			p.is_local = v.is_local
+			p.is_leader = v.is_leader
+			p.npc_id = v.npc.id
+			table.insert(players, p)
+		end
+
+		for i, v in ipairs(api.players) do 
+			api.send_to_client(v.fd, center.msg.s2c_room_members, players)
+		end
+	end
+
 	return api
 end
 

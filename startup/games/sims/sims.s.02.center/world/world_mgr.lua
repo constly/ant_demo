@@ -8,6 +8,13 @@ local function new(center)
 	local next_id = 0;
 	api.worlds = {}  ---@type map<number, sims.server.world>
 
+	function api.shutdown()
+		for i, world in pairs(api.worlds) do 
+			world.destroy()
+		end
+		api.worlds = {}
+	end
+
 	function api.to_save_data()
 		local tbData = {}
 		return tbData

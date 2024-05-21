@@ -38,7 +38,7 @@ local function new(server)
 				local pack = string.pack("<s2", seri.packstring(1, cmd, ret))
 				net.send(client_fd, pack);
 			elseif client_fd == 0 then
-				ltask.send(ServiceWindow, "exec_richman_client_rpc", cmd, ret)
+				ltask.send(ServiceWindow, "exec_sims_client_rpc", cmd, ret)
 			end 
 		end 
 	end
@@ -104,7 +104,7 @@ local function new(server)
 			local pack = string.pack("<s2", seri.packstring(2, cmd, tbParam))
 			net.send(fd, pack);
 		elseif fd == 0 then 
-			ltask.send(ServiceWindow, "exec_richman_client_s2c", cmd, tbParam)
+			ltask.send(ServiceWindow, "exec_sims_client_s2c", cmd, tbParam)
 		end
 	end
 

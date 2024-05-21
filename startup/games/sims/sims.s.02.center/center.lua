@@ -23,6 +23,7 @@ local function new()
 		api.save_mgr.saved_root = tbParam.save_root
 		api.tbParam = tbParam
 		api.msg.init(api.msg.type_center, api)
+
 		api.restart_before()
 		api.save_mgr.load_save_last()
 		api.restart_after()
@@ -31,21 +32,17 @@ local function new()
 	function api.restart_before()
 		---@type sims.core.loader.param
 		local tbParam = {}
-		tbParam.path_map_list = api.start_param.scene
+		tbParam.path_map_list = api.tbParam.scene
 		api.loader.restart(tbParam)
 	end
 
 	function api.restart_after()
-		api.room.notify_restart()
-	end
-
-	function api.restart()
-		api.world_mgr.load_from_save()
-		api.npc_mgr.load_from_save()
-		api.player_mgr.load_from_save()
+		api.player_mgr.notify_restart()
 	end
 
 	function api.shutdown()
+		api.world_mgr.shutdown()
+		print("close sims center")
 	end
 
 	return api

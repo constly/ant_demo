@@ -41,10 +41,10 @@ local function new(ecs)
 	local function init()
 		-- 扩展服务通信接口
 		S = ltask.dispatch {}
-		function S.exec_richman_client_rpc(cmd, tbParam)  
+		function S.exec_sims_client_rpc(cmd, tbParam)  
 			table.insert(tb_msg, {type = "rpc", cmd = cmd, param = tbParam})
 		end
-		function S.exec_richman_client_s2c(cmd, tbParam)
+		function S.exec_sims_client_s2c(cmd, tbParam)
 			table.insert(tb_msg, {type = "s2c", cmd = cmd, param = tbParam})
 		end
 		api.msg.init(api.msg.type_client, api)
@@ -62,8 +62,8 @@ local function new(ecs)
 
 	function api.shutdown()
 		api.statemachine.shutdown()
-		S.exec_richman_client_rpc = nil
-		S.exec_richman_client_s2c = nil
+		S.exec_sims_client_rpc = nil
+		S.exec_sims_client_s2c = nil
 		api.destroy_room()
 		api.editor.exit()
 	end
@@ -89,7 +89,7 @@ local function new(ecs)
 	---@param scene sims.client.create_room.scene 场景详情
 	function api.create_room(scene_path, scene)
 		api.destroy_room()
-		api.serviceId = ltask.spawn("sims.s.01.main|entry", ltask.self())
+		api.serviceId = ltask.spawn("sims.s.01.gate|entry", ltask.self())
 		local package_handler = game_core.create_package_handler(common.path_def.project_root)
 		local root_path = __ANT_RUNTIME__ and common.path_def.cache_root or package_handler.get_pkg_path("sims.res")
 		assert(root_path, "编辑器下走sims.res包, 运行时走cache目录")
