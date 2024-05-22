@@ -42,6 +42,24 @@ function S.dispatch_netmsg(cmd, tbParams)
 	gate.net_mgr.dispatch_rpc(0, cmd, tbParams)
 end 
 
+--- 通知玩家所在world_id
+function S.notify_player_world_id(player_id, world_id)
+	local p = gate.player_mgr.find_by_id(player_id)
+	if p then 
+		p.world_id = world_id
+	end
+end
+
+--- 通知world所在的serverId
+function S.notify_world_server_id(world_id, server_id)
+	gate.world_2_server[world_id] = server_id
+end
+
+function S.send_to_player(player_id, cmd, tbParam)
+	local p = gate.player_mgr.find_by_id(player_id)
+	gate.net_mgr.send_to_client(p.fd, cmd, tbParam)
+end
+
 --- 关闭服务器
 function S.shutdown()
 	gate.shutdown()

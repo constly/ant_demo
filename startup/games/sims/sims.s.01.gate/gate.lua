@@ -13,6 +13,7 @@ local function new()
 	api.player_mgr = require 'net.player_mgr'.new()			---@type sims.s.gate.player_mgr
 	api.net_mgr = require 'net.net_mgr'.new(api)			---@type sims.s.net_mgr
 	api.msg = core.new_msg()
+	api.world_2_server = {}
 
 	local broadcast
 	local broadcast_msg
@@ -56,6 +57,7 @@ local function new()
 		if broadcast then
 			broadcast:send(broadcast_msg) 
 		end
+		ltask.send(api.addrCenter, "update", totalTime, deltaSecond)	
 	end
 
 	return api

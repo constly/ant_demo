@@ -4,14 +4,14 @@ local lib = common.lib
 
 
 ---@param world sims.server.world 所属世界
----@param center sims.s.center
-local function new(world, center)
+---@param server sims.s.server
+local function new(world, server)
 	---@class sims.server.region
 	---@field id number 唯一id
 	---@field start vec3 区域起点
 	---@field npcs sims.server.npc[] 区域中npc列表
 	---@field grids map<number, number> 区域中格子列表:index -> 格子模板id 
-	---@field notify_players sims.server_player[] 区域数据变化时，需要通知的玩家列表
+	---@field notify_players number[] 区域数据变化时，需要通知的玩家列表
 	local api = {}
 	api.npcs = {}
 	api.grids = {}
@@ -53,24 +53,24 @@ local function new(world, center)
 		local offset_x = x - api.start.x
 		local offset_y = (y - api.start.y) * 2
 		local offset_z = z - api.start.z
-		local idx = center.define.region_offset_to_index(offset_x, offset_y, offset_z)
+		local idx = server.define.region_offset_to_index(offset_x, offset_y, offset_z)
 		api.grids[idx] = gridTpl.tpl
 	end
 
-	---@param player sims.server_player 玩家对象
-	function api.add_player(player)
+	---@param player_id number 玩家id
+	function api.add_player(player_id)
 		for i, p in ipairs(api.notify_players) do 
-			if p == player then 
+			if p == player_id then 
 				return
 			end
 		end
-		table.insert(api.notify_players, player)
+		table.insert(api.notify_players, player_id)
 	end
 
-	---@param player sims.server_player 玩家对象
-	function api.remove_player(player)
+	---@param player_id number 玩家对象
+	function api.remove_player(player_id)
 		for i, p in ipairs(api.notify_players) do 
-			if p == player then 
+			if p == player_id then 
 				table.remove(api.notify_players, i)
 				break
 			end

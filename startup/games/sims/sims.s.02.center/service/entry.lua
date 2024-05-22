@@ -41,5 +41,17 @@ function S.notify_player_offline(fd)
 	center.player_mgr.notify_player_offline(fd)
 end
 
+---@param totalTime number 服务器运行总时间
+---@param deltaSecond number 本帧间隔，单位秒
+function S.update(totalTime, deltaSecond)
+	center.service_mgr.update(totalTime, deltaSecond)
+end
+
+---@param tbParam sims.server.npc.create_param
+---@return sims.s.server.npc
+function S.apply_create_npc(tbParam)
+	local npc = center.npc_mgr.create_npc(tbParam)
+	return npc.get_sync_server()
+end
 
 return S;

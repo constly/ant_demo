@@ -16,10 +16,12 @@ local function new()
 	api.client = nil 				---@type sims.client
 	api.gate = nil					---@type sims.s.gate
 	api.center = nil				---@type sims.s.center
+	api.world = nil					---@type sims.s.world.world
 
 	api.type_client = 1
 	api.type_gate = 2
 	api.type_center = 3
+	api.type_world = 4
 
 	--- 客户端到gate
 	api.rpc_client_to_gate_login 				= 1101   	-- 客户端登录到gate
@@ -65,6 +67,7 @@ local function new()
 		api.client = nil
 		api.gate = nil
 		api.center = nil
+		api.world = nil
 	end
 
 	--- 注册rpc
@@ -84,7 +87,7 @@ local function new()
 
 	--- 初始化
 	function api.init(type, outer)
-		require 'msg.msg_npc'.new(api)
+		require 'msg.client_to_world'.new(api)
 		require 'msg.client_to_gate'.new(api)
 		require 'msg.client_to_center'.new(api)
 
@@ -94,10 +97,10 @@ local function new()
 
 		elseif type == api.type_gate then 
 			api.gate = outer
-
 		elseif type == api.type_center then
 			api.center = outer
-
+		elseif type == api.type_world then
+			api.world = outer
 		else 
 			assert(false, string.format("无限的msg type = %s", type))
 		end

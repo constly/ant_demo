@@ -4,6 +4,7 @@ local function new_player()
 	---@field is_online boolean 是否在线
 	---@field guid string 客户端唯一编号
 	---@field id number 玩家唯一id
+	---@field world_id number 所在world_id
 	local api = {}
 
 	return api
@@ -15,6 +16,8 @@ local function new()
 	api.players = {}  ---@type map<number, sims.s.gate.player>	
 	api.next_id = 0
 
+	local cache_id_to_player = {}
+
 	function api.create(guid, fd)
 		local p = api.find_by_guid(guid)
 		if not p then 
@@ -25,12 +28,17 @@ local function new()
 			p.fd = fd
 			p.id = api.next_id
 			api.players[fd] = p
+			cache_id_to_player[p.id] = p
 		end
 		return p
 	end
 
 	function api.find_by_fd(fd)
 		return api.players[fd]
+	end
+
+	function api.find_by_id(id)
+		return cache_id_to_player[id]
 	end
 
 	function api.find_by_guid(guid)

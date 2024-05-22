@@ -6,7 +6,7 @@ local function new(center)
 	---@class sims.server.world_mgr
 	local api = {}
 	local next_id = 0;
-	api.worlds = {}  ---@type map<number, sims.server.world>
+	api.worlds = {}  		---@type map<number, sims.server.world>
 
 	function api.shutdown()
 		for i, world in pairs(api.worlds) do 

@@ -8,7 +8,8 @@ local function new(center)
 	---@class sims.server.player_mgr
 	local api = {} 	
 	api.players = {} ---@type sims.s.server_player[]
-
+	local next_id = 0
+	
 	--------------------------------------------------
 	-- 存档 和 读档
 	--------------------------------------------------
@@ -108,7 +109,7 @@ local function new(center)
 		player.npc = center.npc_mgr.create_player_npc(player) 
 		player.world_id = 1
 		table.insert(api.players, player)
-		
+		center.send_to_gate("notify_player_world_id", player.id, player.world_id)
 		print("add player", id, guid)
 		return player;
 	end
