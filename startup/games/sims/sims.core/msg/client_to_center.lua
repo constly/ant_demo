@@ -36,46 +36,6 @@ local function new(api)
 			api.center.restart_after()
 		end)
 
-
-	api.reg_center_rpc(api.rpc_set_move_dir, 
-		function(player, tbParam)
-			---@type sims.server_player
-			local p = player
-			p.move_dir = tbParam.dir
-		end)
-
-
-	-- 进入区域
-	api.reg_center_rpc(api.rpc_apply_region, 
-		function(player, tbParam)
-			local regionId = tbParam.region_id
-			local region = api.center.main_world.get_or_create_region(regionId)
-			if region then 
-				region.add_player(player)
-				return {regionId = regionId, data = region.get_sync_data()}	
-			end
-			return {regionId = regionId}
-		end, 
-		function(tbParam)
-			local region = api.client.client_world.get_region(tbParam.regionId)
-			if region then 
-				region.set_data(tbParam.data)
-			else 
-				api.client.call_server(api.client.msg.rpc_exit_region, {list = {tbParam.regionId}})
-			end
-		end)
-
-
-	-- 退出区域
-	api.reg_center_rpc(api.rpc_exit_region, 
-		function(player, tbParam)
-			for _, regionId in ipairs(tbParam.list) do 
-				local region = api.center.main_world.get_region(regionId)
-				if region then 
-					region.remove_player(player)
-				end
-			end
-		end)
 end
 
 return {new = new}

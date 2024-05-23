@@ -14,7 +14,7 @@ local function new(client)
 		api.npcs = {}
 	end
 
-	---@param syncNpc sims.server.npc.s	ync
+	---@param syncNpc sims.server.npc.sync
 	function api.create_npc(syncNpc)
 		local npc = api.npcs[syncNpc.id]
 		if not npc then

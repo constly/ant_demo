@@ -21,6 +21,7 @@ local function new(server)
 		npc.pos_x = tbParam.pos_x;
 		npc.pos_y = tbParam.pos_y
 		npc.pos_z = tbParam.pos_z
+		npc.tplId = tbParam.tplId
 		api.npcs[npc.id] = npc
 	end
 

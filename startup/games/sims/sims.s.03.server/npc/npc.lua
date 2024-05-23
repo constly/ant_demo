@@ -3,12 +3,13 @@
 local function new(mgr, server)
 	---@class sims.s.server.npc
 	---@field id number 唯一id
+	---@field tplId number 模板id
 	---@field player_id number 所属玩家id
 	---@field pos_x number 位置x
 	---@field pos_y number 位置y
 	---@field pos_z number 位置z
 	---@field world sims.s.world.world 所属world
-	local api = {}
+	local api = {move_dir = {}, inner_move_dir = {}}
 
 	function api.tick(delta_time)
 		local speed = 4
@@ -59,6 +60,21 @@ local function new(mgr, server)
 		for i, player_id in ipairs(region.notify_players) do 
 			server.send_to_player(player_id, cmd, tbParam)
 		end
+	end
+
+	--- 得到同步到客户端的数据
+	function api.get_sync_data()
+		---@type sims.server.npc.sync
+		local npc = {}
+		npc.id = api.id
+		npc.tplId = api.tplId
+		npc.world_id = api.world_id
+		npc.pos_x = api.pos_x
+		npc.pos_y = api.pos_y
+		npc.pos_z = api.pos_z
+		npc.dir_x = api.dir_x
+		npc.dir_z = api.dir_z
+		return npc
 	end
 
 	return api

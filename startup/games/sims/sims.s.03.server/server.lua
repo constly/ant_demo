@@ -14,15 +14,24 @@ local function new()
 	api.define = core.define
 	api.npc_mgr = require 'npc.npc_mgr'.new(api)
 
+	--- 这里的msg暂时是为了npc.lua中的move同步
+	api.msg = core.new_msg()
+
 	---@param tbParam sims.server.start.params
 	function api.start(tbParam)
 		api.addrGate = tbParam.addrGate
 		api.addrCenter = tbParam.addrCenter
+
+		---@type sims.core.loader.param
+		local loaderParam = {}
+		loaderParam.path_map_list = tbParam.scene
+		api.loader.restart(loaderParam)
 	end 
 
 	--- 创建world
 	---@param tbParam sims.server.create_world_params
 	function api.create_world(tbParam)
+		---@type sims.s.world.world
 		local world = require 'world.world'.new(api)
 		world.start(tbParam)
 		api.worlds[tbParam.id] = world

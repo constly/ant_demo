@@ -9,7 +9,7 @@ local function new(api)
 			player.is_online = true
 
 			local world = api.center.world_mgr.get_world(player.world_id)
-			assert(world, string.format("登录到center失败, world_id = %s", player.world_id))
+			assert(world, string.format("登录到center失败, world is nil, world_id = %s", player.world_id))
 			local ret = world.on_login(player)
 			return {id = player.id, pos = {x = ret.pos_x, y = ret.pos_y, z = ret.pos_z}}
 		end,

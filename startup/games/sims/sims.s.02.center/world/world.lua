@@ -23,7 +23,7 @@ local function new(center)
 		api.id = id
 		api.tpl_id = id		
 		api.addrServer = center.service_mgr.alloc_server()
-		ltask.send(api.addrServer, "start", center.tbParam)
+		ltask.call(api.addrServer, "start", center.tbParam)
 
 		---@type sims.server.create_world_params
 		local tbParams = {}

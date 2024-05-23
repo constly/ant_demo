@@ -78,6 +78,7 @@ local function new()
 	
 	function api.reg_gate_rpc(cmd, server_cb, client_cb) api.reg_rpc(api.type_gate, cmd, server_cb, client_cb) end
 	function api.reg_center_rpc(cmd, server_cb, client_cb) api.reg_rpc(api.type_center, cmd, server_cb, client_cb) end
+	function api.reg_world_rpc(cmd, server_cb, client_cb) api.reg_rpc(api.type_world, cmd, server_cb, client_cb) end
 
 	--- 注册协议
 	function api.reg_s2c(cmd, cb)

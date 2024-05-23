@@ -50,4 +50,17 @@ function S.update(totalTime, deltaSecond)
 	server.npc_mgr.tick(totalTime, deltaSecond)
 end
 
+function S.dispatch_rpc(client_fd, player_id, world_id, cmd, tbParam)
+	local world = server.get_world(world_id)
+	local msg = world.msg
+	local rpc = msg.tb_rpc[cmd]
+	if not rpc or rpc.type ~= msg.type_world then 
+		return log.error("消息转发异常, 不应该发到world处理, cmd = ", cmd)
+	end
+	local ret = rpc.server(player_id, tbParam)
+	if ret then
+		ltask.send(server.addrGate, "dispatch_rpc_rsp", client_fd, cmd, ret)
+	end 
+end
+
 return S;

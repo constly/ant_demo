@@ -24,13 +24,14 @@ local function new()
 		api.addrCenter = ltask.spawn("sims.s.02.center|entry", ltask.self())
 		tbParam.addrCenter = api.addrCenter
 		tbParam.addrGate = ltask.self()
-		ltask.send(api.addrCenter, "start", tbParam)
+		ltask.call(api.addrCenter, "start", tbParam)
 
 		api.msg.init(api.msg.type_gate, api)
 		api.net_mgr.start(tbParam.ip, tbParam.port)
 		local tb = api.player_mgr.create(tbParam.leader_guid, 0)
 		tb.is_leader = true 
 		tb.is_local = true
+		ltask.send(api.addrCenter, "dispatch_rpc", 0, tb.id, api.rpc_gate_to_center_login, {id = tb.id, guid = tb.guid})
 
 		assert(not broadcast)
 		broadcast = ly_net.CreateBroadCast()
@@ -54,9 +55,9 @@ local function new()
 	---@param totalTime number 服务器运行总时间
 	---@param deltaSecond number 本帧间隔，单位秒
 	function api.update(totalTime, deltaSecond)
-		if broadcast then
-			broadcast:send(broadcast_msg) 
-		end
+		if not api.addrCenter or not broadcast then return end 
+
+		broadcast:send(broadcast_msg) 
 		ltask.send(api.addrCenter, "update", totalTime, deltaSecond)	
 	end
 

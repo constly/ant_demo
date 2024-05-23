@@ -1,6 +1,7 @@
 ---@type sims.core
 local core = import_package 'sims.core'
 local ltask = require "ltask"
+local region_alloc = require 'world.region'.new
 
 ---@param server sims.s.server
 local function new(server)
@@ -126,7 +127,7 @@ local function new(server)
 	function api.get_or_create_region(regionId)
 		local region = api.regions[regionId] 
 		if not region then 
-			region = require 'world.region'.new(api, server)
+			region = region_alloc(api, server)
 			region.id = regionId
 			local x, y, z = server.define.region_id_to_world_pos(regionId)
 			local start = {x = x , y = y, z = z}
