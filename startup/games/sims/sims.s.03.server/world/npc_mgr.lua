@@ -1,7 +1,8 @@
-local npc_alloc = require 'npc.npc'.new
+local npc_alloc = require 'world.npc'.new
 
 ---@param server sims.s.server
-local function new(server)
+---@param world sims.s.world.world
+local function new(world, server)
 	---@class sims.s.server.npc_mgr
 	---@field npcs map<number, sims.s.server.npc>
 	local api = {npcs = {}}

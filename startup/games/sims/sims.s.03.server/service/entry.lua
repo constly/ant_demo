@@ -38,16 +38,20 @@ function S.get_world_save_data(world_id)
 end
 
 --- 通知创建npc
+---@param world_id number 世界id
 ---@param list sims.s.server.npc[]
-function S.notfiy_create_npc(list)
+function S.notfiy_create_npc(world_id, list)
+	local world = server.get_world(world_id)
 	for i, v in ipairs(list) do 
-		server.npc_mgr.create_npc(v)
+		world.npc_mgr.create_npc(v)
 	end
 end
 
 --- 每帧更新
 function S.update(totalTime, deltaSecond)
-	server.npc_mgr.tick(totalTime, deltaSecond)
+	for i, w in pairs(server.worlds) do 
+		w.npc_mgr.tick(totalTime, deltaSecond)
+	end
 end
 
 function S.dispatch_rpc(client_fd, player_id, world_id, cmd, tbParam)

@@ -2,6 +2,7 @@
 local core = import_package 'sims.core'
 local ltask = require "ltask"
 local region_alloc = require 'world.region'.new
+local npc_mgr_alloc = require 'world.npc_mgr'.new
 
 ---@param server sims.s.server
 local function new(server)
@@ -9,9 +10,11 @@ local function new(server)
 	---@field id number
 	---@field tpl_id number
 	---@field regions map<number, sims.server.region> 区域列表
+	---@field npc_mgr sims.s.server.npc_mgr
 	local api = {classes = {}, regions = {}}
 
 	api.msg = core.new_msg()
+	api.npc_mgr = npc_mgr_alloc(api, server)
 
 	function api.get_save_data()
 		local data = {}
@@ -52,7 +55,7 @@ local function new(server)
 							params.pos_x, params.pos_y, params.pos_z = x, y, z
 						
 							local ret = ltask.call(server.addrCenter, "apply_create_npc", params)
-							local npc = server.npc_mgr.create_npc(ret)
+							local npc = api.npc_mgr.create_npc(ret)
 							local regionId = server.define.world_pos_to_region_id(npc.pos_x, npc.pos_y, npc.pos_z)
 							region = api.get_or_create_region(regionId)
 							region.add_npc(npc)
@@ -84,7 +87,7 @@ local function new(server)
 
 	---@param params sims.server.login.param
 	function api.on_login(params)
-		local npc = server.npc_mgr.get_npc(params.npc_id)
+		local npc = api.npc_mgr.get_npc(params.npc_id)
 		assert(npc)
 		local grid = api.get_first_gird_by_className("born")
 		assert(grid)

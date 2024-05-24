@@ -5,14 +5,12 @@ local ltask = require "ltask"
 local function new()
 	---@class sims.s.server
 	---@field worlds map<number, sims.s.world.world>
-	---@field npc_mgr sims.s.server.npc_mgr
 	---@field addrGate number
 	---@field addrCenter number
 	local api = {worlds = {}}
 	
 	api.loader = core.new_loader()
 	api.define = core.define
-	api.npc_mgr = require 'npc.npc_mgr'.new(api)
 
 	--- 这里的msg暂时是为了npc.lua中的move同步
 	api.msg = core.new_msg()

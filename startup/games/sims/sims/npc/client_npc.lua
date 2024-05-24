@@ -27,6 +27,7 @@ local function new(client)
 		local cfg = client.loader.npcs.get_by_id(syncNpc.tplId)
 		assert(cfg, string.format("npc 模板id 不存在: %s", syncNpc.tplId or "unknown"))
 		assert(cfg.model, string.format("npc=%d 未配置模型", syncNpc.tplId))
+		assert(syncNpc.pos_x and syncNpc.pos_y and syncNpc.pos_z)
 		print(string.format("create npc id:%d pos:%s %s %s dir:%s %s", syncNpc.id, syncNpc.pos_x, syncNpc.pos_y, syncNpc.pos_z, syncNpc.dir_x, syncNpc.dir_z))
 
 		aync_instance(function(async)

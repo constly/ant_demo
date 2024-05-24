@@ -39,7 +39,7 @@ local function new(center)
 		
 		---@class sims.s.server.npc
 		local tbNpc = npc.get_sync_server()
-		ltask.send(api.addrServer, "notfiy_create_npc", {tbNpc})
+		ltask.send(api.addrServer, "notfiy_create_npc", api.id, {tbNpc})
 
 		---@type sims.server.login.param
 		local tbParam = {}

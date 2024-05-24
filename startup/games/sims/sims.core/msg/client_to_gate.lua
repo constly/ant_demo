@@ -11,6 +11,7 @@ local function new(api)
 			local world = api.center.world_mgr.get_world(player.world_id)
 			assert(world, string.format("登录到center失败, world is nil, world_id = %s", player.world_id))
 			local ret = world.on_login(player)
+			print(string.format("login ret, player_id = %d, pos={%s, %s, %s} ", player.id, ret.pos_x, ret.pos_y, ret.pos_z))
 			return {id = player.id, pos = {x = ret.pos_x, y = ret.pos_y, z = ret.pos_z}}
 		end,
 		function(tbParam)								--- 客户端执行
