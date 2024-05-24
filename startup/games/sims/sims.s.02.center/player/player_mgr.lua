@@ -187,7 +187,7 @@ local function new(center)
 		end
 
 		for i, v in ipairs(api.players) do 
-			api.send_to_client(v.fd, center.msg.s2c_room_members, players)
+			center.send_to_gate("send_to_player", v.id, center.msg.s2c_room_members, players)
 		end
 	end
 

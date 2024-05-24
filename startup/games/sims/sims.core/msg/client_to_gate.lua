@@ -7,6 +7,10 @@ local function new(api)
 		function(player, tbParam)
 			local player = player or api.center.player_mgr.add_player(tbParam.id, tbParam.guid) ---@type sims.s.server_player
 			player.is_online = true
+			player.is_leader = tbParam.is_leader
+			player.is_local = tbParam.is_local
+
+			api.center.player_mgr.refresh_members()
 
 			local world = api.center.world_mgr.get_world(player.world_id)
 			assert(world, string.format("登录到center失败, world is nil, world_id = %s", player.world_id))

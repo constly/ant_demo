@@ -35,8 +35,6 @@ local function new()
 	--- center到客户端
 	api.center_to_client_notify_players 		= 4101
 
-	
-
 
 	--- 客户端全是rpc（服务器可以不返回）
 	api.rpc_login = 1					-- 登录

@@ -39,12 +39,24 @@ local function new(api)
 		end
 	end)
 
+	api.reg_world_rpc(api.rpc_apply_npc_data, 
+		function(player_id, tbParam)
+			local npcId = tbParam.id
+			local npc = api.world.npc_mgr.get_npc(npcId)
+			if npc then 
+				return {data = npc.get_sync_data()}
+			end
+		end, 
+		function(tbParam)
+			api.client.npc_mgr.create_npc(tbParam.data)
+		end)
+
 
 	api.reg_world_rpc(api.rpc_set_move_dir, 
 		function(player_id, tbParam)
-			---@type sims.server_player
-			local p = player
-			p.move_dir = tbParam.dir
+			local npc = api.world.npc_mgr.get_player_npc(player_id)
+			npc.move_dir = tbParam.dir
+			print("set move dir", tbParam.dir.x, tbParam.dir.z)
 		end)
 
 

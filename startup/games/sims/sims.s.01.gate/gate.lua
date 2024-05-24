@@ -31,7 +31,7 @@ local function new()
 		local tb = api.player_mgr.create(tbParam.leader_guid, 0)
 		tb.is_leader = true 
 		tb.is_local = true
-		ltask.send(api.addrCenter, "dispatch_rpc", 0, tb.id, api.rpc_gate_to_center_login, {id = tb.id, guid = tb.guid})
+		ltask.send(api.addrCenter, "dispatch_rpc", 0, tb.id, api.rpc_gate_to_center_login, {id = tb.id, guid = tb.guid, is_leader = true, is_local = true})
 
 		assert(not broadcast)
 		broadcast = ly_net.CreateBroadCast()
