@@ -62,6 +62,21 @@ local function new(mgr, world, server)
 		end
 	end
 
+	---@return sims.server.npc.save_data
+	function api.get_save_data()
+		---@class sims.server.npc.save_data
+		---@field id number
+		---@field pos_x number
+		---@field pos_y number
+		---@field pos_z number
+		local npc = {}
+		npc.id = api.id
+		npc.pos_x = api.pos_x
+		npc.pos_y = api.pos_y
+		npc.pos_z = api.pos_z
+		return npc
+	end
+
 	--- 得到同步到客户端的数据
 	function api.get_sync_data()
 		---@type sims.server.npc.sync

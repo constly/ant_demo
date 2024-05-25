@@ -24,6 +24,7 @@ end
 ---@param tbParam sims.server.login.param 登录参数
 function S.login(tbParam)
 	local world = server.get_world(tbParam.world_id)
+	assert(world, string.format("can not find world, id = %d", tbParam.world_id))
 	return world.on_login(tbParam)
 end
 
@@ -65,6 +66,16 @@ function S.dispatch_rpc(client_fd, player_id, world_id, cmd, tbParam)
 	if ret then
 		ltask.send(server.addrGate, "dispatch_rpc_rsp", client_fd, cmd, ret)
 	end 
+end
+
+function S.save()
+	for i, w in pairs(server.worlds) do 
+		w.save()
+	end
+end 
+
+function S.clear()
+	server.worlds = {}
 end
 
 return S;

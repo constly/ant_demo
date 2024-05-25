@@ -14,6 +14,18 @@ local function new(center)
 		end
 	end	
 
+	function api.save()
+		for _, addr in ipairs(api.addrServers) do 
+			ltask.call(addr, "save")
+		end
+	end
+
+	function api.clear_all_data()
+		for _, addr in ipairs(api.addrServers) do 
+			ltask.call(addr, "clear")
+		end
+	end
+
 	function api.alloc_server()
 		local addr = ltask.spawn("sims.s.03.server|entry", ltask.self())
 		table.insert(api.addrServers, addr)

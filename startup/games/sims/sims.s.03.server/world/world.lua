@@ -16,9 +16,14 @@ local function new(server)
 	api.msg = core.new_msg()
 	api.npc_mgr = npc_mgr_alloc(api, server)
 
-	function api.get_save_data()
-		local data = {}
-		return data
+	function api.save()
+		---@class sims.server.world.save_data
+		---@field npcs map<number, sims.server.npc.save_data>
+		local data = {npcs = {}}
+		for id, v in pairs(api.npc_mgr.npcs) do 
+			data.npcs[id] = v.get_save_data()
+		end
+		ltask.call(server.addrCenter, "save_server_world", api.id, data)
 	end
 
 	---@param tbParam sims.server.create_world_params

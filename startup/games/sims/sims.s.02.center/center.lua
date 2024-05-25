@@ -18,9 +18,6 @@ local function new()
 	api.loader = core.new_loader()
 	api.define = core.define
 
-	-- 主world
-	api.main_world = nil	---@type sims.server.world
-
 	---@param tbParam sims.server.start.params
 	function api.start(tbParam)
 		api.addrGate = tbParam.addrGate

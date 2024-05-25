@@ -29,6 +29,8 @@ local function new(center)
 
 	--- 得到存档内容
 	function api.get_saved()
+		center.service_mgr.save()
+
 		---@type sims.save_data
 		local save_data = {}
 		save_data.npc_data = center.npc_mgr.to_save_data()
@@ -41,6 +43,8 @@ local function new(center)
 
 	--- 设置存档内容
 	function api.set_saved(content)
+		center.service_mgr.clear_all_data();
+		
 		---@type sims.save_data
 		local data = content and common.datalist.deserialize(content)
 		if not data or not data.npc_data then 

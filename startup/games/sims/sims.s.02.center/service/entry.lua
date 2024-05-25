@@ -54,4 +54,17 @@ function S.apply_create_npc(tbParam)
 	return npc.get_sync_server()
 end
 
+---@param world_id number 
+---@param tbParam sims.server.world.save_data
+function S.save_server_world(world_id, tbParam)
+	for id, v in pairs(tbParam.npcs) do 
+		local npc = center.npc_mgr.get_npc_by_id(id)
+		if npc then 
+			npc.pos_x = v.pos_x
+			npc.pos_y = v.pos_y
+			npc.pos_z = v.pos_z
+		end
+	end
+end
+
 return S;

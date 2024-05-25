@@ -6,12 +6,11 @@ local ltask = require "ltask"
 
 ---@param center sims.s.center
 local function new(center)
-	---@class sims.server.world
+	---@class sims.center.world
 	---@field id number 唯一id
 	---@field addrServer number 所在服务器地址
 	---@field tpl_id number 模板id
 	---@field regions map<number, sims.server.region> 区域列表
-	
 	local api = {}
 
 	function api.destroy()

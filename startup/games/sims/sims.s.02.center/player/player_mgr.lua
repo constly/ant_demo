@@ -84,7 +84,9 @@ local function new(center)
 			login_param.pos_x = player.npc.pos_x
 			login_param.pos_y = player.npc.pos_y
 			login_param.pos_z = player.npc.pos_z
-			center.main_world.on_login(player, login_param)
+
+			local world = center.world_mgr.get_world(player.world_id)
+			world.on_login(player, login_param)
 			table.insert(api.players, player)
 		end
 	end
