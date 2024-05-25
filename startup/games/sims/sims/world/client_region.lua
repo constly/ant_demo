@@ -58,6 +58,7 @@ local function new(client, client_world)
 					prefab = def.model .. "/mesh.prefab",
 					on_ready = function(e)
 						local eid = e.tag['*'][1]
+						assert(eid, string.format("failed to create create_instance, model = %s", def.model))
 						local ee<close> = ecs_world:entity(eid)
 						iom.set_position(ee, math3d.vector(x + api.start.x + 0.5, y * 0.5 + api.start.y, z + api.start.z + 0.5))
 						iom.set_scale(ee, def.scale)

@@ -22,7 +22,7 @@ local function new(world, server)
 	--- center通知创建npc
 	---@param tbParam sims.s.server.npc
 	function api.create_npc(tbParam)
-		local npc = npc_alloc(api, server)
+		local npc = npc_alloc(api, world, server)
 		npc.id = tbParam.id
 		npc.player_id = tbParam.player_id
 		npc.pos_x = tbParam.pos_x;

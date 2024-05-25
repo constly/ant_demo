@@ -56,7 +56,6 @@ local function new(api)
 		function(player_id, tbParam)
 			local npc = api.world.npc_mgr.get_player_npc(player_id)
 			npc.move_dir = tbParam.dir
-			print("set move dir", tbParam.dir.x, tbParam.dir.z)
 		end)
 
 

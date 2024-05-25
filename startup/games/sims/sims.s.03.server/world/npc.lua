@@ -1,6 +1,7 @@
 ---@param mgr sims.s.server.npc_mgr
+---@param world sims.s.world.world
 ---@param server sims.s.server
-local function new(mgr, server)
+local function new(mgr, world, server)
 	---@class sims.s.server.npc
 	---@field id number 唯一id
 	---@field tplId number 模板id
@@ -8,7 +9,6 @@ local function new(mgr, server)
 	---@field pos_x number 位置x
 	---@field pos_y number 位置y
 	---@field pos_z number 位置z
-	---@field world sims.s.world.world 所属world
 	local api = {move_dir = {}, inner_move_dir = {}}
 
 	function api.tick(delta_time)
@@ -33,7 +33,7 @@ local function new(mgr, server)
 				if cur_region then 
 					cur_region.remove_npc(api)
 				end
-				local region = api.world.get_or_create_region(region_id)
+				local region = world.get_or_create_region(region_id)
 				region.add_npc(api)
 				cur_region = region
 			end
@@ -68,7 +68,7 @@ local function new(mgr, server)
 		local npc = {}
 		npc.id = api.id
 		npc.tplId = api.tplId
-		npc.world_id = api.world_id
+		npc.world_id = world.id
 		npc.pos_x = api.pos_x
 		npc.pos_y = api.pos_y
 		npc.pos_z = api.pos_z
