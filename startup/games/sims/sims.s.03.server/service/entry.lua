@@ -5,9 +5,11 @@
 local ltask = require "ltask"
 local server = require 'server'.new()  ---@type sims.s.server
 local S = {}
+local isFree = false
 
 ---@param tbParam sims.server.start.params
 function S.start(tbParam)
+	isFree = false
 	server.start(tbParam)
 end
 
@@ -56,6 +58,10 @@ function S.update(totalTime, deltaSecond)
 end
 
 function S.dispatch_rpc(client_fd, player_id, world_id, cmd, tbParam)
+	if isFree then 
+		log.error(string.format("rpc调用异常: server 已经被释放, id = %d", ltask.self()))
+		return
+	end
 	local world = server.get_world(world_id)
 	local msg = world.msg
 	local rpc = msg.tb_rpc[cmd]
@@ -76,6 +82,7 @@ end
 
 function S.clear()
 	server.worlds = {}
+	isFree = true
 end
 
 return S;

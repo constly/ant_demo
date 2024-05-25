@@ -43,6 +43,7 @@ local function new()
 
 	function api.shutdown()
 		api.world_mgr.shutdown()
+		api.service_mgr.shutdown()
 		print("close sims center")
 	end
 

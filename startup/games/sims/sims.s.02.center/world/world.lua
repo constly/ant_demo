@@ -28,7 +28,7 @@ local function new(center)
 		local tbParams = {}
 		tbParams.id = id 
 		tbParams.tpl_id = tpl_id
-		ltask.send(api.addrServer, "create_world", tbParams)
+		ltask.call(api.addrServer, "create_world", tbParams)
 		center.send_to_gate("notify_world_server_id", api.id, api.addrServer)
 	end
 

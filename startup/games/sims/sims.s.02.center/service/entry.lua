@@ -63,6 +63,8 @@ function S.save_server_world(world_id, tbParam)
 			npc.pos_x = v.pos_x
 			npc.pos_y = v.pos_y
 			npc.pos_z = v.pos_z
+			npc.dir_x = v.dir_x
+			npc.dir_z = v.dir_z
 		end
 	end
 end

@@ -106,7 +106,7 @@ local function new(server)
 			npc.pos_z = grid[3];
 		end
 		local region_id = server.define.world_pos_to_region_id(npc.pos_x, npc.pos_y, npc.pos_z)
-		local region = api.get_region(region_id)
+		local region = api.get_or_create_region(region_id)
 		assert(region)
 		region.add_npc(npc)
 		if npc.player_id and npc.player_id > 0 then

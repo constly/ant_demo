@@ -93,6 +93,8 @@ local function new(center)
 		tbNpc.pos_y = api.pos_y
 		tbNpc.pos_z = api.pos_z
 		tbNpc.tplId = api.tplId
+		tbNpc.dir_x = api.dir_x
+		tbNpc.dir_z = api.dir_z
 		return tbNpc
 	end
 

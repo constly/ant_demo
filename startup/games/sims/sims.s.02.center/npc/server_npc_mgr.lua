@@ -8,6 +8,7 @@
 ---@field dir_y number 朝向y
 ---@field dir_z number 朝向z
 
+local npc_alloc = require 'npc.server_npc'.new
 
 ---@param center sims.s.center
 local function new(center)
@@ -73,7 +74,7 @@ local function new(center)
 	---@return sims.server.npc
 	---@param params sims.server.npc.create_param
 	function api.create_npc(params, npc_id)
-		local npc = require 'npc.server_npc'.new(center)
+		local npc = npc_alloc(center)
 		local id = npc_id
 		if not id then 
 			api.next_id = api.next_id + 1

@@ -77,6 +77,7 @@ local function new(center)
 			if not player.npc then 
 				player.npc = center.npc_mgr.create_player_npc(player)
 			end
+			player.npc.player = player
 
 			--- 登录参数
 			---@type sims.server.login.param
@@ -88,6 +89,7 @@ local function new(center)
 			local world = center.world_mgr.get_world(player.world_id)
 			world.on_login(player, login_param)
 			table.insert(api.players, player)
+			center.send_to_gate("notify_player_world_id", player.id, player.world_id)
 		end
 	end
 
@@ -169,7 +171,7 @@ local function new(center)
 	function api.notify_restart()
 		api.refresh_members()
 		for i, v in ipairs(api.players) do 
-			api.send_to_client(v.fd, center.msg.s2c_restart, {pos = {x = v.npc.pos_x, y = v.npc.pos_y, z = v.npc.pos_z}})
+			center.send_to_gate("send_to_player", v.id, center.msg.s2c_restart, {pos = {x = v.npc.pos_x, y = v.npc.pos_y, z = v.npc.pos_z}})
 		end
 	end
 

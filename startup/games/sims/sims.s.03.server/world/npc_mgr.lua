@@ -29,6 +29,8 @@ local function new(world, server)
 		npc.pos_y = tbParam.pos_y
 		npc.pos_z = tbParam.pos_z
 		npc.tplId = tbParam.tplId
+		npc.dir_x = tbParam.dir_x
+		npc.dir_z = tbParam.dir_z
 		api.npcs[npc.id] = npc
 		if tbParam.player_id and tbParam.player_id > 0 then 
 			api.player_npcs[tbParam.player_id] = npc

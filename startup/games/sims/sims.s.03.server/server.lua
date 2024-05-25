@@ -1,6 +1,7 @@
 ---@type sims.core
 local core = import_package 'sims.core'
 local ltask = require "ltask"
+local world_alloc = require 'world.world'.new
 
 local function new()
 	---@class sims.s.server
@@ -11,9 +12,6 @@ local function new()
 	
 	api.loader = core.new_loader()
 	api.define = core.define
-
-	--- 这里的msg暂时是为了npc.lua中的move同步
-	api.msg = core.new_msg()
 
 	---@param tbParam sims.server.start.params
 	function api.start(tbParam)
@@ -30,7 +28,7 @@ local function new()
 	---@param tbParam sims.server.create_world_params
 	function api.create_world(tbParam)
 		---@type sims.s.world.world
-		local world = require 'world.world'.new(api)
+		local world = world_alloc(api)
 		world.start(tbParam)
 		api.worlds[tbParam.id] = world
 	end 

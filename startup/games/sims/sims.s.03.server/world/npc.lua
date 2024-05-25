@@ -50,7 +50,7 @@ local function new(mgr, world, server)
 			param.dir = {_x or 0, _z or 0}
 			param.pos = {api.pos_x, api.pos_y, api.pos_z}
 			param.speed = speed
-			api.notify_region_players(cur_region, server.msg.s2c_npc_move, param)
+			api.notify_region_players(cur_region, world.msg.s2c_npc_move, param)
 		end
 	end
 
@@ -74,6 +74,8 @@ local function new(mgr, world, server)
 		npc.pos_x = api.pos_x
 		npc.pos_y = api.pos_y
 		npc.pos_z = api.pos_z
+		npc.dir_x = api.dir_x
+		npc.dir_z = api.dir_z
 		return npc
 	end
 
