@@ -48,10 +48,17 @@ local function move_lerp(e, move, delta_time, s, client_move_dir)
 	move_dir_z = move_dir_z * delta_time * s.speed
 
 	local add = math3d.vector(move_dir_x, 0, move_dir_z, 1)
-	local new_pos = math3d.add(c_pos, add)
+	local new_pos = math3d.tovalue(math3d.add(c_pos, add))
 	local dir = math3d.vector(-move_dir_x, 0, -move_dir_z)
 
-	iom.set_view(e, new_pos, dir)		
+	---@type sims.client
+	local client = world.client
+	local grid_x, grid_y, grid_z = client.define.world_pos_to_grid_pos(new_pos[1], client_pos[2], new_pos[3])
+	local height = client.client_world.c_world:GetGroundHeight(grid_x, grid_y + 5, grid_z)
+	if height and height ~= client.define.INVALID_NUM then 
+		new_pos = math3d.vector(new_pos[1], height * 0.5, new_pos[3])
+		iom.set_view(e, new_pos, dir)		
+	end
 	update_move_anim(e, true, move)
 end
 

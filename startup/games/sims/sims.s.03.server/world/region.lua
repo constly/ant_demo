@@ -2,8 +2,11 @@
 local common = import_package 'ly.common'
 local lib = common.lib
 
+---@type sims.world.main
+local sims_world = import_package 'sims.world'
+local grid_def = sims_world.get_grid_def()
 
----@param world sims.server.world 所属世界
+---@param world sims.s.world.world 所属世界
 ---@param server sims.s.server
 local function new(world, server)
 	---@class sims.server.region
@@ -49,12 +52,17 @@ local function new(world, server)
 
 	---@return sims.server.grid
 	---@param gridTpl chess_grid_tpl
-	function api.add_grid(x, y, z, gridTpl)
+	---@param def sims.grid_def.line
+	function api.add_grid(x, y, z, gridTpl, def)
 		local offset_x = x - api.start.x
 		local offset_y = (y - api.start.y) * 2
 		local offset_z = z - api.start.z
 		local idx = server.define.region_offset_to_index(offset_x, offset_y, offset_z)
 		api.grids[idx] = gridTpl.tpl
+
+		local grid_x, grid_y, grid_z = server.define.world_pos_to_grid_pos(x, y, z)
+		world.c_world:SetGridData(grid_x, grid_y, grid_z, 
+					def.size[1] or 1, def.size[2] or 1, def.size[3] or 1, grid_def.Under_Ground)
 	end
 
 	---@param player_id number 玩家id

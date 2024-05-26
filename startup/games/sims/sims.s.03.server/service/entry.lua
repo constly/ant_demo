@@ -74,13 +74,18 @@ function S.dispatch_rpc(client_fd, player_id, world_id, cmd, tbParam)
 	end 
 end
 
+--- 保存world数据
 function S.save()
 	for i, w in pairs(server.worlds) do 
 		w.save()
 	end
 end 
 
+--- 清空所有数据，等待下次复用
 function S.clear()
+	for i, v in pairs(server.worlds) do 
+		v.destroy()
+	end
 	server.worlds = {}
 	isFree = true
 end

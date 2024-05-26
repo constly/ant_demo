@@ -4,6 +4,10 @@ local ltask = require "ltask"
 local region_alloc = require 'world.region'.new
 local npc_mgr_alloc = require 'world.npc_mgr'.new
 
+---@type sims.world.main
+local sims_world = import_package 'sims.world'
+
+
 ---@param server sims.s.server
 local function new(server)
 	---@class sims.s.world.world
@@ -11,10 +15,12 @@ local function new(server)
 	---@field tpl_id number
 	---@field regions map<number, sims.server.region> 区域列表
 	---@field npc_mgr sims.s.server.npc_mgr
+	---@field c_world sims.world.c_world 
 	local api = {classes = {}, regions = {}}
 
 	api.msg = core.new_msg()
 	api.npc_mgr = npc_mgr_alloc(api, server)
+	api.c_world = sims_world.create_world()
 
 	function api.save()
 		---@class sims.server.world.save_data
@@ -67,7 +73,7 @@ local function new(server)
 						else
 							local regionId = server.define.world_pos_to_region_id(x, y, z)
 							region = api.get_or_create_region(regionId)
-							local data = region.add_grid(x, y, z, grid)
+							local data = region.add_grid(x, y, z, grid, def)
 							if def.className and def.className ~= "" then 
 								local list = api.classes[def.className] or {}
 								api.classes[def.className] = list
@@ -88,6 +94,7 @@ local function new(server)
 
 	function api.destroy()
 		print("destroy sims world")
+		api.c_world:Reset()
 	end
 
 	---@param params sims.server.login.param
@@ -149,6 +156,15 @@ local function new(server)
 	function api.get_first_gird_by_className(className)
 		local list = api.classes[className]
 		return list and list[1]
+	end
+
+	--- 得到世界坐标的高度
+	function api.get_ground_height(x, y, z)
+		local grid_x, grid_y, grid_z = server.define.world_pos_to_grid_pos(x, y, z)
+		local height = api.c_world:GetGroundHeight(grid_x, grid_y + 5, grid_z)
+		if height ~= server.define.INVALID_NUM then 
+			return height
+		end
 	end
 
 	return api

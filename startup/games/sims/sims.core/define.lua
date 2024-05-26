@@ -11,6 +11,8 @@ api.player_view_distance_x = 60
 api.player_view_distance_y = 40
 api.player_view_distance_z = 60
 
+api.INVALID_NUM = -1000000000
+
 --- 世界坐标转换为区域id
 function api.world_pos_to_region_id(pos_x, pos_y, pos_z)
 	local x = math.floor(pos_x / api.region_size_x) + api.region_limit

@@ -5,6 +5,7 @@ function c_world:Update() end
 function c_world:Destroy() end
 function c_world:SetRegionSize(size_x, size_y, size_z) end
 function c_world:SetMaxAgentSize(size) end
+function c_world:Reset() end
 
 ---@param checkRange number 默认200
 function c_world:GetGroundHeight(pos_x, pos_y, pos_z, checkRange) end

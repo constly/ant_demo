@@ -1,6 +1,8 @@
 ---@type sims.world.main
 local sims_world = import_package 'sims.world'
 
+local region_alloc = require 'world.client_region'.new
+
 ---@param client sims.client
 local function new(client)
 	---@class sims.client.world
@@ -79,7 +81,7 @@ local function new(client)
 					local regionId = define.world_pos_to_region_id(x + pos_x, y + pos_y, z + pos_z)
 					local region = api.regions[regionId]
 					if not region then 
-						region = require 'world.client_region'.new(client, api)
+						region = region_alloc(client, api)
 						region.init(regionId)
 						region.state = 1
 						api.regions[regionId] = region

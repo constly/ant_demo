@@ -8,6 +8,9 @@
 ---@field name string 名字
 ---@field tip string 描述
 
+---@type ly.common
+local common = import_package 'ly.common'
+
 ---@param s sims.client.state_machine
 ---@param client sims.client
 local function new(s, client)
@@ -26,6 +29,7 @@ local function new(s, client)
 
 	function api.on_entry()
 		scenes = api.get_scenes()
+		cur_idx = tonumber(common.user_data.get("sims.create_room.index")) or 1
 	end
 
 	function api.on_update()
@@ -85,7 +89,8 @@ local function new(s, client)
 		end
 	end
 
-	function api.on_exit()
+	function api.on_destroy()
+		common.user_data.set("sims.create_room.index", cur_idx, true)
 	end
 
 	function api.get_scenes()

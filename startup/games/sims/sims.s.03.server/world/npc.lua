@@ -17,9 +17,16 @@ local function new(mgr, world, server)
 		local _x, _z = api.move_dir.x, api.move_dir.z
 		local is_move = false
 		if _x and _z and (_x ~= 0 or _z ~= 0) then 
-			api.pos_x = api.pos_x + _x * delta_move
-			api.pos_z = api.pos_z + _z * delta_move
+			local new_x = api.pos_x + _x * delta_move
+			local new_z = api.pos_z + _z * delta_move
 
+			local height = world.get_ground_height(new_x, api.pos_y, new_z)
+			if height then 
+				api.pos_x = new_x
+				api.pos_z = new_z
+				api.pos_y = height
+			end
+			
 			-- 更新面朝方向
 			api.dir_x = _x	
 			api.dir_z = _z

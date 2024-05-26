@@ -52,7 +52,10 @@ local function new()
 	end
 
 	function api.shutdown()
-
+		for i, v in pairs(api.worlds) do 
+			v.destroy()
+		end
+		api.worlds = {}
 	end
 
 	return api
