@@ -33,9 +33,15 @@ run.bat
 
 ## 工具链相关
 ### 一. 客户端多开
+方式1:  
 1. 运行文件服务器: "./bin/msvc/debug/ant_demo.exe" -s
 2. 启动运行时版本: "./bin/msvc/debug/ant_demo.exe" -rt
-3. 日志输出在: startup/.app/log/runtime-1.log
+3. 日志输出在: startup/.app/log/runtime-1.log  
+
+方式2:  
+1. 执行run_pack.bat打包
+2. 启动publish/run.bat
+
 
 ### 二. 调试C++
 1. 用Visual Studio打开项目根目录

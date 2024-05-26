@@ -19,7 +19,6 @@ function m.exit()
 	world:unsub(pickup_mb)
 end
 
---- 摄像机移动控制
 function m.data_changed()
 	---@type sims.client
 	local client = world.client
