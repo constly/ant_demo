@@ -821,12 +821,12 @@ region:
     height: 0
     id: 3
     ---
-    active: false
+    active: true
     grids: {}
     height: 1
     id: 4
     ---
-    active: false
+    active: true
     grids: {}
     height: 2
     id: 11

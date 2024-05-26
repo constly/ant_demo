@@ -8,17 +8,14 @@
 ---@field name string 名字
 ---@field tip string 描述
 
+local ImGui 		= require "imgui"
 ---@type ly.common
-local common = import_package 'ly.common'
+local common 		= import_package 'ly.common' 	
+local lib 			= common.lib
 
 ---@param s sims.client.state_machine
 ---@param client sims.client
 local function new(s, client)
-	local ImGui 		= require "imgui"
-	---@type ly.common
-	local common 		= import_package 'ly.common' 	
-	local lib 			= common.lib
-
 	---@type sims.client.create_room.scene[]
 	local scenes = {}
 
@@ -116,6 +113,9 @@ local function new(s, client)
 				table.insert(list, data)
 			end
 		end
+		table.sort(list, function(a, b)
+			return a.key < b.key
+		end)
 		return list
 	end
 

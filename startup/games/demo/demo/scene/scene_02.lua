@@ -17,10 +17,7 @@ local imesh = ecs.require "ant.asset|mesh"
 local ientity = ecs.require "ant.entity|entity"
 local math3d = require "math3d"
 local PC  = ecs.require("utils.world_handler").proxy_creator()
-local timer = ecs.require "ant.timer|timer_system"
 local iom = ecs.require "ant.objcontroller|obj_motion"
-local mathpkg = import_package "ant.math"
-local mu      = mathpkg.util
 local iviewport = ecs.require "ant.render|viewport.state"
 local ipu = ecs.require "ant.objcontroller|pickup.pickup_system"
 local icamera = ecs.require "ant.camera|camera"
@@ -83,14 +80,6 @@ function system.on_leave()
 	last_entity = nil
 end 
 
-local function remap_xy(x, y)
-    local vp = iviewport.device_viewrect
-    local vr = iviewport.viewrect
-    local nx, ny = x - vp.x, y - vp.y
-    nx, ny  = mu.convert_device_to_screen_coord(vp, vr, nx, ny)
-	return nx, ny
-end
-
 local desc = 
 [[
 点击场景中的方块, 被选中的目标会被放大1.1倍
@@ -104,7 +93,7 @@ function system.data_changed()
 	for _, _, state, x, y in topick_mb:unpack() do
         if state == "DOWN" then
 			system.set_scale(last_entity, 1)
-            x, y = remap_xy(x, y)
+            x, y = iviewport.remap_xy(x, y)
             ipu.pick(x, y, function(e, a, b)
 				print("pick", e, a, b)
 			end)
