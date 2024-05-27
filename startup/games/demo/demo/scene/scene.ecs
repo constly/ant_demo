@@ -1,5 +1,5 @@
 
-for i = 1, 2 do
+for i = 1, 3 do
 	local name = ("scene_%02d"):format(i)
 	system(name).implement(("scene/%s.lua"):format(name))	
 end

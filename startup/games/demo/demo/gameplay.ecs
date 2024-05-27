@@ -10,6 +10,7 @@ import_feature 	"ant.pipeline"
 import_feature 	"ant.sky|sky"
 import_feature 	"ant.modifier"
 import_feature 	"ant.objcontroller|pickup"
+import_feature 	"ant.animation_instances"
 
 
 system "data_system" 	.implement "data_system.lua"
