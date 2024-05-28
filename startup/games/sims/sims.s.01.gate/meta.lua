@@ -25,6 +25,7 @@
 ---@class sims.server.create_world_params
 ---@field id number 地图id
 ---@field tpl_id number 地图模板id
+---@field addrNav number 导航服务器地址
 
 
 --[[

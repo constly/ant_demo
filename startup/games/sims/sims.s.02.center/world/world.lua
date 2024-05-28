@@ -9,27 +9,33 @@ local function new(center)
 	---@class sims.center.world
 	---@field id number 唯一id
 	---@field addrServer number 所在服务器地址
+	---@field addrNav number 对应的导航服务器
 	---@field tpl_id number 模板id
 	---@field regions map<number, sims.server.region> 区域列表
 	local api = {}
 
 	function api.destroy()
 		center.service_mgr.free_server(api.addrServer)
+		center.service_mgr.free_nav(api.id, api.addrNav)
 		api.addrServer = nil
+		api.addrNav = nil
 	end
 
 	function api.init(id, tpl_id)
 		api.id = id
 		api.tpl_id = id		
 		api.addrServer = center.service_mgr.alloc_server()
+		api.addrNav = center.service_mgr.alloc_nav(id, tpl_id)
 		ltask.call(api.addrServer, "start", center.tbParam)
 
 		---@type sims.server.create_world_params
 		local tbParams = {}
 		tbParams.id = id 
 		tbParams.tpl_id = tpl_id
+		tbParams.addrNav = api.addrNav
 		ltask.call(api.addrServer, "create_world", tbParams)
 		center.send_to_gate("notify_world_server_id", api.id, api.addrServer)
+		center.send_to_gate("notify_world_nav_id", api.id, api.addrNav)
 	end
 
 	---@param player sims.s.server_player
@@ -38,7 +44,7 @@ local function new(center)
 		
 		---@class sims.s.server.npc
 		local tbNpc = npc.get_sync_server()
-		ltask.send(api.addrServer, "notfiy_create_npc", api.id, {tbNpc})
+		ltask.send(api.addrServer, "notify_create_npc", api.id, {tbNpc})
 
 		---@type sims.server.login.param
 		local tbParam = {}

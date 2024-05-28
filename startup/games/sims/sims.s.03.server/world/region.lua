@@ -6,7 +6,7 @@ local lib = common.lib
 local sims_world = import_package 'sims.world'
 local grid_def = sims_world.get_grid_def()
 
----@param world sims.s.world.world 所属世界
+---@param world sims.s.server.world 所属世界
 ---@param server sims.s.server
 local function new(world, server)
 	---@class sims.server.region

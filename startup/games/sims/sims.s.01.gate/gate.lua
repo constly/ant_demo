@@ -14,6 +14,7 @@ local function new()
 	api.net_mgr = require 'net.net_mgr'.new(api)			---@type sims.s.net_mgr
 	api.msg = core.new_msg()
 	api.world_2_server = {}
+	api.world_2_nav = {}
 
 	local broadcast
 	local broadcast_msg

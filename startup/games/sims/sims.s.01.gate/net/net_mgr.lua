@@ -108,6 +108,9 @@ local function new(gate)
 		elseif tb.type == gate.msg.type_world then
 			local addr = gate.world_2_server[p.world_id]
 			ltask.send(addr, "dispatch_rpc", client_fd, p.id, p.world_id, cmd, tbParam)
+		elseif tb.type == gate.msg.type_nav then 
+			local addr = gate.world_2_nav[p.world_id]
+			ltask.send(addr, "dispatch_rpc", client_fd, p.id, p.world_id, cmd, tbParam)
 		end
 	end
 

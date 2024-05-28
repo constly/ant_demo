@@ -1,5 +1,5 @@
 ---@param mgr sims.s.server.npc_mgr
----@param world sims.s.world.world
+---@param world sims.s.server.world
 ---@param server sims.s.server
 local function new(mgr, world, server)
 	---@class sims.s.server.npc

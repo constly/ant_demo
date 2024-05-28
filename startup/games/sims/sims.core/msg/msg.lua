@@ -16,12 +16,14 @@ local function new()
 	api.client = nil 				---@type sims.client
 	api.gate = nil					---@type sims.s.gate
 	api.center = nil				---@type sims.s.center
-	api.world = nil					---@type sims.s.world.world
+	api.world = nil					---@type sims.s.server.world
+	api.nav = nil					---@type sims.s.nav
 
 	api.type_client = 1
 	api.type_gate = 2
 	api.type_center = 3
 	api.type_world = 4
+	api.type_nav = 5
 
 	--- 客户端到gate
 	api.rpc_client_to_gate_login 				= 1101   	-- 客户端登录到gate
@@ -47,6 +49,8 @@ local function new()
 	api.rpc_exit_region = 9				-- 请求离开区域
 	api.rpc_apply_npc_data = 11			-- 获取npc数据
 
+	api.rpc_find_path = 301				-- 请求寻路
+
 	--- 服务器全是主动通知 
 	api.s2c_room_members = 1			-- 通知房间成员列表
 	api.s2c_kick = 3;					-- 通知踢人
@@ -66,6 +70,7 @@ local function new()
 		api.gate = nil
 		api.center = nil
 		api.world = nil
+		api.nav = nil
 	end
 
 	--- 注册rpc
@@ -77,6 +82,7 @@ local function new()
 	function api.reg_gate_rpc(cmd, server_cb, client_cb) api.reg_rpc(api.type_gate, cmd, server_cb, client_cb) end
 	function api.reg_center_rpc(cmd, server_cb, client_cb) api.reg_rpc(api.type_center, cmd, server_cb, client_cb) end
 	function api.reg_world_rpc(cmd, server_cb, client_cb) api.reg_rpc(api.type_world, cmd, server_cb, client_cb) end
+	function api.reg_nav_rpc(cmd, server_cb, client_cb) api.reg_rpc(api.type_nav, cmd, server_cb, client_cb) end
 
 	--- 注册协议
 	function api.reg_s2c(cmd, cb)
@@ -89,6 +95,7 @@ local function new()
 		require 'msg.client_to_world'.new(api)
 		require 'msg.client_to_gate'.new(api)
 		require 'msg.client_to_center'.new(api)
+		require 'msg.client_to_nav'.new(api)
 
 		if type == api.type_client then
 			api.client = outer
@@ -100,6 +107,8 @@ local function new()
 			api.center = outer
 		elseif type == api.type_world then
 			api.world = outer
+		elseif type == api.type_nav then
+			api.nav = outer
 		else 
 			assert(false, string.format("无限的msg type = %s", type))
 		end

@@ -24,6 +24,7 @@ local function new()
 		api.save_mgr.saved_root = tbParam.save_root
 		api.tbParam = tbParam
 		api.msg.init(api.msg.type_center, api)
+		api.service_mgr.start()
 
 		api.restart_before()
 		api.save_mgr.load_save_last()

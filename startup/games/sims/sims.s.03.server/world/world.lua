@@ -10,12 +10,13 @@ local sims_world = import_package 'sims.world'
 
 ---@param server sims.s.server
 local function new(server)
-	---@class sims.s.world.world
+	---@class sims.s.server.world
 	---@field id number
 	---@field tpl_id number
 	---@field regions map<number, sims.server.region> 区域列表
 	---@field npc_mgr sims.s.server.npc_mgr
 	---@field c_world sims.world.c_world 
+	---@field addrNav number 导航服务器地址
 	local api = {classes = {}, regions = {}}
 
 	api.msg = core.new_msg()
@@ -34,6 +35,7 @@ local function new(server)
 
 	---@param tbParam sims.server.create_world_params
 	function api.start(tbParam)
+		api.addrNav = tbParam.addrNav
 		api.msg.init(api.msg.type_world, api)
 
 		local tpl_id = tbParam.tpl_id

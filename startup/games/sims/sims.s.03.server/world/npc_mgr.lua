@@ -1,7 +1,7 @@
 local npc_alloc = require 'world.npc'.new
 
 ---@param server sims.s.server
----@param world sims.s.world.world
+---@param world sims.s.server.world
 local function new(world, server)
 	---@class sims.s.server.npc_mgr
 	---@field npcs map<number, sims.s.server.npc>

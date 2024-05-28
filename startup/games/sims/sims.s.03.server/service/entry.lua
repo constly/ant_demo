@@ -43,7 +43,7 @@ end
 --- 通知创建npc
 ---@param world_id number 世界id
 ---@param list sims.s.server.npc[]
-function S.notfiy_create_npc(world_id, list)
+function S.notify_create_npc(world_id, list)
 	local world = server.get_world(world_id)
 	for i, v in ipairs(list) do 
 		world.npc_mgr.create_npc(v)

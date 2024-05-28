@@ -4,8 +4,8 @@ local ltask = require "ltask"
 local world_alloc = require 'world.world'.new
 
 local function new()
-	---@class sims.s.server
-	---@field worlds map<number, sims.s.server.world>
+	---@class sims.s.nav
+	---@field worlds map<number, sims.s.nav.world>
 	---@field addrGate number
 	---@field addrCenter number
 	local api = {worlds = {}}
@@ -27,7 +27,7 @@ local function new()
 	--- 创建world
 	---@param tbParam sims.server.create_world_params
 	function api.create_world(tbParam)
-		---@type sims.s.server.world
+		---@type sims.s.nav.world
 		local world = world_alloc(api)
 		world.start(tbParam)
 		api.worlds[tbParam.id] = world
@@ -42,7 +42,7 @@ local function new()
 		end
 	end
 
-	---@return sims.s.server.world
+	---@return sims.s.nav.world
 	function api.get_world(world_id)
 		return api.worlds[world_id]
 	end
@@ -58,7 +58,8 @@ local function new()
 		api.worlds = {}
 	end
 
+
 	return api
-end
+end 
 
 return {new = new}

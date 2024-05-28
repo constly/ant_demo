@@ -50,9 +50,14 @@ function S.notify_player_world_id(player_id, world_id)
 	end
 end
 
---- 通知world所在的serverId
+--- 通知world的server服务地址
 function S.notify_world_server_id(world_id, server_id)
 	gate.world_2_server[world_id] = server_id
+end
+
+--- 通知world的导航服务地址
+function S.notify_world_nav_id(world_id, nav_id)
+	gate.world_2_nav[world_id] = nav_id
 end
 
 function S.send_to_player(player_id, cmd, tbParam)
