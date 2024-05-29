@@ -195,7 +195,7 @@ local function new(editor)
 			if wnd and wnd.is_dirty and wnd.is_dirty() then 
 				name = "*" .. name
 			end
-			local label = string.format("%s##btn_view_%d_%s", name, view.id, v.name)
+			local label = string.format("%s##btn_view_%d_%s", name, view.id, v.path)
 			local style_name
 			if is_current_view then 
 				style_name = cur == v.path and GStyle.tab_active or GStyle.btn_normal

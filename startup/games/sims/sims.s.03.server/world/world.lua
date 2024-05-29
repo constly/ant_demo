@@ -35,6 +35,8 @@ local function new(server)
 
 	---@param tbParam sims.server.create_world_params
 	function api.start(tbParam)
+		api.id = tbParam.id
+		api.tpl_id = tbParam.tpl_id
 		api.addrNav = tbParam.addrNav
 		api.msg.init(api.msg.type_world, api)
 

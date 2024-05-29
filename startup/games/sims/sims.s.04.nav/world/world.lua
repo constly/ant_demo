@@ -17,8 +17,14 @@ local function new(nav)
 	end
 
 	function api.destroy()
-		print("destroy sims world")
+		print("destroy nav world")
 		api.c_world:Reset()
+	end
+
+	--- 设置格子数据
+	function api.set_grid_data(args)
+		local grid_x, grid_y, grid_z, size_x, size_y, size_z, value = table.unpack(args)
+		api.c_world:SetGridData(grid_x, grid_y, grid_z, size_x, size_y, size_z, value)
 	end
 
 	return api

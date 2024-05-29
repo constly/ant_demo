@@ -58,6 +58,12 @@ function S.dispatch_rpc(client_fd, player_id, world_id, cmd, tbParam)
 	end 
 end
 
+--- 通知格子数据
+function S.notify_grid_data(world_id, args)
+	local world = nav.get_world(world_id)
+	world.set_grid_data(args)
+end
+
 --- 清空所有数据，等待下次复用
 function S.clear()
 	for i, v in pairs(server.worlds) do 

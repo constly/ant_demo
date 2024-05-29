@@ -6,6 +6,8 @@ local lib = common.lib
 local sims_world = import_package 'sims.world'
 local grid_def = sims_world.get_grid_def()
 
+local ltask = require "ltask"
+
 ---@param world sims.s.server.world 所属世界
 ---@param server sims.s.server
 local function new(world, server)
@@ -61,8 +63,11 @@ local function new(world, server)
 		api.grids[idx] = gridTpl.tpl
 
 		local grid_x, grid_y, grid_z = server.define.world_pos_to_grid_pos(x, y, z)
-		world.c_world:SetGridData(grid_x, grid_y, grid_z, 
-					def.size[1] or 1, def.size[2] or 1, def.size[3] or 1, grid_def.Under_Ground)
+		local size_x, size_y, size_z = def.size[1] or 1, def.size[2] or 1, def.size[3] or 1
+		world.c_world:SetGridData(grid_x, grid_y, grid_z, size_x, size_y, size_z, grid_def.Under_Ground)
+
+		local args = {grid_x, grid_y, grid_z, size_x, size_y, size_z, grid_def.Under_Ground}
+		ltask.send(world.addrNav, "notify_grid_data", world.id, args)
 	end
 
 	---@param player_id number 玩家id
