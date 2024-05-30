@@ -63,6 +63,7 @@ local function new()
 
 	-- 刷新指定pkg
 	function api.refresh_pkg(pkg_name)
+		print("refresh mod pkg", pkg_name)
 		memfs.remove("/pkg/" .. pkg_name)
 
 		local bfs = require 'bee.filesystem'

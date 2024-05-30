@@ -7,6 +7,9 @@ local lib = require 'tools.lib'
 ---@type ly.common.dep
 local dep = require 'dep'
 
+local vfs = require "vfs"
+local fastio = require "fastio"
+
 ---@class ly.common.file
 local api = {}
 
@@ -23,7 +26,12 @@ end
 ---@param file_path string 文件vsf路径
 ---@return string 文本内容
 function api.load_file_from_vfs(file_path)
-	return dep.aio.readall_s(file_path)
+	local c = vfs.read(file_path)
+	if not c then 
+		log.error("error to load_file_from_vfs, path = " .. file_path)
+		return ""
+	end
+	return fastio.tostring(c)
 end
 
 ---@return boolean 是不是vfs路径

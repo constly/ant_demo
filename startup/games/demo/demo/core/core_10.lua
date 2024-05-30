@@ -32,6 +32,7 @@ local entities = {}
 
 local model_index 
 local glbs
+local is_first_frame
 
 function system.on_entry()
 	e_light = world:create_instance { prefab = "/pkg/demo.res/light_skybox.prefab" }
@@ -143,6 +144,7 @@ function system.show_model(index)
 				local aabb = math3d.aabb(math3d.vector(-1.0, -1.0, -1.0), math3d.vector(1.0, 1.0, 1.0))
 				icamera.focus_aabb(main_camera, aabb, dir)
 			end
+			is_first_frame = true;
         end
     }
     entities = ins_model.tag['*']
@@ -263,7 +265,7 @@ function system.draw_anim()
 			end
 
             for name, status in pairs(animation.status) do
-                if ImGui.TreeNode(name) then
+                if ImGui.TreeNodeEx(name, ImGui.TreeNodeFlags {"DefaultOpen"}) then
                     do
                         local v = { status.play }
                         if ImGui.Checkbox("play", v) then
@@ -273,7 +275,7 @@ function system.draw_anim()
                     if ImGui.RadioButton("hide", iplayback.get_completion(e, name) == "hide") then
                         completion_hide(animation_eid, name)
                     end
-                    if ImGui.RadioButton("loop", iplayback.get_completion(e, name) == "loop") then
+                    if ImGui.RadioButton("loop", iplayback.get_completion(e, name) == "loop") or is_first_frame then
                         completion_loop(animation_eid, name)
                     end
                     if ImGui.RadioButton("stop", iplayback.get_completion(e, name) == "stop") then
@@ -304,4 +306,5 @@ function system.draw_anim()
         end
     end
     ImGui.End()
+	is_first_frame = false
 end

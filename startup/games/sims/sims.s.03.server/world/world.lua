@@ -105,13 +105,14 @@ local function new(server)
 	function api.on_login(params)
 		local npc = api.npc_mgr.get_npc(params.npc_id)
 		assert(npc)
-		local grid = api.get_first_gird_by_className("born")
-		assert(grid)
 		if params and params.pos_x then 
 			npc.pos_x = params.pos_x
 			npc.pos_y = params.pos_y
 			npc.pos_z = params.pos_z
 		else 
+			local grid = api.get_first_gird_by_className("born")
+			assert(grid)
+			
 			npc.pos_x = grid[1];
 			npc.pos_y = grid[2];
 			npc.pos_z = grid[3];

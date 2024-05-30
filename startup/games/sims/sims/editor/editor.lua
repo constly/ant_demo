@@ -35,7 +35,10 @@ local function new(client)
 		if editor then
 			editor.wnd_mgr.notify_auto_save()
 		end
-		client.call_server(client.msg.rpc_restart, {type = refresh_def[refresh_type].type})
+		-- 等待mod文件刷新完毕
+		client.tick_timer.add(1, function()
+			client.call_server(client.msg.rpc_restart, {type = refresh_def[refresh_type].type})
+		end)
 	end
 
 

@@ -1,133 +1,733 @@
-cur_object_id: 1
-next_id: 41
+cur_object_id: 2
+next_id: 273
 region:
   id: 1
   layers:
     ---
-    active: false
+    active: true
     grids:
       -1_-1:
-        id: 19
+        id: 138
         tpl: 1
       -1_-2:
-        id: 18
+        id: 137
+        tpl: 1
+      -1_-3:
+        id: 136
+        tpl: 1
+      -1_-4:
+        id: 135
+        tpl: 1
+      -1_-5:
+        id: 134
+        tpl: 1
+      -1_-6:
+        id: 133
+        tpl: 1
+      -1_-7:
+        id: 132
         tpl: 1
       -1_0:
-        id: 20
+        id: 139
         tpl: 1
       -1_1:
-        id: 21
+        id: 140
         tpl: 1
       -1_2:
-        id: 22
+        id: 141
+        tpl: 1
+      -1_3:
+        id: 142
+        tpl: 1
+      -1_4:
+        id: 143
+        tpl: 1
+      -1_5:
+        id: 144
+        tpl: 1
+      -1_6:
+        id: 145
+        tpl: 1
+      -1_7:
+        id: 146
         tpl: 1
       -2_-1:
-        id: 14
+        id: 123
         tpl: 1
       -2_-2:
-        id: 13
+        id: 122
+        tpl: 1
+      -2_-3:
+        id: 121
+        tpl: 1
+      -2_-4:
+        id: 120
+        tpl: 1
+      -2_-5:
+        id: 119
+        tpl: 1
+      -2_-6:
+        id: 118
+        tpl: 1
+      -2_-7:
+        id: 117
         tpl: 1
       -2_0:
-        id: 15
+        id: 124
         tpl: 1
       -2_1:
-        id: 16
+        id: 125
         tpl: 1
       -2_2:
-        id: 17
+        id: 126
+        tpl: 1
+      -2_3:
+        id: 127
+        tpl: 1
+      -2_4:
+        id: 128
+        tpl: 1
+      -2_5:
+        id: 129
+        tpl: 1
+      -2_6:
+        id: 130
+        tpl: 1
+      -2_7:
+        id: 131
+        tpl: 1
+      -3_-1:
+        id: 108
+        tpl: 1
+      -3_-2:
+        id: 107
+        tpl: 1
+      -3_-3:
+        id: 106
+        tpl: 1
+      -3_-4:
+        id: 105
+        tpl: 1
+      -3_-5:
+        id: 104
+        tpl: 1
+      -3_-6:
+        id: 103
+        tpl: 1
+      -3_-7:
+        id: 102
+        tpl: 1
+      -3_0:
+        id: 109
+        tpl: 1
+      -3_1:
+        id: 110
+        tpl: 1
+      -3_2:
+        id: 111
+        tpl: 1
+      -3_3:
+        id: 112
+        tpl: 1
+      -3_4:
+        id: 113
+        tpl: 1
+      -3_5:
+        id: 114
+        tpl: 1
+      -3_6:
+        id: 115
+        tpl: 1
+      -3_7:
+        id: 116
+        tpl: 1
+      -4_-1:
+        id: 93
+        tpl: 1
+      -4_-2:
+        id: 92
+        tpl: 1
+      -4_-3:
+        id: 91
+        tpl: 1
+      -4_-4:
+        id: 90
+        tpl: 1
+      -4_-5:
+        id: 89
+        tpl: 1
+      -4_-6:
+        id: 88
+        tpl: 1
+      -4_-7:
+        id: 87
+        tpl: 1
+      -4_0:
+        id: 94
+        tpl: 1
+      -4_1:
+        id: 95
+        tpl: 1
+      -4_2:
+        id: 96
+        tpl: 1
+      -4_3:
+        id: 97
+        tpl: 1
+      -4_4:
+        id: 98
+        tpl: 1
+      -4_5:
+        id: 99
+        tpl: 1
+      -4_6:
+        id: 100
+        tpl: 1
+      -4_7:
+        id: 101
+        tpl: 1
+      -5_-1:
+        id: 78
+        tpl: 1
+      -5_-2:
+        id: 77
+        tpl: 1
+      -5_-3:
+        id: 76
+        tpl: 1
+      -5_-4:
+        id: 75
+        tpl: 1
+      -5_-5:
+        id: 74
+        tpl: 1
+      -5_-6:
+        id: 73
+        tpl: 1
+      -5_-7:
+        id: 72
+        tpl: 1
+      -5_0:
+        id: 79
+        tpl: 1
+      -5_1:
+        id: 80
+        tpl: 1
+      -5_2:
+        id: 81
+        tpl: 1
+      -5_3:
+        id: 82
+        tpl: 1
+      -5_4:
+        id: 83
+        tpl: 1
+      -5_5:
+        id: 84
+        tpl: 1
+      -5_6:
+        id: 85
+        tpl: 1
+      -5_7:
+        id: 86
+        tpl: 1
+      -6_-1:
+        id: 63
+        tpl: 1
+      -6_-2:
+        id: 62
+        tpl: 1
+      -6_-3:
+        id: 61
+        tpl: 1
+      -6_-4:
+        id: 60
+        tpl: 1
+      -6_-5:
+        id: 59
+        tpl: 1
+      -6_-6:
+        id: 58
+        tpl: 1
+      -6_-7:
+        id: 57
+        tpl: 1
+      -6_0:
+        id: 64
+        tpl: 1
+      -6_1:
+        id: 65
+        tpl: 1
+      -6_2:
+        id: 66
+        tpl: 1
+      -6_3:
+        id: 67
+        tpl: 1
+      -6_4:
+        id: 68
+        tpl: 1
+      -6_5:
+        id: 69
+        tpl: 1
+      -6_6:
+        id: 70
+        tpl: 1
+      -6_7:
+        id: 71
+        tpl: 1
+      -7_-1:
+        id: 48
+        tpl: 1
+      -7_-2:
+        id: 47
+        tpl: 1
+      -7_-3:
+        id: 46
+        tpl: 1
+      -7_-4:
+        id: 45
+        tpl: 1
+      -7_-5:
+        id: 44
+        tpl: 1
+      -7_-6:
+        id: 43
+        tpl: 1
+      -7_-7:
+        id: 42
+        tpl: 1
+      -7_0:
+        id: 49
+        tpl: 1
+      -7_1:
+        id: 50
+        tpl: 1
+      -7_2:
+        id: 51
+        tpl: 1
+      -7_3:
+        id: 52
+        tpl: 1
+      -7_4:
+        id: 53
+        tpl: 1
+      -7_5:
+        id: 54
+        tpl: 1
+      -7_6:
+        id: 55
+        tpl: 1
+      -7_7:
+        id: 56
         tpl: 1
       0_-1:
-        id: 24
+        id: 153
         tpl: 1
       0_-2:
-        id: 23
+        id: 152
+        tpl: 1
+      0_-3:
+        id: 151
+        tpl: 1
+      0_-4:
+        id: 150
+        tpl: 1
+      0_-5:
+        id: 149
+        tpl: 1
+      0_-6:
+        id: 148
+        tpl: 1
+      0_-7:
+        id: 147
         tpl: 1
       0_0:
-        id: 25
+        id: 154
         tpl: 1
       0_1:
-        id: 26
+        id: 155
         tpl: 1
       0_2:
-        id: 27
+        id: 156
+        tpl: 1
+      0_3:
+        id: 157
+        tpl: 1
+      0_4:
+        id: 158
+        tpl: 1
+      0_5:
+        id: 159
+        tpl: 1
+      0_6:
+        id: 160
+        tpl: 1
+      0_7:
+        id: 161
         tpl: 1
       1_-1:
-        id: 29
+        id: 168
         tpl: 1
       1_-2:
-        id: 28
+        id: 167
+        tpl: 1
+      1_-3:
+        id: 166
+        tpl: 1
+      1_-4:
+        id: 165
+        tpl: 1
+      1_-5:
+        id: 164
+        tpl: 1
+      1_-6:
+        id: 163
+        tpl: 1
+      1_-7:
+        id: 162
         tpl: 1
       1_0:
-        id: 30
+        id: 169
         tpl: 1
       1_1:
-        id: 31
+        id: 170
         tpl: 1
       1_2:
-        id: 32
+        id: 171
+        tpl: 1
+      1_3:
+        id: 172
+        tpl: 1
+      1_4:
+        id: 173
+        tpl: 1
+      1_5:
+        id: 174
+        tpl: 1
+      1_6:
+        id: 175
+        tpl: 1
+      1_7:
+        id: 176
         tpl: 1
       2_-1:
-        id: 34
+        id: 183
         tpl: 1
       2_-2:
-        id: 33
+        id: 182
+        tpl: 1
+      2_-3:
+        id: 181
+        tpl: 1
+      2_-4:
+        id: 180
+        tpl: 1
+      2_-5:
+        id: 179
+        tpl: 1
+      2_-6:
+        id: 178
+        tpl: 1
+      2_-7:
+        id: 177
         tpl: 1
       2_0:
-        id: 35
+        id: 184
         tpl: 1
       2_1:
-        id: 36
+        id: 185
         tpl: 1
       2_2:
-        id: 37
+        id: 186
+        tpl: 1
+      2_3:
+        id: 187
+        tpl: 1
+      2_4:
+        id: 188
+        tpl: 1
+      2_5:
+        id: 189
+        tpl: 1
+      2_6:
+        id: 190
+        tpl: 1
+      2_7:
+        id: 191
+        tpl: 1
+      3_-1:
+        id: 198
+        tpl: 1
+      3_-2:
+        id: 197
+        tpl: 1
+      3_-3:
+        id: 196
+        tpl: 1
+      3_-4:
+        id: 195
+        tpl: 1
+      3_-5:
+        id: 194
+        tpl: 1
+      3_-6:
+        id: 193
+        tpl: 1
+      3_-7:
+        id: 192
+        tpl: 1
+      3_0:
+        id: 199
+        tpl: 1
+      3_1:
+        id: 200
+        tpl: 1
+      3_2:
+        id: 201
+        tpl: 1
+      3_3:
+        id: 202
+        tpl: 1
+      3_4:
+        id: 203
+        tpl: 1
+      3_5:
+        id: 204
+        tpl: 1
+      3_6:
+        id: 205
+        tpl: 1
+      3_7:
+        id: 206
+        tpl: 1
+      4_-1:
+        id: 213
+        tpl: 1
+      4_-2:
+        id: 212
+        tpl: 1
+      4_-3:
+        id: 211
+        tpl: 1
+      4_-4:
+        id: 210
+        tpl: 1
+      4_-5:
+        id: 209
+        tpl: 1
+      4_-6:
+        id: 208
+        tpl: 1
+      4_-7:
+        id: 207
+        tpl: 1
+      4_0:
+        id: 214
+        tpl: 1
+      4_1:
+        id: 215
+        tpl: 1
+      4_2:
+        id: 216
+        tpl: 1
+      4_3:
+        id: 217
+        tpl: 1
+      4_4:
+        id: 218
+        tpl: 1
+      4_5:
+        id: 219
+        tpl: 1
+      4_6:
+        id: 220
+        tpl: 1
+      4_7:
+        id: 221
+        tpl: 1
+      5_-1:
+        id: 228
+        tpl: 1
+      5_-2:
+        id: 227
+        tpl: 1
+      5_-3:
+        id: 226
+        tpl: 1
+      5_-4:
+        id: 225
+        tpl: 1
+      5_-5:
+        id: 224
+        tpl: 1
+      5_-6:
+        id: 223
+        tpl: 1
+      5_-7:
+        id: 222
+        tpl: 1
+      5_0:
+        id: 229
+        tpl: 1
+      5_1:
+        id: 230
+        tpl: 1
+      5_2:
+        id: 231
+        tpl: 1
+      5_3:
+        id: 232
+        tpl: 1
+      5_4:
+        id: 233
+        tpl: 1
+      5_5:
+        id: 234
+        tpl: 1
+      5_6:
+        id: 235
+        tpl: 1
+      5_7:
+        id: 236
+        tpl: 1
+      6_-1:
+        id: 243
+        tpl: 1
+      6_-2:
+        id: 242
+        tpl: 1
+      6_-3:
+        id: 241
+        tpl: 1
+      6_-4:
+        id: 240
+        tpl: 1
+      6_-5:
+        id: 239
+        tpl: 1
+      6_-6:
+        id: 238
+        tpl: 1
+      6_-7:
+        id: 237
+        tpl: 1
+      6_0:
+        id: 244
+        tpl: 1
+      6_1:
+        id: 245
+        tpl: 1
+      6_2:
+        id: 246
+        tpl: 1
+      6_3:
+        id: 247
+        tpl: 1
+      6_4:
+        id: 248
+        tpl: 1
+      6_5:
+        id: 249
+        tpl: 1
+      6_6:
+        id: 250
+        tpl: 1
+      6_7:
+        id: 251
+        tpl: 1
+      7_-1:
+        id: 258
+        tpl: 1
+      7_-2:
+        id: 257
+        tpl: 1
+      7_-3:
+        id: 256
+        tpl: 1
+      7_-4:
+        id: 255
+        tpl: 1
+      7_-5:
+        id: 254
+        tpl: 1
+      7_-6:
+        id: 253
+        tpl: 1
+      7_-7:
+        id: 252
+        tpl: 1
+      7_0:
+        id: 259
+        tpl: 1
+      7_1:
+        id: 260
+        tpl: 1
+      7_2:
+        id: 261
+        tpl: 1
+      7_3:
+        id: 262
+        tpl: 1
+      7_4:
+        id: 263
+        tpl: 1
+      7_5:
+        id: 264
+        tpl: 1
+      7_6:
+        id: 265
+        tpl: 1
+      7_7:
+        id: 266
         tpl: 1
     height: -1
     id: 2
     ---
     active: true
     grids:
-      -1_0:
+      -2_-3:
+        id: 269
+        tpl: 2
+      -2_0:
+        id: 270
+        tpl: 2
+      -2_1:
+        id: 271
+        tpl: 2
+      -2_2:
+        id: 272
+        tpl: 2
+      -3_-3:
+        id: 268
+        tpl: 2
+      -3_4:
+        id: 273
+        tpl: 2
+      -4_-3:
+        id: 267
+        tpl: 2
+      -5_0:
         id: 7
         tpl: 10
-      0_-1:
-        id: 38
-        tpl: 1
-      0_-2:
-        id: 39
-        tpl: 1
-      0_0:
-        id: 6
-        tpl: 1
     height: 0
     id: 3
     ---
-    active: true
-    grids:
-      1_-1:
-        id: 40
-        tpl: 1
-      1_-2:
-        id: 41
-        tpl: 1
-      1_0:
-        id: 10
-        tpl: 1
+    active: false
+    grids: {}
     height: 1
     id: 4
     ---
-    active: true
-    grids:
-      1_0:
-        id: 12
-        tpl: 201
+    active: false
+    grids: {}
     height: 2
     id: 11
   max:
-    x: 2
-    y: 2
+    x: 7
+    y: 7
   min:
-    x: -2
-    y: -2
+    x: -7
+    y: -7
 setting:
   grid_def: /pkg/mod.main/scenes/grid_def.txt
 show_ground: true
