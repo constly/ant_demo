@@ -34,4 +34,6 @@ public:
 	World* world = nullptr;
 	AStarParam param;
 
+private:
+	const std::vector<Point>& GetAroundGrids(const Point& point);
 };
