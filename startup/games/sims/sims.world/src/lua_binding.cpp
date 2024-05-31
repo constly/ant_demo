@@ -85,18 +85,30 @@ namespace luabind {
 	// 寻路
 	static int FindPath(lua_State* L) {
 		World& world = bee::lua::checkudata<World>(L, 1);
-		AStarParam param;
-		param.start.x = (int)luaL_checkinteger(L, 2);  	
-		param.start.y = (int)luaL_checkinteger(L, 3);  	
-		param.start.z = (int)luaL_checkinteger(L, 4);  	
-		param.dest.x = (int)luaL_checkinteger(L, 5);  	
-		param.dest.y = (int)luaL_checkinteger(L, 6);  	
-		param.dest.z = (int)luaL_checkinteger(L, 7);  
+		AStarParam& param = world.astar.param;
+		param.start = Point((int)luaL_checkinteger(L, 2), (int)luaL_checkinteger(L, 3), (int)luaL_checkinteger(L, 4)); 
+		param.dest = Point((int)luaL_checkinteger(L, 5), (int)luaL_checkinteger(L, 6), (int)luaL_checkinteger(L, 7));
 		param.bodySize = (int)luaL_checkinteger(L, 8);  
 		param.walkType = (EWalkType)luaL_checkinteger(L, 9);  
 		param.path.clear();
+		if (world.astar.Run()) {
+			lua_newtable(L);
+			int index = 0;
+			for (int32_t i = (int32_t)param.path.size() - 1; i >= 0; --i) {
+				const Point& p = param.path[i];
 
-		world.astar.Run();
+				lua_newtable(L);
+				lua_pushinteger(L, p.x);
+				lua_seti(L, -2, 1); 
+				lua_pushinteger(L, p.y);
+				lua_seti(L, -2, 2); 
+				lua_pushinteger(L, p.z);
+				lua_seti(L, -2, 3); 
+				
+				lua_seti(L, -2, ++index); 
+			}
+			return 1;
+		}
 		return 0;
 	}
 

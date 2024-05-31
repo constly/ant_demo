@@ -2,6 +2,12 @@
 #include <vector>
 #include <assert.h> 
 
+// 无效数值
+#define INVALID_NUM -1000000000
+
+// 坐标范围 [-100万, 100万] 
+#define POS_RANGE 1000000
+
 enum class EGridType : uint8_t {
 	None = 0,		// 空中
 
@@ -17,17 +23,6 @@ enum class EGridType : uint8_t {
 	Ceiling 	= 1 << 6,			// 天花板 （Under_Object || Under_StandableObject || Under_Ground 下面格子）
 };
 
-struct Point {
-	int x = 0;
-	int y = 0;
-	int z = 0;
-	Point(){}
-	Point(int _x, int _y, int _z) {
-		x = _x;
-		y = _y;
-		z = _z;
-	}
-};
 
 // 寻路类型
 enum class EWalkType : int8_t {
@@ -37,5 +32,3 @@ enum class EWalkType : int8_t {
 	Wall = 8,		// 可以在墙表面走
 };
 
-// 无效数值
-#define INVALID_NUM -1000000000

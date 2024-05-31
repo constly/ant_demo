@@ -118,7 +118,8 @@
 			"print": "cpp",
 			"ranges": "cpp",
 			"semaphore": "cpp",
-			"*.hpp11": "cpp"
+			"*.hpp11": "cpp",
+			"source_location": "cpp"
 		},
 		"lua.debug.variables.showIntegerAsHex": false,
 		"dotnet.defaultSolution": "disable"
