@@ -23,6 +23,7 @@ local iviewport = ecs.require "ant.render|viewport.state"
 local ipu = ecs.require "ant.objcontroller|pickup.pickup_system"
 local icamera = ecs.require "ant.camera|camera"
 local math3d = require "math3d"
+local timer = ecs.require "ant.timer|timer_system"
 
 ---@type ly.common
 local common = import_package 'ly.common'
@@ -36,18 +37,24 @@ local game_core = import_package 'ly.game_core'
 ---@type ly.world.main
 local ly_world = import_package 'ly.world'
 local grid_def = ly_world.get_grid_def()
+local walkDef = ly_world.get_walk_type()
 
 local c_world
 local grid_instances = {}
 local hint_instance = {}
+local grid_id_cache = {}
 
 local topick_mb
 local pickup_mb
 local last_entity
+local start_entity
+local dest_entity
 
 --- 是不是编辑器模式
 local is_editor_mode = false
 
+local scale_index = 0
+local scale_interval = 0
 
 function system.on_entry()
 	topick_mb = world:sub{"mouse", "LEFT"}
@@ -78,9 +85,12 @@ function system.on_leave()
 	c_world:Destroy()
 	c_world = nil
 	last_entity = nil
+	start_entity = nil
+	dest_entity = nil
 	editor.save()
 	PC:clear()
 	system.destroy_grid_instances()
+	system.destroy_hint_instances()
 end
 
 function system.data_changed()
@@ -121,6 +131,23 @@ function system.data_changed()
 				end)
 			end
 		end
+
+		local delta = timer.delta() * 0.001
+		scale_interval = scale_interval + delta
+		if scale_interval > 0.1 then 
+			scale_interval = 0;
+			scale_index = scale_index + 1
+			local ins = hint_instance[scale_index];
+			if not ins  then 
+				scale_index = 1
+			else 
+				for idx, ins in ipairs(hint_instance) do 
+					local eid = ins.tag['*'][1]
+					local ee<close> = world:entity(eid)
+					iom.set_scale(ee, idx == scale_index and 0.55 or 0.4)
+				end
+			end
+		end
 	end
 end
 
@@ -156,6 +183,7 @@ function system.load_map()
 
 	c_world:Reset()
 	system.destroy_grid_instances()
+	system.destroy_hint_instances()
 	for _, layer in ipairs(data_handler.data.region.layers) do 
 		local y = math.floor(layer.height)
 		for gridId, grid in pairs(layer.grids) do 
@@ -165,11 +193,17 @@ function system.load_map()
 				local instance = world:create_instance {
 					prefab = def.model .. "/mesh.prefab",
 					on_ready = function(e)
-						local eid = e.tag['*'][1]
+						local tags = e.tag['*']
+						local eid = tags[1]
 						assert(eid, string.format("failed to create create_instance, model = %s", def.model))
 						local ee<close> = world:entity(eid)
-						iom.set_position(ee, math3d.vector(x, y, z))
+						local size_x, size_y, size_z = def.size[1] or 1, def.size[2] or 1, def.size[3] or 1
+						iom.set_position(ee, math3d.vector(x + size_x * 0.5, y, z + size_z * 0.5))
 						iom.set_scale(ee, def.scale)
+
+						for i, eid in ipairs(tags) do 
+							grid_id_cache[eid] = {x, y, z}
+						end
 					end
 				}
 				table.insert(grid_instances, instance)
@@ -177,6 +211,7 @@ function system.load_map()
 			end 
 		end 
 	end
+	c_world:Update()
 end
 
 function system.destroy_grid_instances()
@@ -184,6 +219,14 @@ function system.destroy_grid_instances()
 		world:remove_instance(p)
 	end
 	grid_instances = {}
+	grid_id_cache = {}
+end
+
+function system.destroy_hint_instances()
+	for _, p in ipairs(hint_instance) do
+		world:remove_instance(p)
+	end
+	hint_instance = {}
 end
 
 function system.set_scale(eid, scale)
@@ -198,8 +241,47 @@ end
 
 function system.after_pickup()
 	for _, eid, x, y in pickup_mb:unpack() do 
+		local eid = tonumber(eid)
 		system.set_scale(eid, 0.8)
 		last_entity = eid
+
+		if not start_entity then 
+			start_entity = last_entity
+		else 
+			dest_entity = last_entity
+			system.generator_path()
+		end
 		break
 	end
+end
+
+function system.generator_path()
+	system.destroy_hint_instances()
+	local start = grid_id_cache[start_entity]
+	local dest = grid_id_cache[dest_entity]
+	if start and dest then 
+		local bodySize = 1
+		local walkType = walkDef.Ground
+		local tb = c_world:FindPath(start[1], start[2] + 1, start[3], dest[1], dest[2] + 1, dest[3], bodySize, walkType)
+		if tb then 
+			for i, v in ipairs(tb) do 
+				local instance = world:create_instance {
+					prefab = "/pkg/sims.res/assets/cube/cube_green.glb/mesh.prefab",
+					on_ready = function(e)
+						local tags = e.tag['*']
+						local eid = tags[1]
+						local ee<close> = world:entity(eid)
+						local x, y, z = v[1], v[2], v[3]
+						iom.set_position(ee, math3d.vector(x + 0.5, y, z + 0.5))
+						iom.set_scale(ee, 0.4)
+					end
+				}
+				table.insert(hint_instance, instance)
+			end
+		end
+	end
+	start_entity = nil
+	dest_entity = nil
+	scale_index = 0
+	scale_interval = 0;
 end
