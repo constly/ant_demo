@@ -4,8 +4,8 @@ local ltask = require "ltask"
 local region_alloc = require 'world.region'.new
 local npc_mgr_alloc = require 'world.npc_mgr'.new
 
----@type sims.world.main
-local sims_world = import_package 'sims.world'
+---@type ly.world.main
+local sims_world = import_package 'ly.world'
 
 
 ---@param server sims.s.server
@@ -15,7 +15,7 @@ local function new(server)
 	---@field tpl_id number
 	---@field regions map<number, sims.server.region> 区域列表
 	---@field npc_mgr sims.s.server.npc_mgr
-	---@field c_world sims.world.c_world 
+	---@field c_world ly.world.c_world 
 	---@field addrNav number 导航服务器地址
 	local api = {classes = {}, regions = {}}
 

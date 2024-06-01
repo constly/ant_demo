@@ -2,8 +2,8 @@
 local common = import_package 'ly.common'
 local lib = common.lib
 
----@type sims.world.main
-local sims_world = import_package 'sims.world'
+---@type ly.world.main
+local sims_world = import_package 'ly.world'
 local grid_def = sims_world.get_grid_def()
 
 local ltask = require "ltask"

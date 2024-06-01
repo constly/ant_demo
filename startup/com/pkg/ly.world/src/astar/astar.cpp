@@ -17,7 +17,9 @@ bool AStar::Run() {
 	closeList.clear();
 	openList.push_back(start);	
 	while (openList.size() > 0) {
-		const Point& p = openList[0];
+		Point p = openList[0];
+		closeList.insert(p);
+
 		auto& arounds = GetAroundGrids(p); 
 		for (auto& around : arounds) {
 			// 检查是否在开启列表中
@@ -39,8 +41,9 @@ bool AStar::Run() {
 			if (delta == 0)
 				continue;
 
-			// 如果已经在开启列表，且之前的寻路代价更低，则忽略
 			int32_t G = (delta == 1 ? 10 : 14) + p.G;
+
+			// 如果已经在开启列表，且之前的寻路代价更低，则忽略
 			if (find && find->G < G) 
 				continue;
 			
@@ -56,7 +59,6 @@ bool AStar::Run() {
 			parentList[around] = p;
 		}
 
-		closeList.insert(p);
 		openList.erase(openList.begin());
 		std::sort(openList.begin(), openList.end(), [](const Point& a, const Point& b) {return a.GetF() < b.GetF();});
 	}
@@ -115,9 +117,9 @@ void AStar::GenerateFinalPath() {
 		auto first = openList[0];
 		param.path.push_back(first);
 		while(true) {
-			auto it = closeList.find(first);
-			if (it != closeList.end()) {
-				first = *it;
+			auto it = parentList.find(first);
+			if (it != parentList.end()) {
+				first = it->second;
 				if (first.ID == param.start.ID)
 					break;
 				param.path.push_back(first);

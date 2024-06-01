@@ -1,4 +1,33 @@
 {
     "dotnet.defaultSolution": "disable",
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+
+	"script-runner.statusBar": true,
+	"script-runner.definitions": {
+	"ext.desc" : "安装cmd exe插件, 快捷键设置面板搜索ant_demo",
+    "commands": [
+      {
+        "identifier": "ant_demo.run_build",
+        "description": "run_build",
+        "command": "./run_build.bat",
+		"desc": "快捷键 alt + b",
+        "working_directory": ""
+      },
+      {
+        "identifier": "ant_demo.run",
+        "description": "run",
+        "command": "./run.bat",
+		"desc": "快捷键 alt + q",
+        "working_directory": ""
+      },
+	  {
+        "identifier": "ant_test.run",
+        "description": "run",
+        "command": "./run_test.bat",
+		"desc": "快捷键 alt + t",
+        "working_directory": ""
+      }
+    ]
+  }
+
 }

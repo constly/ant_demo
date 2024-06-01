@@ -55,6 +55,17 @@ namespace luabind {
 		return 1;
 	}
 
+	// 得到格子类型
+	static int GetGridType(lua_State* L) {
+		World& world = bee::lua::checkudata<World>(L, 1);
+		int pos_x = (int)luaL_checkinteger(L, 2);  	
+		int pos_y = (int)luaL_checkinteger(L, 3);  	
+		int pos_z = (int)luaL_checkinteger(L, 4);  	
+		EGridType type = world.GetGridData(pos_x, pos_y, pos_z);
+		lua_pushinteger(L, (int)type);
+		return 1;
+	}
+
 	// 设置格子数据
 	static int SetGridData(lua_State* L) {
 		World& world = bee::lua::checkudata<World>(L, 1);
@@ -122,6 +133,9 @@ namespace luabind {
 			{"SetMaxAgentSize", SetMaxAgentSize},
 
 			{"GetGroundHeight", GetGroundHeight},
+			{"GetGridType", GetGridType},
+
+
 			{"SetGridData", SetGridData},
 			{"ClearGridData", ClearGridData},
 			{"FindPath", FindPath},
@@ -142,7 +156,7 @@ static int bCreateWorld(lua_State* L) {
     lua_pushinteger(L, static_cast<lua_Integer>(CLASS::MEMBER)); \
     lua_setfield(L, -2, #MEMBER);
 
-extern "C" int luaopen_sims_world_impl(lua_State *L) {
+extern "C" int luaopen_ly_world_impl(lua_State *L) {
 	lua_newtable(L);
 	lua_pushcfunction(L, bCreateWorld);
 	lua_setfield(L, -2, "CreateWorld");

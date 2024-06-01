@@ -1,5 +1,5 @@
----@type sims.world.main
-local sims_world = import_package 'sims.world'
+---@type ly.world.main
+local sims_world = import_package 'ly.world'
 
 ---@type sims.core
 local core = import_package 'sims.core'

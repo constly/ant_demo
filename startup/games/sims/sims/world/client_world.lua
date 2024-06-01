@@ -1,5 +1,5 @@
----@type sims.world.main
-local sims_world = import_package 'sims.world'
+---@type ly.world.main
+local sims_world = import_package 'ly.world'
 
 local region_alloc = require 'world.client_region'.new
 
@@ -8,7 +8,7 @@ local function new(client)
 	---@class sims.client.world
 	---@field regionId number
 	---@field regions map<number, sims.client.region> 客户端加载的区域列表
-	---@field c_world sims.world.c_world
+	---@field c_world ly.world.c_world
 	local api = {regions = {}}
 	api.c_world = sims_world.create_world()
 	
