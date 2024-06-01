@@ -18,12 +18,14 @@ end
 ---@type ly.game_editor.editor
 local editor = new()
 
-function editor.default_draw()
+function editor.default_draw(margin_x, margin_y)
 	local ImGui = dep.ImGui
 	local size_x, size_y = ImGui.GetContentRegionAvail()
-	size_x = size_x - 50
-	size_y = size_y - 50
-	ImGui.SetCursorPos(20, 30)
+	margin_x = margin_x or 30
+	margin_y = margin_y or 30
+	size_x = size_x - margin_x
+	size_y = size_y - margin_y
+	ImGui.SetCursorPos(margin_x * 0.5, margin_y * 0.5)
 	ImGui.PushStyleVarImVec2(ImGui.StyleVar.WindowPadding, 0, 0)
 	ImGui.BeginChild("##child", size_x, size_y, ImGui.ChildFlags({"Border"}), ImGui.WindowFlags {"NoScrollbar", "NoScrollWithMouse"})
 		editor.draw()

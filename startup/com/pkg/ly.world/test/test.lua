@@ -22,13 +22,17 @@ local function new()
 		---@type ly.world.c_world 
 		local world = world_impl.CreateWorld();
 
-		for i = 1, 10 do 
-			world:SetGridData(i, 0, 1, 1, 1, 1, gridDef.Under_Ground)
-		end
+		world:SetGridData(1, 0, 1, 1, 1, 1, gridDef.Under_Ground)
+		world:SetGridData(2, -1, 1, 1, 1, 1, gridDef.Under_Ground)
+		world:SetGridData(3, 0, 1, 1, 1, 1, gridDef.Under_Ground)
+		world:SetGridData(4, 1, 1, 1, 1, 1, gridDef.Under_Ground)
+		world:SetGridData(5, 2, 1, 1, 1, 1, gridDef.Under_Ground)
+		world:SetGridData(6, 1, 1, 1, 1, 1, gridDef.Under_Ground)
+		world:SetGridData(7, 0, 1, 1, 1, 1, gridDef.Under_Ground)
 		world:Update()
 		assert(world:GetGridType(0, 0, 1) == gridDef.Wall, "检查地形是 墙表面")		
 		assert(world:GetGridType(1, 0, 1) == gridDef.Under_Ground, "检查地形是 地下")
-		assert(world:GetGridType(1, -1, 1) == gridDef.Ceiling, "检查地形是 天花板")
+		assert(world:GetGridType(1, -1, 1) == (gridDef.Ceiling | gridDef.Wall), "检查地形是 天花板")
 		assert(world:GetGridType(1, 1, 1) == gridDef.Ground, "检查地形是 地表面")
 
 		local start = {1, 1, 1}

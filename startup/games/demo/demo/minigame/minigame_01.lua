@@ -3,7 +3,7 @@ local mgr = require "data_mgr"
 local tbParam = 
 {
     ecs             = ecs,
-    system_name     = "minigame_02_system",
+    system_name     = "minigame_01_system",
     category        = mgr.type_minigame,
     name            = "01_模拟人生",
     file            = "minigame/minigame_01.lua",

@@ -1,0 +1,4 @@
+for i = 1, 1 do
+	local name = ("gameplay_%02d"):format(i)
+	system(name).implement(("gameplay/%s.lua"):format(name))
+end

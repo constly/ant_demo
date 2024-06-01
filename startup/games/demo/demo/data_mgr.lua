@@ -104,6 +104,7 @@ function api.reset()
 		{"type_scene",      "场景"},
 		{"type_renderer",   "渲染"},
 		{"type_net",        "网络"},
+		{"type_gameplay",	"玩法"},
 		{"type_minigame",   "完整示例"},
 	}
 	for i, v in ipairs(tb_def) do 

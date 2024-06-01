@@ -84,7 +84,7 @@ std::vector<Point>& AStar::GetAroundGrids(const Point& point) {
 				if (closeList.find(temp) != closeList.end())
 					continue;
 
-				Region* region = world->GetRegionByPos(point.x + x, point.y + y, point.z + z);
+				Region* region = world->GetRegionByPos(temp.x, temp.y, temp.z);
 				if (!region)
 					continue;
 				
@@ -95,7 +95,7 @@ std::vector<Point>& AStar::GetAroundGrids(const Point& point) {
 				EGridType gridType = region->grids[index];
 
 				// 如果地形可以走，则加入到开放列表
-				if (gridType == EGridType::Ground) {
+				if (((int32_t)gridType & (int32_t)EGridType::Ground) != 0) {
 					tempPoints.push_back(temp);
 				}
 			}

@@ -85,6 +85,8 @@ end
 
 
 function system.on_entry()
+	do return end
+	
     local mq = w:first "main_queue camera_ref:in"
     local ce<close> = world:entity(mq.camera_ref)
     local eyepos = math3d.vector(0, 15,-10)
