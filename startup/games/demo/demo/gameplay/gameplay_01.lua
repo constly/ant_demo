@@ -139,7 +139,7 @@ function system.data_changed()
 			scale_index = scale_index + 1
 			local ins = hint_instance[scale_index];
 			if not ins  then 
-				scale_index = 1
+				scale_index = 0
 			else 
 				for idx, ins in ipairs(hint_instance) do 
 					local eid = ins.tag['*'][1]
@@ -151,6 +151,7 @@ function system.data_changed()
 	end
 end
 
+-- 加载地图
 function system.load_map()
 	---@type map<number, sims.grid_def.line>
 	local tbGridDef = {}
@@ -255,6 +256,7 @@ function system.after_pickup()
 	end
 end
 
+-- 寻路，并且绘制路线
 function system.generator_path()
 	system.destroy_hint_instances()
 	local start = grid_id_cache[start_entity]

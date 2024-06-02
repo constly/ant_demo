@@ -65,8 +65,8 @@ public:
 	AStarParam param;
 
 private:
-	// 清理数据
-	void CleanData();
+	// 清理缓存数据
+	void CleanCache();
 
 	// 得到相邻格子
 	std::vector<Point>& GetAroundGrids(const Point& point);
@@ -74,9 +74,17 @@ private:
 	// 生成最终路径
 	void GenerateFinalPath();
 
+	// 是否可以通行
+	bool IsWalkable(const Point& point);
+
+	// 邻居是否可以通行
+	bool IsNeighborWalkable(const Point& point);
+
 private:
 	std::vector<Point> openList;
 	std::set<Point> closeList;
 	std::map<Point, Point> parentList;
-
+	std::map<Point, bool> cacheWalkable;
+	std::map<Point, bool> cacheNeighborWalkable;
+	bool open_debug = false;
 };

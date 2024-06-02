@@ -1,5 +1,5 @@
 cur_object_id: 2
-next_id: 336
+next_id: 340
 region:
   id: 1
   layers:
@@ -769,7 +769,7 @@ region:
     height: 1
     id: 4
     ---
-    active: false
+    active: true
     grids:
       -1_2:
         id: 307
@@ -807,6 +807,9 @@ region:
       -2_5:
         id: 316
         tpl: 3
+      0_-6:
+        id: 337
+        tpl: 2
       0_2:
         id: 304
         tpl: 3
@@ -819,6 +822,9 @@ region:
       0_5:
         id: 314
         tpl: 3
+      1_-6:
+        id: 338
+        tpl: 2
       1_2:
         id: 302
         tpl: 3
@@ -840,6 +846,9 @@ region:
       2_-3:
         id: 280
         tpl: 2
+      2_-6:
+        id: 339
+        tpl: 2
       2_0:
         id: 283
         tpl: 2
@@ -849,6 +858,9 @@ region:
       2_2:
         id: 301
         tpl: 3
+      3_-6:
+        id: 340
+        tpl: 2
     height: 2
     id: 265
     ---
