@@ -9,8 +9,10 @@ local function new(client)
 	---@field regionId number
 	---@field regions map<number, sims.client.region> 客户端加载的区域列表
 	---@field c_world ly.world.c_world
+	---@field ground_cache map<number, number[]> 地面格子缓存
 	local api = {regions = {}}
 	api.c_world = sims_world.create_world()
+	api.ground_cache = {}
 	
 	local last_check_pos = {}
 
@@ -21,6 +23,7 @@ local function new(client)
 			v.destroy()
 		end
 		api.regions = {}
+		api.ground_cache = {}
 		api.c_world:Reset()
 	end
 
@@ -31,6 +34,10 @@ local function new(client)
 
 	function api.tick(delta)
 		api.update_current_region()
+	end
+
+	function api.get_entity_grid_pos(entity_id)
+		return api.ground_cache[entity_id]
 	end
 
 	--- 设置当前所在的区域id

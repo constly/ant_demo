@@ -27,6 +27,21 @@ local function new(nav)
 		api.c_world:SetGridData(grid_x, grid_y, grid_z, size_x, size_y, size_z, value)
 	end
 
+	---@param tbParam sims.rpc_find_path.param
+	function api.find_path(tbParam)
+		local start = tbParam.start
+		local dest = tbParam.dest
+		local bodySize = tbParam.bodySize
+		local walkType = tbParam.walkType
+		local tb = api.c_world:FindPath(start[1], start[2], start[3], dest[1], dest[2], dest[3], bodySize, walkType)
+		if not tb then  
+			print(string.format("failed to find path, start=%s,%s,%s  dest=%s,%s,%s", 
+				start[1], start[2], start[3], dest[1], dest[2], dest[3]))
+		end
+		return tb
+	end
+
+
 	return api
 end 
 

@@ -17,7 +17,7 @@ local function new()
 	api.gate = nil					---@type sims.s.gate
 	api.center = nil				---@type sims.s.center
 	api.world = nil					---@type sims.s.server.world
-	api.nav = nil					---@type sims.s.nav
+	api.nav = nil					---@type sims.s.nav.world
 
 	api.type_client = 1
 	api.type_gate = 2

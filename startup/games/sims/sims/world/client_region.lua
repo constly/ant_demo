@@ -57,11 +57,17 @@ local function new(client, client_world)
 				local instance = ecs_world:create_instance {
 					prefab = def.model .. "/mesh.prefab",
 					on_ready = function(e)
-						local eid = e.tag['*'][1]
+						local tags = e.tag['*']
+						local eid = tags[1]
 						assert(eid, string.format("failed to create create_instance, model = %s", def.model))
 						local ee<close> = ecs_world:entity(eid)
-						iom.set_position(ee, math3d.vector(x + api.start.x + 0.5, y * 0.5 + api.start.y, z + api.start.z + 0.5))
+						local pos_x, pos_y, pos_z = x + api.start.x + 0.5, y * 0.5 + api.start.y, z + api.start.z + 0.5
+						iom.set_position(ee, math3d.vector(pos_x, pos_y, pos_z))
 						iom.set_scale(ee, def.scale)
+
+						local viewId = tags[2]
+						local grid_x, grid_y, grid_z = client.define.world_pos_to_grid_pos(pos_x, pos_y, pos_z)
+						client_world.ground_cache[viewId] = {grid_x, grid_y, grid_z}
 					end
 				}
 				api.grids[index] = instance

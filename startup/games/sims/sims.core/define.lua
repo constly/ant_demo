@@ -1,5 +1,13 @@
+---@type ly.world.main
+local ly_world = import_package 'ly.world'
+
+
 ---@class sims.define 数据定义
 local api = {}
+
+
+---@type ly.world.WalkType
+api.walkType = ly_world.get_walk_type()
 
 -- 区域划分相关
 api.region_size_x = 20

@@ -20,9 +20,6 @@ function m.exit()
 end
 
 function m.data_changed()
-	---@type sims.client
-	local client = world.client
-	
 	for _, _, state, x, y in topick_mb:unpack() do
         if state == "DOWN" then
 			m.set_scale(last_entity, 1)
@@ -34,8 +31,24 @@ end
 
 function m.after_pickup()
 	for _, eid, x, y in pickup_mb:unpack() do 
-		m.set_scale(eid, 1.2)
+		m.set_scale(eid, 0.8)
 		last_entity = eid
+
+		---@type sims.client
+		local client = world.client
+		local v = client.client_world.get_entity_grid_pos(eid)
+		local pos = client.player_ctrl.position
+		if v then 
+			local start_x, start_y, start_z = client.define.world_pos_to_grid_pos(pos.x, pos.y, pos.z)
+			local grid_x, grid_y, grid_z = v[1], v[2] + 1, v[3]
+			---@class sims.rpc_find_path.param
+			local tbSend = {}
+			tbSend.start = {start_x, start_y, start_z}; 			-- 起点
+			tbSend.dest = {grid_x, grid_y, grid_z};					-- 终点
+			tbSend.bodySize = 1;										-- 身体大小
+			tbSend.walkType = client.define.walkType.Ground;			-- 寻路类型
+			client.call_server(client.msg.rpc_find_path, tbSend)
+		end
 		break
 	end
 end

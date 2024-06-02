@@ -6,8 +6,7 @@ local function new(api)
 
 	-- 请求寻路
 	api.reg_nav_rpc(api.rpc_find_path, function(player_id, tbParam)
-		print("nav执行 请求寻路", tbParam)
-		return {1}
+		return api.nav.find_path(tbParam)
 	end, function(tbParam)
 		print("client执行 请求寻路返回", tbParam)
 	end)

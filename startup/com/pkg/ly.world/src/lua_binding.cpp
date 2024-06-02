@@ -96,6 +96,8 @@ namespace luabind {
 	// 寻路
 	static int FindPath(lua_State* L) {
 		World& world = bee::lua::checkudata<World>(L, 1);
+		world.Update();
+		
 		AStarParam& param = world.astar.param;
 		param.start = Point((int)luaL_checkinteger(L, 2), (int)luaL_checkinteger(L, 3), (int)luaL_checkinteger(L, 4)); 
 		param.dest = Point((int)luaL_checkinteger(L, 5), (int)luaL_checkinteger(L, 6), (int)luaL_checkinteger(L, 7));
