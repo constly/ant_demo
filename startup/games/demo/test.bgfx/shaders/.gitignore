@@ -1,0 +1,4 @@
+*.bin
+*.d
+*.hlsl
+bin
