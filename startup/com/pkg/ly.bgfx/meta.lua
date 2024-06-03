@@ -1,0 +1,2 @@
+---@class bgfx
+---@field 

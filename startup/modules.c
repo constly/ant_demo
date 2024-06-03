@@ -28,6 +28,7 @@ int luaopen_ly_net(lua_State *L);
 int luaopen_ly_sound_impl(lua_State* L);
 int luaopen_ly_dotween_impl(lua_State *L);
 int luaopen_ly_world_impl(lua_State *L);
+int luaopen_ly_bgfx_impl(lua_State *L);
 
 // game pkg
 

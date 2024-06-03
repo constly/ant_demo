@@ -119,7 +119,8 @@
 			"ranges": "cpp",
 			"semaphore": "cpp",
 			"*.hpp11": "cpp",
-			"source_location": "cpp"
+			"source_location": "cpp",
+			"bgfx_interface.h": "c"
 		},
 		"lua.debug.variables.showIntegerAsHex": false,
 		"dotnet.defaultSolution": "disable",
