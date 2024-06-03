@@ -7,12 +7,9 @@ local sampler   = require "sampler"
 local platform  = require "bee.platform"
 local OS        = platform.os
 
-local bf 		= require "bee.filesystem"
-print("current_path is:", bf.current_path())
-local ROOT<const> = "../ant_demo/startup/games/demo/test.bgfx"
-
+local utils		= require 'utils' ---@type test.bfgx.utils
+local ROOT<const> = utils.Root
 local caps = bgfx.get_caps()
-
 local renderer<const> = caps.rendererType
 
 local is = ecs.system "init_system"
@@ -260,7 +257,9 @@ end
 
 function is:update()
     bgfx.touch(viewid)
-
+	---@type bgfx.debug.type
+	local debug_type = "T"
+	bgfx.set_debug(debug_type)
     local viewmat = math3d.value_ptr(math3d.lookat(math3d.vector(0, 0, -10), math3d.vector(0, 0, 0), math3d.vector(0, 1, 0)))
     local projmat = math3d.value_ptr(math3d.projmat{aspect=fb_size.w/fb_size.h, fov=90, n=0.01, f=100})
 
@@ -274,5 +273,7 @@ function is:update()
         bgfx.set_texture(0, tex, texhandle)
     end
     draw_simple_mode(viewmat, projmat)
-
+	bgfx.dbg_text_clear()
+	bgfx.dbg_text_print(0, 1, 0x0f, "Color can be changed with ANSI \x1b[9;me\x1b[10;ms\x1b[11;mc\x1b[12;ma\x1b[13;mp\x1b[14;me\x1b[0m code too.");
+	bgfx.dbg_text_print(100, 100, 0x0f, "\x1b[;0m    \x1b[;1m    \x1b[; 2m    \x1b[; 3m    \x1b[; 4m    \x1b[; 5m    \x1b[; 6m    \x1b[; 7m    \x1b[0m")
 end

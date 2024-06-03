@@ -1,5 +1,7 @@
 system "init_system"
-    .implement "init_system.lua"
+	-- 以下选一个例子激活
+    .implement "examples/example_01_helloworld.lua"
+	--.implement "examples/example_02_cubes.lua"
 
 pipeline "init"
     .stage "init"
