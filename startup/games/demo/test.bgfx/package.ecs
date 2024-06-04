@@ -1,7 +1,9 @@
+import_feature "ant.imgui"
+
 system "init_system"
 	-- 以下选一个例子激活
-    .implement "examples/example_01_helloworld.lua"
-	--.implement "examples/example_02_cubes.lua"
+    --.implement "examples/00_helloworld.lua"
+	.implement "examples/01_cubes.lua"
 
 pipeline "init"
     .stage "init"
@@ -10,7 +12,9 @@ pipeline "exit"
     .stage "exit"
 
 pipeline "update"
-    .stage "data_changed"
+	.stage "start_frame"
+	.stage "data_changed"
     .stage "update"
+    .stage "end_frame"
 
 
