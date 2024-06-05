@@ -13,6 +13,9 @@ mkdir %windowd3d11dir%
 %wdir%\bin\msvc\Release\shaderc.exe --platform windows --type fragment -p s_5_0 -f mesh\fs_mesh.sc -o %windowd3d11dir%\fs_mesh.bin --depends -i %shaderinc% --debug
 %wdir%\bin\msvc\Release\shaderc.exe --platform windows --type vertex -p s_5_0 -f mesh\vs_mesh.sc -o %windowd3d11dir%\vs_mesh.bin --depends -i %shaderinc% --debug
 
+%wdir%\bin\msvc\Release\shaderc.exe --platform windows --type fragment -p s_5_0 -f cubes\fs_cubes.sc -o %windowd3d11dir%\fs_cubes.bin --depends -i %shaderinc% --debug
+%wdir%\bin\msvc\Release\shaderc.exe --platform windows --type vertex -p s_5_0 -f cubes\vs_cubes.sc -o %windowd3d11dir%\vs_cubes.bin --depends -i %shaderinc% --debug
+
 %wdir%\bin\msvc\Release\shaderc.exe --platform windows --type fragment -p s_5_0 -f fullquad\fs_quad.sc -o %windowd3d11dir%\fs_quad.bin --depends -i %shaderinc% --debug
 %wdir%\bin\msvc\Release\shaderc.exe --platform windows --type vertex -p s_5_0 -f fullquad\vs_quad.sc -o %windowd3d11dir%\vs_quad.bin --depends -i %shaderinc% --debug
 
