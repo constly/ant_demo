@@ -37,13 +37,12 @@ local is_first_frame
 function system.on_entry()
 	e_light = world:create_instance { prefab = "/pkg/demo.res/light_skybox.prefab" }
 	e_plane = world:create_entity{
-		policy = { "ant.render|simplerender", },
+		policy = { "ant.render|render", },
 		data = {
 			scene = { s = {250, 1, 250}, },
 			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
 			visible	= true,
-			mesh_result = imesh.init_mesh(ientity.plane_mesh(), true),
-			owned_mesh_buffer = true,
+			mesh = "plane.primitive",
 		}
 	}
 

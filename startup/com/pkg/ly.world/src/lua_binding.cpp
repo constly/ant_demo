@@ -1,5 +1,6 @@
 ﻿#include <lua.hpp>
 #include <bee/lua/binding.h>
+#include <bee/lua/udata.h>
 #include "world/world.h"
 
 namespace luabind {

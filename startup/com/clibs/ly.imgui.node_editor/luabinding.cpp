@@ -1,5 +1,6 @@
 #include <lua.hpp>
 #include <bee/lua/binding.h>
+#include <bee/lua/udata.h>
 #include "backend/imgui_impl_bgfx.h"
 #include <bee/nonstd/unreachable.h>
 #include "src/imgui_node_editor.h"

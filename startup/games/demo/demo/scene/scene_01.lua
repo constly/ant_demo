@@ -35,13 +35,12 @@ local tb_keydown = {}
 function system.on_entry()
 	PC:create_instance { prefab = "/pkg/demo.res/light_skybox.prefab" }
 	PC:create_entity{
-		policy = { "ant.render|simplerender", },
+		policy = { "ant.render|render", },
 		data = {
 			scene = { s = {250, 1, 250}, },
 			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
 			visible	= true,
-			mesh_result = imesh.init_mesh(ientity.plane_mesh(), true),
-			owned_mesh_buffer = true,
+			mesh = "plane.primitive",
 		}
 	}
 
@@ -173,6 +172,9 @@ end
 
 function system.play_anim(name)
 	if name == pre_anim_name then return end 
+
+	print("暂时不播放动画，因为有bug, anim name = ", name)
+	do return end
 
 	local entities = p_model.tag['*']
 	for i = 1, #entities do

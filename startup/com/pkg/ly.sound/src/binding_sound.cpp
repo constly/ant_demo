@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <bee/lua/binding.h>
+#include <bee/lua/udata.h>
 #include "fastio.h"
 
 struct CuteSoundMgr {	

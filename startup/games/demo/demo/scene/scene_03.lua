@@ -99,11 +99,11 @@ function system.on_entry()
 		sz = sz or sx
 		return PC:create_entity{
 			policy = {
-				"ant.render|simplerender",
+				"ant.render|render",
 			},
 			data = {
 				scene 		= {s = {sx, 1, sz},},
-				mesh_result = imesh.init_mesh(ientity.plane_mesh()),
+				mesh = "plane.primitive",
 				material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
 				visible     = true,
 			}

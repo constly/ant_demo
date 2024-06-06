@@ -41,7 +41,7 @@ function system.init_world()
 	world:create_instance { prefab = "/pkg/demo.res/light_skybox.prefab" }
 	world:create_entity{
 		policy = {
-			"ant.render|simplerender",
+			"ant.render|render",
 		},
 		data = {
 			scene 		= {
@@ -49,14 +49,13 @@ function system.init_world()
             },
 			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
 			visible     = false,
-			mesh_result	= ientity.plane_mesh(),
-            owned_mesh_buffer = true,
+			mesh = "plane.primitive",
 		}
 	}
 
 	world:create_entity{
 		policy = {
-			"ant.render|simplerender",
+			"ant.render|render",
 		},
 		data = {
 			scene 		= {
@@ -64,8 +63,7 @@ function system.init_world()
             },
 			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
 			visible     = false,
-			mesh_result	= ientity.plane_mesh(),
-            owned_mesh_buffer = true,
+			mesh = "plane.primitive",
 		}
 	}
 

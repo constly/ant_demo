@@ -16,6 +16,7 @@ local common = import_package 'ly.common'
 local games = {
 	{name = "demo", feature = {"demo|gameplay"}, desc = "some usage examples of the ant"},
 	{name = "sims", feature = {"sims"}, desc = "sample project 1"},
+	{name = "bgfx", feature = {"test.bgfx"}, desc = "bgfx examples"},
 }
 
 local selected = tonumber(common.user_data.get("entry.last")) or 1

@@ -4,6 +4,7 @@
 //-------------------------------------------------------------
 #include <lua.hpp>
 #include <bee/lua/binding.h>
+#include <bee/lua/udata.h>
 
 #if defined(_WIN32)
 #   include <Ws2tcpip.h>

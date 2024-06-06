@@ -10,6 +10,7 @@ pipeline "exit"
 
 pipeline "update"
 	.stage "start_frame"
+	.stage "timer"
     .stage "update"
     .stage "end_frame"
 

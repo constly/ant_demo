@@ -43,15 +43,14 @@ function system.on_entry()
 	}
 
 	PC:create_entity{
-		policy = { "ant.render|simplerender" },
+		policy = { "ant.render|render" },
 		data = {
 			scene = {
 				s = {30, 1, 30},	-- 缩放
             },
 			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
 			visible	= true,
-			mesh_result = imesh.init_mesh(ientity.plane_mesh(), true),
-			owned_mesh_buffer = true,
+			mesh = "plane.primitive",
 		}
 	}
 
