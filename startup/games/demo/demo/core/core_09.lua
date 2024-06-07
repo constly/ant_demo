@@ -48,6 +48,22 @@ function system.on_entry()
 	}
 	table.insert(entities, e)
 
+	local e = world:create_entity {
+		policy = {
+			"ant.render|render",
+		},
+		data = {
+			scene 		= {
+				s = {1, 1, 1},	-- 缩放
+				t = {0, 1, 0},	-- 位置
+			},
+			material 	= "/pkg/ant.resources/materials/meshcolor.material",
+			visible     = true,
+			mesh        = "arrow(0.3).primitive",
+		}
+	}
+	table.insert(entities, e)
+
 	local p0 = {-1, -1, -1}
 	local p1 = {3, 3, 3}
 	local scene = { s= 1}
