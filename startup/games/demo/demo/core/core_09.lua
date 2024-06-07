@@ -18,12 +18,12 @@ local imesh = ecs.require "ant.asset|mesh"
 local ientity = ecs.require "ant.entity|entity"
 local icamera = ecs.require "ant.camera|camera"
 local math3d = require "math3d"
+local imaterial = ecs.require "ant.render|material"
 
-local light
-local entities = {}
+local PC  = ecs.require("utils.world_handler").proxy_creator()
 
 function system.on_entry()
-	light = world:create_instance { 
+	PC:create_instance { 
 		prefab = "/pkg/demo.res/light_skybox.prefab",
 		on_ready = function() 
 			local main_queue = w:first "main_queue camera_ref:in"
@@ -35,7 +35,7 @@ function system.on_entry()
 		end
 	}
 
-	local e = world:create_entity{
+	PC:create_entity{
 		policy = { "ant.render|render" },
 		data = {
 			scene 		= {
@@ -44,11 +44,13 @@ function system.on_entry()
 			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
 			visible	= true,
 			mesh = "plane.primitive",
+			on_ready = function(e)
+				imaterial.set_property(e, "u_basecolor_factor", math3d.vector(0, 0.8, 0.8))
+			end
 		}
 	}
-	table.insert(entities, e)
 
-	local e = world:create_entity {
+	PC:create_entity {
 		policy = {
 			"ant.render|render",
 		},
@@ -56,29 +58,27 @@ function system.on_entry()
 			scene 		= {
 				s = {1, 1, 1},	-- 缩放
 				t = {0, 1, 0},	-- 位置
+				r = {0, math.rad(270), 0},
 			},
 			material 	= "/pkg/ant.resources/materials/meshcolor.material",
 			visible     = true,
 			mesh        = "arrow(0.3).primitive",
+			on_ready = function(e)
+				imaterial.set_property(e, "u_color", math3d.vector(0.8, 0.8, 0))
+			end
 		}
 	}
-	table.insert(entities, e)
 
 	local p0 = {-1, -1, -1}
 	local p1 = {3, 3, 3}
 	local scene = { s= 1}
 	local color = {1, 0, 0, 1}
 	local hide = false
-	local e = ientity.create_line_entity(p0, p1, scene, color, hide)
-	table.insert(entities, e)
+	PC:add_entity(ientity.create_line_entity(p0, p1, scene, color, hide))
 end
 
 function system.on_leave()
-	world:remove_instance(light)
-	for i, v in ipairs(entities) do 
-		world:remove_entity(v)
-	end
-	entities = {}
+	PC:clear()
 end
 
 --function system.data_changed()
