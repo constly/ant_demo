@@ -1,6 +1,7 @@
 # Ant Game Engine 学习记录
-学习使用[Ant Game Engine](https://github.com/ejoy/ant)，目前有两个入口:  
-（注，本人平时要上班，以下工作都在业余时间进行，可能进度会比较慢，欢迎有相同意向的加入）
+学习使用[Ant Game Engine](https://github.com/ejoy/ant)，目前有3个入口:  
+![entry](./img/entry.png)
+
 ## 入口1: demo场景 
 主要用于演示引擎基础功能，指导方针如下：
 * 尽可能给每一个功能点都加上示例代码
@@ -15,6 +16,10 @@
 * 统一研发人员与mod开发者的工作流，大家一视同仁，都用一样的工具
 * 如下图所示，左边为游戏编辑器，右边为游戏场景。左边修改后，点击刷新右边立刻重新加载
 ![editor_01](./img/editor_01.png)
+
+## 入口3：bgfx场景
+学习bgfx，准备将部分example用ant实现一遍
+![bgfx_01](./img/bgfx_01.png)
 
 ## 如何运行
 ```
