@@ -82,7 +82,7 @@ function system.on_entry()
 		}
 	}
 
-	for i, v in ipairs({"tetrahedron", "hexahedron"}) do 
+	for i, v in ipairs({"tetrahedron", "cube", "icosahedron"}) do 
 		PC:create_entity {
 			policy = {
 				"ant.render|simplerender",
@@ -93,10 +93,26 @@ function system.on_entry()
 				material    = "/pkg/ant.resources/materials/meshcolor.material",
 				visible     = true,
 				on_ready = function (e)
-					imaterial.set_property(e, "u_color", math3d.vector(1, 1, 1))
+					imaterial.set_property(e, "u_color", math3d.vector(0.4, 0.4, 0.4))
 				end,
 			},
 		}
+
+		local func_name = string.format("create_%s_wireframe", v)
+		if system[func_name] then
+			PC:create_entity{
+				policy = {
+					"ant.render|simplerender",
+				},
+				data = {
+					scene 		= {s = 0.5, t = {i, 1, 0}},
+					material	= "/pkg/ant.resources/materials/line.material",
+					render_layer= "translucent",
+					mesh_result	= system[func_name](),
+					visible		= true,
+				}
+			}
+		end
 	end
 end 
 
@@ -106,7 +122,7 @@ end
 
 local time = 0;
 function system.data_changed()
-	local delta_time = timer.delta() * 0.001
+	local delta_time = timer.delta() * 0.001 * 0.5
 	time = time + delta_time
 	for idx, eid in ipairs(PC._entities) do 
 		local e<close> = world:entity(eid)
@@ -197,6 +213,34 @@ function system.create_cube(u0, v0, u1, v1)
 	return create_mesh(vbdata, ibdata, aabb)
 end
 
+function system.create_cube_wireframe()
+	local vb = {
+													-- z = 0.5
+		-0.5, 	0.5, 	0.5, 	0, 0, 1, 1,
+		0.5, 	0.5, 	0.5, 	0, 1, 1, 1,
+		-0.5, 	-0.5, 	0.5, 	1, 1, 1, 1,
+		0.5, 	-0.5, 	0.5, 	1, 0, 1, 1,
+
+													-- z = -0.5
+		-0.5, 	0.5, 	-0.5, 	0, 0, 0, 1,
+		0.5, 	0.5, 	-0.5, 	0, 1, 0, 1,
+		-0.5, 	-0.5, 	-0.5, 	1, 1, 0, 1,
+		0.5, 	-0.5, 	-0.5, 	1, 0, 0, 1,
+
+	}
+	local vbdata = {"p3|c4", vb}
+	local ibdata = {
+		0, 1, 0, 2, 
+		1, 3, 2, 3,
+		0, 4, 1, 5,
+		2, 6, 3, 7,
+		4, 5, 4, 6, 
+		5, 7, 6, 7,
+	}
+	local aabb = {{-0.5, -0.5, -0.5}, {0.5, 0.5, 0.5}}
+	return create_mesh(vbdata, ibdata, aabb)
+end
+
 function system.create_axis()
 	local r = {1, 0, 0, 1} 
 	local g = {0, 1, 0, 1}
@@ -240,38 +284,87 @@ function system.create_tetrahedron(u0, v0, u1, v1)
 	return create_mesh(vbdata, ibdata, aabb)
 end
 
---- 绘制正六面体
---- https://danielsieger.com/blog/2021/01/03/generating-platonic-solids.html
-function system.create_hexahedron(u0, v0, u1, v1)
-	local a = 1 / math.sqrt(3)
+function system.create_tetrahedron_wireframe()
+	local a = 1 / 3
+	local b = math.sqrt(8 / 9)
+	local c = math.sqrt(2 / 9)
+	local d = math.sqrt(2 / 3)
 	local vb = {
-		-a, -a, -a, 
-		a, -a, -a,
-		a, a, -a,
-		-a, a, -a,
-		-a, -a, a,
-		a, -a, a,
-		a, a, a,
-		-a, a, a,
+		0, 	0, 	1, 	1, 0, 0, 1,
+		-c, d, -a, 0, 1, 0, 1,
+		-c, -d, -a, 0, 0, 1, 1,
+		b, 0, -a, 1, 1, 1, 1,
 	}
-	local vbdata = {"p3", vb}
-	local ibdata = {}
-	local add_quad = function(a, b, c, d)
-		local n = #ibdata
-		ibdata[n + 1] = a
-		ibdata[n + 2] = b
-		ibdata[n + 3] = c
-
-		ibdata[n + 4] = b
-		ibdata[n + 5] = d
-		ibdata[n + 6] = c
-	end
-	add_quad(3, 2, 1, 0)
-	add_quad(2, 6, 5, 1)
-	add_quad(5, 6, 7, 4)
-	add_quad(0, 4, 7, 3)
-	add_quad(3, 7, 6, 2)
-	add_quad(1, 5, 4, 0)
+	local vbdata = {"p3|c4", vb}
+	local ibdata = {
+		0, 1, 2,
+		0, 2, 3,
+		0, 3, 1,
+		3, 2, 1
+	}
 	local aabb = {{-1, -1, 1}, {1, 1, 1}}
 	return create_mesh(vbdata, ibdata, aabb)
+end
+
+function system.create_icosahedron()
+	local phi = (1 + math.sqrt(5)) * 0.5
+	local a = 1
+	local b = 1 / phi
+	local vb = {
+		0, b, -a,
+		b, a, 0,
+		-b, a, 0,
+		0, b, a,
+		0, -b, a,
+		-a, 0, b,
+		0, -b, -a,
+		a, 0, -b,
+		a, 0, b,
+		-a, 0, -b,
+		b, -a, 0,
+		-b, -a, 0,
+	}
+
+	local function norm(a, b, c)
+		return math.sqrt(a * a + b * b + c * c)
+	end
+
+	local function project_to_unit_sphere(tb)
+		for i = 1, #tb, 3 do 
+			local a, b, c = tb[i], tb[i + 1], tb[i + 2]
+			local n = 1 / norm(a, b, c)
+			tb[i], tb[i + 1], tb[i + 2] = n * a, n * b, n * c
+		end
+	end
+	project_to_unit_sphere(vb)
+
+	local vbdata = {"p3", vb}
+	local ibdata = {
+		2, 1, 0, 
+		1, 2, 3, 
+		5, 4, 3, 
+		4, 8, 3, 
+		7, 6, 0, 
+		6, 9, 0, 
+		11, 10, 4, 
+		10, 11, 6, 
+		9, 5, 2, 
+		5, 9, 11, 
+		8, 7, 1, 
+		7, 8, 10, 
+		2, 5, 3, 
+		8, 1, 3, 
+		9, 2, 0, 
+		1, 7, 0, 
+		11, 9, 6,
+		7, 10, 6, 
+		5, 11, 4, 
+		10, 8, 4, 
+	}
+	local aabb = {{-1, -1, 1}, {1, 1, 1}}
+	return create_mesh(vbdata, ibdata, aabb)
+end
+
+function system.create_sphere(triangles)
+	
 end
