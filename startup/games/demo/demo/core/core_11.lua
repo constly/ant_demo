@@ -22,7 +22,9 @@ local imesh 	= ecs.require "ant.asset|mesh"
 local iom   = ecs.require "ant.objcontroller|obj_motion"
 local timer 	= ecs.require "ant.timer|timer_system"
 local renderpkg	= import_package "ant.render"
+local assetmgr  = import_package "ant.asset"
 local layoutmgr = renderpkg.layoutmgr
+local entities = {}
 
 function system.on_entry()
 	PC:create_instance { 
@@ -37,7 +39,6 @@ function system.on_entry()
 		end
 	}
 
-	-- 怎么给panel/cube设置贴图？
 	PC:create_entity{
 		policy = { "ant.render|simplerender" },
 		data = {
@@ -52,6 +53,34 @@ function system.on_entry()
 				imaterial.set_property(e, "u_basecolor_factor", math3d.vector(0.3, 0.3, 0.3))
 			end
 		}
+	}
+
+	local eid = world:create_entity {
+		policy = {
+			"ant.render|render",
+		},
+		data = {
+			scene 	= { s = {5, 1, 2}, t = {0, -1.5, 0}  },
+			material = "/pkg/demo.res/materials/plane.material",
+			visible     = true,
+			mesh        = "plane.primitive",
+			on_ready = function (e)
+				-- 更换默认贴图
+				local tex = assetmgr.resource "/pkg/ant.resources/textures/color_text.texture"
+				imaterial.set_property(e, "s_basecolor", tex.id)
+			end,
+		},
+	}
+	table.insert(entities, eid)
+
+	PC:create_instance {
+		prefab = "/pkg/ant.resources.binary/meshes/base/cube.glb/mesh.prefab",
+		on_ready = function (e)
+			local entity<close> = world:entity(e.tag.Cube[1])
+			imaterial.set_property(entity, "u_basecolor_factor", math3d.vector( 1,0,0,1 )) -- 红色
+			iom.set_position(entity, math3d.vector(-1, -1, 0))
+			iom.set_scale(entity, 0.25)
+		end
 	}
 
 	PC:create_entity {
@@ -118,6 +147,10 @@ end
 
 function system.on_leave()
 	PC:clear()
+	for i, eid in ipairs(entities) do
+		world:remove_entity(eid)
+	end
+	entities = {}
 end
 
 local time = 0;
