@@ -33,7 +33,8 @@ function system.on_entry()
 			local main_queue = w:first "main_queue camera_ref:in"
 			local main_camera <close> = world:entity(main_queue.camera_ref, "camera:in")
 			local dir = math3d.vector(0, -1, 1)
-			local boxcorners = {math3d.vector(-1.0, -1.0, -1.0), math3d.vector(1.0, 1.0, 1.0)}
+			local size = 1
+			local boxcorners = {math3d.vector(-size, -size, -size), math3d.vector(size, size, size)}
 			local aabb = math3d.aabb(boxcorners[1], boxcorners[2])
 			icamera.focus_aabb(main_camera, aabb, dir)
 		end
@@ -60,7 +61,7 @@ function system.on_entry()
 			"ant.render|render",
 		},
 		data = {
-			scene 	= { s = {5, 1, 2}, t = {0, -1.5, 0}  },
+			scene 	= { s = {10, 10, 1}, t = {0, 0, 3}, r = {math.rad(-90), 0, 0}  },
 			material = "/pkg/demo.res/materials/plane.material",
 			visible     = true,
 			mesh        = "plane.primitive",
@@ -69,6 +70,19 @@ function system.on_entry()
 				local tex = assetmgr.resource "/pkg/ant.resources/textures/color_text.texture"
 				imaterial.set_property(e, "s_basecolor", tex.id)
 			end,
+		},
+	}
+	table.insert(entities, eid)
+
+	local eid = world:create_entity {
+		policy = {
+			"ant.render|render",
+		},
+		data = {
+			scene 	= { s = {5, 1, 5}, t = {0, -1.5, 0}  },
+			material = "/pkg/ant.resources/materials/mesh_shadow.material",
+			visible     = true,
+			mesh        = "plane.primitive",
 		},
 	}
 	table.insert(entities, eid)
@@ -110,6 +124,21 @@ function system.on_entry()
 			visible		= true,
 		}
 	}
+
+	PC:create_entity {
+        policy = {
+            "ant.render|simplerender",
+        },
+        data = {
+            scene = {s = 0.5, t = {0, -1, 0}},
+            mesh_result = system.create_sphere(100),
+            material    = "/pkg/ant.resources/materials/meshcolor.material",
+            visible     = true,
+            on_ready = function (e)
+                imaterial.set_property(e, "u_color", math3d.vector(0, 1, 0))
+            end,
+        },
+    }
 
 	for i, v in ipairs({"tetrahedron", "cube", "icosahedron"}) do 
 		PC:create_entity {
@@ -399,5 +428,108 @@ function system.create_icosahedron()
 end
 
 function system.create_sphere(triangles)
-	
+	triangles = triangles or 320
+	local t = (1 + math.sqrt(5)) / 2
+	local points = {}
+	local faces = {}
+	local normals = {}
+	-- add vertex to mesh, fix position to be on unit sphere
+	local function add_point(x, y, z)
+		local length = math.sqrt(x * x + y * y + z * z)
+		local v = 1 / length
+		points[#points + 1] = {x * v, y * v, z * v}
+	end 
+	local function add_face(a, b, c, d, in_faces)
+		local list = in_faces or faces
+		list[#list + 1] = {a, b, c, d}
+	end
+	local function add_normal(p1, p2, p3)
+		normals[#normals + 1] = {p1, p2, p3}
+	end
+	-- create 12 vertices of a icosahedron
+	add_point(-1, t, 0)
+	add_point(1, t, 0)
+	add_point(-1, -t, 0)
+	add_point(1, -t, 0)
+
+	add_point(0, -1, t)
+	add_point(0, 1, t)
+	add_point(0, -1, -t) 
+	add_point(0, 1, -t)
+
+	add_point(t, 0, -1)
+	add_point(t, 0, 1)
+	add_point(-t, 0, -1)
+	add_point(-t, 0, 1)
+
+	-- create 20 triangles of the icosahedron
+	local ni = 0
+	local function create_triangle(idx1, idx2, idx3, faces)
+		add_face(idx1, idx2, idx3, ni, faces)
+		add_normal(idx1, idx2, idx3)
+		ni = ni + 1
+	end
+	create_triangle(0, 11, 5)
+	create_triangle(0, 5, 1)
+	create_triangle(0, 1, 7)
+	create_triangle(0, 7, 10)
+	create_triangle(0, 10, 11)
+	create_triangle(1, 5, 9)
+	create_triangle(5, 11, 4)
+	create_triangle(11, 10, 2)
+	create_triangle(10, 7, 6)
+	create_triangle(7, 1, 8)
+	create_triangle(3, 9, 4)
+	create_triangle(3, 4, 2)
+	create_triangle(3, 2, 6)
+	create_triangle(3, 6, 8)
+	create_triangle(3, 8, 9)
+	create_triangle(4, 9, 5)
+	create_triangle(2, 4, 11)
+	create_triangle(6, 2, 10)
+	create_triangle(8, 6, 7)
+	create_triangle(9, 8, 1)
+
+	-- return index of point in the middle of p1 and p2
+	local function get_middle_point(idx1, idx2)
+		local p1 = points[idx1 + 1]
+		local p2 = points[idx2 + 1]
+		local middle = {(p1[1] + p2[1]) * 0.5, (p1[2] + p2[2]) * 0.5, (p1[3] + p2[3]) * 0.5}
+		add_point(middle[1], middle[2], middle[3])
+		return #points - 1;
+	end
+
+	-- refine triangles
+	while #faces <= triangles do 
+		local faces2 = {}
+		for _, f in ipairs(faces) do 
+			local a = get_middle_point(f[1], f[2])
+			local b = get_middle_point(f[2], f[3])
+			local c = get_middle_point(f[3], f[1])
+
+			create_triangle(f[1], a, c, faces2)
+			create_triangle(f[2], b, a, faces2)
+			create_triangle(f[3], c, b, faces2)
+			create_triangle(a, b, c, faces2)
+		end
+		faces = faces2
+	end
+
+	local vb = {}
+	for _, p in ipairs(points) do 
+		local index = #vb
+		vb[index + 1] = p[1]
+		vb[index + 2] = p[2]
+		vb[index + 3] = p[3]
+	end
+	local vbdata = {"p3", vb}
+	local ibdata = {}
+	for _, f in ipairs(faces) do 
+		local index = #ibdata
+		ibdata[index + 1] = f[1]
+		ibdata[index + 2] = f[2]
+		ibdata[index + 3] = f[3]
+	end
+	local aabb = {{-1, -1, 1}, {1, 1, 1}}
+	return create_mesh(vbdata, ibdata, aabb)
 end
