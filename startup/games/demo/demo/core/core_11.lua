@@ -27,6 +27,7 @@ local layoutmgr = renderpkg.layoutmgr
 local entities = {}
 
 function system.on_entry()
+	-- 天空盒
 	PC:create_instance { 
 		prefab = "/pkg/demo.res/light_skybox.prefab",
 		on_ready = function() 
@@ -40,22 +41,7 @@ function system.on_entry()
 		end
 	}
 
-	PC:create_entity{
-		policy = { "ant.render|simplerender" },
-		data = {
-			scene 		= {
-				s = {0.5, 0.5, 0.5},	-- 缩放
-				t = {-2, 0, 0},
-            },
-			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
-			visible	= true,
-			mesh_result = system.create_plane(),
-			on_ready = function(e)
-				imaterial.set_property(e, "u_basecolor_factor", math3d.vector(0.3, 0.3, 0.3))
-			end
-		}
-	}
-
+	-- 替换plane图片
 	local eid = world:create_entity {
 		policy = {
 			"ant.render|render",
@@ -74,6 +60,7 @@ function system.on_entry()
 	}
 	table.insert(entities, eid)
 
+	-- 最下面的plane，用于展示阴影
 	local eid = world:create_entity {
 		policy = {
 			"ant.render|render",
@@ -87,16 +74,39 @@ function system.on_entry()
 	}
 	table.insert(entities, eid)
 
-	PC:create_instance {
-		prefab = "/pkg/ant.resources.binary/meshes/base/cube.glb/mesh.prefab",
-		on_ready = function (e)
-			local entity<close> = world:entity(e.tag.Cube[1])
-			imaterial.set_property(entity, "u_basecolor_factor", math3d.vector( 1,0,0,1 )) -- 红色
-			iom.set_position(entity, math3d.vector(-1, -1, 0))
-			iom.set_scale(entity, 0.25)
-		end
+	---[[
+	-- 绘制自定义plane
+	PC:create_entity{
+		policy = { "ant.render|simplerender" },
+		data = {
+			scene 		= {
+				s = {0.5, 0.5, 0.5},	-- 缩放
+				t = {-2, 0, 0},
+            },
+			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
+			visible	= true,
+			mesh_result = system.create_plane(),
+			on_ready = function(e)
+				imaterial.set_property(e, "u_basecolor_factor", math3d.vector(0.3, 0.3, 0.3))
+			end
+		}
 	}
 
+	-- 绘制坐标轴
+	PC:create_entity{
+		policy = {
+			"ant.render|simplerender",
+		},
+		data = {
+			scene 		= {s = 0.5, t = {0, 0, 0}},
+			material	= "/pkg/ant.resources/materials/line.material",
+			render_layer= "translucent",
+			mesh_result	= system.create_axis(),
+			visible		= true,
+		}
+	}
+
+	-- 绘制自定义cube
 	PC:create_entity {
         policy = {
             "ant.render|simplerender",
@@ -111,35 +121,39 @@ function system.on_entry()
             end,
         },
     }
+	--]]
 
-	PC:create_entity{
-		policy = {
-			"ant.render|simplerender",
-		},
-		data = {
-			scene 		= {s = 0.5, t = {0, 0, 0}},
-			material	= "/pkg/ant.resources/materials/line.material",
-			render_layer= "translucent",
-			mesh_result	= system.create_axis(),
-			visible		= true,
-		}
+	-- 绘制cube.glb
+	PC:create_instance {
+		prefab = "/pkg/ant.resources.binary/meshes/base/cube.glb/mesh.prefab",
+		on_ready = function (e)
+			local entity<close> = world:entity(e.tag.Cube[1])
+			imaterial.set_property(entity, "u_basecolor_factor", math3d.vector(1, 0, 0, 1 )) -- 红色
+			iom.set_position(entity, math3d.vector(-2, -1, 0))
+			iom.set_scale(entity, 0.25)
+		end
 	}
 
-	PC:create_entity {
-        policy = {
-            "ant.render|simplerender",
-        },
-        data = {
-            scene = {s = 0.5, t = {0, -1, 0}},
-            mesh_result = system.create_sphere(100),
-            material    = "/pkg/ant.resources/materials/meshcolor.material",
-            visible     = true,
-            on_ready = function (e)
-                imaterial.set_property(e, "u_color", math3d.vector(0, 1, 0))
-            end,
-        },
-    }
+	-- 绘制球
+	local nums = {20, 80, 320, 1280}
+	for i, v in ipairs(nums) do
+		PC:create_entity {
+			policy = {
+				"ant.render|simplerender",
+			},
+			data = {
+				scene = {s = 0.5, t = {i - 2, -1, 0}},
+				mesh_result = system.create_sphere(v),
+				material    = "/pkg/ant.resources/materials/meshcolor.material",
+				visible     = true,
+				on_ready = function (e)
+					imaterial.set_property(e, "u_color", math3d.vector(i / #nums, 1 - i / #nums, 0))
+				end,
+			},
+		}
+	end
 
+	---[[
 	for i, v in ipairs({"tetrahedron", "cube", "icosahedron"}) do 
 		PC:create_entity {
 			policy = {
@@ -172,6 +186,7 @@ function system.on_entry()
 			}
 		end
 	end
+	--]]
 end 
 
 function system.on_leave()
@@ -256,7 +271,6 @@ function system.create_cube(u0, v0, u1, v1)
 
 	}
 	local vbdata = {"p3|n3|t2", vb}
-	--local ibdata = {0, 1, 2, 3, 7, 1, 5, 0, 4, 2, 6, 7, 4, 5,}  
 	local ibdata = {
 		0, 1, 2, -- 0
 		1, 3, 2,
@@ -433,15 +447,16 @@ function system.create_sphere(triangles)
 	local points = {}
 	local faces = {}
 	local normals = {}
+
 	-- add vertex to mesh, fix position to be on unit sphere
 	local function add_point(x, y, z)
 		local length = math.sqrt(x * x + y * y + z * z)
 		local v = 1 / length
 		points[#points + 1] = {x * v, y * v, z * v}
 	end 
-	local function add_face(a, b, c, d, in_faces)
+	local function add_face(a, b, c, in_faces)
 		local list = in_faces or faces
-		list[#list + 1] = {a, b, c, d}
+		list[#list + 1] = {a, b, c}
 	end
 	local function add_normal(p1, p2, p3)
 		normals[#normals + 1] = {p1, p2, p3}
@@ -463,11 +478,9 @@ function system.create_sphere(triangles)
 	add_point(-t, 0, 1)
 
 	-- create 20 triangles of the icosahedron
-	local ni = 0
 	local function create_triangle(idx1, idx2, idx3, faces)
-		add_face(idx1, idx2, idx3, ni, faces)
+		add_face(idx1, idx2, idx3, faces)
 		add_normal(idx1, idx2, idx3)
-		ni = ni + 1
 	end
 	create_triangle(0, 11, 5)
 	create_triangle(0, 5, 1)
@@ -500,13 +513,12 @@ function system.create_sphere(triangles)
 	end
 
 	-- refine triangles
-	while #faces <= triangles do 
+	while #faces < triangles do 
 		local faces2 = {}
 		for _, f in ipairs(faces) do 
 			local a = get_middle_point(f[1], f[2])
 			local b = get_middle_point(f[2], f[3])
 			local c = get_middle_point(f[3], f[1])
-
 			create_triangle(f[1], a, c, faces2)
 			create_triangle(f[2], b, a, faces2)
 			create_triangle(f[3], c, b, faces2)
