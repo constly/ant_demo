@@ -2,17 +2,23 @@ local bgfx    	= require "bgfx"	---@type bgfx
 local ImGui 	= require "imgui"
 local viewid = 2
 
+---@type test.bgfx.example 
 local api = {}
 local s_logo
 
-function api.update()
-    bgfx.touch(viewid)	
+function api.on_entry()
 	bgfx.set_debug("T")
-	bgfx.reset(Screen_Width, Screen_Height, "vmx")
-	bgfx.set_view_rect(viewid, ContentStartX, ContentStartY, ContentSizeX, ContentSizeY)
 	bgfx.set_view_clear(viewid, "CD", 0x303030ff, 1, 0)
 	bgfx.dbg_text_clear()
+end
 
+function api.on_resize()
+	bgfx.set_view_rect(viewid, ContentStartX, ContentStartY, ContentSizeX, ContentSizeY)
+end
+
+function api.update()
+    bgfx.touch(viewid)	
+	
 	local stats = bgfx.get_stats("sd")
 	bgfx.dbg_text_image(
 		math.max(stats.textWidth // 2, 20) - 20, 	-- // 表示 整除运算符，比如 5//2 输出结果 2

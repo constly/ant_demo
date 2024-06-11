@@ -1,8 +1,9 @@
 ---@class test.bgfx.example 
 ---@field _name string
----@field on_entry function
----@field on_exit function
----@field update function
+---@field on_entry function 当进入时
+---@field on_exit function	当离开时
+---@field on_resize function 当窗口大小改变时
+---@field update function 每帧更新
 
 ---@class test.bgfx.data_mgr
 local api = {}
@@ -46,11 +47,20 @@ function api.entry(ins)
 		api.Current.on_exit()
 	end
 	api.Current = ins
-	if api.Current.on_entry then
-		api.Current.on_entry()
+	if ins.on_entry then
+		ins.on_entry()
+	end
+	if ins.on_resize() then
+		ins.on_resize()
 	end
 	if ins then
 		common.user_data.set("test.bgfx.current", ins._name, true)
+	end
+end
+
+function api.on_resize()
+	if api.Current and api.Current.on_resize then 
+		api.Current.on_resize()
 	end
 end
 

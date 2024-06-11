@@ -12,7 +12,12 @@ function bgfx.get_caps() end
 function bgfx.get_stats() end
 function bgfx.get_memory() end
 
-function bgfx.reset() end
+--- Reset graphic settings and back-buffer size.
+---@param _width number Back-buffer width.
+---@param _height number Back-buffer height.
+---@param _flags string See: BGFX_RESET_* for more info.
+--- attention This call doesn’t change the window size, it just resizes the back-buffer. Your windowing code controls the window size.
+function bgfx.reset(_width, _height, _flags) end
 function bgfx.frame() end
 function bgfx.render_frame() end
 
