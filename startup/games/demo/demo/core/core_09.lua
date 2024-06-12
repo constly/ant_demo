@@ -35,11 +35,12 @@ function system.on_entry()
 		end
 	}
 
+	-- plane
 	PC:create_entity{
 		policy = { "ant.render|render" },
 		data = {
 			scene 		= {
-				s = {2, 1, 2},	-- 缩放
+				s = {5, 1, 5},	-- 缩放
             },
 			material 	= "/pkg/demo.res/materials/primitive.material",
 			visible	= true,
@@ -50,12 +51,13 @@ function system.on_entry()
 		}
 	}
 
+	-- cube
 	PC:create_entity{
 		policy = { "ant.render|render" },
 		data = {
 			scene 		= {
 				s = {0.5, 0.5, 0.5},	-- 缩放
-				t = {0, 0.5, 0},
+				t = {-2, 0.5, 0},
             },
 			material 	= "/pkg/demo.res/materials/primitive.material",
 			visible	= true,
@@ -68,6 +70,7 @@ function system.on_entry()
 		}
 	}
 
+	-- arrow
 	PC:create_entity {
 		policy = {
 			"ant.render|render",
@@ -75,11 +78,13 @@ function system.on_entry()
 		data = {
 			scene 		= {
 				s = {1, 1, 1},	-- 缩放
-				t = {0, 1, 0},	-- 位置
+				t = {1, 0.5, 0},	-- 位置
 				r = {0, math.rad(270), 0},
 			},
 			material 	= "/pkg/ant.resources/materials/meshcolor.material",
 			visible     = true,
+			visible_masks = "main_view|cast_shadow",
+			cast_shadow = true,
 			mesh        = "arrow(0.3).primitive",
 			on_ready = function(e)
 				imaterial.set_property(e, "u_color", math3d.vector(0.8, 0.8, 0))
@@ -87,9 +92,28 @@ function system.on_entry()
 		}
 	}
 
-	local p0 = {-1, -1, -1}
-	local p1 = {3, 3, 3}
-	local scene = { s= 1}
+	-- sphere
+	PC:create_entity {
+		policy = {
+			"ant.render|render",
+		},
+		data = {
+			scene = {s = 0.5, t = {0, 1, 0}},
+			material    = "/pkg/demo.res/materials/sphere.material",
+			visible     = true,
+			cast_shadow = true,
+			visible_masks = "main_view|cast_shadow",
+			mesh        = "sphere.primitive",
+			on_ready = function (e)
+				imaterial.set_property(e, "u_basecolor_factor", math3d.vector(1, 1, 0, 1))
+			end,
+		},
+	}
+
+	-- line
+	local p0 = {-1, 0, -3}
+	local p1 = {-1, 0, 3}
+	local scene = { s = 2}
 	local color = {1, 0, 0, 1}
 	local hide = false
 	PC:add_entity(ientity.create_line_entity(p0, p1, scene, color, hide))
