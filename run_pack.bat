@@ -15,9 +15,9 @@ set dest_dir=%current_dir%publish\
 
 luamake -mode %mode%
 luamake -mode release tools
-"./bin/msvc/%mode%/ant_demo.exe" -p
+"./bin/msvc/%mode%/demo_ant.exe" -p
 
-copy %src_dir%ant_demo.exe %dest_dir%\ant.exe
+copy %src_dir%demo_ant.exe %dest_dir%\demo.exe
 copy %src_dir%fmod.dll %dest_dir%
 copy %src_dir%fmodstudio.dll %dest_dir%
 

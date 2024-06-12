@@ -86,7 +86,7 @@ if lm.os == "windows" then
     lm:default {
         "ant",
         "copy_dll",
-        "ant_demo",
+        "demo_ant",
         lm.sanitize and "copy_asan_v2",
     }
     return
@@ -95,12 +95,12 @@ end
 if lm.os == "ios" then
     lm:default {
         "bgfx-lib",
-        "ant_demo",
+        "demo_ant",
     }
     return
 end
 
 lm:default {
     "ant",
-    "ant_demo",
+    "demo_ant",
 }

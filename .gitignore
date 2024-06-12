@@ -9,7 +9,7 @@ lua.booster.lint.json
 
 startup/games/demo/demo.res/designer/space.work
 
-publish/ant.exe
+publish/demo.exe
 publish/fmod.dll
 publish/fmodstudio.dll
 publish/internal

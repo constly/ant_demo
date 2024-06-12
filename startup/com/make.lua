@@ -24,7 +24,7 @@ lm:copy "bootstrap_lua" {
 local LuaInclude = lm.AntDir .. "/3rd/bee.lua/3rd/lua"
 
 if lm.os == "ios" then
-    lm:lib "ant_demo" {
+    lm:lib "demo_ant" {
         deps = {
             "ant_runtime",
             "ant_links",
@@ -55,8 +55,8 @@ if lm.os == "android" then
         error("unknown arch:" .. tostring(arch))
     end
 
-    lm:dll "ant_demo" {
-        basename = "libant_demo",
+    lm:dll "demo_ant" {
+        basename = "libdemo_ant",
         crt = "static",
         bindir = "runtime/android/app/src/main/jniLibs/" .. jniDir,
         deps = {
@@ -76,7 +76,7 @@ if lm.os == "android" then
 end
 
 if lm.os == "macos" then
-    lm:lib "ant_demo_rt_static" {
+    lm:lib "demo_ant_rt_static" {
         deps = {
             "ant_runtime",
             "ant_links",
@@ -90,7 +90,7 @@ if lm.os == "macos" then
         sources = "../modules.c"
     }
 
-    lm:exe "ant_demo" {			-- 编辑器版本
+    lm:exe "demo_ant" {			-- 编辑器版本
         deps = {
             "ant_editor",
             "bgfx-lib",
@@ -107,7 +107,7 @@ if lm.os == "macos" then
         },
         sources = "../modules.c"
     }
-    lm:exe "ant_demo_rt" {		-- 运行时版本
+    lm:exe "demo_ant_rt" {		-- 运行时版本
         deps = {
             "ant_runtime",
             "bgfx-lib",
@@ -132,7 +132,7 @@ if lm.os == "macos" then
     return
 end
 
-lm:exe "ant_demo" {	
+lm:exe "demo_ant" {	
     deps = {
         "ant_runtime",
         "bgfx-lib",
@@ -149,6 +149,6 @@ lm:exe "ant_demo" {
     },
     sources = {
         "../modules.c",
-        "../../runtime/win32/ant_demo.rc"
+        "../../runtime/win32/demo_ant.rc"
     }
 }

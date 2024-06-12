@@ -1,2 +1,2 @@
 chcp 65001
-"./bin/msvc/debug/ant_demo.exe" "startup/main.lua"
+"./bin/msvc/debug/demo_ant.exe" "startup/main.lua"

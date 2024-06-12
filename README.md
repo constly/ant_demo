@@ -39,18 +39,18 @@ run.bat
 ## 工具链相关
 ### 一. 客户端多开
 方式1:  
-1. 运行文件服务器: "./bin/msvc/debug/ant_demo.exe" -s
-2. 启动运行时版本: "./bin/msvc/debug/ant_demo.exe" -rt
+1. 运行文件服务器: "./bin/msvc/debug/demo_ant.exe" -s
+2. 启动运行时版本: "./bin/msvc/debug/demo_ant.exe" -rt
 3. 日志输出在: startup/.app/log/runtime-1.log  
 
 方式2:  
 1. 执行run_pack.bat打包
-2. 启动publish/run.bat
+2. 启动publish/demo.exe
 
 
 ### 二. 调试C++
 1. 用Visual Studio打开项目根目录
-2. 将bin/msvc/debug/ant_demo.exe设置为启动项, 启动即可调试C++
+2. 将bin/msvc/debug/demo_ant.exe设置为启动项, 启动即可调试C++
 
 ### 三. 关于编译
 1. 某些情况下会报奇怪的编译报错，这时可以看文件中是否有中文，改下文件的编码或者把中文删掉试试
@@ -72,7 +72,7 @@ run.bat
 ### 七. 打包
 1. 执行run_pack.bat，相关文件会发布到publish/下
 2. 目前只考虑了windows平台
-3. 点击publish/run.bat启动游戏
+3. 点击publish/demo.exe启动游戏
 
 ## deom场景部分内容展示
 ![imgui_02](./img/imgui_02.png)
