@@ -13,3 +13,4 @@ whitelist:
 block:
 	/pkg/ant.efk/efkbgfx
 	/pkg/ant.resources.test
+	/pkg/ant.resources.binary

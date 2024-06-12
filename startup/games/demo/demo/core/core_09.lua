@@ -39,13 +39,31 @@ function system.on_entry()
 		policy = { "ant.render|render" },
 		data = {
 			scene 		= {
-				s = {1, 1, 1},	-- 缩放
+				s = {2, 1, 2},	-- 缩放
             },
-			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
+			material 	= "/pkg/demo.res/materials/primitive.material",
 			visible	= true,
 			mesh = "plane.primitive",
 			on_ready = function(e)
 				imaterial.set_property(e, "u_basecolor_factor", math3d.vector(0, 0.8, 0.8))
+			end
+		}
+	}
+
+	PC:create_entity{
+		policy = { "ant.render|render" },
+		data = {
+			scene 		= {
+				s = {0.5, 0.5, 0.5},	-- 缩放
+				t = {0, 0.5, 0},
+            },
+			material 	= "/pkg/demo.res/materials/primitive.material",
+			visible	= true,
+			visible_masks = "main_view|cast_shadow",
+			cast_shadow = true,
+			mesh = "cube.primitive",
+			on_ready = function(e)
+				imaterial.set_property(e, "u_basecolor_factor", math3d.vector(1, 0.2, 0.8))
 			end
 		}
 	}

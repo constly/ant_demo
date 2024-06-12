@@ -83,7 +83,7 @@ function system.on_entry()
 				s = {0.5, 0.5, 0.5},	-- 缩放
 				t = {-2, 0, 0},
             },
-			material 	= "/pkg/ant.resources/materials/mesh_shadow.material",
+			material 	= "/pkg/demo.res/materials/primitive.material",
 			visible	= true,
 			mesh_result = system.create_plane(),
 			on_ready = function(e)
@@ -114,7 +114,7 @@ function system.on_entry()
         data = {
             scene = {s = 0.5, t = {-1, 0, 0}},
             mesh_result = system.create_cube(),
-            material    = "/pkg/ant.resources/materials/mesh_shadow.material",
+            material    = "/pkg/demo.res/materials/primitive.material",
             visible     = true,
             on_ready = function (e)
                 imaterial.set_property(e, "u_basecolor_factor", math3d.vector(1, 1, 1))
@@ -125,7 +125,7 @@ function system.on_entry()
 
 	-- 绘制cube.glb
 	PC:create_instance {
-		prefab = "/pkg/ant.resources.binary/meshes/base/cube.glb/mesh.prefab",
+		prefab = "/pkg/demo.res/npc/cube/cube.glb/mesh.prefab",
 		on_ready = function (e)
 			local entity<close> = world:entity(e.tag.Cube[1])
 			imaterial.set_property(entity, "u_basecolor_factor", math3d.vector(1, 0, 0, 1 )) -- 红色
@@ -144,12 +144,12 @@ function system.on_entry()
 			data = {
 				scene = {s = 0.5, t = {i - 2, -1, -0.25}},
 				mesh_result = system.create_sphere(v),
-				material    = "/pkg/ant.resources/materials/meshcolor.material",
+				material    = "/pkg/demo.res/materials/sphere.material",
 				visible     = true,
 				cast_shadow = true,
 				visible_masks = "main_view|cast_shadow",
 				on_ready = function (e)
-					imaterial.set_property(e, "u_color", math3d.vector(i / #nums, 1 - i / #nums, 0))
+					imaterial.set_property(e, "u_basecolor_factor", math3d.vector(i / #nums, 1 - i / #nums, 0))
 				end,
 			},
 		}
@@ -261,33 +261,58 @@ function system.create_cube(u0, v0, u1, v1)
 		u0, v0, u1, v1 = 0, 0, 1, 1
 	end
 	local vb = {
-													-- z = 0.5
-		-0.5, 	0.5, 	0.5, 	0, 1, 0, u0, v0,	--left top
-		0.5, 	0.5, 	0.5, 	0, 1, 0, u1, v0,	--right top
-		-0.5, 	-0.5, 	0.5, 	0, 1, 0, u0, v1,	--left bottom
-		0.5, 	-0.5, 	0.5, 	0, 1, 0, u1, v1,	--right bottom
-
-													-- z = -0.5
-		-0.5, 	0.5, 	-0.5, 	0, 1, 0, u0, v0,	--left top
-		0.5, 	0.5, 	-0.5, 	0, 1, 0, u1, v0,	--right top
-		-0.5, 	-0.5, 	-0.5, 	0, 1, 0, u0, v1,	--left bottom
-		0.5, 	-0.5, 	-0.5, 	0, 1, 0, u1, v1,	--right bottom
+		-- top            x   y   z  u  v
+		-0.5,  0.5,  0.5, 0,  1,  0, 0, 0,
+		 0.5,  0.5,  0.5, 0,  1,  0, 1, 0,
+		-0.5,  0.5, -0.5, 0,  1,  0, 0, 1,
+		 0.5,  0.5, -0.5, 0,  1,  0, 1, 1,
+		-- bottom
+		-0.5, -0.5,  0.5, 0, -1,  0, 0, 0,
+		 0.5, -0.5,  0.5, 0, -1,  0, 1, 0,
+		-0.5, -0.5, -0.5, 0, -1,  0, 0, 1,
+		 0.5, -0.5, -0.5, 0, -1,  0, 1, 1,
+		 -- front
+		-0.5,  0.5, -0.5, 0,  0, -1, 0, 0,
+		 0.5,  0.5, -0.5, 0,  0, -1, 1, 0,
+		-0.5, -0.5, -0.5, 0,  0, -1, 0, 1,
+		 0.5, -0.5, -0.5, 0,  0, -1, 1, 1,
+		 -- back
+		-0.5,  0.5,  0.5, 0,  0,  1, 0, 0,
+		 0.5,  0.5,  0.5, 0,  0,  1, 1, 0,
+		-0.5, -0.5,  0.5, 0,  0,  1, 0, 1,
+		 0.5, -0.5,  0.5, 0,  0,  1, 1, 1,
+		 -- left
+	    -0.5, -0.5,  0.5, -1,  0, 0, 0, 0,
+		-0.5,  0.5,  0.5, -1,  0, 0, 1, 0,
+		-0.5, -0.5, -0.5, -1,  0, 0, 0, 1,
+		-0.5,  0.5, -0.5, -1,  0, 0, 1, 1,
+		-- right
+	     0.5, -0.5,  0.5,  1,  0, 0, 0, 0,
+		 0.5,  0.5,  0.5,  1,  0, 0, 1, 0,
+		 0.5, -0.5, -0.5,  1,  0, 0, 0, 1,
+		 0.5,  0.5, -0.5,  1,  0, 0, 1, 1,
 
 	}
 	local vbdata = {"p3|n3|t2", vb}
 	local ibdata = {
-		0, 1, 2, -- 0
-		1, 3, 2,
-		4, 6, 5, -- 2
-		5, 6, 7,
-		0, 2, 4, -- 4
-		4, 2, 6,
-		1, 5, 3, -- 6
-		5, 7, 3,
-		0, 4, 1, -- 8
-		4, 5, 1,
-		2, 3, 6, -- 10
-		6, 3, 7,
+		0,  1,  2,
+		1,  3,  2,
+
+		4,  6,  5,
+		5,  6,  7,
+
+
+		8,  9,  10,
+		9,  11, 10,
+
+		12,  14, 13,
+		13,  14, 15,
+
+		16,  17, 18,
+		17,  19, 18,
+
+		20,  22, 21,
+		21,  22, 23,
 	}
 	local aabb = {{-0.5, -0.5, -0.5}, {0.5, 0.5, 0.5}}
 	return create_mesh(vbdata, ibdata, aabb)
