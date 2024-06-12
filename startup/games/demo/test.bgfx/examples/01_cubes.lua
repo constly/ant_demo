@@ -11,13 +11,13 @@ local ctx = {}
 local time = 0;
 
 local s_ptNames = {
-	"Triangle List",
-	"Triangle Strip",
-	"Lines",
-	"Line Strip",
-	"Points",
+	{"Triangle List", 	nil},
+	{"Triangle Strip", 	"TRISTRIP"},
+	{"Lines", 			"LINES"},
+	{"Line Strip", 		"LINESTRIP"},
+	{"Points",			"POINTS"},
 }
-local cur_combo = s_ptNames[1]
+local cur_combo = 1
 local check_r = {true}
 local check_g = {true}
 local check_b = {true}
@@ -40,8 +40,56 @@ function api.on_entry()
 	buf[112+1] = string.pack("fffL", 1.0, -1.0, -1.0, 0xffffffff)
 
 	ctx.vb = bgfx.create_vertex_buffer(buf, ctx.vdecl)
-	ctx.ib = bgfx.create_index_buffer{
-		0, 1, 2, 3, 7, 1, 5, 0, 4, 2, 6, 7, 4, 5,
+	ctx.ib = {}
+
+	-- cube triangle list
+	ctx.ib[1] = bgfx.create_index_buffer {
+		0, 1, 2, -- 0
+		1, 3, 2,
+		4, 6, 5, -- 2
+		5, 6, 7,
+		0, 2, 4, -- 4
+		4, 2, 6,
+		1, 5, 3, -- 6
+		5, 7, 3,
+		0, 4, 1, -- 8
+		4, 5, 1,
+		2, 3, 6, -- 10
+		6, 3, 7,
+	}
+
+	-- cube triangle strip
+	ctx.ib[2] = bgfx.create_index_buffer{
+		0, 1, 2, 
+		3, 7, 1, 5, 0, 4, 2, 6, 7, 4, 5,
+	}
+
+	-- cube line list
+	ctx.ib[3] = bgfx.create_index_buffer {
+		0, 1,
+		0, 2,
+		0, 4,
+		1, 3,
+		1, 5,
+		2, 3,
+		2, 6,
+		3, 7,
+		4, 5,
+		4, 6,
+		5, 7,
+		6, 7,
+	}
+
+	-- cube line strip
+	ctx.ib[4] = bgfx.create_index_buffer {
+		0, 2, 3, 1, 5, 7, 6, 4,
+		0, 2, 6, 4, 5, 7, 3, 1,
+		0,
+	}
+
+	-- cube points
+	ctx.ib[5] = bgfx.create_index_buffer {
+		0, 1, 2, 3, 4, 5, 6, 7
 	}
 
 	bgfx.set_debug("")
@@ -50,7 +98,9 @@ end
 
 function api.on_exit()
 	bgfx.destroy(ctx.prog)
-	bgfx.destroy(ctx.ib)
+	for i, v in pairs(ctx.ib) do 
+		bgfx.destroy(v)
+	end
 	bgfx.destroy(ctx.vb)
 end
 
@@ -73,16 +123,17 @@ function api.update(delta_time)
 	local window_flag = ImGui.WindowFlags {"NoScrollbar", "NoScrollWithMouse", "NoTitleBar", "NoResize"}
 	if ImGui.Begin("menu", nil, window_flag) then 
 		ImGui.Checkbox("Write R##checkbox_r", check_r)
-		ImGui.Checkbox("Write G##checkbox_r", check_g)
-		ImGui.Checkbox("Write B##checkbox_r", check_b)
-		ImGui.Checkbox("Write A##checkbox_r", check_a)
+		ImGui.Checkbox("Write G##checkbox_g", check_g)
+		ImGui.Checkbox("Write B##checkbox_b", check_b)
+		ImGui.Checkbox("Write A##checkbox_a", check_a)
 
 		ImGui.Text("Primitive topology:");
 		ImGui.SetNextItemWidth(width - 10)
-        if ImGui.BeginCombo("##combo_4", cur_combo) then
-            for i, name in ipairs(s_ptNames) do
+        if ImGui.BeginCombo("##combo_4", s_ptNames[cur_combo][1]) then
+            for i, v in ipairs(s_ptNames) do
+				local name = v[1]
                 if ImGui.Selectable(name, name == cur_combo) then
-                    cur_combo = name
+                    cur_combo = i
                 end
             end
             ImGui.EndCombo()
@@ -90,12 +141,18 @@ function api.update(delta_time)
 	end
 	ImGui.End()
 	
+	local mask = "Z"
+	if check_r[1] then mask = mask .. "R" end
+	if check_g[1] then mask = mask .. "G" end
+	if check_b[1] then mask = mask .. "B" end
+	if check_a[1] then mask = mask .. "A" end
+
 	local state = bgfx.make_state({ 
-		PT = "TRISTRIP", 
+		PT = s_ptNames[cur_combo][2], 
 		MSAA = true, 
 		CULL = "CW",
 		DEPTH_TEST = "LESS",
-		WRITE_MASK = "RGBA",
+		WRITE_MASK = mask,
 	})	
 
 	bgfx.touch(viewid)
@@ -104,7 +161,7 @@ function api.update(delta_time)
 		for xx = 0, 10 do
 			bgfx.set_transform { r = { time + xx*0.21, time + yy*0.37, 0 }, t = { -15.0 + xx * 3, -15.0 + yy * 3, 0 } }
 			bgfx.set_vertex_buffer(ctx.vb)
-			bgfx.set_index_buffer(ctx.ib)
+			bgfx.set_index_buffer(ctx.ib[cur_combo])
 			bgfx.set_state(state)
 			bgfx.submit(viewid, ctx.prog)
 		end
