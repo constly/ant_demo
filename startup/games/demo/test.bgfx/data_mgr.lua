@@ -32,6 +32,7 @@ local function init()
 	end
 	reg("00_helloworld")
 	reg("01_cubes")
+	reg("02_metaballs")
 
 	if not api.Current then
 		api.entry(api.tbExamples[1])
@@ -50,7 +51,7 @@ function api.entry(ins)
 	if ins.on_entry then
 		ins.on_entry()
 	end
-	if ins.on_resize() then
+	if ins.on_resize then
 		ins.on_resize()
 	end
 	if ins then

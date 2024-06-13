@@ -19,6 +19,9 @@ mkdir %windowd3d11dir%
 %wdir%\bin\msvc\Release\shaderc.exe --platform windows --type fragment -p s_5_0 -f fullquad\fs_quad.sc -o %windowd3d11dir%\fs_quad.bin --depends -i %shaderinc% --debug
 %wdir%\bin\msvc\Release\shaderc.exe --platform windows --type vertex -p s_5_0 -f fullquad\vs_quad.sc -o %windowd3d11dir%\vs_quad.bin --depends -i %shaderinc% --debug
 
+%wdir%\bin\msvc\Release\shaderc.exe --platform windows --type fragment -p s_5_0 -f metaballs\fs_metaballs.sc -o %windowd3d11dir%\fs_metaballs.bin --depends -i %shaderinc% --debug
+%wdir%\bin\msvc\Release\shaderc.exe --platform windows --type vertex -p s_5_0 -f metaballs\vs_metaballs.sc -o %windowd3d11dir%\vs_metaballs.bin --depends -i %shaderinc% --debug
+
 set windowvkdir=%windowsdir%\vulkan
 echo build windows vk shader in %windowvkdir%...
 mkdir %windowvkdir%
@@ -32,6 +35,9 @@ echo build window vk raw shader...
 
 %wdir%\bin\msvc\Release\shaderc.exe --platform windows --type fragment -p spirv -f fullquad\fs_quad.sc -o %windowvkdir%\fs_quad.bin --depends -i %shaderinc% --debug
 %wdir%\bin\msvc\Release\shaderc.exe --platform windows --type vertex -p spirv -f fullquad\vs_quad.sc -o %windowvkdir%\vs_quad.bin --depends -i %shaderinc% --debug
+
+%wdir%\bin\msvc\Release\shaderc.exe --platform windows --type fragment -p spirv -f metaballs\fs_metaballs.sc -o %windowvkdir%\fs_metaballs.bin --depends -i %shaderinc% --debug
+%wdir%\bin\msvc\Release\shaderc.exe --platform windows --type vertex -p spirv -f metaballs\vs_metaballs.sc -o %windowvkdir%\vs_metaballs.bin --depends -i %shaderinc% --debug
 
 set androiddir=bin\android
 set androidvkdir=%androiddir%\vulkan
