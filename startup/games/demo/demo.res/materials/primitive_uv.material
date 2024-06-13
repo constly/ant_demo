@@ -3,6 +3,8 @@ fx:
   varyings:
     a_position: vec3
     a_normal: vec3
+	a_texcoord0: vec2
+    v_texcoord0: vec2
     v_posWS: "vec3 TEXCOORD1"
     v_normal: "vec3 TEXCOORD2"
 properties:

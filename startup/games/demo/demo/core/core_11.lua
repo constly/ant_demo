@@ -83,7 +83,7 @@ function system.on_entry()
 				s = {0.5, 0.5, 0.5},	-- 缩放
 				t = {-2, 0, 0},
             },
-			material 	= "/pkg/demo.res/materials/primitive.material",
+			material 	= "/pkg/demo.res/materials/primitive_uv.material",
 			visible	= true,
 			mesh_result = system.create_plane(),
 			on_ready = function(e)
@@ -114,7 +114,7 @@ function system.on_entry()
         data = {
             scene = {s = 0.5, t = {-1, 0, 0}},
             mesh_result = system.create_cube(),
-            material    = "/pkg/demo.res/materials/primitive.material",
+            material    = "/pkg/demo.res/materials/primitive_uv.material",
             visible     = true,
             on_ready = function (e)
                 imaterial.set_property(e, "u_basecolor_factor", math3d.vector(1, 1, 1))
@@ -144,7 +144,7 @@ function system.on_entry()
 			data = {
 				scene = {s = 0.5, t = {i - 2, -1, -0.25}},
 				mesh_result = system.create_sphere(v),
-				material    = "/pkg/demo.res/materials/sphere.material",
+				material    = "/pkg/demo.res/materials/primitive.material",
 				visible     = true,
 				cast_shadow = true,
 				visible_masks = "main_view|cast_shadow",

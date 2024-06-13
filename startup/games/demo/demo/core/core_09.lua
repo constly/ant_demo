@@ -99,7 +99,7 @@ function system.on_entry()
 		},
 		data = {
 			scene = {s = 0.5, t = {0, 1, 0}},
-			material    = "/pkg/demo.res/materials/sphere.material",
+			material    = "/pkg/demo.res/materials/primitive.material",
 			visible     = true,
 			cast_shadow = true,
 			visible_masks = "main_view|cast_shadow",
