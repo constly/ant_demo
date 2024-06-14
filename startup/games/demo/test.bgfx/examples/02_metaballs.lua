@@ -54,7 +54,7 @@ local function vertLerp(result, iso, idx0, v0, idx1, v1)
 	return lerp
 end
 
-local function triangulate(tvb, offset, rgb, xyz, val, iso)
+local function triangulate(tvb, offset, rgb, xyz, val, iso, scale)
 	local cubeindex = 0
 	if val[1].val < iso then cubeindex = cubeindex | 0x01 end
 	if val[2].val < iso then cubeindex = cubeindex | 0x02 end
@@ -96,9 +96,9 @@ local function triangulate(tvb, offset, rgb, xyz, val, iso)
 
 	for ii , v in ipairs(indices) do
 		local vertex = verts[indices[ii] + 1]
-		local xyz1 = xyz[1] + vertex[1];
-		local xyz2 = xyz[2] + vertex[2];
-		local xyz3 = xyz[3] + vertex[3];
+		local xyz1 = xyz[1] + vertex[1] * scale;
+		local xyz2 = xyz[2] + vertex[2] * scale;
+		local xyz3 = xyz[3] + vertex[3] * scale;
 
 		local rr = math.floor((rgb[1] + vertex[1]*dr)*255)
 		local gg = math.floor((rgb[2] + vertex[2]*dg)*255)
@@ -106,7 +106,7 @@ local function triangulate(tvb, offset, rgb, xyz, val, iso)
 
 		local abgr = 0xff000000 | (bb << 16) | (gg << 8) | rr
 
-		tvb:packV(offset, xyz1, xyz2, xyz3, vertex[4], vertex[5], vertex[6], abgr)
+		tvb:packV(offset, xyz1, xyz2, xyz3, vertex[4] * scale, vertex[5] * scale, vertex[6] * scale, abgr)
 
 		offset = offset + 1
 		num = num + 1
@@ -119,13 +119,24 @@ local DIMS = 32
 
 local ypitch = DIMS
 local zpitch = DIMS*DIMS
-local invdim = 1/(DIMS-1)
 local ctx = {}
 
 function api.on_entry()
 	ctx.prog = utils.load_program("vs_metaballs.bin", "fs_metaballs.bin")
+	ctx.vdecl = bgfx.vertex_layout {
+		{ "POSITION", 3, "FLOAT" },
+		{ "NORMAL", 3, "FLOAT" },
+		{ "COLOR0", 4, "UINT8", true },
+	}
+	ctx.tvb = bgfx.transient_buffer 'ffffffd'
 
-	bgfx.set_debug("")
+	local grid = {}
+	ctx.grid = grid
+	for i = 1, DIMS^3 do 
+		grid[i] = {0, 0, 0}
+	end
+
+	bgfx.set_debug("PT")
 	bgfx.dbg_text_clear()
 end 
 
@@ -138,14 +149,132 @@ function api.on_resize()
 	bgfx.set_view_rect(viewid, ContentStartX, ContentStartY, w, h)
 	bgfx.set_view_clear(viewid, "CD", 0x303030ff, 1, 0)
 	
-	local eyepos, at = math3d.vector(0,0,-35), math3d.vector(0, 0, 0)
-	local viewmat = math3d.lookat(eyepos, at)
+	local viewmat = math3d.lookat({0, 0, -50, 0}, {0, 0, 0})
 	local projmat = math3d.projmat { fov = 60, aspect = w/h , n = 0.1, f = 100 }
 	bgfx.set_view_transform(viewid, viewmat, projmat)
 end
 
+local time = 0
+local iso = { [1] = 0.75 }
+local numDims = {[1] = DIMS}
 function api.update(delta_time)
+	local width = 180
+	ImGui.SetNextWindowPos(Screen_Width - width, 0)
+	ImGui.SetNextWindowSize(width, 250);
+	local window_flag = ImGui.WindowFlags {"NoScrollbar", "NoScrollWithMouse", "NoTitleBar", "NoResize"}
+	if ImGui.Begin("menu", nil, window_flag) then 
+		ImGui.SliderFloat("ISO", iso, 0.1, 4.0)
+		ImGui.SliderInt("Size", numDims, 8, DIMS)
+	end
+	ImGui.End()
 
+
+	bgfx.touch(viewid)
+	time = time + delta_time 
+
+	local scale = DIMS / numDims[1]
+	local invdim = 1 / (numDims[1] - 1)
+
+	local numVertices = 0
+	local maxVertices = (32 << 10)
+	ctx.tvb:alloc(maxVertices, ctx.vdecl)
+
+	local numSpheres = 16
+	local sphere = {}
+	for i = 1, numSpheres do 
+		table.insert(sphere, {
+			math.sin(time*i*0.21+i*0.37) * (DIMS * 0.5 - 8),
+			math.sin(time*i*0.37+i*0.67) * (DIMS * 0.5 - 8),
+			math.cos(time*i*0.11+i*0.13) * (DIMS * 0.5 - 8),
+			1 / (2 + (math.sin(time*(i*0.13)) * 0.5 + 0.5) * 2)
+		})
+	end 
+
+	local grid = ctx.grid
+	for zz = 0 , DIMS-1 do
+		for yy = 0, DIMS-1 do
+			local offset = (zz*DIMS+yy)*DIMS
+			for xx = 0 , DIMS-1 do
+				local xoffset = offset + xx
+				local dist = 0.0
+				local prod = 1.0
+				for ii = 1, numSpheres do
+					local pos = sphere[ii]
+
+					local dx = pos[1] - (-DIMS*0.5 + xx )
+					local dy = pos[2] - (-DIMS*0.5 + yy )
+					local dz = pos[3] - (-DIMS*0.5 + zz )
+					local invr = pos[4]
+					local dot = dx*dx + dy*dy + dz*dz
+					dot = dot * invr * invr
+					dist = dist * dot + prod
+					prod = prod * dot
+				end
+				grid[xoffset+1].val = dist / prod - 1;
+			end
+		end
+	end
+
+	for zz = 1, DIMS-2 do
+		for yy = 1, DIMS-2 do
+			local offset = (zz*DIMS+yy)*DIMS
+			for xx = 1, DIMS-2 do
+				local xoffset = offset + xx + 1
+				local v1 = grid[xoffset-1     ].val - grid[xoffset+1     ].val
+				local v2 = grid[xoffset-ypitch].val - grid[xoffset+ypitch].val
+				local v3 = grid[xoffset-zpitch].val - grid[xoffset+zpitch].val
+				local l = (v1^2 + v2^2 + v3^2) ^ 0.5
+				local r =grid[xoffset]
+				r[1] = v1 * l
+				r[2] = v2 * l
+				r[3] = v3 * l
+			end
+		end
+	end
+
+	local rgb = {}
+	local pos = {}
+	local val = {}
+	for zz = 0, DIMS-2 do
+		if numVertices+12 >= maxVertices then break	end
+		rgb[3] = zz*invdim
+		rgb[6] = (zz+1)*invdim
+
+		for yy = 0, DIMS-2 do
+			if numVertices+12 >= maxVertices then break end
+			local offset = (zz*DIMS+yy)*DIMS
+			rgb[2] = yy*invdim
+			rgb[5] = (yy+1)*invdim
+			for xx = 0, DIMS-2 do
+				if numVertices+12 >= maxVertices then break end
+				local xoffset = offset + xx
+				rgb[1] = xx*invdim
+				rgb[4] = (xx+1)*invdim
+
+				pos[1] = -DIMS*0.5 + xx
+				pos[2] = -DIMS*0.5 + yy
+				pos[3] = -DIMS*0.5 + zz
+
+				val[1] = grid[xoffset+zpitch+ypitch+1]
+				val[2] = grid[xoffset+zpitch+ypitch+2]
+				val[3] = grid[xoffset+ypitch+2       ]
+				val[4] = grid[xoffset+ypitch+1       ]
+				val[5] = grid[xoffset+zpitch+1       ]
+				val[6] = grid[xoffset+zpitch+2       ]
+				val[7] = grid[xoffset+2              ]
+				val[8] = grid[xoffset+1              ]
+
+				local num = triangulate(ctx.tvb, numVertices, rgb, pos, val, iso[1], scale)
+				numVertices = numVertices + num
+			end
+		end
+	end
+
+	bgfx.set_transform { r =  { time * 0.67, time, 0 } }
+	ctx.tvb:setV(0, 0, numVertices)
+	local state = bgfx.make_state { WRITE_MASK = "RGBAZ", DEPTH_TEST = "LESS", CULL = "CW", MSAA = true }
+	bgfx.set_state(state) 
+	bgfx.submit(viewid, ctx.prog)
 end
 
 

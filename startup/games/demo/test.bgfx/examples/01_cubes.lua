@@ -92,7 +92,7 @@ function api.on_entry()
 		0, 1, 2, 3, 4, 5, 6, 7
 	}
 
-	bgfx.set_debug("")
+	bgfx.set_debug("PT")
 	bgfx.dbg_text_clear()
 end
 
