@@ -17,6 +17,7 @@ local games = {
 	{name = "demo", feature = {"demo|gameplay"}, desc = "some usage examples of the ant"},
 	{name = "sims", feature = {"sims"}, desc = "sample project 1"},
 	{name = "bgfx", feature = {"test.bgfx"}, desc = "bgfx examples"},
+	{name = "game_01 2d", feature = {"game_01"}, desc = "2d game 01"},
 }
 
 local selected = tonumber(common.user_data.get("entry.last")) or 1

@@ -5,3 +5,4 @@ mount:
     /        %project%/com
 	/pkg/        %project%/games/demo
 	/pkg/        %project%/games/sims
+	/pkg/        %project%/games/game_01

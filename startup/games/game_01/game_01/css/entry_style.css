@@ -1,0 +1,23 @@
+body {
+	font: 200% "阿里巴巴普惠体";
+	background-color: gray;
+}
+button {
+	padding: 0 20px;
+	text-align: center;
+	text-decoration: none;
+	border-radius: 10px;
+	border: 1px white;
+	background-color: black;
+	background-size: contain;
+	color: white;
+	transform: scale(1.0);
+}
+button:active {
+	transform: scale(1.1);
+}
+
+/*hover没起效，暂时不清楚应该用啥表示hover*/
+button:hover {
+	transform: scale(1.05);
+}
