@@ -10,7 +10,7 @@ local function new(ecs)
 
 	function api.init()
 		local iRmlUi = api.RmlUi
-		local ui = iRmlUi.open ("rmlui_01", "/pkg/game_01/ui/ui_entry/ui_entry.html")
+		local ui = iRmlUi.open ("rmlui_01", "/pkg/game_01.ui/ui/ui_entry/ui_entry.html")
 
 		-- 注册事件
 		iRmlUi.onMessage("click", function (msg)

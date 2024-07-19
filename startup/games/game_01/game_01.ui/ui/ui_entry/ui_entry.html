@@ -9,8 +9,8 @@
 				gap: 20px;  /*行间距*/
 			}
 		</style>
-        <style path = "/pkg/game_01/css/entry_style.css"/> 
-        <script path = "/pkg/game_01/ui/ui_entry/ui_entry.lua"/> 
+        <style path = "/pkg/game_01.ui/css/entry_style.css"/> 
+        <script path = "/pkg/game_01.ui/ui/ui_entry/ui_entry.lua"/> 
     </head>
     <body>
         <div>
@@ -18,7 +18,7 @@
             <button data-event-click="load()">载入游戏</button>
             <button data-event-click="setting()">设置</button>
             <button data-if="show">隐藏菜单</button>
-            <button data-event-click="exit()">退出</button>
+            <button data-event-click="open '/pkg/game_01.ui/ui/ui_map/ui_map.html'">退出</button>
         </div>
     </body>
 </html>

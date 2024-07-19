@@ -5,17 +5,10 @@ local w = world.w
 
 ---@type ly.common
 local common = import_package 'ly.common' 	
-
-local math3d = require "math3d"
-local icamera = ecs.require "ant.camera|camera"
 local window = require "window"
-local ientity = ecs.require "ant.entity|entity"
 
 ---@type game_01.client
 local client
-
-local ientity = ecs.require "ant.entity|entity"
-
 local pre 
 
 function system.preinit()

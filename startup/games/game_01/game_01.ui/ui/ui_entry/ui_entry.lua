@@ -1,8 +1,12 @@
-
-local model = window.createModel {
+-------------------------------------------------
+--- 游戏进入界面
+-------------------------------------------------
+---@type game_01.ui.main
+local main = import_package 'game_01.ui'
+local model = main.create_ui(window, {
 	show = false,
 	label = "新游戏"
-}
+})
 window.onMessage("rmlui_01.test", function(a)
 	print("rmlui_01.html", a)
 end)
