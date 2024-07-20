@@ -1,11 +1,10 @@
 -------------------------------------------------
---- 地图主界面
+--- 游戏设置界面
 -------------------------------------------------
 ---@type game_01.ui.main
 local main = import_package 'game_01.ui'
-local model = main.create_ui(window, {})
+local view = main.create_ui(window, {})
 
-function model.test()
-	print("window is2", window)
-	print("click test")
+function view.on_btn_click_return()
+	view.open_ui("ui_entry")
 end

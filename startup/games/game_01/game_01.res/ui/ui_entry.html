@@ -1,0 +1,22 @@
+<html>
+    <head>
+		<style>
+			div {
+				margin-left: 30%;
+				margin-right: 30%;
+				margin-top: 15%;
+				margin-bottom: 20%;
+				gap: 20px;  /*行间距*/
+			}
+		</style>
+        <style path = "/pkg/game_01.res/css/entry_style.css"/> 
+        <script path = "/pkg/game_01.ui/entry/ui_entry.lua"/> 
+    </head>
+    <body>
+        <div>
+            <button id = "new" data-event-click="on_btn_click_new()">新游戏</button>
+            <button data-event-click="on_btn_click_setting()">设置</button>
+            <button data-event-click="on_btn_click_exit()">退出</button>
+        </div>
+    </body>
+</html>

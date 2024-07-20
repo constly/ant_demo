@@ -1,6 +1,8 @@
+/*游戏进入界面相关style*/
+
 body {
 	font: 200% "阿里巴巴普惠体";
-	background-color: gray;
+	background-color: burlywood;
 }
 button {
 	padding: 0 20px;

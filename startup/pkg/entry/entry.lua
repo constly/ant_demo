@@ -15,8 +15,8 @@ local common = import_package 'ly.common'
 ---@type entry.game[]
 local games = {
 	{name = "demo", feature = {"demo|gameplay"}, desc = "some usage examples of the ant"},
-	{name = "sims", feature = {"sims"}, desc = "sample project 1"},
-	{name = "bgfx", feature = {"test.bgfx"}, desc = "bgfx examples"},
+	--{name = "sims", feature = {"sims"}, desc = "sample project 1"},
+	--{name = "bgfx", feature = {"test.bgfx"}, desc = "bgfx examples"},
 	{name = "game_01 2d", feature = {"game_01"}, desc = "2d game 01"},
 }
 
