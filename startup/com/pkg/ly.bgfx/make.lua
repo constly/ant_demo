@@ -5,6 +5,12 @@ lm:source_set "ly.bgfx" {
 	sources = {
       
     },
+	msvc = {
+		flags = {
+			"/utf-8",
+			"/Zc:preprocessor",
+		}
+	}
 }
 
 -- lua绑定相关代码只能放在 lua_source中，不然编译不过
@@ -21,4 +27,10 @@ lm:lua_src "ly.bgfx" {
     sources = {
         "src/lua_binding.cpp",
     },
+	msvc = {
+		flags = {
+			"/utf-8",
+			"/Zc:preprocessor",
+		}
+	}
 }

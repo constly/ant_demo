@@ -150,5 +150,8 @@ lm:exe "demo_ant" {
     sources = {
         "../modules.c",
         "../../runtime/win32/demo_ant.rc"
-    }
+    },
+	msvc = {
+		flags = "/utf-8",
+	}
 }

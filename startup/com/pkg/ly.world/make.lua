@@ -6,6 +6,9 @@ lm:source_set "ly.world" {
         "src/world/*.cpp",
 		"src/astar/*.cpp",
     },
+	msvc = {
+		flags = "/utf-8",
+	}
 }
 
 -- lua绑定相关代码只能放在 lua_source中，不然编译不过
@@ -17,4 +20,7 @@ lm:lua_src "ly.world" {
     sources = {
         "src/lua_binding.cpp",
     },
+	msvc = {
+		flags = "/utf-8",
+	}
 }

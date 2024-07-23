@@ -13,4 +13,10 @@ lm:lua_src "ly.net" {
     sources = {
         "lua_broadcast.cpp",
     },
+	msvc = {
+		flags = {
+			"/utf-8",
+			"/Zc:preprocessor",
+		}
+	}
 }
