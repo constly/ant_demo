@@ -1,26 +1,5 @@
 # Ant Game Engine 学习记录
-学习使用[Ant Game Engine](https://github.com/ejoy/ant)，目前有3个入口:  
-![entry](./img/entry.png)
-
-## 入口1: demo场景 
-主要用于演示引擎基础功能，指导方针如下：
-* 尽可能给每一个功能点都加上示例代码
-* 尽可能覆盖游戏开发的方方面面，比如编辑器，UI，渲染，联机，调试，优化，资源管理，对接Steam等等
-* 尽量封装+模块化，以便需要时直接Ctrl+C, Ctrl+V
-* 如下图所示，程序会尽可能罗列出每个功能使用示例
-![core_10](./img/core_10.png)
-
-## 入口2：smis场景
-准备做一个支持局域网联机的小demo，试图打造一套基于运行时的工具链：
-* 所有模块都支持热重载，追求极致工作效率
-* 统一研发人员与mod开发者的工作流，大家一视同仁，都用一样的工具
-* 如下图所示，左边为游戏编辑器，右边为游戏场景。左边修改后，点击刷新右边立刻重新加载
-![editor_01](./img/editor_01.png)
-
-## 入口3：bgfx场景
-学习bgfx，准备将部分example用ant实现一遍
-![bgfx_01](./img/bgfx_01.png)
-
+学习使用[Ant Game Engine](https://github.com/ejoy/ant)
 ## 如何运行
 ```
 -- clone引擎，注意: 就用默认名字ant

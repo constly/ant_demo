@@ -148,11 +148,11 @@ function system.draw_node2()
 		ImGui.SameLine();
 
 		local spacing = {x = 3, y = 3}
-		ImGui.PushButtonRepeat(true);
+		draw_list.PushButtonRepeat(true);
 		if ImGui.ArrowButton("##left", ImGui.Dir.Left) then counter = counter - 1 end
 		ImGui.SameLine(0.0, spacing.y);
 		if ImGui.ArrowButton("##right", ImGui.Dir.Right) then counter = counter + 1 end
-		ImGui.PopButtonRepeat();
+		draw_list.PopButtonRepeat();
 		ImGui.SameLine();
 		ImGui.Text("%d", counter);
 

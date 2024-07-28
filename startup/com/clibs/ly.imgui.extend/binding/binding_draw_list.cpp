@@ -562,6 +562,17 @@ static int dlTableSetColumnWidthAutoAll(lua_State* L) {
 	return 0;
 }
 
+static int dlPushButtonRepeat(lua_State* L) {
+	bool repeat = lua_toboolean(L, 1);
+	ImGui::PushItemFlag(ImGuiItemFlags_ButtonRepeat, repeat);
+	return 0;
+}
+
+static int dlPopButtonRepeat(lua_State* L) {
+	ImGui::PopItemFlag();
+	return 0;
+}
+
 void init_draw_list(lua_State* L) {
 	luaL_Reg draw_list[] = {
 		{ "PushClipRect", dlPushClipRect },
@@ -592,6 +603,8 @@ void init_draw_list(lua_State* L) {
 		{ "SetTableColumnWidth", dlSetTableColumnWidth },
 		{ "TableSetColumnWidthAutoSingle", dlTableSetColumnWidthAutoSingle },
 		{ "TableSetColumnWidthAutoAll", dlTableSetColumnWidthAutoAll },
+		{ "PushButtonRepeat", dlPushButtonRepeat },
+		{ "PopButtonRepeat", dlPopButtonRepeat },
 		{ NULL, NULL },
 	};
 	luaL_newlib(L, draw_list);
