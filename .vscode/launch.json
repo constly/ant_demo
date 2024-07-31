@@ -5,7 +5,7 @@
             "type": "lua",
             "request": "launch",
             "name": "Debug",
-            "luaexe": "${workspaceFolder}/bin/msvc/debug/ant_demo.exe",
+            "luaexe": "${workspaceFolder}/bin/msvc/debug/demo_ant.exe",
             "luaVersion": "lua-latest",
             "path": null,
             "cpath": null,
